@@ -8,19 +8,20 @@ nuget Fake.Core.Target //"
 open Fake.IO
 open Fake.IO.Globbing.Operators //enables !! and globbing
 open Fake.DotNet
-open Fake.DotNet.Testing
 open Fake.Core
 
 
 //Properties
-let buildFolder = "./build/"
+let buildFolder = System.IO.Path.GetFullPath("./build/")
 let buildAppFolder = buildFolder + "app"
 let buildTestFolder = buildFolder + "test"
+let artifactFolder = System.IO.Path.GetFullPath("./artifact/")
+let artifactAppFolder = artifactFolder + "app"
 
 //Targets
 Target.create "Clean" (fun _ ->
     Trace.trace "Clean build folder..."
-    Shell.cleanDir buildFolder
+    Shell.cleanDirs [ buildFolder; artifactFolder ]
 )
 
 Target.create "BuildApp" (fun _ -> 
@@ -37,21 +38,44 @@ Target.create "BuildTest" (fun _ ->
         |> Trace.logItems "BuildTest-Output: "
 )
 
-let runDotNetTest libraryFilePath = 
+let runDotNetTest projectFilePath = 
     let result =
         Process.execWithResult (fun info ->
             { info with
                 FileName = "dotnet.exe"
                 WorkingDirectory = "."
-                Arguments = "test " + libraryFilePath
+                Arguments = "test " + projectFilePath
             }) (System.TimeSpan.FromMinutes 15.)
     result
 
 Target.create "Test" (fun _ -> 
-    let testLibraries = !! ("src/test/**/*.fsproj")    
-    for testLibrary in testLibraries do
-        let result = runDotNetTest testLibrary
+    Trace.trace "Testing app..."
+    let projectFilePaths = !! ("src/test/**/*.fsproj")    
+    for projectFilePath in projectFilePaths do
+        let result = runDotNetTest projectFilePath
         printfn "'dotnet.exe test' exit code: %d" result.ExitCode
+        for message in result.Messages do
+            printfn "   %s" message
+        for error in result.Errors do
+            failwith (sprintf "%s" error)        
+)
+
+let runDotNetPublish projectFilePath outputPath = 
+    let result =
+        Process.execWithResult (fun info ->
+            { info with
+                FileName = "dotnet.exe"
+                WorkingDirectory = "."
+                Arguments = "publish --framework netcoreapp2.0 --runtime win-x64 --output " + outputPath + " " + projectFilePath
+            }) (System.TimeSpan.FromMinutes 15.)
+    result
+
+Target.create "Publish" (fun _ ->
+    Trace.trace "Publishing app..."
+    let projectFilePaths = !! ("src/app/**/*.fsproj")    
+    for projectFilePath in projectFilePaths do
+        let result = runDotNetPublish projectFilePath artifactAppFolder
+        printfn "'dotnet.exe publish' exit code: %d" result.ExitCode
         for message in result.Messages do
             printfn "   %s" message
         for error in result.Errors do
@@ -69,6 +93,7 @@ open Fake.Core.TargetOperators
     ==> "BuildApp"
     ==> "BuildTest"
     ==> "Test"
+    ==> "Publish"
     ==> "Default"
 
 //Start build
