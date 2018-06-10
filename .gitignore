@@ -46,3 +46,4 @@ artifacts/
 build.fsx.lock
 build/
 test/
+artifact/

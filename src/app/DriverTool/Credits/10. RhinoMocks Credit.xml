@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProductName>RhinoMocks</ProductName>
+  <ProductHome>https://github.com/meisinger/rhino-mocks/</ProductHome>
+  <CreditText>trondr.DriverUtil uses RhinoMocks in unit tests to create stub instances of dependent services not under test.</CreditText>
+</CreditInfo>

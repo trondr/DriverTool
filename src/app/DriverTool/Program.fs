@@ -1,8 +1,19 @@
-﻿// Learn more about F# at http://fsharp.org
+﻿open System
+open DriverTool.Commands
+open NCmdLiner
 
-open System
-
+let runCommand args =
+    let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args)
+    let exitCode = 
+        match result.IsSuccess with
+            |true -> 0
+            |false ->                
+                result.OnFailure(new Action<exn>(fun ex -> System.Console.WriteLine(ex.Message)))|> ignore
+                1
+    exitCode
+    
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+    let exitCode = runCommand argv
+    Console.ReadLine() |> ignore
+    exitCode // return an integer exit code

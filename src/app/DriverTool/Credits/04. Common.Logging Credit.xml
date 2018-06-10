@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProductName>Common.Logging</ProductName>
+  <ProductHome>http://netcommon.sourceforge.net/index.html</ProductHome>
+  <CreditText>trondr.DriverUtil uses Common.Logging to provide a logging abstraction around log4net. This enables loose coupling to log4net as logging mechanism.</CreditText>
+</CreditInfo>
