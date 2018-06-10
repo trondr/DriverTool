@@ -14,39 +14,49 @@ open Fake.Core
 
 //Properties
 let buildFolder = "./build/"
-let testFolder = "./test/"
+let buildAppFolder = buildFolder + "app"
+let buildTestFolder = buildFolder + "test"
 
 //Targets
 Target.create "Clean" (fun _ ->
     Trace.trace "Clean build folder..."
-    Shell.cleanDirs [buildFolder; testFolder]
+    Shell.cleanDir buildFolder
 )
 
 Target.create "BuildApp" (fun _ -> 
     Trace.trace "Building app..."
     !! "src/app/**/*.fsproj"
-        |> MSBuild.runRelease id buildFolder "Build"
+        |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
 )
 
 Target.create "BuildTest" (fun _ -> 
     Trace.trace "Building test..."
     !! "src/test/**/*.fsproj"
-        |> MSBuild.runRelease id testFolder "Build"
+        |> MSBuild.runRelease id buildTestFolder "Build"
         |> Trace.logItems "BuildTest-Output: "
 )
 
-let nunitConsoleRunnerPath = "E:/Dev/github.trondr/DriverTool/tools/NUnit/nunit3-console.exe"
+let runDotNetTest libraryFilePath = 
+    let result =
+        Process.execWithResult (fun info ->
+            { info with
+                FileName = "dotnet.exe"
+                WorkingDirectory = "."
+                Arguments = "test " + libraryFilePath
+            }) (System.TimeSpan.FromMinutes 15.)
+    result
 
 Target.create "Test" (fun _ -> 
-    !! (testFolder + "/*.Tests.dll")
-        |> NUnit3.run (fun p -> 
-            {p with 
-                ShadowCopy = false
-                ToolPath = nunitConsoleRunnerPath}
-        )
+    let testLibraries = !! ("src/test/**/*.fsproj")    
+    for testLibrary in testLibraries do
+        let result = runDotNetTest testLibrary
+        printfn "'dotnet.exe test' exit code: %d" result.ExitCode
+        for message in result.Messages do
+            printfn "   %s" message
+        for error in result.Errors do
+            failwith (sprintf "%s" error)        
 )
-
 
 Target.create "Default" (fun _ ->
     Trace.trace "Hello world from FAKE"
@@ -55,7 +65,7 @@ Target.create "Default" (fun _ ->
 //Dependencies
 open Fake.Core.TargetOperators
 
-"Clean"
+"Clean" 
     ==> "BuildApp"
     ==> "BuildTest"
     ==> "Test"
