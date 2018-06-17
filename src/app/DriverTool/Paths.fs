@@ -1,7 +1,7 @@
 ﻿module Paths
 
     open System.IO
-
+    
     let HasInvalidPathCharacters (path :string) = 
         let invalidPathCharacters = Path.GetInvalidPathChars();
         if (path.IndexOfAny(invalidPathCharacters) <> -1) 
@@ -20,3 +20,4 @@
             || (HasInvalidPathCharacters path)
             || (HasWildCardCharacters path)
         not invalidPath
+        
