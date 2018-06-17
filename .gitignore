@@ -45,5 +45,4 @@ artifacts/
 .fake/
 build.fsx.lock
 build/
-test/
 artifact/
