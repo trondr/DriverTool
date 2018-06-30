@@ -1,10 +1,10 @@
 namespace DriverTool.Tests
 open NUnit.Framework
-open DriverTool
 open Paths
 
 [<TestFixture>]
 module UnitTests  =
+    open System.Security.Cryptography
          
     [<Test>]
     [<TestCase("","Empty string",false)>]
@@ -31,3 +31,7 @@ module UnitTests  =
     let IsValidPathTests (path:string) (description:string) (expected:bool) =
         let actual = IsValidPath path
         Assert.AreEqual(expected,actual,description)
+
+    
+
+    
