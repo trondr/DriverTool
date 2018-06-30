@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="WmiHelper.fs" />
+    <Compile Include="ModelCode.fs" />
     <Compile Include="Paths.fs" />
+    <Compile Include="Path.fs" />
     <EmbeddedResource Include="Credits\01. Castle Windsor Credit.xml" />
     <EmbeddedResource Include="Credits\02. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\03. NCmdLiner SolutionTemplates Credit.xml" />
@@ -31,12 +34,14 @@
     <EmbeddedResource Include="License\10. RhinoMocks License.xml" />
     <EmbeddedResource Include="License\11. NUnit License.xml" />
     <EmbeddedResource Include="License\12. CsvHelper License.xml" />
+    <Compile Include="Commands\CommandProviders.fs" />
     <Compile Include="Commands\CommandDefinitions.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NCmdLiner" Version="2.0.18110.340" />
+    <PackageReference Include="System.Management" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

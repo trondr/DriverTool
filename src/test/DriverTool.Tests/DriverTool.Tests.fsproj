@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="UnitTests.fs" />
+    <Compile Include="ModelCodeTests.fs" />
+    <Compile Include="PathsTests.fs" />
+    <Compile Include="PathTests.fs" />
+    <Compile Include="WmiHelperTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
