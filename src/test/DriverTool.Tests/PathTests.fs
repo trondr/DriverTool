@@ -1,4 +1,4 @@
-﻿module WmiHelperTests
+﻿namespace DriverTool.Tests
 open NUnit.Framework
 open DriverTool
 

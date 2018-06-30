@@ -1,6 +1,7 @@
-﻿module WmiHelperTests
+﻿namespace DriverTool.Tests
 open NUnit.Framework
 open System
+open DriverTool
 
 [<TestFixture>]
 module WmiHelperTests  =

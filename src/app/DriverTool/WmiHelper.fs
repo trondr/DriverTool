@@ -1,7 +1,6 @@
-﻿
+﻿namespace DriverTool
 
-module WmiHelper
-
+module WmiHelper =
     open System.Management
     open Microsoft.FSharp.Collections    
     open System

@@ -3,7 +3,7 @@ open NUnit.Framework
 open Paths
 
 [<TestFixture>]
-module UnitTests  =
+module PathsTests  =
     open System.Security.Cryptography
          
     [<Test>]
