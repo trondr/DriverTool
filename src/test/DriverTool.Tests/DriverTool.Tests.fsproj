@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Include="ModelCodeTests.fs" />
+    <Compile Include="OperatingSystemCodeTests.fs" />
     <Compile Include="PathsTests.fs" />
     <Compile Include="PathTests.fs" />
     <Compile Include="WmiHelperTests.fs" />

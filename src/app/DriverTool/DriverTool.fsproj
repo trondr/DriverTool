@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="WmiHelper.fs" />
     <Compile Include="ModelCode.fs" />
+    <Compile Include="OperatingSystemCode.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="Path.fs" />
     <EmbeddedResource Include="Credits\01. Castle Windsor Credit.xml" />
