@@ -4,7 +4,7 @@ open System
 open Paths
 
 type Path private (path : string) = 
-    member x.path = path
+    member x.Value = path
     static member createWithContinuation success failure (path:string) : Result<'Path, 'Exception> =
         match path with
         | null -> failure (new ArgumentNullException("Path value cannot be null") :> Exception)
@@ -22,5 +22,5 @@ type Path private (path : string) =
     
     override x.Equals(b) =
         match b with
-        | :? Path as p -> (path) = (p.path)
+        | :? Path as p -> (path) = (p.Value)
         | _ -> false

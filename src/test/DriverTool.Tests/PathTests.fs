@@ -22,7 +22,7 @@ module PathTests  =
         let testPath = @"c:\temp\test.txt"
         let path1Result = Path.create testPath
         match path1Result with
-        | Ok path -> Assert.AreEqual(testPath, path.path)
+        | Ok path -> Assert.AreEqual(testPath, path.Value)
         | Error ex -> Assert.Fail(sprintf "%s" ex.Message)
         let path2Result = Path.create testPath            
         Assert.AreEqual(path1Result,path2Result,"paths are not equal")
