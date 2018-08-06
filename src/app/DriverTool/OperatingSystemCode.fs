@@ -4,7 +4,7 @@ open System
 type OperatingSystemCode private (operatingSystemCode : string) = 
     member x.Value = operatingSystemCode
     
-    static member createWithContinuation success failure (operatingSystemCode:string) (defaultToLocal:bool) : Result<'OperatingSystemCode, 'Exception> =
+    static member createWithContinuation success failure (operatingSystemCode:string) (defaultToLocal:bool) : Result<OperatingSystemCode, Exception> =
         
         let OsCaptionToOperatingSystemCode (caption:string) = 
             match caption with
@@ -13,7 +13,7 @@ type OperatingSystemCode private (operatingSystemCode : string) =
             | caption when caption.Contains("Windows 8") -> Result.Ok "Win8"
             | _ -> Result.Error (new Exception(sprintf "OS %s is not supported." caption))
 
-        let getOperatingSystemCodeForLocalSystem : Result<'string, 'Exception> = 
+        let getOperatingSystemCodeForLocalSystem : Result<string, Exception> = 
             let captionResult = WmiHelper.getWmiProperty "Win32_OperatingSystem" "Caption"
             match captionResult with
             | Ok c -> OsCaptionToOperatingSystemCode (c.ToString())

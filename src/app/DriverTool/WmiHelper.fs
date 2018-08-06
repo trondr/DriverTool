@@ -5,7 +5,7 @@ module WmiHelper =
     open Microsoft.FSharp.Collections    
     open System
 
-    let getWmiProperty (className : string) (propertyName : string) : Result<'T, 'Exception> = 
+    let getWmiProperty (className : string) (propertyName : string) : Result<'T, Exception> = 
         try
             use managementClass = new ManagementClass(className)
             use managementObjectCollection = managementClass.GetInstances()
@@ -17,7 +17,7 @@ module WmiHelper =
                     |> Seq.cast
                     |> Seq.map(fun (x: ManagementObject) -> x.GetPropertyValue(propertyName))
                     |> Seq.head
-                Result.Ok (value : 'T)
+                Result.Ok (value :?> 'T)
         with
            | _ as ex -> Result.Error ex
 

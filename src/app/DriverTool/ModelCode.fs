@@ -4,8 +4,8 @@ open System
 type ModelCode private (modelCode : string) = 
     member x.Value = modelCode
     
-    static member createWithContinuation success failure (modelCode:string) (defaultToLocal:bool) : Result<'ModelCode, 'Exception> =
-        let getModelCodeForLocalSystem : Result<'string, 'Exception> = 
+    static member createWithContinuation success failure (modelCode:string) (defaultToLocal:bool) : Result<ModelCode, Exception> =
+        let getModelCodeForLocalSystem : Result<string, Exception> = 
             let localModelCodeResult = WmiHelper.getWmiProperty "Win32_ComputerSystem" "Model"
             localModelCodeResult
         
@@ -15,7 +15,7 @@ type ModelCode private (modelCode : string) =
             | Ok mc -> success (ModelCode (mc.ToString()) )
             | Error ex -> failure (new Exception(sprintf "%s" ex.Message))
             
-        | modelCode when System.String.IsNullOrWhiteSpace(modelCode) -> failure (new ArgumentNullException("Model code value cannot be null") :> Exception)
+        | modelCode when System.String.IsNullOrWhiteSpace(modelCode) -> failure (new ArgumentNullException("Model code value cannot be null"))
         | _ -> success (ModelCode modelCode)
 
     static member create (modelCode : string) =
