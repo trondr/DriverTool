@@ -20,7 +20,7 @@ module OperatingSystemCodeTests  =
         |Error ex -> Assert.IsTrue(ex.Message.StartsWith("Value cannot be null."))
 
     [<Test>]
-    let ModuleCodeTest_Empty_ModuleCode_UseLocalIsTrue() =
+    let OperatingSystemCode_Empty_OperatingSystemCode_UseLocalIsTrue() =
         let operatingSystemCodeResult = OperatingSystemCode.create "" true
         match operatingSystemCodeResult with
         |Ok operatingSystemCode -> Assert.IsFalse((String.IsNullOrWhiteSpace(operatingSystemCode.Value)), sprintf "Operating system code: %s" operatingSystemCode.Value)
