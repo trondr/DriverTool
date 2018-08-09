@@ -6,11 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="F.fs" />
+    <Compile Include="Paths.fs" />
+    <Compile Include="Path.fs" />
+    <Compile Include="FileOperations.fs" />
     <Compile Include="WmiHelper.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
-    <Compile Include="Paths.fs" />
-    <Compile Include="Path.fs" />
     <EmbeddedResource Include="Credits\01. Castle Windsor Credit.xml" />
     <EmbeddedResource Include="Credits\02. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\03. NCmdLiner SolutionTemplates Credit.xml" />
@@ -46,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.5.0" />
+    <PackageReference Update="FSharp.Core" Version="4.5.2" />
   </ItemGroup>
 
 </Project>
