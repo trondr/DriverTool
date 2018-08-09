@@ -13,6 +13,7 @@
     <Compile Include="WmiHelper.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
+    <Compile Include="ExportRemoteUpdates.fs" />
     <EmbeddedResource Include="Credits\01. Castle Windsor Credit.xml" />
     <EmbeddedResource Include="Credits\02. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\03. NCmdLiner SolutionTemplates Credit.xml" />

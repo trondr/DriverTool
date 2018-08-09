@@ -31,4 +31,3 @@ type ModelCode private (modelCode : string) =
         | :? ModelCode as m -> (modelCode) = (m.Value)
         | _ -> false
 
-

@@ -1,11 +1,12 @@
 ﻿namespace DriverTool.Tests
 open System
 open NUnit.Framework
+open DriverTool
+
 open FileOperations
 
 [<TestFixture>]
 module FileOperationTests =
-    open DriverTool
 
     type TemporaryFile() =
         let createTestFile =                        
@@ -25,7 +26,7 @@ module FileOperationTests =
     let ensureFileDoesNotExistTest_FileExists() =
         use temporaryFile = new TemporaryFile()
         let path = temporaryFile.Path
-        let actualResult = ensureFileDoesNotExist path false
+        let actualResult = ensureFileDoesNotExist false (FilePath.Path path)
         match actualResult with
         |Ok p -> Assert.Fail((sprintf "The test should have failed. File %s exists" p.Value))
         |Error ex -> Assert.AreEqual(String.Format("File exists: '{0}'", path.Value),ex.Message)
@@ -34,7 +35,7 @@ module FileOperationTests =
     let ensureFileDoesNotExistTest_FileExists_Overwrite() =
         use temporaryFile = new TemporaryFile()
         let path = temporaryFile.Path
-        let actualResult = ensureFileDoesNotExist path true
+        let actualResult = ensureFileDoesNotExist true (FilePath.Path path)
         match actualResult with
         |Ok p -> Assert.AreEqual(path.Value, p.Value)
         |Error ex -> Assert.Fail("Test failed")
@@ -44,7 +45,7 @@ module FileOperationTests =
         use temporaryFile = new TemporaryFile()
         let path = temporaryFile.Path
         System.IO.File.Delete(path.Value)
-        let actualResult = ensureFileDoesNotExist path false
+        let actualResult = ensureFileDoesNotExist false (FilePath.Path path)
         match actualResult with
         |Ok p -> Assert.AreEqual(path.Value, p.Value)
         |Error ex -> Assert.Fail("Test failed")

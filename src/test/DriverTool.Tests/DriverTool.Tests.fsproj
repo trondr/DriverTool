@@ -13,6 +13,7 @@
     <Compile Include="PathsTests.fs" />
     <Compile Include="PathTests.fs" />
     <Compile Include="WmiHelperTests.fs" />
+    <Compile Include="ExportRemoteUpdatesTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
