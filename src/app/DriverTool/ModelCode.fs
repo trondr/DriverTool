@@ -1,6 +1,13 @@
 ﻿namespace DriverTool
 open System
 
+type InvalidModelCodeException(modelCode:string, message : string) =
+        inherit Exception(
+            match String.IsNullOrWhiteSpace(message) with
+            |false  -> String.Format("The model code '{0}' is not valid. {1}", modelCode, message)
+            |true -> String.Format("The model code '{0}' is not valid.", modelCode)
+            )
+
 type ModelCode private (modelCode : string) = 
     member x.Value = modelCode
     
@@ -13,9 +20,9 @@ type ModelCode private (modelCode : string) =
         | modelCode when System.String.IsNullOrWhiteSpace(modelCode) && defaultToLocal -> 
             match getModelCodeForLocalSystem with
             | Ok mc -> success (ModelCode (mc.ToString()) )
-            | Error ex -> failure (new Exception(sprintf "%s" ex.Message))
+            | Error ex -> failure ((new InvalidModelCodeException(String.Empty,String.Format("Failed to get model code from WMI. {0}", ex.Message))):> Exception)
             
-        | modelCode when System.String.IsNullOrWhiteSpace(modelCode) -> failure (new ArgumentNullException("Model code value cannot be null"))
+        | modelCode when System.String.IsNullOrWhiteSpace(modelCode) -> failure ((new InvalidModelCodeException(modelCode,"ModelCode cannot be null or empty.")) :> Exception)
         | _ -> success (ModelCode modelCode)
 
     static member create (modelCode : string) =

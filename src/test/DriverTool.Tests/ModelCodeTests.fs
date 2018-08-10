@@ -17,7 +17,7 @@ module ModelCodeTests  =
         let modelCodeResult = ModelCode.create "" false
         match modelCodeResult with
         |Ok modelCode -> Assert.IsFalse((String.IsNullOrWhiteSpace(modelCode.Value)), sprintf "Model code: %s" modelCode.Value)
-        |Error ex -> Assert.IsTrue(ex.Message.StartsWith("Value cannot be null."))
+        |Error ex -> Assert.IsTrue(ex.Message.EndsWith("ModelCode cannot be null or empty."))
 
     [<Test>]
     let ModuleCodeTest_Empty_ModuleCode_UseLocalIsTrue() =
