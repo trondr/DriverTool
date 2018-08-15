@@ -68,9 +68,18 @@ module ExportRemoteUpdates =
 
 
     type PackageXmlInfo = 
-        {Location:string; Category:string}
-
-
+        {
+            Location:string;
+            Category:string
+        }
+    
+    type DownloadedPackageXmlInfo = 
+        {
+            Location:string; 
+            Category:string;
+            FilePath:Path;
+            BaseUrl:string
+        }
 
     let getPackagesInfo (modelInfoXmlFilePath:Path) : Result<IEnumerable<PackageXmlInfo>,Exception>= 
         try
@@ -107,39 +116,101 @@ module ExportRemoteUpdates =
                 getTempFilePath f
             Path.create tempXmlFilePathString
         |Result.Error ex -> Result.Error ex
+
+    open System.Linq
+
+    let getBaseUrl locationUrl =
+        let uri = new Uri(locationUrl)
+        uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length).Trim('/');
         
-    let downloadPackageInfo packageXmlInfo = 
+    let downloadPackageInfo (packageXmlInfo:PackageXmlInfo) = 
         let uri = new Uri(packageXmlInfo.Location)
         let tempXmlFileName = getTempXmlFilePathFromUri uri
         match tempXmlFileName with
         | Result.Ok p -> 
-            downloadFile uri p               
+            let fileResult = downloadFile uri p               
+            match fileResult with
+            |Ok p -> 
+                let dpi = 
+                                {
+                                Location = packageXmlInfo.Location;
+                                Category = packageXmlInfo.Category
+                                FilePath = p;
+                                BaseUrl = getBaseUrl packageXmlInfo.Location
+                                }
+                Result.Ok dpi
+            |Error ex -> Result.Error ex
         | Result.Error ex -> Result.Error ex
+    
+    let getAllErrorMessages (results:IEnumerable<Result<System.Object,Exception>>) =         
+        results
+        |> Seq.filter (fun dpi -> 
+                            match dpi with
+                            |Error _ -> true
+                            | _ -> false)
+        |> Seq.map (fun dpi -> 
+                        match dpi with
+                        |Error ex -> ex.Message
+                        | _ -> String.Empty)
 
-    //let downloadPackageXmls packageXmlInfos : IEnumerable<PackageXmlInfo> = 
-    //    Seq.map packageXmlInfos (fun pi -> downloadPackageInfo pi)
+    let getAllSuccesses (results:IEnumerable<Result<System.Object,Exception>>) =
+        results
+        |> Seq.filter (fun dpi -> 
+                                match dpi with
+                                |Ok _ -> true
+                                | _ -> false
+                           )
+            |> Seq.map (fun dpi -> 
+                            match dpi with
+                            |Ok pi -> pi
+                            | _ -> failwith "Failed to get all successes due to a bug in the success filter.")
 
-    //let downloadPackageXmlsR packageXmlInfos : Result<IEnumerable<PackageXmlInfo>,Exception> =
-    //    match packageXmlInfos with
-    //    |Ok infos -> downloadPackageXmls infos
-    //    |Error ex -> Result.Error ex
+
+
+    let downloadPackageXmls packageXmlInfos : Result<seq<DownloadedPackageXmlInfo>,Exception> = 
+        let downloadedPackageXmlInfos = 
+            packageXmlInfos
+            |> Seq.map (fun pi -> downloadPackageInfo pi)
+
+        let objectResults = 
+                    downloadedPackageXmlInfos
+                    |> Seq.cast<Result<System.Object,Exception>>
+
+        let allErrorMessages = 
+            getAllErrorMessages objectResults
+
+        match allErrorMessages.Count() with
+        | 0 ->  
+                let allSuccesses = 
+                    (getAllSuccesses objectResults)
+                    |> Seq.cast<DownloadedPackageXmlInfo>                 
+                Result.Ok allSuccesses
+        | _ -> 
+            let msg = String.Format("Failed to download all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
+            Result.Error (new Exception(msg))
+        
+
+    let downloadPackageXmlsR (packageXmlInfos : Result<IEnumerable<PackageXmlInfo>,Exception>) =
+        match packageXmlInfos with
+        |Ok infos -> downloadPackageXmls infos
+        |Error ex -> Result.Error ex
     
 
-    //let getRemoteUpdates (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) overwrite = 
-    //    let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
-    //    let modelInfoXmlFilePath = getModelInfoXmlFilePath modelCode operatingSystemCode
-    //    match getModelInfoXmlFilePath with
-    //    |Ok filePath-> 
-    //        result = 
-    //            filePath 
-    //            |> ensureFileDoesNotExist overwrite
-    //            |> downloadFile modelInfoUri
-    //            |> ensureFileExists
-    //            |> getPackagesInfo
-    //            |> downloadPackageXmlsR
-    //            |> parsePackageXmls
-    //        result
-    //    |Error ex -> Result.Error ex
+    let getRemoteUpdates (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) overwrite = 
+        let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
+        let modelInfoXmlFilePath = getModelInfoXmlFilePath modelCode operatingSystemCode
+        match modelInfoXmlFilePath with
+        |Ok filePath -> 
+                let result = 
+                    filePath 
+                    |> ensureFileDoesNotExist overwrite
+                    //|> downloadFile modelInfoUri
+                    //|> ensureFileExists
+                    //|> getPackagesInfo
+                    //|> downloadPackageXmls
+                    //|> parsePackageXmls
+                result
+        |Error ex -> Result.Error ex
 
 
     let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite = 
