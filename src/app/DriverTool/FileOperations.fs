@@ -1,10 +1,8 @@
 ﻿namespace DriverTool
 open F
-open DriverTool
 open System
 
 module FileOperations =
-
     let deleteFileUnsafe (path: Path)  =
         System.IO.File.Delete path.Value
 
@@ -25,3 +23,7 @@ module FileOperations =
             | false -> Result.Error (new FileExistsException(String.Format("File exists: '{0}'", path.Value)) :> Exception)
         | false -> Result.Ok path
     
+    let ensureFileExists (path:Path) : Result<Path, Exception> = 
+        match System.IO.File.Exists(path.Value) with
+        | true -> Result.Ok path            
+        | false -> Result.Error (new System.IO.FileNotFoundException(String.Format("File does not exist: '{0}'", path.Value)) :> Exception)
