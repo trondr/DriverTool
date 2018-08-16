@@ -23,7 +23,19 @@ module FileOperations =
             | false -> Result.Error (new FileExistsException(String.Format("File exists: '{0}'", path.Value)) :> Exception)
         | false -> Result.Ok path
     
+    let ensureFileDoesNotExistR overwrite (path:Result<Path, Exception>) : Result<Path, Exception> = 
+        match path with
+        |Error  ex -> Result.Error ex
+        |Ok p -> ensureFileDoesNotExist overwrite p
+    
     let ensureFileExists (path:Path) : Result<Path, Exception> = 
         match System.IO.File.Exists(path.Value) with
         | true -> Result.Ok path            
         | false -> Result.Error (new System.IO.FileNotFoundException(String.Format("File does not exist: '{0}'", path.Value)) :> Exception)
+
+    let ensureFileExistsR (path:Result<Path, Exception>) : Result<Path, Exception> = 
+        match path with
+        |Ok p -> ensureFileExists p
+        |Error ex -> Result.Error ex
+
+    

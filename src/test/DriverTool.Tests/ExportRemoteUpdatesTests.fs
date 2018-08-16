@@ -12,7 +12,7 @@ module ExportRemoteUpdatesTests =
     [<Test>]
     let exportRemoteUpdatesTest() =
         let readFromLocalMachine = false
-        let modelCodeResult = ModelCode.create "LP1234" readFromLocalMachine
+        let modelCodeResult = ModelCode.create "20FA" readFromLocalMachine
         let operatingSystemCodeResult = OperatingSystemCode.create "Win10" readFromLocalMachine
         let csvPathResult = Path.create "c:\\temp\\test.csv"
 

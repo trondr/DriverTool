@@ -3,8 +3,7 @@ open FileOperations
 
 module ExportRemoteUpdates = 
     open System
-    open System.Net
-    open System.Security.Cryptography
+    open System.Net    
     open System.Collections.Generic
     open System.Text.RegularExpressions
         
@@ -44,9 +43,6 @@ module ExportRemoteUpdates =
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         new Uri(String.Format("https://download.lenovo.com/catalog/{0}_{1}.xml",modelCode.Value,operatingSystemCode.Value))
 
-    let getModelInfoXmlFilePath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
-        Path.create (System.IO.Path.Combine(System.IO.Path.GetTempPath(), String.Format("{modelCode.Value}_{operatingSystemCode.Value}.xml",modelCode.Value,operatingSystemCode.Value)))
-
     let downloadFileUnsafe (uri:Uri) (filePath:Path) = 
         use webClient = new WebClient()
         webClient.DownloadProgressChanged.Add(fun ea -> System.Console.Write("{0} of {1}\r", ea.BytesReceived, ea.TotalBytesToReceive))
@@ -59,10 +55,11 @@ module ExportRemoteUpdates =
         |true -> raise (new FileExistsException(String.Format("File allready exists: {0}",filePath.Value)))
         filePath
 
-    let downloadFile (uri:Uri) (filePath:Path) :Result<Path,Exception> = 
+    let downloadFile (uri:Uri) (filePath:Result<Path,Exception>) :Result<Path,Exception> = 
         try
-            downloadFileUnsafe uri filePath |> ignore   
-            Result.Ok filePath
+            match filePath with
+            |Ok fp -> Result.Ok (downloadFileUnsafe uri fp)
+            |Error ex -> Result.Error ex
         with
         | ex -> Result.Error ex
 
@@ -80,15 +77,19 @@ module ExportRemoteUpdates =
             FilePath:Path;
             BaseUrl:string
         }
+    
+    open FSharp.Data
+    type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
 
-    let getPackagesInfo (modelInfoXmlFilePath:Path) : Result<IEnumerable<PackageXmlInfo>,Exception>= 
+    let getPackagesInfo (modelInfoXmlFilePath:Result<Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
         try
-            let testpi =  {Location = ""; Category =""}
-            let testpis = seq{                    
-                        yield testpi
-                        }
-            Result.Ok testpis
-                
+            match modelInfoXmlFilePath with
+            |Ok p -> 
+                let x = PackagesXmlProvider.Load(p.Value)
+                x.Packages
+                |> Seq.map (fun p -> { Location = p.Location; Category = p.Category})
+                |> Result.Ok
+            |Error ex -> Result.Error ex
         with
         |ex -> Result.Error ex
     
@@ -125,24 +126,24 @@ module ExportRemoteUpdates =
         
     let downloadPackageInfo (packageXmlInfo:PackageXmlInfo) = 
         let uri = new Uri(packageXmlInfo.Location)
-        let tempXmlFileName = getTempXmlFilePathFromUri uri
-        match tempXmlFileName with
-        | Result.Ok p -> 
-            let fileResult = downloadFile uri p               
-            match fileResult with
-            |Ok p -> 
-                let dpi = 
-                                {
-                                Location = packageXmlInfo.Location;
-                                Category = packageXmlInfo.Category
-                                FilePath = p;
-                                BaseUrl = getBaseUrl packageXmlInfo.Location
-                                }
-                Result.Ok dpi
-            |Error ex -> Result.Error ex
-        | Result.Error ex -> Result.Error ex
+        let tempXmlFileName = 
+            getTempXmlFilePathFromUri uri
+            |> ensureFileDoesNotExistR true
+        let fileResult = downloadFile uri tempXmlFileName               
+        match fileResult with
+        |Ok p -> 
+            let dpi = 
+                            {
+                            Location = packageXmlInfo.Location;
+                            Category = packageXmlInfo.Category
+                            FilePath = p;
+                            BaseUrl = getBaseUrl packageXmlInfo.Location
+                            }
+            Result.Ok dpi
+        |Error ex -> Result.Error ex
+        
     
-    let getAllErrorMessages (results:IEnumerable<Result<System.Object,Exception>>) =         
+    let getAllErrorMessages (results:seq<Result<'T,Exception>>) =         
         results
         |> Seq.filter (fun dpi -> 
                             match dpi with
@@ -153,7 +154,7 @@ module ExportRemoteUpdates =
                         |Error ex -> ex.Message
                         | _ -> String.Empty)
 
-    let getAllSuccesses (results:IEnumerable<Result<System.Object,Exception>>) =
+    let getAllSuccesses (results:seq<Result<'T,Exception>>) =
         results
         |> Seq.filter (fun dpi -> 
                                 match dpi with
@@ -165,8 +166,6 @@ module ExportRemoteUpdates =
                             |Ok pi -> pi
                             | _ -> failwith "Failed to get all successes due to a bug in the success filter.")
 
-
-
     let downloadPackageXmls packageXmlInfos : Result<seq<DownloadedPackageXmlInfo>,Exception> = 
         let downloadedPackageXmlInfos = 
             packageXmlInfos
@@ -174,7 +173,7 @@ module ExportRemoteUpdates =
 
         let objectResults = 
                     downloadedPackageXmlInfos
-                    |> Seq.cast<Result<System.Object,Exception>>
+                    //|> Seq.cast<Result<System.Object,Exception>>
 
         let allErrorMessages = 
             getAllErrorMessages objectResults
@@ -188,13 +187,83 @@ module ExportRemoteUpdates =
         | _ -> 
             let msg = String.Format("Failed to download all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
-        
-
-    let downloadPackageXmlsR (packageXmlInfos : Result<IEnumerable<PackageXmlInfo>,Exception>) =
+     
+    let downloadPackageXmlsR (packageXmlInfos: Result<seq<PackageXmlInfo>,Exception>) = 
         match packageXmlInfos with
-        |Ok infos -> downloadPackageXmls infos
-        |Error ex -> Result.Error ex
-    
+        |Ok pis -> downloadPackageXmls pis
+        |Error ex -> Result.Error ex     
+
+    let getModelInfoXmlFilePath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
+        let fileName = String.Format("{0}_{1}.xml",modelCode.Value,operatingSystemCode.Value)
+        let filePathString = getTempFilePath fileName        
+        Path.create filePathString
+
+    type PackageInfo = {
+        Title:string;
+        Version:string;
+        BaseUrl:string;
+        InstallerName:string;
+        ExtractCommandLine:string;
+        InstallCommandLine:string;
+        Category:string;
+        ReadmeName:string;
+        ReleaseDate:string;
+    }
+
+    open Tvsu.Beans
+    open Tvsu.Engine;
+
+    let getInstallCommandLine (update: Update) = 
+        match (update.Package.Install.Cmdline) with
+        | null -> update.Package.Install.Cmdline.[0].Commad;
+        |_ -> update.Package.ExtractCommand.Command;
+
+    let getUpdateInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
+        use xmlFileStream = new System.IO.FileStream(downloadedPackageInfo.FilePath.Value,System.IO.FileMode.Open)
+        let update = new Update(downloadedPackageInfo.FilePath.Value,xmlFileStream)
+        {
+            Title = update.Title
+            Version = update.Package.Version;
+            InstallerName = update.Package.Files.Installers.[0].Name;
+            BaseUrl = downloadedPackageInfo.BaseUrl;
+            ReadmeName = update.Package.Files.Readmes.[0].Name;
+            ExtractCommandLine = update.Package.ExtractCommand.Command;
+            InstallCommandLine = getInstallCommandLine update;
+            Category = downloadedPackageInfo.Category;
+            ReleaseDate = update.Package.ReleaseDate.Date.ToString("yyyy-MM-dd")
+        }
+
+    let getUpdateInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
+        try
+            Result.Ok (getUpdateInfoUnsafe downloadedPackageInfo)
+        with
+        |ex -> Result.Error ex
+
+    let parsePackageXmls (downloadedPackageXmls : seq<DownloadedPackageXmlInfo>) : seq<Result<PackageInfo,Exception>> = 
+        downloadedPackageXmls
+        |> Seq.map (fun pi -> (getUpdateInfo pi))        
+
+    let parsePackageXmlsR (downloadedPackageXmls: Result<seq<DownloadedPackageXmlInfo>,Exception>) : Result<seq<PackageInfo>,Exception> =
+        let parsedUpdates = 
+            match downloadedPackageXmls with
+            |Ok pis -> (parsePackageXmls pis)
+            |Error ex -> seq{yield Result.Error ex}
+        
+        let objectResults = 
+                    parsedUpdates
+                    //|> Seq.cast<Result<System.Object,Exception>>
+
+        let allErrorMessages = getAllErrorMessages objectResults
+
+        match allErrorMessages.Count() with
+        | 0 ->  
+                let allSuccesses = 
+                    (getAllSuccesses objectResults)
+                    |> Seq.cast<PackageInfo>                 
+                Result.Ok allSuccesses
+        | _ -> 
+            let msg = String.Format("Failed to parse all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
+            Result.Error (new Exception(msg))
 
     let getRemoteUpdates (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) overwrite = 
         let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
@@ -204,21 +273,47 @@ module ExportRemoteUpdates =
                 let result = 
                     filePath 
                     |> ensureFileDoesNotExist overwrite
-                    //|> downloadFile modelInfoUri
-                    //|> ensureFileExists
-                    //|> getPackagesInfo
-                    //|> downloadPackageXmls
-                    //|> parsePackageXmls
+                    |> downloadFile modelInfoUri
+                    |> ensureFileExistsR
+                    |> getPackagesInfo
+                    |> downloadPackageXmlsR
+                    |> parsePackageXmlsR
                 result
         |Error ex -> Result.Error ex
 
+    let getUnique list =
+        match list with
+        |Error ex -> Result.Error ex
+        |Ok l -> 
+            Result.Ok (l |> Seq.distinct)
+    
+    let exportToCsv (csvFilePath:Path) packageInfos : Result<Path,Exception> =
+        try
+            use sw = new System.IO.StreamWriter(csvFilePath.Value)
+            use csv = new CsvHelper.CsvWriter(sw)
+            csv.Configuration.Delimiter <- ";"
+            csv.WriteRecords(packageInfos)
+            Result.Ok csvFilePath
+        with
+        | ex -> Result.Error ex
+    
+    let exportToCsvR (csvFilePath:Path) packageInfos : Result<Path,Exception> =
+        match packageInfos with
+        |Error ex -> Result.Error ex
+        |Ok pis -> exportToCsv csvFilePath pis
+
+    open LenovoSystemUpdate
 
     let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite = 
-        let path = ensureFileDoesNotExist overwrite csvFilePath
-        match path with
-        |Ok p -> 
-            printf "Model: %s, OperatingSystem: %s, CsvPath: %s" model.Value operatingSystem.Value p.Value
-            Path.create "C:\\Temp"
-        |Error ex -> Result.Error ex
+        match isLenovoSystemUpdateInstalled with
+        |false -> Result.Error (new LenovoSystemUpdateNotInstalledException() :> Exception)
+        |true ->
+            let csvFileStatus = ensureFileDoesNotExist overwrite csvFilePath
+            match csvFileStatus with
+            |Error ex -> Result.Error ex
+            |Ok csvPath ->
+                getRemoteUpdates model operatingSystem overwrite
+                |> getUnique
+                |> exportToCsvR csvPath
         
         
