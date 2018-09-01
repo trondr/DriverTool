@@ -22,7 +22,7 @@ module ExportRemoteUpdatesTests =
             let (modelCode, operatingSystemCode, csvFilePath) = parameters
             let result = exportRemoteUpdates modelCode operatingSystemCode csvFilePath true
             match result with
-            |Ok p -> Assert.AreEqual("C:\\Temp", p.Value)
+            |Ok p -> Assert.AreEqual("c:\\temp\\test.csv", p.Value)
             |Error ex -> Assert.Fail(ex.Message)
         |Error ex -> Assert.Fail(ex.Message)
 
