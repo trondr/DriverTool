@@ -2,18 +2,8 @@
 
 module Commands =
 
-    
-
-    
-
-    //type ExportRemoteUpdateInfoParameters = 
-    //    {
-    //       CsvFileName : FileName     
-    //    }
-
-
-    open NCmdLiner
     open NCmdLiner.Attributes
+
     [<Commands()>]
     type CommandDefinitions =        
         
@@ -27,6 +17,5 @@ module Commands =
                                             modelCode : string,
                                             [<OptionalCommandParameter(Description = "Operating system code Win7|Win8|Win10. If operating system code is not specified the current system model code will be looked up and used.", ExampleValue = @"Win10", AlternativeName = "op", DefaultValue = "Win10")>] 
                                             operatingSystemCode : string        
-                                            ) : Result<int> =
-                System.Console.WriteLine("")
-                Result.Ok(0)
+                                            ) : NCmdLiner.Result<int> =                
+                CommandProviders.ExportRemoteUdateInfo modelCode operatingSystemCode csvFileName overWrite                
