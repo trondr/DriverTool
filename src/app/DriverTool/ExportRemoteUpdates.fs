@@ -81,8 +81,7 @@ module ExportRemoteUpdates =
     open FSharp.Data    
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
     type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
-    //type PackageXmlProvider = XmlProvider<Schema = "C:\\Users\\eta410\\AppData\\Local\\Temp\\fwdptv07_2_.xsd">
-
+    
     let getPackagesInfo (modelInfoXmlFilePath:Result<Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
         try
             match modelInfoXmlFilePath with
@@ -121,6 +120,7 @@ module ExportRemoteUpdates =
         |Result.Error ex -> Result.Error ex
 
     open System.Linq
+    open F
 
     let getBaseUrl locationUrl =
         let uri = new Uri(locationUrl)
@@ -153,7 +153,7 @@ module ExportRemoteUpdates =
                             | _ -> false)
         |> Seq.map (fun dpi -> 
                         match dpi with
-                        |Error ex -> ex.Message
+                        |Error ex -> getAccumulatedExceptionMessages ex
                         | _ -> String.Empty)
 
     let getAllSuccesses (results:seq<Result<'T,Exception>>) =
@@ -242,7 +242,7 @@ module ExportRemoteUpdates =
         try
             Result.Ok (getUpdateInfoUnsafe downloadedPackageInfo)
         with
-        |ex -> Result.Error (new Exception(String.Format("Failed to get update info from '{0}'. {1}",downloadedPackageInfo.FilePath.Value, ex.Message)))
+        |ex -> Result.Error (new Exception(String.Format("Failed to get update info from '{0}'.",downloadedPackageInfo.FilePath.Value),ex))
 
     let parsePackageXmls (downloadedPackageXmls : seq<DownloadedPackageXmlInfo>) : seq<Result<PackageInfo,Exception>> = 
         downloadedPackageXmls
