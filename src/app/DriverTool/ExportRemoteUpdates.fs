@@ -64,21 +64,11 @@ module ExportRemoteUpdates =
         | ex -> Result.Error ex
 
 
-    type PackageXmlInfo = 
-        {
-            Location:string;
-            Category:string
-        }
     
-    type DownloadedPackageXmlInfo = 
-        {
-            Location:string; 
-            Category:string;
-            FilePath:Path;
-            BaseUrl:string
-        }
     
     open FSharp.Data    
+    open DriverTool
+
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
     type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
     
@@ -121,6 +111,7 @@ module ExportRemoteUpdates =
 
     open System.Linq
     open F
+    open DriverTool
 
     let getBaseUrl locationUrl =
         let uri = new Uri(locationUrl)
@@ -200,53 +191,15 @@ module ExportRemoteUpdates =
         let filePathString = getTempFilePath fileName        
         Path.create filePathString
 
-    type PackageInfo = {
-        Title:string;
-        Version:string;
-        BaseUrl:string;
-        InstallerName:string;
-        ExtractCommandLine:string;
-        InstallCommandLine:string;
-        Category:string;
-        ReadmeName:string;
-        ReleaseDate:string;
-    }
-
-    let getUpdateInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
-        let package = PackageXmlProvider.Load(downloadedPackageInfo.FilePath.Value)
-        let title = package.Title.Desc.Value
-        let version = package.Version
-        let baseUrl = downloadedPackageInfo.BaseUrl
-        let readmeName = package.Files.Readme.File.Name;
-        let extractCommandLine = package.ExtractCommand;
-        let installCommandLine =
-                match (package.Install.Cmdline.Value) with
-                | null -> package.ExtractCommand;
-                |_ -> package.Install.Cmdline.Value;    
-                ;
-        let category = downloadedPackageInfo.Category;
-        let releaseDate = package.ReleaseDate.Date.ToString("yyyy-MM-dd")
-        {
-            Title = title;
-            Version = version;
-            InstallerName = package.Files.Installer.File.Name;
-            BaseUrl = baseUrl;
-            ReadmeName = readmeName;
-            ExtractCommandLine = extractCommandLine;
-            InstallCommandLine = installCommandLine;                
-            Category = category;
-            ReleaseDate = releaseDate;
-        }
-    
-    let getUpdateInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
+    let getPackageInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         try
-            Result.Ok (getUpdateInfoUnsafe downloadedPackageInfo)
+            Result.Ok (getPackageInfoUnsafe downloadedPackageInfo)
         with
         |ex -> Result.Error (new Exception(String.Format("Failed to get update info from '{0}'.",downloadedPackageInfo.FilePath.Value),ex))
 
     let parsePackageXmls (downloadedPackageXmls : seq<DownloadedPackageXmlInfo>) : seq<Result<PackageInfo,Exception>> = 
         downloadedPackageXmls
-        |> Seq.map (fun pi -> (getUpdateInfo pi))        
+        |> Seq.map (fun pi -> (getPackageInfo pi))        
 
     let parsePackageXmlsR (downloadedPackageXmls: Result<seq<DownloadedPackageXmlInfo>,Exception>) : Result<seq<PackageInfo>,Exception> =
         let parsedUpdates = 
