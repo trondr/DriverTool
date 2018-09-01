@@ -78,8 +78,10 @@ module ExportRemoteUpdates =
             BaseUrl:string
         }
     
-    open FSharp.Data
+    open FSharp.Data    
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
+    type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
+    //type PackageXmlProvider = XmlProvider<Schema = "C:\\Users\\eta410\\AppData\\Local\\Temp\\fwdptv07_2_.xsd">
 
     let getPackagesInfo (modelInfoXmlFilePath:Result<Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
         try
@@ -210,34 +212,37 @@ module ExportRemoteUpdates =
         ReleaseDate:string;
     }
 
-    open Tvsu.Beans
-    open Tvsu.Engine;
-
-    let getInstallCommandLine (update: Update) = 
-        match (update.Package.Install.Cmdline) with
-        | null -> update.Package.Install.Cmdline.[0].Commad;
-        |_ -> update.Package.ExtractCommand.Command;
-
     let getUpdateInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
-        use xmlFileStream = new System.IO.FileStream(downloadedPackageInfo.FilePath.Value,System.IO.FileMode.Open)
-        let update = new Update(downloadedPackageInfo.FilePath.Value,xmlFileStream)
+        let package = PackageXmlProvider.Load(downloadedPackageInfo.FilePath.Value)
+        let title = package.Title.Desc.Value
+        let version = package.Version
+        let baseUrl = downloadedPackageInfo.BaseUrl
+        let readmeName = package.Files.Readme.File.Name;
+        let extractCommandLine = package.ExtractCommand;
+        let installCommandLine =
+                match (package.Install.Cmdline.Value) with
+                | null -> package.ExtractCommand;
+                |_ -> package.Install.Cmdline.Value;    
+                ;
+        let category = downloadedPackageInfo.Category;
+        let releaseDate = package.ReleaseDate.Date.ToString("yyyy-MM-dd")
         {
-            Title = update.Title
-            Version = update.Package.Version;
-            InstallerName = update.Package.Files.Installers.[0].Name;
-            BaseUrl = downloadedPackageInfo.BaseUrl;
-            ReadmeName = update.Package.Files.Readmes.[0].Name;
-            ExtractCommandLine = update.Package.ExtractCommand.Command;
-            InstallCommandLine = getInstallCommandLine update;
-            Category = downloadedPackageInfo.Category;
-            ReleaseDate = update.Package.ReleaseDate.Date.ToString("yyyy-MM-dd")
+            Title = title;
+            Version = version;
+            InstallerName = package.Files.Installer.File.Name;
+            BaseUrl = baseUrl;
+            ReadmeName = readmeName;
+            ExtractCommandLine = extractCommandLine;
+            InstallCommandLine = installCommandLine;                
+            Category = category;
+            ReleaseDate = releaseDate;
         }
-
+    
     let getUpdateInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         try
             Result.Ok (getUpdateInfoUnsafe downloadedPackageInfo)
         with
-        |ex -> Result.Error ex
+        |ex -> Result.Error (new Exception(String.Format("Failed to get update info from '{0}'. {1}",downloadedPackageInfo.FilePath.Value, ex.Message)))
 
     let parsePackageXmls (downloadedPackageXmls : seq<DownloadedPackageXmlInfo>) : seq<Result<PackageInfo,Exception>> = 
         downloadedPackageXmls
@@ -305,15 +310,15 @@ module ExportRemoteUpdates =
     open LenovoSystemUpdate
 
     let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite = 
-        match isLenovoSystemUpdateInstalled with
-        |false -> Result.Error (new LenovoSystemUpdateNotInstalledException() :> Exception)
-        |true ->
-            let csvFileStatus = ensureFileDoesNotExist overwrite csvFilePath
-            match csvFileStatus with
-            |Error ex -> Result.Error ex
-            |Ok csvPath ->
-                getRemoteUpdates model operatingSystem overwrite
-                |> getUnique
-                |> exportToCsvR csvPath
+        //match isLenovoSystemUpdateInstalled with
+        //|false -> Result.Error (new LenovoSystemUpdateNotInstalledException() :> Exception)
+        //|true ->
+        let csvFileStatus = ensureFileDoesNotExist overwrite csvFilePath
+        match csvFileStatus with
+        |Error ex -> Result.Error ex
+        |Ok csvPath ->
+            getRemoteUpdates model operatingSystem overwrite
+            |> getUnique
+            |> exportToCsvR csvPath
         
         
