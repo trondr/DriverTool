@@ -309,10 +309,7 @@ module ExportRemoteUpdates =
 
     open LenovoSystemUpdate
 
-    let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite = 
-        //match isLenovoSystemUpdateInstalled with
-        //|false -> Result.Error (new LenovoSystemUpdateNotInstalledException() :> Exception)
-        //|true ->
+    let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite =         
         let csvFileStatus = ensureFileDoesNotExist overwrite csvFilePath
         match csvFileStatus with
         |Error ex -> Result.Error ex
