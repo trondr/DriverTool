@@ -60,15 +60,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Client">
-      <HintPath>C:\Program Files (x86)\Lenovo\System Update\Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Common">
-      <HintPath>C:\Program Files (x86)\Lenovo\System Update\Common.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.5.2" />
   </ItemGroup>
 
