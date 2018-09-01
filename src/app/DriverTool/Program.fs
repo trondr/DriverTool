@@ -34,5 +34,6 @@ let resolveEventHandler (obj:System.Object) (resolveEventArgs: ResolveEventArgs)
 [<EntryPoint>]
 let main argv =
     let exitCode = runCommand argv
+    Console.WriteLine("Press any key...")
     Console.ReadLine() |> ignore
     exitCode // return an integer exit code
