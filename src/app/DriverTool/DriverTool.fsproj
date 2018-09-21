@@ -48,8 +48,8 @@
     <EmbeddedResource Include="License\10. RhinoMocks License.xml" />
     <EmbeddedResource Include="License\11. NUnit License.xml" />
     <EmbeddedResource Include="License\12. CsvHelper License.xml" />
-    <Compile Include="Commands\CommandProviders.fs" />
-    <Compile Include="Commands\CommandDefinitions.fs" />
+    <Compile Include="CommandProviders.fs" />
+    <Compile Include="CommandDefinitions.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
