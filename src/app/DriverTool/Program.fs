@@ -12,25 +12,6 @@ let runCommand args =
                 1
     exitCode
 
-open System.Reflection
-open DriverTool
-
-let loadAssemblyFromSearchPath assemblyName (searchPaths : seq<string>) =
-    searchPaths
-    |> Seq.map (fun p -> 
-            let assemblyPath = System.IO.Path.Combine(p,assemblyName + ".dll")
-            assemblyPath
-        )
-    |> Seq.filter (fun p -> System.IO.File.Exists(p))    
-    |> Seq.map (fun p -> Assembly.LoadFile(p))
-    |> Seq.head
-
-let resolveEventHandler (obj:System.Object) (resolveEventArgs: ResolveEventArgs) : Assembly =
-    let assemblyName = new AssemblyName(resolveEventArgs.Name)
-    let searchPaths = seq{ yield DriverTool.LenovoSystemUpdate.systemUpdateFolderPathString }
-    let assembly = loadAssemblyFromSearchPath assemblyName.Name searchPaths
-    assembly
-
 [<EntryPoint>]
 let main argv =
     let exitCode = runCommand argv
