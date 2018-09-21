@@ -2,7 +2,7 @@
   "profiles": {
     "DriverTool": {
       "commandName": "Project",
-      "commandLineArgs": "Help"
+      "commandLineArgs": "CreateDriverPackage /modelCode=\"20EQ\" /operatingSystemCode=\"Win10\""
     }
   }
 }

@@ -19,3 +19,12 @@ module Commands =
                                             operatingSystemCode : string        
                                             ) : NCmdLiner.Result<int> =                
                 CommandProviders.ExportRemoteUdateInfo modelCode operatingSystemCode csvFileName overWrite                
+        
+        [<Command(Description="",Summary="")>]
+        static member CreateDriverPackage(
+                                         [<OptionalCommandParameter(Description = "Model code as specified by the first 4 letters of the Model property of the Win32_ComputerSystem wmi class instance. Powershell script to extract the model code: $(Get-WmiObject Win32_ComputerSystem|Select-Object Model).Model.SubString(0,4). If model code is not specified the current system model code will be looked up and used.", ExampleValue = @"20EQ", AlternativeName = "m", DefaultValue = "")>] 
+                                            modelCode : string,
+                                            [<OptionalCommandParameter(Description = "Operating system code Win7|Win8|Win10. If operating system code is not specified the current system model code will be looked up and used.", ExampleValue = @"Win10", AlternativeName = "op", DefaultValue = "Win10")>] 
+                                            operatingSystemCode : string
+                                         ) : NCmdLiner.Result<int> = 
+            CommandProviders.CreateDriverPackage modelCode operatingSystemCode

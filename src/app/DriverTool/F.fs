@@ -19,3 +19,9 @@ let rec getAccumulatedExceptionMessages (ex: Exception) =
     match ex.InnerException with
     | null -> ex.Message
     | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
+
+let getUnique list =
+    match list with
+    |Error ex -> Result.Error ex
+    |Ok l -> 
+        Result.Ok (l |> Seq.distinct)

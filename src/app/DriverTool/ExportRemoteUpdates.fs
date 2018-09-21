@@ -238,12 +238,6 @@ module ExportRemoteUpdates =
                     |> parsePackageXmlsR
                 result
         |Error ex -> Result.Error ex
-
-    let getUnique list =
-        match list with
-        |Error ex -> Result.Error ex
-        |Ok l -> 
-            Result.Ok (l |> Seq.distinct)
     
     let exportToCsv (csvFilePath:Path) packageInfos : Result<Path,Exception> =
         try

@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Debug.txt" />
     <Compile Include="F.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="Path.fs" />
@@ -24,6 +25,7 @@
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
+    <Compile Include="CreateDriverPackage.fs" />
     <EmbeddedResource Include="Credits\01. Castle Windsor Credit.xml" />
     <EmbeddedResource Include="Credits\02. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\03. NCmdLiner SolutionTemplates Credit.xml" />
@@ -55,6 +57,7 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="7.1.1" />
+    <PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.1.2" />
     <PackageReference Include="FSharp.Data" Version="2.4.6" />
     <PackageReference Include="NCmdLiner" Version="2.0.18110.340" />
     <PackageReference Include="System.Management" Version="4.5.0" />
