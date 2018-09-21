@@ -260,8 +260,6 @@ module ExportRemoteUpdates =
         |Error ex -> Result.Error ex
         |Ok pis -> exportToCsv csvFilePath pis
 
-    open LenovoSystemUpdate
-
     let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite =         
         let csvFileStatus = ensureFileDoesNotExist overwrite csvFilePath
         match csvFileStatus with
