@@ -6,14 +6,14 @@
         open System.IO         
         open System.Runtime.CompilerServices
         open log4net
+        open System.Reflection
                 
         let configureLogging =
             log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
             let appConfigFile = new FileInfo(getAppConfigFilePath)
-            for repository in LogManager.GetAllRepositories() do
-                log4net.Config.XmlConfigurator.ConfigureAndWatch(repository,appConfigFile)
-                |> ignore
-        
+            let repository = LogManager.GetRepository(Assembly.GetEntryAssembly())
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(repository,appConfigFile)
+
         let getLogger<'T> = LogManager.GetLogger(typeof<'T>)
 
         type LoggingExtensions() = 
