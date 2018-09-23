@@ -13,6 +13,7 @@
             let appConfigFile = new FileInfo(getAppConfigFilePath)
             let repository = LogManager.GetRepository(Assembly.GetEntryAssembly())
             log4net.Config.XmlConfigurator.ConfigureAndWatch(repository,appConfigFile)
+            |>ignore
 
         let getLogger<'T> = LogManager.GetLogger(typeof<'T>)
 
