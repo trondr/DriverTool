@@ -2,5 +2,5 @@
 <CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ProductName>Log4Net</ProductName>
   <ProductHome>http://logging.apache.org/log4net/</ProductHome>
-  <CreditText>trondr.DriverUtil uses log4net to provide industry standard logging.</CreditText>
+  <CreditText>DriverTool uses log4net to provide industry standard logging.</CreditText>
 </CreditInfo>

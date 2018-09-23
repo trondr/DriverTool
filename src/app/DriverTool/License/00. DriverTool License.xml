@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LicenseInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ProductName>trondr.DriverUtil</ProductName>
+  <ProductName>DriverTool</ProductName>
   <ProductHome></ProductHome>
   <License>New BSD License (BSD) http://www.opensource.org/licenses/BSD-3-Clause </License>
   <LicenseText>
@@ -17,7 +17,7 @@
     this list of conditions and the following disclaimer in the documentation
     and/or other materials provided with the distribution.
 
-    * Neither the name of trondr.DriverUtil nor the names of its
+    * Neither the name of DriverTool nor the names of its
     contributors may be used to endorse or promote products derived from
     this software without specific prior written permission.
 
