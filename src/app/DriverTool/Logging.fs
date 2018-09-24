@@ -50,10 +50,11 @@
             | t when t < 1000.0 * 60.0 * 60.0 -> String.Format("{0}m {1}s {2}ms",duration.Minutes, duration.Seconds, duration.Milliseconds)
             | _ -> String.Format("{0}h {1}m {2}s",duration.Hours,duration.Minutes, duration.Seconds)
 
-        let getParametersString input =
+        let getParametersString (input:obj) =
             let parametersString = 
                 match input.GetType() with
-                | t when t = typeof<System.String[]> -> "[|\"" + (input |> String.concat "\";\"") + "\"|]"
+                | t when t = typeof<System.String[]> -> "[|\"" + ((input:?> System.String[]) |> String.concat "\";\"") + "\"|]"
+                | t when t = typeof<System.Int32[]> -> "[|" + ((input:?> System.Int32[]) |> Array.map string |> String.concat ";") + "|]"
                 | _ -> input.ToString()
             parametersString
 
