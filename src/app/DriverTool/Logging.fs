@@ -50,11 +50,18 @@
             | t when t < 1000.0 * 60.0 * 60.0 -> String.Format("{0}m {1}s {2}ms",duration.Minutes, duration.Seconds, duration.Milliseconds)
             | _ -> String.Format("{0}h {1}m {2}s",duration.Hours,duration.Minutes, duration.Seconds)
 
+        let getParametersString input =
+            let parametersString = 
+                match input.GetType() with
+                | t when t = typeof<System.String[]> -> (sprintf "%A" input).Replace(Environment.NewLine,"")
+                | _ -> input.ToString()
+            parametersString
+
         let debugLogger func input =
             let logger = getFunctionLogger func
             let mutable functionCall = String.Empty
             if(logger.IsDebugEnabled) then
-                functionCall <- String.Format("{0}({1})",(getFunctionName func), input.ToString())
+                functionCall <- String.Format("{0}({1})",(getFunctionName func), (getParametersString input))
                 logger.Debug ("Call:   " + functionCall)
             let startTime = DateTime.Now
             
