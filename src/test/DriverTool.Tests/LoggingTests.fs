@@ -29,3 +29,18 @@ module LoggingTests =
         let expected = "4h 3m 2s"
         let actual = getDurationString (new TimeSpan(0,4,3,2,43))
         Assert.AreEqual(expected,actual,"Unexpected value") 
+
+
+    [<Test>]
+    let getParametersStringArrayOfString () =
+        let expected = "[|\"arg1\";\"arg2\"|]"
+        let input = [|"arg1";"arg2"|]
+        let actual = getParametersString input
+        Assert.AreEqual(expected,actual,"Unexpected value") 
+
+    [<Test>]
+    let getParametersStringArrayOfInt () =
+        let expected = "[|1;2|]"
+        let input = [|1;2|]
+        let actual = getParametersString input
+        Assert.AreEqual(expected,actual,"Unexpected value") 
