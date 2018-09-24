@@ -14,6 +14,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
+    <EmbeddedResource Include="Credits\02. Log4Net Credit.xml" />
+    <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />
+    <EmbeddedResource Include="Credits\04. CsvHelper Credit.xml" />
+    <EmbeddedResource Include="Credits\05.  Log4NetCMTrace Credit.xml" />
+    <EmbeddedResource Include="License\00. DriverTool License.xml" />
+    <EmbeddedResource Include="License\01. NCmLiner License.xml" />
+    <EmbeddedResource Include="License\02. Log4Net License.xml" />
+    <EmbeddedResource Include="License\03. NUnit License.xml" />
+    <EmbeddedResource Include="License\04. CsvHelper License.xml" />
+    <EmbeddedResource Include="License\05. Log4NetCMTrace License.xml" />
     <Content Include="Debug.txt" />
     <None Include="App.config" />
     <Compile Include="AssemblyInfo.fs" />
@@ -30,17 +41,6 @@
     <Compile Include="PackageXml.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="CreateDriverPackage.fs" />
-    <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
-    <EmbeddedResource Include="Credits\02. Log4Net Credit.xml" />
-    <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />
-    <EmbeddedResource Include="Credits\04. CsvHelper Credit.xml" />
-    <EmbeddedResource Include="Credits\05.  Log4NetCMTrace Credit.xml" />
-    <EmbeddedResource Include="License\00. DriverTool License.xml" />
-    <EmbeddedResource Include="License\01. NCmLiner License.xml" />
-    <EmbeddedResource Include="License\02. Log4Net License.xml" />
-    <EmbeddedResource Include="License\03. NUnit License.xml" />
-    <EmbeddedResource Include="License\04. CsvHelper License.xml" />
-    <EmbeddedResource Include="License\05. Log4NetCMTrace License.xml" />
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
     <Compile Include="Program.fs" />
