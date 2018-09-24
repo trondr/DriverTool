@@ -6,8 +6,8 @@ open Logging
 
 let logger = getLoggerByName "DriverTool"
 
-let runCommand args =        
-    let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args)
+let runCommandSimple args =        
+    let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args)    
     let exitCode = 
         match result.IsSuccess with
             |true -> 0
@@ -15,6 +15,9 @@ let runCommand args =
                 result.OnFailure(new Action<exn>(fun ex -> logger.Error(ex.Message)))|> ignore
                 1    
     exitCode
+
+let runCommand =
+    debugLogger runCommandSimple
 
 [<EntryPoint>]
 let main argv =
