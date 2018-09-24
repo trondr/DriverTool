@@ -10,12 +10,16 @@
                 
         let configureLogging =
             log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
-            let appConfigFile = new FileInfo(getAppConfigFilePath)
-            let repository = LogManager.GetRepository(Assembly.GetEntryAssembly())
-            log4net.Config.XmlConfigurator.ConfigureAndWatch(repository,appConfigFile)
+            let appConfigFile = new FileInfo(getAppConfigFilePath)            
+            let loggerRepository = LogManager.GetRepository(Assembly.GetEntryAssembly())
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
             |>ignore
 
-        let getLogger<'T> = LogManager.GetLogger(typeof<'T>)
+        let getLoggerByType<'T> = 
+            LogManager.GetLogger(typeof<'T>)
+
+        let getLoggerByName (name:string) =
+            LogManager.GetLogger(Assembly.GetEntryAssembly(),name)
 
         type LoggingExtensions() = 
             [<Extension>]

@@ -4,8 +4,7 @@ open NCmdLiner
 open DriverTool
 open Logging
 
-type DriverTool = String
-let logger = getLogger<DriverTool>
+let logger = getLoggerByName "DriverTool"
 
 let runCommand args =        
     let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args)
