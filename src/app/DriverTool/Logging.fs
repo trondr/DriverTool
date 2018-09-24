@@ -53,7 +53,7 @@
         let getParametersString input =
             let parametersString = 
                 match input.GetType() with
-                | t when t = typeof<System.String[]> -> (sprintf "%A" input).Replace(Environment.NewLine,"")
+                | t when t = typeof<System.String[]> -> "[|\"" + (input |> String.concat "\";\"") + "\"|]"
                 | _ -> input.ToString()
             parametersString
 
