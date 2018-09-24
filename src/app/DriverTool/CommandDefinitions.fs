@@ -18,7 +18,7 @@ module Commands =
                                             [<OptionalCommandParameter(Description = "Operating system code Win7|Win8|Win10. If operating system code is not specified the current system model code will be looked up and used.", ExampleValue = @"Win10", AlternativeName = "op", DefaultValue = "Win10")>] 
                                             operatingSystemCode : string        
                                             ) : NCmdLiner.Result<int> =                
-                CommandProviders.ExportRemoteUdateInfo modelCode operatingSystemCode csvFileName overWrite                
+                CommandProviders.exportRemoteUdateInfo (modelCode, operatingSystemCode, csvFileName, overWrite)                
         
         [<Command(Description="",Summary="")>]
         static member CreateDriverPackage(
@@ -27,4 +27,4 @@ module Commands =
                                             [<OptionalCommandParameter(Description = "Operating system code Win7|Win8|Win10. If operating system code is not specified the current system model code will be looked up and used.", ExampleValue = @"Win10", AlternativeName = "op", DefaultValue = "Win10")>] 
                                             operatingSystemCode : string
                                          ) : NCmdLiner.Result<int> = 
-            CommandProviders.CreateDriverPackage modelCode operatingSystemCode
+            CommandProviders.createDriverPackage (modelCode, operatingSystemCode)

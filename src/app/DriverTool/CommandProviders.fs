@@ -4,7 +4,7 @@ open DriverTool.CreateDriverPackage
 
 module CommandProviders =
 
-    let ExportRemoteUdateInfo modelCodeString operatingSystemString csvFilePathString overwrite = 
+    let exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
         let modelCodeResult = ModelCode.create modelCodeString true
         let operatingSystemCodeResult = OperatingSystemCode.create operatingSystemString true
         let csvFilePathResult = Path.create csvFilePathString
@@ -18,7 +18,10 @@ module CommandProviders =
             | Error ex -> NCmdLiner.Result.Fail<int>(ex)
         |Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let CreateDriverPackage modelCodeString operatingSystemString =   
+    let exportRemoteUdateInfo =
+        Logging.debugLogger exportRemoteUdateInfoSimple
+    
+    let createDriverPackageSimple (modelCodeString,operatingSystemString) =   
         let modelCodeResult = ModelCode.create modelCodeString true
         let operatingSystemCodeResult = OperatingSystemCode.create operatingSystemString true
         let parametersResult  = validateExportCreateDriverPackageParameters (modelCodeResult, operatingSystemCodeResult)
@@ -31,3 +34,5 @@ module CommandProviders =
             | Error ex -> NCmdLiner.Result.Fail<int>(ex)
         |Error ex -> NCmdLiner.Result.Fail<int>(ex)
         
+    let createDriverPackage =
+        Logging.debugLogger createDriverPackageSimple
