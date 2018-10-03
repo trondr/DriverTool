@@ -1,38 +1,31 @@
 ﻿namespace DriverTool
-open DriverTool.ExportRemoteUpdates
-open DriverTool.CreateDriverPackage
+open F
 
 module CommandProviders =
 
     let exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
-        let modelCodeResult = ModelCode.create modelCodeString true
-        let operatingSystemCodeResult = OperatingSystemCode.create operatingSystemString true
-        let csvFilePathResult = Path.create csvFilePathString
-        let parametersResult = validateExportRemoteUdateInfoParameters (modelCodeResult, operatingSystemCodeResult, csvFilePathResult)
-        match parametersResult with
-        |Ok parameters ->            
-            let (modelCode, operatingSystemCode, csvFilePath) = parameters
-            let result = exportRemoteUpdates modelCode operatingSystemCode csvFilePath overwrite
-            match result with
-            | Ok p -> NCmdLiner.Result.Ok(0)
-            | Error ex -> NCmdLiner.Result.Fail<int>(ex)
-        |Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        match (result {
+                let! modelCode = ModelCode.create modelCodeString true
+                let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
+                let! csvFilePath = Path.create csvFilePathString
+                let result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates modelCode operatingSystemCode csvFilePath overwrite
+                return result
+            }) with
+        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let exportRemoteUdateInfo =
         Logging.debugLogger exportRemoteUdateInfoSimple
     
-    let createDriverPackageSimple (modelCodeString,operatingSystemString) =   
-        let modelCodeResult = ModelCode.create modelCodeString true
-        let operatingSystemCodeResult = OperatingSystemCode.create operatingSystemString true
-        let parametersResult  = validateExportCreateDriverPackageParameters (modelCodeResult, operatingSystemCodeResult)
-        match parametersResult with
-        |Ok parameters ->            
-            let (modelCode, operatingSystemCode) = parameters
-            let result = createDriverPackage modelCode operatingSystemCode
-            match result with
-            | Ok p -> NCmdLiner.Result.Ok(0)
-            | Error ex -> NCmdLiner.Result.Fail<int>(ex)
-        |Error ex -> NCmdLiner.Result.Fail<int>(ex)
-        
+    let createDriverPackageSimple (modelCodeString,operatingSystemString) =
+        match (result {
+                let! modelCode = ModelCode.create modelCodeString true
+                let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
+                let createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage modelCode operatingSystemCode
+                return createDriverPackageResult
+            }) with
+        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+
     let createDriverPackage =
         Logging.debugLogger createDriverPackageSimple
