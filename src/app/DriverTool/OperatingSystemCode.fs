@@ -55,4 +55,7 @@ type OperatingSystemCode private (operatingSystemCode : string) =
         | :? OperatingSystemCode as m -> (operatingSystemCode) = (m.Value)
         | _ -> false
 
+    override x.ToString() =
+        x.Value
+
 

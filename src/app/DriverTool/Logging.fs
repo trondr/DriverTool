@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
         
     open DriverTool.Configuration
+    open FInit
 
     module Logging =
         open System
@@ -30,12 +31,12 @@
                 
         let getFunctionName func = 
             let functionName = 
-                System.Text.RegularExpressions.Regex.Replace(func.GetType().Name,"(@\d+)$","",RegexOptions.None)
+                System.Text.RegularExpressions.Regex.Replace(func.GetType().Name,"(@\d+-{0,1}\d+)$","",RegexOptions.None)
             functionName
             
         let getFuncLoggerName func =
             let funcLoggerName = 
-                System.Text.RegularExpressions.Regex.Replace(func.GetType().FullName,"(@\d+)$","",RegexOptions.None)
+                System.Text.RegularExpressions.Regex.Replace(func.GetType().FullName,"(@\d+-{0,1}\d+)$","",RegexOptions.None)
             funcLoggerName
 
         let getFunctionLogger func =
@@ -50,13 +51,45 @@
             | t when t < 1000.0 * 60.0 * 60.0 -> String.Format("{0}m {1}s {2}ms",duration.Minutes, duration.Seconds, duration.Milliseconds)
             | _ -> String.Format("{0}h {1}m {2}s",duration.Hours,duration.Minutes, duration.Seconds)
 
+        let valueToString value =
+            Newtonsoft.Json.JsonConvert.SerializeObject(value) + ":" + value.GetType().ToString()
+        
         let getParametersString (input:obj) =
             let parametersString = 
                 match input.GetType() with
-                | t when t = typeof<System.String[]> -> "[|\"" + ((input:?> System.String[]) |> String.concat "\";\"") + "\"|]"
-                | t when t = typeof<System.Int32[]> -> "[|" + ((input:?> System.Int32[]) |> Array.map string |> String.concat ";") + "|]"
-                | _ -> input.ToString()
+                | t when Microsoft.FSharp.Reflection.FSharpType.IsTuple(t) -> 
+                    let inputValues = Microsoft.FSharp.Reflection.FSharpValue.GetTupleFields input
+                    let stringValues = inputValues |> Array.map (fun x -> valueToString x)
+                    "(" + (stringValues |> String.concat ",") + ")"                    
+                | _ -> valueToString input
             parametersString
+
+        let exceptionToString (ex:Exception) =
+            let exceptionType = ex.GetType().FullName
+            let exceptionMessage = ex.Message
+            String.Format("Exception : {0} : {1}",exceptionType, exceptionMessage)
+        
+        let (|As|_|) (p:'T) : 'U option =
+            let p = p :> obj
+            if p :? 'U then Some (p :?> 'U) else None
+        
+        let (|ResultType|_|) t =
+            
+            let ti = t.GetType()
+            let bt = box t
+            match bt with
+            | :? Result<_,_> as r -> Some(r)
+            |_ -> None
+
+        let resultToString result = 
+            let resultString = 
+                match result with
+                | ResultType r -> 
+                    match r with
+                    |Ok value -> "Ok : " + value.ToString()
+                    |Error ex -> "Error : " + (exceptionToString ex)
+                | _ -> result.ToString()
+            resultString            
 
         let debugLogger func input =
             let logger = getFunctionLogger func
@@ -70,8 +103,9 @@
             
             let stopTime = DateTime.Now
             let duration = stopTime - startTime
-            if(logger.IsDebugEnabled) then
-                let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , result.ToString(), (getDurationString duration))
+            if(logger.IsDebugEnabled) then                
+                let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , (resultToString result), (getDurationString duration))
                 logger.Debug (functionCallResult)
             result
-        
+
+        //let genericDebugLogger 

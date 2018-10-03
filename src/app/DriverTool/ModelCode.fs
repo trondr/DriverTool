@@ -37,4 +37,7 @@ type ModelCode private (modelCode : string) =
         match b with
         | :? ModelCode as m -> (modelCode) = (m.Value)
         | _ -> false
+    
+    override x.ToString() =
+        x.Value
 

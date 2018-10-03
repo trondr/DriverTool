@@ -14,18 +14,18 @@ module CommandProviders =
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let exportRemoteUdateInfo =
-        Logging.debugLogger exportRemoteUdateInfoSimple
+    let exportRemoteUdateInfo (modelCodeString, operatingSystemString, csvFilePathString, overwrite) =
+        Logging.debugLogger exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite)
     
     let createDriverPackageSimple (modelCodeString,operatingSystemString) =
         match (result {
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
-                let createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage modelCode operatingSystemCode
+                let createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (modelCode, operatingSystemCode)
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let createDriverPackage =
-        Logging.debugLogger createDriverPackageSimple
+    let createDriverPackage (modelCodeString,operatingSystemString) =
+        Logging.debugLogger createDriverPackageSimple (modelCodeString,operatingSystemString)
