@@ -29,6 +29,7 @@
     <None Include="App.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Configuration.fs" />
+    <Compile Include="FInit.fs" />
     <Compile Include="Logging.fs" />
     <Compile Include="F.fs" />
     <Compile Include="Paths.fs" />
@@ -54,6 +55,7 @@
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Log4NetCMTrace" Version="1.0.0.9" />
     <PackageReference Include="NCmdLiner" Version="2.0.18110.340" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="4.5.0" />
   </ItemGroup>

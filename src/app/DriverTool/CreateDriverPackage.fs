@@ -80,12 +80,13 @@ module CreateDriverPackage =
             |> Result.Ok
         | Error ex -> Result.Error ex
         
-    let createDriverPackage (model: ModelCode) (operatingSystem:OperatingSystemCode) = 
+    let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode)) = 
         ExportRemoteUpdates.getRemoteUpdates model operatingSystem true
         |> getUnique
         |> getUniqueUpdates
         |> downloadUpdates (System.IO.Path.GetTempPath())
 
-        
+    let createDriverPackage ((model: ModelCode), (operatingSystem:OperatingSystemCode)) =
+        Logging.debugLogger createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode))
 
         
