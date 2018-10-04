@@ -106,5 +106,31 @@
                 let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , (resultToString result), (getDurationString duration))
                 logger.Debug (functionCallResult)
             result
+        
+        let rec getAccumulatedExceptionMessages (ex: Exception) =
+            match ex.InnerException with
+            | null -> ex.Message
+            | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
+
+        let debugLoggerResult func input =
+            let logger = getFunctionLogger func
+            let mutable functionCall = String.Empty
+            if(logger.IsDebugEnabled) then
+                functionCall <- String.Format("{0}({1})",(getFunctionName func), (getParametersString input))
+                logger.Debug ("Call:   " + functionCall)
+            let startTime = DateTime.Now
+            
+            let result = func input
+            
+            let stopTime = DateTime.Now
+            let duration = stopTime - startTime
+            if(logger.IsDebugEnabled) then
+                let resultString = 
+                    match result with
+                    |Ok v -> "OK" + valueToString v
+                    |Error ex -> "ERROR:" + getAccumulatedExceptionMessages ex
+                let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , resultString, (getDurationString duration))
+                logger.Debug (functionCallResult)
+            result
 
         //let genericDebugLogger 
