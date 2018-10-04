@@ -38,6 +38,36 @@ module DriverTool =
             ReleaseDate:string;
         }
 
+    type DownloadJob = 
+        {
+            SourceUri:Uri;
+            DestinationFile:string;
+            Checksum:string;
+            Size:Int64
+        }
+
+    /// <summary>
+    /// Get files to download. As it is possible for two packages to share a readme file this function will return DownloadJobs with uniqe destination files.
+    /// </summary>
+    /// <param name="destinationDirectory"></param>
+    /// <param name="packageInfos"></param>
+    let packageInfosToDownloadJobs destinationDirectory packageInfos =
+        seq{
+            for packageInfo in packageInfos do
+                let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
+                let sourceReadmeUri = new Uri(sourceReadmeUrl)
+                let destinationReadmePath = System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
+                yield {SourceUri = sourceReadmeUri; DestinationFile = destinationReadmePath; Checksum = packageInfo.ReadmeCrc; Size = packageInfo.ReadmeSize}
+
+                let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
+                let sourceInstallerUri = new Uri(sourceInstallerUrl)
+                let destinationInstallerPath = System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
+                yield {SourceUri = sourceInstallerUri; DestinationFile = destinationInstallerPath; Checksum = packageInfo.InstallerCrc; Size = packageInfo.InstallerSize}
+        } 
+        //Make sure destination file is unique
+        |> Seq.groupBy (fun p -> p.DestinationFile) 
+        |> Seq.map (fun (k,v) -> v |>Seq.head)
+
     let getPackageInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         let packageXDocument = XDocument.Load(downloadedPackageInfo.FilePath.Value)
         let packageXElement = packageXDocument.Root
