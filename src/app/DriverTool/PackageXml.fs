@@ -8,7 +8,8 @@ module DriverTool =
     type PackageXmlInfo = 
         {
             Location:string;
-            Category:string
+            Category:string;
+            CheckSum:string
         }
     
     type DownloadedPackageXmlInfo = 

@@ -79,7 +79,7 @@ module ExportRemoteUpdates =
             |Ok p -> 
                 let x = PackagesXmlProvider.Load(p.Value)
                 x.Packages
-                |> Seq.map (fun p -> { Location = p.Location; Category = p.Category})
+                |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
                 |> Result.Ok
             |Error ex -> Result.Error ex
         with
