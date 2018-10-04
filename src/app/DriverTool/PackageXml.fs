@@ -43,7 +43,8 @@ module DriverTool =
             SourceUri:Uri;
             DestinationFile:string;
             Checksum:string;
-            Size:Int64
+            Size:Int64;
+            Package:PackageInfo;
         }
 
     /// <summary>
@@ -57,12 +58,12 @@ module DriverTool =
                 let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
                 let sourceReadmeUri = new Uri(sourceReadmeUrl)
                 let destinationReadmePath = System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
-                yield {SourceUri = sourceReadmeUri; DestinationFile = destinationReadmePath; Checksum = packageInfo.ReadmeCrc; Size = packageInfo.ReadmeSize}
+                yield {SourceUri = sourceReadmeUri; DestinationFile = destinationReadmePath; Checksum = packageInfo.ReadmeCrc; Size = packageInfo.ReadmeSize;Package=packageInfo}
 
                 let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
                 let sourceInstallerUri = new Uri(sourceInstallerUrl)
                 let destinationInstallerPath = System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
-                yield {SourceUri = sourceInstallerUri; DestinationFile = destinationInstallerPath; Checksum = packageInfo.InstallerCrc; Size = packageInfo.InstallerSize}
+                yield {SourceUri = sourceInstallerUri; DestinationFile = destinationInstallerPath; Checksum = packageInfo.InstallerCrc; Size = packageInfo.InstallerSize;Package=packageInfo}
         } 
         //Make sure destination file is unique
         |> Seq.groupBy (fun p -> p.DestinationFile) 

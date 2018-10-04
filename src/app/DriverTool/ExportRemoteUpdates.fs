@@ -263,7 +263,7 @@ module ExportRemoteUpdates =
         |Error ex -> Result.Error ex
         |Ok csvPath ->
             getRemoteUpdates (model, operatingSystem, overwrite)
-            |> getUnique
+            |> getUniqueR
             |> exportToCsvR csvPath
         
         
