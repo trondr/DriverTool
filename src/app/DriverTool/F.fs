@@ -1,6 +1,12 @@
 ﻿module F
 
 open System
+/// <summary>
+/// Null coalescing operator
+/// </summary>
+/// <param name="lhs"></param>
+/// <param name="rhs"></param>
+let (|?) lhs rhs = (if lhs = null then rhs else lhs) 
 
 let tryCatch<'T, 'R> f  (t:'T) : Result<'R, Exception> =
     try
@@ -14,8 +20,12 @@ let tryCatch2<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) : Result<'R, Exception> =
     with
         | ex -> Result.Error ex
 
+let getUniqueRecords records =
+    let uniqueRecords = 
+        records |> Seq.distinct
+    uniqueRecords
 
-let getUnique list =
+let getUniqueR list =
     match list with
     |Error ex -> Result.Error ex
     |Ok l -> 
@@ -89,3 +99,37 @@ let toAccumulatedResult (results:seq<Result<_,Exception>>) =
             Result.Ok allValues
         | _ -> Result.Error (new Exception(String.Join(' ', allExceptionMessages)))
     accumulatedResult
+
+open System.IO
+
+let toValidDirectoryName (name:string) =    
+    let invalid = 
+        new String(Path.GetInvalidFileNameChars()) + new String(Path.GetInvalidPathChars());
+    let validName = 
+            new string
+                (
+                    seq{
+                        //Remove invalid characters from name
+                        for (c:char) in name do
+                            if(not (invalid.Contains(c.ToString())) ) then
+                                yield c    
+                    } |> Seq.toArray
+                )    
+    validName
+        .Replace("[","_")
+        .Replace("]", "_")
+        .Replace("(", "_")
+        .Replace(")", "_")
+        .Replace(",", "_")
+        .Replace(" ", "_")
+        .Replace("__", "_")
+        .Trim()
+        .Trim('_');
+    
+let nullOrWhiteSpaceGuard (obj:string) (argumentName:string) =
+        if(String.IsNullOrWhiteSpace(obj)) then
+            raise (new ArgumentException("Value cannot be null or whitespace.",argumentName))
+    
+let nullGuard (obj) (argumentName:string) =
+    if(obj = null) then
+        raise (new ArgumentNullException("Value cannot be null.",argumentName))    
