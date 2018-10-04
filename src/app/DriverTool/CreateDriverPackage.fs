@@ -7,6 +7,7 @@ module CreateDriverPackage =
     open DriverTool
     open System.Net
     open FSharp.Collections.ParallelSeq
+    open System.Text
 
     let validateExportCreateDriverPackageParameters (modelCode:Result<ModelCode,Exception>, operatingSystemCode:Result<OperatingSystemCode,Exception>) = 
         
@@ -41,7 +42,7 @@ module CreateDriverPackage =
             |> Seq.map (fun (k,v) -> v |>Seq.head)
             |> Result.Ok
     
-    let downloadFile (sourceUri:Uri) destinationFile =
+    let downloadFilePlain (sourceUri:Uri, destinationFile) =
         try
             use webClient = new System.Net.WebClient()
             let webHeaderCollection = new WebHeaderCollection()
@@ -56,37 +57,48 @@ module CreateDriverPackage =
             
         with
         | ex -> Result.Error (new Exception( String.Format("Failed to download {0} due to {e.Message}",sourceUri.OriginalString, ex.Message),ex))
+    
+    let downloadFile (sourceUri:Uri, destinationFile) =
+        Logging.debugLoggerResult downloadFilePlain (sourceUri, destinationFile)
 
-
-    let downloadUpdate  destinationDirectory packageInfo =
+    let downloadUpdatePlain (destinationDirectory, packageInfo) =
         match String.IsNullOrWhiteSpace(packageInfo.BaseUrl) with
         | true -> Result.Error (new Exception(String.Format("Base url is undefined for update '{0}' ({1}). Please verify that update is still present in the update catlog for the model in question. The model catalog location has the format: https://download.lenovo.com/catalog/<modelcode>_<oscode>.xml",packageInfo.Title, packageInfo.InstallerName)))
         | false ->
             let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
             let sourceReadmeUri = new Uri(sourceReadmeUrl)
             let destinationReadmePath = System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
-            let downloadReadmeResult = downloadFile sourceReadmeUri destinationReadmePath
+            let downloadReadmeResult = downloadFile (sourceReadmeUri, destinationReadmePath)
 
             let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
             let sourceInstallerUri = new Uri(sourceInstallerUrl)
             let destinationInstallerPath = System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
-            downloadFile sourceInstallerUri destinationInstallerPath
+            downloadFile (sourceInstallerUri, destinationInstallerPath)
+    
+    let downloadUpdate (destinationDirectory, packageInfo) =
+        Logging.debugLoggerResult downloadUpdatePlain (destinationDirectory, packageInfo)
 
-    let downloadUpdates destinationDirectory (packageInfos : Result<seq<PackageInfo>,Exception>) =
+    let downloadUpdates destinationDirectory packageInfos = 
+        let res = 
+            packageInfos 
+            |> PSeq.map (fun p -> downloadUpdate (destinationDirectory, p))
+            |> PSeq.toArray
+            |> Seq.ofArray
+            |> toAccumulatedResult
+        res    
+        
+    let downloadUpdatesR destinationDirectory (packageInfos : Result<seq<PackageInfo>,Exception>) =        
         match packageInfos with
-        | Ok ps -> 
-            ps        
-            |> PSeq.map (fun p -> downloadUpdate destinationDirectory p)            
-            |> Result.Ok
+        | Ok ps -> downloadUpdates destinationDirectory ps            
         | Error ex -> Result.Error ex
         
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode)) = 
         ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
         |> getUnique
         |> getUniqueUpdates
-        |> downloadUpdates (System.IO.Path.GetTempPath())
+        |> downloadUpdatesR (System.IO.Path.GetTempPath())
 
     let createDriverPackage ((model: ModelCode), (operatingSystem:OperatingSystemCode)) =
-        Logging.debugLogger createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode))
+        Logging.debugLoggerResult createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode))
 
         
