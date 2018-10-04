@@ -15,11 +15,6 @@ let tryCatch2<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) : Result<'R, Exception> =
         | ex -> Result.Error ex
 
 
-let rec getAccumulatedExceptionMessages (ex: Exception) =
-    match ex.InnerException with
-    | null -> ex.Message
-    | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
-
 let getUnique list =
     match list with
     |Error ex -> Result.Error ex
@@ -65,3 +60,32 @@ type ResultBuilder() =
         __.Using(sequence.GetEnumerator(), fun enum -> __.While(enum.MoveNext, __.Delay(fun () -> body enum.Current)))
 
 let result = new ResultBuilder()
+
+let getAllExceptions (results:seq<Result<_,Exception>>) =
+        let f = fun (r:Result<_,Exception>) ->
+            match r with
+            |Error ex -> Some(ex.Message)
+            |Ok v -> None
+        results 
+        |> Seq.choose f
+    
+let getAllValues (results:seq<Result<_,Exception>>) =
+    let f = fun (r:Result<_,Exception>) ->
+        match r with
+        |Error ex -> None
+        |Ok v -> Some(v)
+    results 
+    |> Seq.choose f
+
+let toAccumulatedResult (results:seq<Result<_,Exception>>) =
+    let allExceptionMessages = 
+            (getAllExceptions results) 
+            |> Seq.toArray
+        
+    let accumulatedResult =             
+        match allExceptionMessages.Length with
+        | 0 -> 
+            let allValues = getAllValues results
+            Result.Ok allValues
+        | _ -> Result.Error (new Exception(String.Join(' ', allExceptionMessages)))
+    accumulatedResult
