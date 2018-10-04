@@ -64,36 +64,21 @@ module CreateDriverPackage =
     let downloadFile (sourceUri:Uri, destinationFile, force) =
         Logging.debugLoggerResult downloadFilePlain (sourceUri, destinationFile, force)
 
-    let downloadUpdatePlain (destinationDirectory, packageInfo) =
-        match String.IsNullOrWhiteSpace(packageInfo.BaseUrl) with
-        | true -> Result.Error (new Exception(String.Format("Base url is undefined for update '{0}' ({1}). Please verify that update is still present in the update catlog for the model in question. The model catalog location has the format: https://download.lenovo.com/catalog/<modelcode>_<oscode>.xml",packageInfo.Title, packageInfo.InstallerName)))
-        | false ->
-            let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
-            let sourceReadmeUri = new Uri(sourceReadmeUrl)
-            let destinationReadmePath = System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)            
-            let readmeDownloadResult = 
-                match hasSameFileHash (destinationReadmePath, packageInfo.ReadmeCrc) with
-                |false -> downloadFile (sourceReadmeUri, destinationReadmePath, true)
-                |true -> 
-                    Logging.getLoggerByName("downloadUpdate").Info(String.Format("Destination file '{0}' allready exists", destinationReadmePath))
-                    Result.Ok destinationReadmePath
-            
-            let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
-            let sourceInstallerUri = new Uri(sourceInstallerUrl)
-            let destinationInstallerPath = System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
-            match hasSameFileHash (destinationInstallerPath, packageInfo.InstallerCrc) with
-            |false -> downloadFile (sourceInstallerUri, destinationInstallerPath, true)
-            |true -> 
-                Logging.getLoggerByName("downloadUpdate").Info(String.Format("Destination file '{0}' allready exists", destinationInstallerPath))
-                Result.Ok destinationInstallerPath
-    
-    let downloadUpdate (destinationDirectory, packageInfo) =
-        Logging.debugLoggerResult downloadUpdatePlain (destinationDirectory, packageInfo)
+    let downloadUpdatePlain (downloadJob) =
+        match hasSameFileHash (downloadJob.DestinationFile, downloadJob.Checksum, downloadJob.Size) with
+        |false -> downloadFile (downloadJob.SourceUri, downloadJob.DestinationFile, true)
+        |true -> 
+            Logging.getLoggerByName("downloadUpdatePlain").Info(String.Format("Destination file '{0}' allready exists", downloadJob.DestinationFile))
+            Result.Ok downloadJob.DestinationFile
+
+    let downloadUpdate (downloadJob) =
+        Logging.debugLoggerResult downloadUpdatePlain (downloadJob)
 
     let downloadUpdates destinationDirectory packageInfos = 
         let res = 
             packageInfos 
-            |> PSeq.map (fun p -> downloadUpdate (destinationDirectory, p))
+            |> packageInfosToDownloadJobs destinationDirectory
+            |> PSeq.map (fun dj -> downloadUpdate (dj))
             |> PSeq.toArray
             |> Seq.ofArray
             |> toAccumulatedResult
