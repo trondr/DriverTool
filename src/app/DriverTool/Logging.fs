@@ -73,22 +73,21 @@
             let p = p :> obj
             if p :? 'U then Some (p :?> 'U) else None
         
-        let (|ResultType|_|) t =
-            
-            let ti = t.GetType()
+        let (|NCmdLinerResultType|_|) t =
             let bt = box t
             match bt with
-            | :? Result<_,_> as r -> Some(r)
+            | :? NCmdLiner.Result<int> as r -> Some(r)
             |_ -> None
 
         let resultToString result = 
             let resultString = 
                 match result with
-                | ResultType r -> 
-                    match r with
-                    |Ok value -> "Ok : " + value.ToString()
-                    |Error ex -> "Error : " + (exceptionToString ex)
-                | _ -> result.ToString()
+                | NCmdLinerResultType r -> 
+                    if(r.IsSuccess) then
+                        "Ok : " + valueToString r.Value
+                    else
+                        "Error : " + (exceptionToString r.Exception)
+                | _ -> valueToString result
             resultString            
 
         let debugLogger func input =

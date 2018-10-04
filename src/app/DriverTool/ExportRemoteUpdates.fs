@@ -223,7 +223,7 @@ module ExportRemoteUpdates =
             let msg = String.Format("Failed to parse all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
 
-    let getRemoteUpdatesSimple (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) overwrite = 
+    let getRemoteUpdatesSimple ((modelCode: ModelCode), (operatingSystemCode: OperatingSystemCode), overwrite) = 
         let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
         let modelInfoXmlFilePath = getModelInfoXmlFilePath modelCode operatingSystemCode
         match modelInfoXmlFilePath with
@@ -239,8 +239,8 @@ module ExportRemoteUpdates =
                 result
         |Error ex -> Result.Error ex
     
-    let getRemoteUpdates =
-        Logging.debugLogger getRemoteUpdatesSimple
+    let getRemoteUpdates ((modelCode: ModelCode), (operatingSystemCode: OperatingSystemCode), overwrite) =
+        Logging.debugLogger getRemoteUpdatesSimple ((modelCode: ModelCode), (operatingSystemCode: OperatingSystemCode), overwrite)
 
     let exportToCsv (csvFilePath:Path) packageInfos : Result<Path,Exception> =
         try
@@ -262,7 +262,7 @@ module ExportRemoteUpdates =
         match csvFileStatus with
         |Error ex -> Result.Error ex
         |Ok csvPath ->
-            getRemoteUpdates model operatingSystem overwrite
+            getRemoteUpdates (model, operatingSystem, overwrite)
             |> getUnique
             |> exportToCsvR csvPath
         

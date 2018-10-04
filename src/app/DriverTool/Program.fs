@@ -16,8 +16,8 @@ let runCommandSimple args =
                 1    
     exitCode
 
-let runCommand =
-    debugLogger runCommandSimple
+let runCommand (args)=
+    debugLogger runCommandSimple (args)
 
 [<EntryPoint>]
 let main argv =
