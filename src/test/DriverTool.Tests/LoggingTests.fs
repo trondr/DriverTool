@@ -33,14 +33,21 @@ module LoggingTests =
 
     [<Test>]
     let getParametersStringArrayOfString () =
-        let expected = "[|\"arg1\";\"arg2\"|]"
+        let expected = "[\"arg1\",\"arg2\"]:System.String[]"
         let input = [|"arg1";"arg2"|]
         let actual = getParametersString input
         Assert.AreEqual(expected,actual,"Unexpected value") 
 
     [<Test>]
     let getParametersStringArrayOfInt () =
-        let expected = "[|1;2|]"
+        let expected = "[1,2]:System.Int32[]"
         let input = [|1;2|]
+        let actual = getParametersString input
+        Assert.AreEqual(expected,actual,"Unexpected value") 
+
+    [<Test>]
+    let getParametersTuple () =
+        let expected = "(\"arg1\":System.String,\"arg2\":System.String)"
+        let input = ("arg1","arg2")
         let actual = getParametersString input
         Assert.AreEqual(expected,actual,"Unexpected value") 
