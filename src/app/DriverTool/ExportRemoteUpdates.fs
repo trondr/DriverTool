@@ -6,6 +6,7 @@ module ExportRemoteUpdates =
     open System.Net    
     open System.Collections.Generic
     open System.Text.RegularExpressions
+    open Logging
         
     let validateExportRemoteUdateInfoParameters (modelCode:Result<ModelCode,Exception>, operatingSystemCode:Result<OperatingSystemCode,Exception>, csvPath:Result<Path,Exception>) = 
         
@@ -223,24 +224,23 @@ module ExportRemoteUpdates =
             let msg = String.Format("Failed to parse all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
 
-    let getRemoteUpdatesSimple ((modelCode: ModelCode), (operatingSystemCode: OperatingSystemCode), overwrite) = 
-        let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
-        let modelInfoXmlFilePath = getModelInfoXmlFilePath modelCode operatingSystemCode
-        match modelInfoXmlFilePath with
-        |Ok filePath -> 
-                let result = 
-                    filePath 
+    let getRemoteUpdatesPlain (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
+        result{
+            let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
+            let! modelInfoXmlFilePath = getModelInfoXmlFilePath modelCode operatingSystemCode
+            let result =
+                    modelInfoXmlFilePath 
                     |> ensureFileDoesNotExist overwrite
                     |> downloadFile modelInfoUri
                     |> ensureFileExistsR
                     |> getPackagesInfo
                     |> downloadPackageXmlsR
                     |> parsePackageXmlsR
-                result
-        |Error ex -> Result.Error ex
-    
-    let getRemoteUpdates ((modelCode: ModelCode), (operatingSystemCode: OperatingSystemCode), overwrite) =
-        Logging.debugLogger getRemoteUpdatesSimple ((modelCode: ModelCode), (operatingSystemCode: OperatingSystemCode), overwrite)
+            return! result
+        }
+
+    let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
+        Logging.debugLogger getRemoteUpdatesPlain (modelCode, operatingSystemCode, overwrite)
 
     let exportToCsv (csvFilePath:Path) packageInfos : Result<Path,Exception> =
         try
