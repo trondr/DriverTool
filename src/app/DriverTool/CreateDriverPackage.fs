@@ -8,6 +8,7 @@ module CreateDriverPackage =
     open System.Net
     open FSharp.Collections.ParallelSeq
     open System.Text
+    open Checksum
 
     let validateExportCreateDriverPackageParameters (modelCode:Result<ModelCode,Exception>, operatingSystemCode:Result<OperatingSystemCode,Exception>) = 
         
@@ -42,24 +43,26 @@ module CreateDriverPackage =
             |> Seq.map (fun (k,v) -> v |>Seq.head)
             |> Result.Ok
     
-    let downloadFilePlain (sourceUri:Uri, destinationFile) =
+    let downloadFilePlain (sourceUri:Uri, destinationFile, force) =
         try
             use webClient = new System.Net.WebClient()
             let webHeaderCollection = new WebHeaderCollection()
             webHeaderCollection.Add("User-Agent", "LenovoUtil/1.0") 
             webClient.Headers <- webHeaderCollection
-            match System.IO.File.Exists(destinationFile) with
-            |false -> 
-                Console.WriteLine("Downloading '{0}' -> {1}...", sourceUri.OriginalString, destinationFile)
-                webClient.DownloadFile(sourceUri.OriginalString,destinationFile)
-                Result.Ok destinationFile      
-            |true -> Result.Error (new Exception(String.Format("Destination file '{0}' allready exists", destinationFile)))
             
+            let destinationPath = Path.createWithContinuation (fun p -> FileOperations.ensureFileDoesNotExist true p) (fun ex -> Result.Error ex) destinationFile  
+            
+            match destinationPath with
+            |Ok path -> 
+                Console.WriteLine("Downloading '{0}' -> {1}...", sourceUri.OriginalString, path.Value)
+                webClient.DownloadFile(sourceUri.OriginalString,path.Value)
+                Result.Ok destinationFile      
+            |Error ex -> Result.Error (new Exception(String.Format("Destination file '{0}' allready exists", destinationFile), ex))            
         with
         | ex -> Result.Error (new Exception( String.Format("Failed to download {0} due to {e.Message}",sourceUri.OriginalString, ex.Message),ex))
     
-    let downloadFile (sourceUri:Uri, destinationFile) =
-        Logging.debugLoggerResult downloadFilePlain (sourceUri, destinationFile)
+    let downloadFile (sourceUri:Uri, destinationFile, force) =
+        Logging.debugLoggerResult downloadFilePlain (sourceUri, destinationFile, force)
 
     let downloadUpdatePlain (destinationDirectory, packageInfo) =
         match String.IsNullOrWhiteSpace(packageInfo.BaseUrl) with
@@ -67,13 +70,22 @@ module CreateDriverPackage =
         | false ->
             let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
             let sourceReadmeUri = new Uri(sourceReadmeUrl)
-            let destinationReadmePath = System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
-            let downloadReadmeResult = downloadFile (sourceReadmeUri, destinationReadmePath)
-
+            let destinationReadmePath = System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)            
+            let readmeDownloadResult = 
+                match hasSameFileHash (destinationReadmePath, packageInfo.ReadmeCrc) with
+                |false -> downloadFile (sourceReadmeUri, destinationReadmePath, true)
+                |true -> 
+                    Logging.getLoggerByName("downloadUpdate").Info(String.Format("Destination file '{0}' allready exists", destinationReadmePath))
+                    Result.Ok destinationReadmePath
+            
             let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
             let sourceInstallerUri = new Uri(sourceInstallerUrl)
             let destinationInstallerPath = System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
-            downloadFile (sourceInstallerUri, destinationInstallerPath)
+            match hasSameFileHash (destinationInstallerPath, packageInfo.InstallerCrc) with
+            |false -> downloadFile (sourceInstallerUri, destinationInstallerPath, true)
+            |true -> 
+                Logging.getLoggerByName("downloadUpdate").Info(String.Format("Destination file '{0}' allready exists", destinationInstallerPath))
+                Result.Ok destinationInstallerPath
     
     let downloadUpdate (destinationDirectory, packageInfo) =
         Logging.debugLoggerResult downloadUpdatePlain (destinationDirectory, packageInfo)
