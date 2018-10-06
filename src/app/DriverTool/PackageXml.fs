@@ -47,6 +47,25 @@ module DriverTool =
             Package:PackageInfo;
         }
 
+    type DownloadedPackageInfo =
+        {
+            InstallerPath:string;
+            ReadmePath:string;
+            Package:PackageInfo;
+        }
+
+    type ExtractedPackageInfo =
+        {
+            ExtractedDirectoryPath:string;
+            DownloadedPackage:DownloadedPackageInfo;
+        }
+
+    let getDestinationReadmePath destinationDirectory packageInfo =
+        System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
+
+    let getDestinationInstallerPath destinationDirectory packageInfo =
+        System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
+
     /// <summary>
     /// Get files to download. As it is possible for two packages to share a readme file this function will return DownloadJobs with uniqe destination files.
     /// </summary>
@@ -57,12 +76,14 @@ module DriverTool =
             for packageInfo in packageInfos do
                 let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
                 let sourceReadmeUri = new Uri(sourceReadmeUrl)
-                let destinationReadmePath = System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
+                let destinationReadmePath = 
+                    getDestinationReadmePath destinationDirectory packageInfo
                 yield {SourceUri = sourceReadmeUri; DestinationFile = destinationReadmePath; Checksum = packageInfo.ReadmeCrc; Size = packageInfo.ReadmeSize;Package=packageInfo}
 
                 let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
                 let sourceInstallerUri = new Uri(sourceInstallerUrl)
-                let destinationInstallerPath = System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
+                let destinationInstallerPath = 
+                    getDestinationInstallerPath destinationDirectory packageInfo
                 yield {SourceUri = sourceInstallerUri; DestinationFile = destinationInstallerPath; Checksum = packageInfo.InstallerCrc; Size = packageInfo.InstallerSize;Package=packageInfo}
         } 
         //Make sure destination file is unique
