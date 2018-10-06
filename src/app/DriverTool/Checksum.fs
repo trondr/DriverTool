@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Security.Cryptography
 open DriverTool
+open DriverTool.FileOperations
 
 let getHashAlgorithmFromHashStringLength hashStringLength = 
     match hashStringLength with
@@ -25,12 +26,6 @@ let computeFileHashFromHashLength filePath hashLength =
     (getHashAlgorithmFromHashStringLength hashLength)                
     |> computeFileHash filePath
     |> fileHashToString
- 
-let fileExists filePath =
-    System.IO.File.Exists(filePath)
-
-let getFileSize filePath =
-    (new System.IO.FileInfo(filePath)).Length
  
 let hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (destinationFilePath:string, sourceFileHash:string, sourceFileSize:Int64) =
         match(fileExists destinationFilePath) with
