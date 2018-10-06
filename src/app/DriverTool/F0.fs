@@ -1,4 +1,5 @@
-﻿module FInit
+﻿[<AutoOpen>]
+module F0
 
 //Source: https://stackoverflow.com/questions/2920094/how-can-i-convert-between-f-list-and-f-tuple
 let tupleToArray t = 
@@ -13,3 +14,12 @@ let listToTuple l =
     let tupleType = Microsoft.FSharp.Reflection.FSharpType.MakeTupleType types
     Microsoft.FSharp.Reflection.FSharpValue.MakeTuple (l' , tupleType)
 
+//Source: http://www.fssnip.net/mW/title/memoize-
+let memoize fn =
+  let cache = new System.Collections.Generic.Dictionary<_,_>()
+  (fun x ->
+    match cache.TryGetValue x with
+    | true, v -> v
+    | false, _ -> let v = fn (x)
+                  cache.Add(x,v)
+                  v)
