@@ -139,4 +139,4 @@ let nullOrWhiteSpaceGuard (obj:string) (argumentName:string) =
     
 let nullGuard (obj) (argumentName:string) =
     if(obj = null) then
-        raise (new ArgumentNullException("Value cannot be null.",argumentName))    
+        raise (new ArgumentNullException("Value cannot be null.",argumentName))
