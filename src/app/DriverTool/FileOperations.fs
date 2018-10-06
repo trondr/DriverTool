@@ -38,4 +38,14 @@ module FileOperations =
         |Ok p -> ensureFileExists p
         |Error ex -> Result.Error ex
 
-    
+    let fileExists filePath =
+        System.IO.File.Exists(filePath)
+
+    let getFileSize filePath =
+        (new System.IO.FileInfo(filePath)).Length
+ 
+open FileOperations
+open System.IO
+
+
+
