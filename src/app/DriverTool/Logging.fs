@@ -1,8 +1,7 @@
 ﻿namespace DriverTool
         
     open DriverTool.Configuration
-    open FInit
-
+    
     module Logging =
         open System
         open System.IO         
@@ -18,8 +17,18 @@
             log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
             |>ignore
 
-        let getLoggerByType<'T> = 
-            LogManager.GetLogger(typeof<'T>)
+        let logFactory =
+            LogManager.GetLogger
+
+        let cachedLogFactory =
+            memoize logFactory
+            
+        let Logger<'T> = 
+            cachedLogFactory(typeof<'T>)
+
+        type System.Object with
+            member x.Logger() = 
+                cachedLogFactory(x.GetType())
 
         let getLoggerByName (name:string) =
             LogManager.GetLogger(Assembly.GetEntryAssembly(),name)
