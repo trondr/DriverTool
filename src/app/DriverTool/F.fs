@@ -1,4 +1,11 @@
-﻿module F
+﻿[<AutoOpen>]
+module F
+
+#if DEBUG
+let (|>) value func =
+  let result = func value
+  result
+#endif
 
 open System
 /// <summary>
