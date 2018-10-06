@@ -3,6 +3,7 @@
 open System
 open System.IO
 open System.Security.Cryptography
+open DriverTool
 
 let getHashAlgorithmFromHashStringLength hashStringLength = 
     match hashStringLength with
@@ -13,28 +14,39 @@ let getHashAlgorithmFromHashStringLength hashStringLength =
         | 128 -> SHA512.Create() :> HashAlgorithm
         | _  -> SHA512.Create() :> HashAlgorithm
 
-let computeHash filePath (hashAlgorithm:HashAlgorithm)  =
-    let fileHash = File.ReadAllBytes(filePath)|> hashAlgorithm.ComputeHash
-    fileHash
+let computeFileHash filePath (hashAlgorithm:HashAlgorithm)  =
+    File.ReadAllBytes(filePath)
+    |> hashAlgorithm.ComputeHash
 
 let fileHashToString fileHash =
-    let fileHashString = 
-        BitConverter.ToString(fileHash).Replace("-", "").ToLower()
-    fileHashString
+    BitConverter.ToString(fileHash).Replace("-", "").ToLower()
 
-let hasSameFileHash (filePath:string, crc:string, fileSize:Int64) =
-    let hasSameFileHash = 
-        match(System.IO.File.Exists(filePath)) with
+let computeFileHashFromHashLength filePath hashLength =
+    (getHashAlgorithmFromHashStringLength hashLength)                
+    |> computeFileHash filePath
+    |> fileHashToString
+ 
+let fileExists filePath =
+    System.IO.File.Exists(filePath)
+
+let getFileSize filePath =
+    (new System.IO.FileInfo(filePath)).Length
+ 
+let hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (destinationFilePath:string, sourceFileHash:string, sourceFileSize:Int64) =
+        match(fileExists destinationFilePath) with
         | true ->   
-            let actualSize = (new System.IO.FileInfo(filePath)).Length
+            let destinationFileSize = getFileSize destinationFilePath
             let isSameFileSize = 
-                (fileSize = actualSize)
+                (sourceFileSize = destinationFileSize)
             match isSameFileSize with        
-            |true -> 
-                use hashAlgorithm = getHashAlgorithmFromHashStringLength crc.Length                
-                let fileHash = computeHash filePath hashAlgorithm
-                let fileHashString = fileHashToString fileHash                
-                (crc.ToLower() = fileHashString)                
+            |true ->              
+                let destinationFileHash = computeFileHashFromHashLength destinationFilePath sourceFileHash.Length                
+                (sourceFileHash.ToLower() = destinationFileHash.ToString().ToLower())                
             | false  -> false
         |false -> false
-    hasSameFileHash
+
+let hasSameFileHashPlain (filePath:string, sourceFileHash:string, fileSize:Int64) =
+    hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (filePath, sourceFileHash, fileSize)
+
+let hasSameFileHash (filePath:string, crc:string, fileSize:Int64) =
+    Logging.debugLogger hasSameFileHashPlain (filePath, crc, fileSize)
