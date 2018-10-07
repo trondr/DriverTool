@@ -71,26 +71,32 @@ module CreateDriverPackage =
     let downloadFile (sourceUri:Uri, destinationFile, force) =
         Logging.debugLoggerResult downloadFilePlain (sourceUri, destinationFile, force)
 
-    let verifyDownload downloadJob =
+    let verifyDownload downloadJob verificationWarningOnly =
         match (hasSameFileHash (downloadJob.DestinationFile, downloadJob.Checksum, downloadJob.Size)) with
         |true  -> Result.Ok downloadJob
-        |false -> Result.Error (new Exception(String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadJob.DestinationFile,downloadJob.SourceUri.OriginalString)))
+        |false -> 
+            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadJob.DestinationFile,downloadJob.SourceUri.OriginalString)
+            match verificationWarningOnly with
+            |true ->
+                Logging.getLoggerByName("verifyDownload").Warn(msg)
+                Result.Ok downloadJob
+            |false->Result.Error (new Exception(msg))
  
-    let downloadUpdatePlain (downloadJob) =
+    let downloadUpdatePlain (downloadJob,verificationWarningOnly) =
         match (hasSameFileHash (downloadJob.DestinationFile, downloadJob.Checksum, downloadJob.Size)) with
         |false -> 
             let downloadResult = 
                 downloadFile (downloadJob.SourceUri, downloadJob.DestinationFile, true)
             match downloadResult with
             |Ok s -> 
-                verifyDownload downloadJob
+                verifyDownload downloadJob verificationWarningOnly
             |Error ex -> Result.Error (new Exception("Download could not be verified. " + ex.Message))
         |true -> 
             Logging.getLoggerByName("downloadUpdatePlain").Info(String.Format("Destination file '{0}' allready exists", downloadJob.DestinationFile))
             Result.Ok downloadJob
 
-    let downloadUpdate (downloadJob) =
-        Logging.debugLoggerResult downloadUpdatePlain (downloadJob)
+    let downloadUpdate (downloadJob,verificationWarningOnly) =
+        Logging.debugLoggerResult downloadUpdatePlain (downloadJob,verificationWarningOnly)
 
     let packageInfosToDownloadedPackageInfos destinationDirectory packageInfos =
         packageInfos
@@ -101,13 +107,19 @@ module CreateDriverPackage =
                             Package = p;
                         }
                     )
-            
+    
+    let (|TextFile|_|) (input:string) = if input.ToLower().EndsWith(".txt") then Some(input) else None
+
+    let verificationWarningOnly downloadJob =
+        match downloadJob.DestinationFile with
+        | TextFile x -> true
+        | _ -> false
     
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos 
             |> packageInfosToDownloadJobs destinationDirectory
-            |> PSeq.map (fun dj -> downloadUpdate (dj))
+            |> PSeq.map (fun dj -> downloadUpdate (dj,verificationWarningOnly dj))
             |> PSeq.toArray
             |> Seq.ofArray
             |> toAccumulatedResult
@@ -170,10 +182,10 @@ module CreateDriverPackage =
             System.IO.File.Copy(sourceFilePath, destinationFilePath, true)
             Result.Ok destinationFilePath
         with
-        | ex -> Result.Error (new Exception("Failed to copy file.", ex))
+        | ex -> Result.Error (new Exception(String.Format("Failed to copy file '{0}'->'{1}'.", sourceFilePath, destinationFilePath), ex))
     
-    let extractReadme downloadedPackageInfo packageFolderPath  =
-        let destinationReadmeFilePath = System.IO.Path.Combine(packageFolderPath,downloadedPackageInfo.Package.ReadmeName)
+    let extractReadme (downloadedPackageInfo, packageFolderPath:Path)  =
+        let destinationReadmeFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.ReadmeName)
         match ExistingFilePath.New downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
             match (copyFile (readmeFilePath.Value, destinationReadmeFilePath)) with
@@ -186,10 +198,10 @@ module CreateDriverPackage =
         let fileName = commandLine.Split(' ').[0];
         fileName;
 
-    let extractInstaller downloadedPackageInfo packageFolderPath =
+    let extractInstaller (downloadedPackageInfo, packageFolderPath:Path) =
         if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine)) then
             //Installer does not support extraction, copy the installer directly to package folder...
-           let destinationInstallerFilePath = System.IO.Path.Combine(packageFolderPath,downloadedPackageInfo.Package.InstallerName)
+           let destinationInstallerFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.InstallerName)
            match ExistingFilePath.New downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
                 match copyFile (installerPath.Value, destinationInstallerFilePath) with
@@ -200,7 +212,7 @@ module CreateDriverPackage =
                 Result.Error ex
         else
             //Installer supports extraction
-            let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",String.Format("\"{0}\"",packageFolderPath))
+            let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",String.Format("\"{0}\"",packageFolderPath.Value))
             let fileName = getFileNameFromCommandLine extractCommandLine
             let arguments = extractCommandLine.Replace(fileName,"")
             match (ExistingFilePath.New downloadedPackageInfo.InstallerPath) with
@@ -210,16 +222,15 @@ module CreateDriverPackage =
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex
 
-    let extractUpdate (rootDirectory, (downloadedPackageInfo:DownloadedPackageInfo)) =
-        let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
-        let packageFolderPath = System.IO.Path.Combine(rootDirectory,packageFolderName)
-        
-        match (extractReadme downloadedPackageInfo packageFolderPath) with
-        |Ok _ -> 
-            match (extractInstaller downloadedPackageInfo packageFolderPath) with
-            |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo downloadedPackageInfo)
-            |Error ex -> Result.Error ex
-        |Error ex -> Result.Error ex
+    let extractUpdate (rootDirectory:Path, (downloadedPackageInfo:DownloadedPackageInfo)) =
+        result{
+            let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
+            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, packageFolderName)
+            let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)
+            let! extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
+            let! extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
+            return extractInstallerResult
+        }
 
     let downloadedPackageInfosToExtractedPackageInfos (downloadedPackageInfos:seq<DownloadedPackageInfo>) =
         downloadedPackageInfos
@@ -240,8 +251,9 @@ module CreateDriverPackage =
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
                 let! updates = downloadUpdates (System.IO.Path.GetTempPath()) uniqueUpdates
-                let driversPath = combine2Paths destinationFolderPath.Value "Drivers"
-                let! extractedUpdates = extractUpdates driversPath updates                
+                let! driversPath = combine2Paths (destinationFolderPath.Value, "Drivers")
+                let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
+                let! extractedUpdates = extractUpdates existingDriversPath updates                
                 return extractedUpdates
             }
     
