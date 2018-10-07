@@ -81,7 +81,7 @@ let result = new ResultBuilder()
 let getAllExceptions (results:seq<Result<_,Exception>>) =
         let f = fun (r:Result<_,Exception>) ->
             match r with
-            |Error ex -> Some(ex.Message)
+            |Error ex -> Some(getAccumulatedExceptionMessages ex)
             |Ok v -> None
         results 
         |> Seq.choose f
