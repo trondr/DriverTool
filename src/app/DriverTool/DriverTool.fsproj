@@ -34,6 +34,7 @@
     <Compile Include="F.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="Path.fs" />
+    <Compile Include="DirectoryOperations.fs" />
     <Compile Include="PathOperations.fs" />
     <Compile Include="FileOperations.fs" />
     <Compile Include="ExistingPath.fs" />
