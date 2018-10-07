@@ -23,3 +23,11 @@ let memoize fn =
     | false, _ -> let v = fn (x)
                   cache.Add(x,v)
                   v)
+
+
+open System
+
+let rec getAccumulatedExceptionMessages (ex: Exception) =
+            match ex.InnerException with
+            | null -> ex.Message
+            | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
