@@ -116,10 +116,7 @@
                 logger.Debug (functionCallResult)
             result
         
-        let rec getAccumulatedExceptionMessages (ex: Exception) =
-            match ex.InnerException with
-            | null -> ex.Message
-            | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
+        
 
         let debugLoggerResult func input =
             let logger = getFunctionLogger func
