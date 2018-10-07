@@ -45,8 +45,9 @@ module ExportRemoteUpdates =
         new Uri(String.Format("https://download.lenovo.com/catalog/{0}_{1}.xml",modelCode.Value,operatingSystemCode.Value))
 
     let downloadFileUnsafe (uri:Uri) (filePath:Path) = 
+        
         use webClient = new WebClient()
-        webClient.DownloadProgressChanged.Add(fun ea -> System.Console.Write("{0} of {1}\r", ea.BytesReceived, ea.TotalBytesToReceive))
+        webClient.Logger().Info(String.Format("Downloading '{0}'->'{1}'...",uri.OriginalString,filePath.Value))
         let webHeaderCollection = new WebHeaderCollection()
         webHeaderCollection.Add("User-Agent", "DriverUtil/1.0")
         webClient.Headers <- webHeaderCollection
@@ -54,6 +55,7 @@ module ExportRemoteUpdates =
         |false->
             webClient.DownloadFileTaskAsync(uri,filePath.Value) |> Async.AwaitTask |> Async.RunSynchronously
         |true -> raise (new FileExistsException(String.Format("File allready exists: {0}",filePath.Value)))
+        webClient.Logger().Info(String.Format("Finished downloading '{0}'->'{1}'!",uri.OriginalString,filePath.Value))
         filePath
 
     let downloadFile (uri:Uri) (filePath:Result<Path,Exception>) :Result<Path,Exception> = 
