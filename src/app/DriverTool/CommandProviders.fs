@@ -17,15 +17,16 @@ module CommandProviders =
     let exportRemoteUdateInfo (modelCodeString, operatingSystemString, csvFilePathString, overwrite) =
         Logging.debugLogger exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite)
     
-    let createDriverPackageSimple (modelCodeString,operatingSystemString) =
+    let createDriverPackageSimple (modelCodeString,operatingSystemString,destinationFolder) =
         match (result {
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
-                let createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (modelCode, operatingSystemCode)
+                let! destinationFolderPath = Path.create destinationFolder
+                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (modelCode, operatingSystemCode, destinationFolderPath)
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let createDriverPackage (modelCodeString,operatingSystemString) =
-        Logging.debugLogger createDriverPackageSimple (modelCodeString,operatingSystemString)
+    let createDriverPackage (modelCodeString,operatingSystemString,destinationFolder) =
+        Logging.debugLogger createDriverPackageSimple (modelCodeString,operatingSystemString,destinationFolder)
