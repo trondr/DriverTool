@@ -15,7 +15,7 @@ module FileOperations =
     type FileExistsException(message : string) =
         inherit Exception(message)    
     
-    let ensureFileDoesNotExist overwrite (path:Path) : Result<Path, Exception> = 
+    let ensureFileDoesNotExist (overwrite, path:Path) : Result<Path, Exception> = 
         match System.IO.File.Exists(path.Value) with
         | true -> 
             match overwrite with
@@ -26,7 +26,7 @@ module FileOperations =
     let ensureFileDoesNotExistR overwrite (path:Result<Path, Exception>) : Result<Path, Exception> = 
         match path with
         |Error  ex -> Result.Error ex
-        |Ok p -> ensureFileDoesNotExist overwrite p
+        |Ok p -> ensureFileDoesNotExist (overwrite, p)
     
     let ensureFileExists (path:Path) : Result<Path, Exception> = 
         match System.IO.File.Exists(path.Value) with
