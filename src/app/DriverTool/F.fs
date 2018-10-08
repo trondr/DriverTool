@@ -32,6 +32,9 @@ let getUniqueRecords records =
         records |> Seq.distinct
     uniqueRecords
 
+let getUnique list =
+    list |> Seq.distinct
+
 let getUniqueR list =
     match list with
     |Error ex -> Result.Error ex
