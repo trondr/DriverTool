@@ -9,7 +9,7 @@ module DriverTool =
         {
             Location:string;
             Category:string;
-            CheckSum:string
+            CheckSum:string;
         }
     
     type DownloadedPackageXmlInfo = 
@@ -18,6 +18,7 @@ module DriverTool =
             Category:string;
             FilePath:Path;
             BaseUrl:string
+            CheckSum:string;
         }
 
     type PackageInfo = 
@@ -66,6 +67,8 @@ module DriverTool =
     let getDestinationInstallerPath destinationDirectory packageInfo =
         System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
 
+    open DriverTool.Web
+
     /// <summary>
     /// Get files to download. As it is possible for two packages to share a readme file this function will return DownloadJobs with uniqe destination files.
     /// </summary>
@@ -76,15 +79,16 @@ module DriverTool =
             for packageInfo in packageInfos do
                 let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
                 let sourceReadmeUri = new Uri(sourceReadmeUrl)
-                let destinationReadmePath = 
-                    getDestinationReadmePath destinationDirectory packageInfo
-                yield {SourceUri = sourceReadmeUri; DestinationFile = destinationReadmePath; Checksum = packageInfo.ReadmeCrc; Size = packageInfo.ReadmeSize;Package=packageInfo}
+                match (Path.create (getDestinationReadmePath destinationDirectory packageInfo)) with
+                |Ok p -> yield {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = p; }
+                |Error ex -> Result.Error ex |> ignore
 
                 let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
                 let sourceInstallerUri = new Uri(sourceInstallerUrl)
-                let destinationInstallerPath = 
-                    getDestinationInstallerPath destinationDirectory packageInfo
-                yield {SourceUri = sourceInstallerUri; DestinationFile = destinationInstallerPath; Checksum = packageInfo.InstallerCrc; Size = packageInfo.InstallerSize;Package=packageInfo}
+                match Path.create (getDestinationInstallerPath destinationDirectory packageInfo) with
+                |Ok p -> yield {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.InstallerCrc; SourceFileSize = packageInfo.InstallerSize; DestinationFile = p; }
+                |Error ex -> Result.Error ex |> ignore
+                
         } 
         //Make sure destination file is unique
         |> Seq.groupBy (fun p -> p.DestinationFile) 
@@ -145,7 +149,6 @@ module DriverTool =
         let releaseDate = packageXElement.Element(XName.Get("ReleaseDate")).Value
         let baseUrl = downloadedPackageInfo.BaseUrl
         let category = downloadedPackageInfo.Category
-
         {
             Name = name;
             Title = title;
