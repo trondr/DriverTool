@@ -1,6 +1,6 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
-open Checksum
+open DriverTool.Checksum
 
 [<TestFixture>]
 module ChecksumTests =
