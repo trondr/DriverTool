@@ -44,38 +44,22 @@ module ExportRemoteUpdates =
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         new Uri(String.Format("https://download.lenovo.com/catalog/{0}_{1}.xml",modelCode.Value,operatingSystemCode.Value))
 
-    let downloadFileUnsafe (uri:Uri) (filePath:Path) = 
-        
-        use webClient = new WebClient()
-        webClient.Logger().Info(String.Format("Downloading '{0}'->'{1}'...",uri.OriginalString,filePath.Value))
-        let webHeaderCollection = new WebHeaderCollection()
-        webHeaderCollection.Add("User-Agent", "DriverUtil/1.0")
-        webClient.Headers <- webHeaderCollection
-        match System.IO.File.Exists(filePath.Value) with
-        |false->
-            webClient.DownloadFileTaskAsync(uri,filePath.Value) |> Async.AwaitTask |> Async.RunSynchronously
-        |true -> raise (new FileExistsException(String.Format("File allready exists: {0}",filePath.Value)))
-        webClient.Logger().Info(String.Format("Finished downloading '{0}'->'{1}'!",uri.OriginalString,filePath.Value))
-        filePath
-
-    let downloadFile (uri:Uri) (filePath:Result<Path,Exception>) :Result<Path,Exception> = 
-        try
-            match filePath with
-            |Ok fp -> Result.Ok (downloadFileUnsafe uri fp)
-            |Error ex -> Result.Error ex
-        with
-        | ex -> Result.Error ex
-
-
-    
-    
     open FSharp.Data    
     open DriverTool
 
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
     type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
     
-    let getPackagesInfo (modelInfoXmlFilePath:Result<Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
+    let getPackagesInfo (modelInfoXmlFilePath:Path) : Result<seq<PackageXmlInfo>,Exception>= 
+        try
+            let x = PackagesXmlProvider.Load(modelInfoXmlFilePath.Value)
+            x.Packages
+            |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
+            |> Result.Ok            
+        with
+        |ex -> Result.Error ex
+
+    let getPackagesInfoR (modelInfoXmlFilePath:Result<Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
         try
             match modelInfoXmlFilePath with
             |Ok p -> 
@@ -114,30 +98,42 @@ module ExportRemoteUpdates =
 
     open System.Linq
     open F
-    open DriverTool
+    open DriverTool.Web
 
     let getBaseUrl locationUrl =
         let uri = new Uri(locationUrl)
         uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length).Trim('/');
-        
+    
+    let packageXmlInfo2downloadedPackageXmlInfo (packageXmlInfo:PackageXmlInfo, filePath) =
+        {
+            Location = packageXmlInfo.Location;
+            Category = packageXmlInfo.Category;
+            FilePath = filePath;
+            BaseUrl = getBaseUrl packageXmlInfo.Location;
+            CheckSum = packageXmlInfo.CheckSum;
+        }
+    open DriverTool.Checksum
+
+    let verifyDownload (sourceUri:Uri, destinationFile, checksum, fileSize, verificationWarningOnly) =
+        match (hasSameFileHash (destinationFile, checksum, fileSize)) with
+        |true  -> Result.Ok destinationFile
+        |false -> 
+            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",destinationFile,sourceUri.OriginalString)
+            match verificationWarningOnly with
+            |true ->
+                Logging.getLoggerByName("verifyDownload").Warn(msg)
+                Result.Ok destinationFile
+            |false->Result.Error (new Exception(msg))
+
     let downloadPackageInfo (packageXmlInfo:PackageXmlInfo) = 
-        let uri = new Uri(packageXmlInfo.Location)
-        let tempXmlFileName = 
-            getTempXmlFilePathFromUri uri
-            |> ensureFileDoesNotExistR true
-        let fileResult = downloadFile uri tempXmlFileName               
-        match fileResult with
-        |Ok p -> 
-            let dpi = 
-                            {
-                            Location = packageXmlInfo.Location;
-                            Category = packageXmlInfo.Category
-                            FilePath = p;
-                            BaseUrl = getBaseUrl packageXmlInfo.Location
-                            }
-            Result.Ok dpi
-        |Error ex -> Result.Error ex
-        
+            result {
+                let sourceUri = new Uri(packageXmlInfo.Location)
+                let! destinationFilePath = getTempXmlFilePathFromUri sourceUri
+                let downloadInfo = {SourceUri=sourceUri;SourceChecksum=packageXmlInfo.CheckSum;SourceFileSize=0L;DestinationFile=destinationFilePath;}
+                let! downloadInfo2 = downloadIfDifferent (downloadInfo, false)                             
+                let dpi = packageXmlInfo2downloadedPackageXmlInfo (packageXmlInfo, downloadInfo2.DestinationFile)
+                return dpi
+            }
     
     let getAllErrorMessages (results:seq<Result<'T,Exception>>) =         
         results
@@ -226,25 +222,26 @@ module ExportRemoteUpdates =
             let msg = String.Format("Failed to parse all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
 
+    
+
     let getRemoteUpdatesPlain (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
         result{
             let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
-            let! modelInfoXmlFilePath = getModelInfoXmlFilePath modelCode operatingSystemCode
-            let result =
-                    modelInfoXmlFilePath 
-                    |> ensureFileDoesNotExist overwrite
-                    |> downloadFile modelInfoUri
-                    |> ensureFileExistsR
-                    |> getPackagesInfo
-                    |> downloadPackageXmlsR
-                    |> parsePackageXmlsR
-            return! result
+            let! path = getModelInfoXmlFilePath modelCode operatingSystemCode
+            let! modelInfoXmlFilePath = ensureFileDoesNotExist (overwrite, path)
+            let! downloadedFile = downloadFile (modelInfoUri, overwrite, modelInfoXmlFilePath)            
+            let! packageXmlInfos = getPackagesInfo downloadedFile
+            let! downloadedPackageXmls = downloadPackageXmls packageXmlInfos
+            let! packageInfos = 
+                (parsePackageXmls downloadedPackageXmls)
+                |>toAccumulatedResult
+            return packageInfos
         }
 
     let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
         Logging.debugLogger getRemoteUpdatesPlain (modelCode, operatingSystemCode, overwrite)
 
-    let exportToCsv (csvFilePath:Path) packageInfos : Result<Path,Exception> =
+    let exportToCsv (csvFilePath:Path, packageInfos) : Result<Path,Exception> =
         try
             use sw = new System.IO.StreamWriter(csvFilePath.Value)
             use csv = new CsvHelper.CsvWriter(sw)
@@ -254,18 +251,13 @@ module ExportRemoteUpdates =
         with
         | ex -> Result.Error ex
     
-    let exportToCsvR (csvFilePath:Path) packageInfos : Result<Path,Exception> =
-        match packageInfos with
-        |Error ex -> Result.Error ex
-        |Ok pis -> exportToCsv csvFilePath pis
-
     let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite =         
-        let csvFileStatus = ensureFileDoesNotExist overwrite csvFilePath
-        match csvFileStatus with
-        |Error ex -> Result.Error ex
-        |Ok csvPath ->
-            getRemoteUpdates (model, operatingSystem, overwrite)
-            |> getUniqueR
-            |> exportToCsvR csvPath
+        result {
+            let! csvFilePath = ensureFileDoesNotExist (overwrite, csvFilePath)    
+            let! r = getRemoteUpdates (model, operatingSystem, overwrite)
+            let u = getUnique r
+            let e = exportToCsv (csvFilePath,u)
+            return! e
+        }        
         
         

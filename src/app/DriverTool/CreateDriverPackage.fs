@@ -63,21 +63,11 @@ module CreateDriverPackage =
  
     open DriverTool.Web
     
-    let downloadUpdatePlain (downloadJob,verificationWarningOnly) =
-        match (hasSameFileHash (downloadJob.DestinationFile, downloadJob.Checksum, downloadJob.Size)) with
-        |false -> 
-            let downloadResult = 
-                downloadFile (downloadJob.SourceUri, downloadJob.DestinationFile, true)
-            match downloadResult with
-            |Ok s -> 
-                verifyDownload downloadJob verificationWarningOnly
-            |Error ex -> Result.Error (new Exception("Download could not be verified. " + ex.Message))
-        |true -> 
-            Logging.getLoggerByName("downloadUpdatePlain").Info(String.Format("Destination file '{0}' allready exists", downloadJob.DestinationFile))
-            Result.Ok downloadJob
+    let downloadUpdatePlain (downloadInfo:DownloadInfo, ignoreVerificationErrors) =
+        downloadIfDifferent (downloadInfo, ignoreVerificationErrors)         
 
-    let downloadUpdate (downloadJob,verificationWarningOnly) =
-        Logging.debugLoggerResult downloadUpdatePlain (downloadJob,verificationWarningOnly)
+    let downloadUpdate (downloadJob, ignoreVerificationErrors) =
+        Logging.debugLoggerResult downloadUpdatePlain (downloadJob, ignoreVerificationErrors)
 
     let packageInfosToDownloadedPackageInfos destinationDirectory packageInfos =
         packageInfos
@@ -91,8 +81,8 @@ module CreateDriverPackage =
     
     let (|TextFile|_|) (input:string) = if input.ToLower().EndsWith(".txt") then Some(input) else None
 
-    let verificationWarningOnly downloadJob =
-        match downloadJob.DestinationFile with
+    let ignoreVerificationErrors downloadInfo =
+        match downloadInfo.DestinationFile.Value with
         | TextFile x -> true
         | _ -> false
     
@@ -100,7 +90,7 @@ module CreateDriverPackage =
         let downloadJobs = 
             packageInfos 
             |> packageInfosToDownloadJobs destinationDirectory
-            |> PSeq.map (fun dj -> downloadUpdate (dj,verificationWarningOnly dj))
+            |> PSeq.map (fun dj -> downloadUpdate (dj,ignoreVerificationErrors dj))
             |> PSeq.toArray
             |> Seq.ofArray
             |> toAccumulatedResult
