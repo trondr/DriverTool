@@ -214,6 +214,60 @@ module CreateDriverPackage =
         |> Seq.map (fun dp -> extractUpdate (rootDirectory, dp))
         |> toAccumulatedResult
      
+    open System.Text.RegularExpressions
+        
+    let directoryContainsDpInst (directoryPath:string) =
+        let dpinstFilesCount = 
+            System.IO.Directory.GetFiles(directoryPath,"*.*")
+            |> Seq.filter (fun fp -> System.Text.RegularExpressions.Regex.Match((new System.IO.FileInfo(fp)).Name,"dpinst",RegexOptions.IgnoreCase).Success)
+            |> Seq.toList
+            |> Seq.length            
+        (dpinstFilesCount > 0)
+
+    let packageIsUsingDpInstDuringInstall (installScriptPath:Path, installCommandLine:string) = 
+        match (installCommandLine.StartsWith("dpinst.exe", true, System.Globalization.CultureInfo.InvariantCulture)) with
+        | true -> 
+            true
+        | false -> 
+            directoryContainsDpInst ((new System.IO.FileInfo(installScriptPath.Value)).Directory.FullName)
+        
+
+    let createInstallScriptFile (installScriptPath: Path, installCommandLine:string) =
+        try
+            use sw = new System.IO.StreamWriter(installScriptPath.Value)
+            sw.WriteLine("Set ExitCode=0")
+            sw.WriteLine("pushd \"%~dp0\"")
+            sw.WriteLine("")
+            sw.WriteLine(installCommandLine)
+            if (packageIsUsingDpInstDuringInstall (installScriptPath, installCommandLine)) then
+                sw.WriteLine("")
+                sw.WriteLine("Set DpInstExitCode=%errorlevel%")
+                sw.WriteLine("%~dp0\\..\\Tools\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")            
+            sw.WriteLine("")
+            sw.WriteLine("Set ExitCode=%errorlevel%")
+            sw.WriteLine("popd")
+            sw.WriteLine("EXIT /B %ExitCode%")
+            Result.Ok installScriptPath
+        with
+        | _ as ex -> Result.Error ex
+
+    let createInstallScript (extractedUpdate:ExtractedPackageInfo) =
+        result{
+            let! installScriptPath = 
+                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"Install-Package.cmd"))
+            let installCommandLine = 
+                extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")
+            return! createInstallScriptFile (installScriptPath,installCommandLine)            
+        }
+
+    let createInstallScripts (extractedUpdates) =
+        extractedUpdates |> Seq.map (fun u -> createInstallScript u )               
+                
+
+    let extractDpInstExitCodeToExitCodeExe toolsPath =
+        raise (new NotImplementedException())
+        Result.Ok toolsPath
+
     open DriverTool.PathOperations
 
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path)) = 
@@ -222,10 +276,15 @@ module CreateDriverPackage =
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
                 let! updates = downloadUpdates (System.IO.Path.GetTempPath()) uniqueUpdates
+                let! toolsPath = combine2Paths (destinationFolderPath.Value, "Tools")
+                let! dpInstToExitCodeExe = extractDpInstExitCodeToExitCodeExe toolsPath
                 let! driversPath = combine2Paths (destinationFolderPath.Value, "Drivers")
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
-                let! extractedUpdates = extractUpdates existingDriversPath updates                
-                return extractedUpdates
+                let! extractedUpdates = extractUpdates existingDriversPath updates
+                let extractedUpdates2 = 
+                    createInstallScripts (extractedUpdates)
+                    |> toAccumulatedResult
+                return extractedUpdates2
             }
     
     let createDriverPackage ((modelCode: ModelCode), (operatingSystem:OperatingSystemCode),(destinationFolderPath: Path)) =
