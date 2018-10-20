@@ -23,7 +23,9 @@ let memoize fn =
     | false, _ -> let v = fn (x)
                   cache.Add(x,v)
                   v)
-
+//Source: http://www.fssnip.net/7UQ/title/Null-Value-guard-active-pattern
+let (|Null|NotNull|) (x : 'T when 'T : not struct) =
+    if obj.ReferenceEquals(x, null) then Null else NotNull x
 
 open System
 

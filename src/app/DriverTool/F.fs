@@ -140,6 +140,28 @@ let nullOrWhiteSpaceGuard (obj:string) (argumentName:string) =
         if(String.IsNullOrWhiteSpace(obj)) then
             raise (new ArgumentException("Value cannot be null or whitespace.",argumentName))
     
-let nullGuard (obj) (argumentName:string) =
-    if(obj = null) then
-        raise (new ArgumentNullException("Value cannot be null.",argumentName))
+let nullGuardResult (obj: 'T when 'T : not struct, argumentName:string) =
+    match obj with
+    |Null -> Result.Error (new ArgumentNullException("Value cannot be null.",argumentName) :> Exception)
+    |NotNull v -> Result.Ok v
+
+let nullGuard (obj: 'T when 'T : not struct) (argumentName:string) =
+    match obj with
+    |Null -> raise (new ArgumentNullException("Value cannot be null.",argumentName))
+    |NotNull _ -> ()
+
+
+
+let createWithContinuationGeneric success failure validator (value:'T) : Result<'T,Exception> = 
+            match value with
+            |Null -> failure (new ArgumentNullException("value","Value cannot be null.") :> Exception)
+            |NotNull v -> 
+                let result = validator value
+                match result with
+                |Ok vr -> success vr
+                |Error ex -> failure ex
+        
+let createGeneric validator (value:'T) =
+    let success v = Result.Ok v
+    let failure ex = Result.Error ex
+    createWithContinuationGeneric success failure validator value 
