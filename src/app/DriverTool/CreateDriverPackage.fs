@@ -7,36 +7,9 @@ module CreateDriverPackage =
     
     open System
     open DriverTool
-    open System.Net
     open FSharp.Collections.ParallelSeq
     open Checksum
 
-    let validateExportCreateDriverPackageParameters (modelCode:Result<ModelCode,Exception>, operatingSystemCode:Result<OperatingSystemCode,Exception>) = 
-        
-        let validationResult = 
-            match modelCode with
-                    |Ok m ->
-                        match operatingSystemCode with
-                        |Ok os -> Result.Ok (m, os)                            
-                        |Error ex -> Result.Error ex
-                    |Error ex -> Result.Error ex
-        match validationResult with
-        |Ok _ -> validationResult
-        |Error _ -> 
-            //Accumulate all non-empty error messages into an array
-            let errorMessages = 
-                [|
-                    (match modelCode with
-                    |Error ex -> ex.Message
-                    |Ok _-> String.Empty);
-
-                    (match operatingSystemCode with
-                    |Error ex -> ex.Message
-                    |Ok _-> String.Empty);
-                |] |> Array.filter (fun m -> (not (String.IsNullOrWhiteSpace(m)) ) )            
-            Result.Error (new Exception(String.Format("Failed to validate one or more input parameters.{0}{1}",Environment.NewLine, String.Join(Environment.NewLine, errorMessages))))
-    
-    
     let getUniqueUpdates packageInfos = 
         let uniqueUpdates = 
             packageInfos
@@ -44,14 +17,6 @@ module CreateDriverPackage =
             |> Seq.map (fun (k,v) -> v |>Seq.head)
         uniqueUpdates
 
-    let getUniqueUpdatesR (updatesResult : Result<seq<PackageInfo>,Exception>) : Result<seq<PackageInfo>,Exception> =
-        match updatesResult with
-        |Error ex -> Result.Error ex
-        |Ok u ->             
-            Seq.groupBy (fun p -> p.InstallerName) u            
-            |> Seq.map (fun (k,v) -> v |>Seq.head)
-            |> Result.Ok
-    
     let verifyDownload downloadJob verificationWarningOnly =
         match (hasSameFileHash (downloadJob.DestinationFile, downloadJob.Checksum, downloadJob.Size)) with
         |true  -> Result.Ok downloadJob
@@ -103,11 +68,6 @@ module CreateDriverPackage =
         |Error ex -> 
             Result.Error ex
 
-    let downloadUpdatesR destinationDirectory (packageInfos : Result<seq<PackageInfo>,Exception>) =        
-        match packageInfos with
-        | Ok ps -> downloadUpdates destinationDirectory ps            
-        | Error ex -> Result.Error ex
-    
     let toTitlePostFix (title:string) (version:string) (releaseDate:string) = 
         nullOrWhiteSpaceGuard title "title"
         let parts = title.Split('-');
@@ -119,8 +79,7 @@ module CreateDriverPackage =
     
     open System.Linq
     open ExistingPath
-    open DriverTool
-
+    
     let toTitlePrefix (title:string) (category:string) (postFixLength: int) = 
         nullOrWhiteSpaceGuard title "title"
         nullGuard category "category"
@@ -141,9 +100,6 @@ module CreateDriverPackage =
         let packageFolderName = 
             String.Format("{0}_{1}",prefix,postfix).Replace("__", "_").Replace("__", "_");
         packageFolderName
-
-    let extractUpdateToPackageFolder downloadJob packageFolder =
-        Result.Error "Not implemented"
 
     let downloadedPackageInfoToExtractedPackageInfo (packageFolderPath:Path,downloadedPackageInfo) =
         {
@@ -296,8 +252,7 @@ module CreateDriverPackage =
         installScripts
     
     open EmbeddedResouce
-    open System.Reflection
-
+    
     let extractEmbeddedResource (resourceName, destinationFolderPath:Path, destinationFileName) =
         result {
                 let assembly = destinationFolderPath.GetType().Assembly
