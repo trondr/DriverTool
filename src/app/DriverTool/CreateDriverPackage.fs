@@ -262,30 +262,56 @@ module CreateDriverPackage =
 
     let createInstallScripts (extractedUpdates) =
         extractedUpdates |> Seq.map (fun u -> createInstallScript u )               
-                
+    
+    open EmbeddedResouce
+    open System.Reflection
 
-    let extractDpInstExitCodeToExitCodeExe toolsPath =
-        raise (new NotImplementedException())
-        Result.Ok toolsPath
+    let extractEmbeddedResource (resourceName, destinationFolderPath:Path, destinationFileName) =
+        result {
+                let assembly = destinationFolderPath.GetType().Assembly
+                let! exeResourceName = 
+                    ResourceName.create resourceName
+                let! exeFilePath = 
+                    Path.create (System.IO.Path.Combine(destinationFolderPath.Value, destinationFileName))
+                let! fileResult = 
+                    EmbeddedResouce.extractEmbeddedResourceToFile (exeResourceName,assembly, exeFilePath)
+                return fileResult
+            }
 
+    let extractDpInstExitCodeToExitCodeExe (toolsPath:Path) =
+        let exeResult = 
+            extractEmbeddedResource ("DriverTool.Tools.DpInstExitCode2ExitCode.exe", toolsPath,"DpInstExitCode2ExitCode.exe")
+        let configResult =
+            extractEmbeddedResource ("DriverTool.Tools.DpInstExitCode2ExitCode.exe.config",toolsPath,"DpInstExitCode2ExitCode.exe.config")
+        [|exeResult;configResult|]
+        |> toAccumulatedResult
+    
     open DriverTool.PathOperations
 
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path)) = 
-           result {
+        let driversResult =
+            result {
                 let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
                 let! updates = downloadUpdates (System.IO.Path.GetTempPath()) uniqueUpdates
-                let! toolsPath = combine2Paths (destinationFolderPath.Value, "Tools")
-                let! dpInstToExitCodeExe = extractDpInstExitCodeToExitCodeExe toolsPath
                 let! driversPath = combine2Paths (destinationFolderPath.Value, "Drivers")
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
                 let! extractedUpdates = extractUpdates existingDriversPath updates
                 let extractedUpdates2 = 
                     createInstallScripts (extractedUpdates)
                     |> toAccumulatedResult
-                return extractedUpdates2
+                return! extractedUpdates2
             }
+        let toolsExtractResult =
+            result{
+                let! toolsPath = combine2Paths (destinationFolderPath.Value, "Tools")
+                let! existingToolsPath = DirectoryOperations.ensureDirectoryExists (toolsPath, true)
+                let dpInstToExitCodeExe = extractDpInstExitCodeToExitCodeExe existingToolsPath
+                return! dpInstToExitCodeExe
+            }
+        [|driversResult;toolsExtractResult|]
+        |>toAccumulatedResult
     
     let createDriverPackage ((modelCode: ModelCode), (operatingSystem:OperatingSystemCode),(destinationFolderPath: Path)) =
         Logging.debugLoggerResult createDriverPackageSimple (modelCode, operatingSystem, destinationFolderPath)
