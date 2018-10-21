@@ -3,6 +3,8 @@ open Microsoft.FSharp.Collections
 open F
 
 module CreateDriverPackage =
+    let logger = Logging.getLoggerByName("CreateDriverPackage")
+    
     open System
     open DriverTool
     open System.Net
@@ -142,9 +144,9 @@ module CreateDriverPackage =
     let extractUpdateToPackageFolder downloadJob packageFolder =
         Result.Error "Not implemented"
 
-    let downloadedPackageInfoToExtractedPackageInfo downloadedPackageInfo =
+    let downloadedPackageInfoToExtractedPackageInfo (packageFolderPath:Path,downloadedPackageInfo) =
         {
-            ExtractedDirectoryPath = getPackageFolderName downloadedPackageInfo.Package;
+            ExtractedDirectoryPath = packageFolderPath.Value;
             DownloadedPackage = downloadedPackageInfo;
         }
 
@@ -161,7 +163,7 @@ module CreateDriverPackage =
         |Ok readmeFilePath -> 
             match (copyFile (readmeFilePath.Value, destinationReadmeFilePath)) with
             |Ok _ -> 
-                Result.Ok (downloadedPackageInfoToExtractedPackageInfo downloadedPackageInfo)
+                Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
         |Error ex -> Result.Error ex
 
@@ -177,7 +179,7 @@ module CreateDriverPackage =
            |Ok installerPath -> 
                 match copyFile (installerPath.Value, destinationInstallerFilePath) with
                 |Ok _ -> 
-                    Result.Ok (downloadedPackageInfoToExtractedPackageInfo downloadedPackageInfo)
+                    Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
            |Error ex -> 
                 Result.Error ex
@@ -189,7 +191,7 @@ module CreateDriverPackage =
             match (ExistingFilePath.New downloadedPackageInfo.InstallerPath) with
             |Ok fp -> 
                 match DriverTool.ProcessOperations.startProcess (fp.Value, arguments) with
-                |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo downloadedPackageInfo)
+                |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex
 
@@ -203,15 +205,11 @@ module CreateDriverPackage =
             return extractInstallerResult
         }
 
-    let downloadedPackageInfosToExtractedPackageInfos (downloadedPackageInfos:seq<DownloadedPackageInfo>) =
-        downloadedPackageInfos
-        |> Seq.map (fun dp -> 
-                        downloadedPackageInfoToExtractedPackageInfo dp
-                    )
-
     let extractUpdates rootDirectory downloadedPackageInfos = 
         downloadedPackageInfos
-        |> Seq.map (fun dp -> extractUpdate (rootDirectory, dp))
+        |> PSeq.map (fun dp -> extractUpdate (rootDirectory, dp))
+        |> PSeq.toArray
+        |> Seq.ofArray
         |> toAccumulatedResult
      
     open System.Text.RegularExpressions
@@ -242,7 +240,7 @@ module CreateDriverPackage =
             if (packageIsUsingDpInstDuringInstall (installScriptPath, installCommandLine)) then
                 sw.WriteLine("")
                 sw.WriteLine("Set DpInstExitCode=%errorlevel%")
-                sw.WriteLine("%~dp0\\..\\Tools\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")            
+                sw.WriteLine("%~dp0\\..\\..\\Tools\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")            
             sw.WriteLine("")
             sw.WriteLine("Set ExitCode=%errorlevel%")
             sw.WriteLine("popd")
@@ -257,11 +255,20 @@ module CreateDriverPackage =
                 Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"Install-Package.cmd"))
             let installCommandLine = 
                 extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")
-            return! createInstallScriptFile (installScriptPath,installCommandLine)            
+            return! (createInstallScriptFile (installScriptPath,installCommandLine))          
         }
 
-    let createInstallScripts (extractedUpdates) =
-        extractedUpdates |> Seq.map (fun u -> createInstallScript u )               
+    let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>) =
+        let extractedUpdatesList = 
+            extractedUpdates.ToList()
+        logger.InfoFormat("Creating install script for {0} packages...",extractedUpdatesList.Count)
+        let installScripts = 
+            extractedUpdatesList 
+            |> PSeq.map (fun u -> (createInstallScript u) )       
+            |> PSeq.toArray
+            |> Seq.ofArray
+            |> toAccumulatedResult
+        installScripts
     
     open EmbeddedResouce
     open System.Reflection
@@ -300,7 +307,7 @@ module CreateDriverPackage =
                 let! extractedUpdates = extractUpdates existingDriversPath updates
                 let extractedUpdates2 = 
                     createInstallScripts (extractedUpdates)
-                    |> toAccumulatedResult
+                    
                 return! extractedUpdates2
             }
         let toolsExtractResult =
