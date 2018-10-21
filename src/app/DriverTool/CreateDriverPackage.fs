@@ -206,10 +206,10 @@ module CreateDriverPackage =
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex
 
-    let extractUpdate (rootDirectory:Path, (downloadedPackageInfo:DownloadedPackageInfo)) =
+    let extractUpdate (rootDirectory:Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, packageFolderName)
+            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)
             let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
             let extractPackageXmlResult = extractPackageXml (downloadedPackageInfo, existingPackageFolderPath)
@@ -224,8 +224,14 @@ module CreateDriverPackage =
             return! res
         }
 
-    let extractUpdates rootDirectory downloadedPackageInfos = 
-        downloadedPackageInfos
+    let getPrefixes count =
+        Array.init count (fun index -> ((index+1)*10).ToString("D3"))
+    
+    let extractUpdates (rootDirectory, downloadedPackageInfos:seq<DownloadedPackageInfo>) = 
+        let downloadedPackageInfosList = downloadedPackageInfos.ToList()
+        let prefixes = getPrefixes downloadedPackageInfosList.Count
+        downloadedPackageInfosList
+        |> Seq.zip prefixes
         |> PSeq.map (fun dp -> extractUpdate (rootDirectory, dp))
         |> PSeq.toArray
         |> Seq.ofArray
@@ -332,7 +338,7 @@ module CreateDriverPackage =
                 let! driversPath = combine2Paths (versionedPackagePath.Value, "Drivers")
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", versionedPackagePath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
-                let! extractedUpdates = extractUpdates existingDriversPath updates
+                let! extractedUpdates = extractUpdates (existingDriversPath, updates)
                 let driversResult = createInstallScripts (extractedUpdates)
 
                 let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
