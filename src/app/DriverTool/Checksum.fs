@@ -33,7 +33,7 @@ module Checksum=
             | true ->   
                 let destinationFileSize = getFileSize destinationFilePath
                 let isSameFileSize = 
-                    (sourceFileSize = destinationFileSize)
+                    (sourceFileSize = destinationFileSize) || (sourceFileSize = 0L)
                 match isSameFileSize with        
                 |true ->              
                     let destinationFileHash = computeFileHashFromHashLength destinationFilePath sourceFileHash.Length                
