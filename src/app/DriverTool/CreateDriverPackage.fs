@@ -314,29 +314,38 @@ module CreateDriverPackage =
     
     open DriverTool.PathOperations
 
+    let getLastestReleaseDate (updates:seq<DownloadedPackageInfo>) =
+        updates
+        |> Seq.map (fun p -> p.Package.ReleaseDate)
+        |> Seq.max
+        
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path)) = 
-        let driversResult =
+        
             result {
                 let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
                 let! updates = downloadUpdates (System.IO.Path.GetTempPath()) uniqueUpdates
-                let! driversPath = combine2Paths (destinationFolderPath.Value, "Drivers")
+                let latestRelaseDate = getLastestReleaseDate updates
+                let! versionedPackagePath = combine2Paths (destinationFolderPath.Value,latestRelaseDate)
+                
+                let! driversPath = combine2Paths (versionedPackagePath.Value, "Drivers")
+                logger.InfoFormat("Extracting drivers to folder '{0}'...", versionedPackagePath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
                 let! extractedUpdates = extractUpdates existingDriversPath updates
-                let extractedUpdates2 = 
-                    createInstallScripts (extractedUpdates)
-                return! extractedUpdates2
-            }
-        let toolsExtractResult =
-            result{
-                let! toolsPath = combine2Paths (destinationFolderPath.Value, "Tools")
+                let driversResult = createInstallScripts (extractedUpdates)
+
+                let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
+                logger.InfoFormat("Extracting tools to folder '{0}'...", versionedPackagePath.Value)
                 let! existingToolsPath = DirectoryOperations.ensureDirectoryExists (toolsPath, true)
-                let dpInstToExitCodeExe = extractDpInstExitCodeToExitCodeExe existingToolsPath
-                return! dpInstToExitCodeExe
+                let toolsExtractResult = extractDpInstExitCodeToExitCodeExe existingToolsPath
+
+                let result =
+                    [|driversResult;toolsExtractResult|]
+                    |>toAccumulatedResult
+
+                return! result
             }
-        [|driversResult;toolsExtractResult|]
-        |>toAccumulatedResult
     
     let createDriverPackage ((modelCode: ModelCode), (operatingSystem:OperatingSystemCode),(destinationFolderPath: Path)) =
         Logging.debugLoggerResult createDriverPackageSimple (modelCode, operatingSystem, destinationFolderPath)
