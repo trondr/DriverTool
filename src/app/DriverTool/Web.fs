@@ -43,7 +43,7 @@ module Web =
         match (hasSameFileHash downloadInfo) with
         |true  -> Result.Ok downloadInfo
         |false -> 
-            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadInfo.DestinationFile,downloadInfo.SourceUri.OriginalString)
+            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadInfo.DestinationFile.Value,downloadInfo.SourceUri.OriginalString)
             match ignoreVerificationErrors with
             |true ->
                 Logging.getLoggerByName("verifyDownload").Warn(msg)
