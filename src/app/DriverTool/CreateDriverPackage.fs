@@ -209,7 +209,6 @@ module CreateDriverPackage =
             true
         | false -> 
             directoryContainsDpInst ((new System.IO.FileInfo(installScriptPath.Value)).Directory.FullName)
-        
 
     let createInstallScriptFile (installScriptPath: Path, installCommandLine:string) =
         try
@@ -279,8 +278,27 @@ module CreateDriverPackage =
         updates
         |> Seq.map (fun p -> p.Package.ReleaseDate)
         |> Seq.max
+
+    let createPackageDefinitionFile (extractedUpdate:ExtractedPackageInfo, logDirectory) = 
+        result{
+            let! packageDefinitonSmsPath = combine2Paths (extractedUpdate.ExtractedDirectoryPath,"PackageDefinition.sms")   
+            
+
+            return! Result.Error (new NotImplementedException("createPackageDefinitionFile: Not Implemented"):>Exception)
+        }
+         
         
-    let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path)) = 
+        
+        
+    
+    let createPackageDefinitionFiles (extractedUpdates:seq<ExtractedPackageInfo>, logDirectory:string) =
+        extractedUpdates
+        |> PSeq.map (fun u -> (createPackageDefinitionFile (u, logDirectory)))
+        |> PSeq.toArray
+        |> Seq.ofArray
+        |> toAccumulatedResult
+    
+    let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path), logDirectory) = 
         
             result {
                 let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
@@ -294,21 +312,25 @@ module CreateDriverPackage =
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", versionedPackagePath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
                 let! extractedUpdates = extractUpdates (existingDriversPath, updates)
-                let driversResult = createInstallScripts (extractedUpdates)
+                let installScriptResults = createInstallScripts (extractedUpdates)
+
+                               
+                let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
+
 
                 let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
                 logger.InfoFormat("Extracting tools to folder '{0}'...", versionedPackagePath.Value)
                 let! existingToolsPath = DirectoryOperations.ensureDirectoryExists (toolsPath, true)
                 let toolsExtractResult = extractDpInstExitCodeToExitCodeExe existingToolsPath
 
-                let result =
-                    [|driversResult;toolsExtractResult|]
-                    |>toAccumulatedResult
-
-                return! result
+                let res = 
+                    match ([|installScriptResults;toolsExtractResult;packageSmsResults|] |> toAccumulatedResult) with
+                    |Ok _ -> Result.Ok ()
+                    |Error ex -> Result.Error ex  
+                return! res
             }
     
-    let createDriverPackage ((modelCode: ModelCode), (operatingSystem:OperatingSystemCode),(destinationFolderPath: Path)) =
-        Logging.debugLoggerResult createDriverPackageSimple (modelCode, operatingSystem, destinationFolderPath)
+    let createDriverPackage (modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
+        Logging.debugLoggerResult createDriverPackageSimple (modelCode, operatingSystem, destinationFolderPath, logDirectory)
 
         
