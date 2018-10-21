@@ -28,7 +28,7 @@ module Web =
                 Result.Ok path      
             |Error ex -> Result.Error (new Exception(String.Format("Destination file '{0}' allready exists", destinationFilePath.Value), ex))            
         with
-        | ex -> Result.Error (new Exception( String.Format("Failed to download {0} due to {e.Message}",sourceUri.OriginalString, ex.Message),ex))
+        | ex -> Result.Error (new Exception( String.Format("Failed to download '{0}' due to '{1}'", sourceUri.OriginalString, ex.Message),ex))
     
     let downloadFile (sourceUri:Uri, force, destinationFilePath) =
         Logging.debugLoggerResult downloadFilePlain (sourceUri, force, destinationFilePath)
@@ -58,7 +58,7 @@ module Web =
                 verifyDownload downloadInfo ignoreVerificationErrors
             |Error ex -> Result.Error (new Exception("Download could not be verified. " + ex.Message))
         |false -> 
-            logger.Info(String.Format("Destination file '{0}' allready exists.", downloadInfo.DestinationFile))
+            logger.Info(String.Format("Destination file '{0}' allready exists.", downloadInfo.DestinationFile.Value))
             Result.Ok downloadInfo
 
         
