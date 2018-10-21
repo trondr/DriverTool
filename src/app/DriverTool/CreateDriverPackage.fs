@@ -77,6 +77,7 @@ module CreateDriverPackage =
                         {
                             InstallerPath = getDestinationInstallerPath destinationDirectory p;
                             ReadmePath = getDestinationReadmePath destinationDirectory p;
+                            PackageXmlPath = getDestinationPackageXmlPath destinationDirectory p;
                             Package = p;
                         }
                     )
@@ -157,6 +158,16 @@ module CreateDriverPackage =
         with
         | ex -> Result.Error (new Exception(String.Format("Failed to copy file '{0}'->'{1}'.", sourceFilePath, destinationFilePath), ex))
     
+    let extractPackageXml (downloadedPackageInfo, packageFolderPath:Path)  =
+        let destinationFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.PackageXmlName)
+        match ExistingFilePath.New downloadedPackageInfo.PackageXmlPath with
+        |Ok filePath -> 
+            match (copyFile (filePath.Value, destinationFilePath)) with
+            |Ok _ -> 
+                Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
+            |Error ex -> Result.Error ex
+        |Error ex -> Result.Error ex
+
     let extractReadme (downloadedPackageInfo, packageFolderPath:Path)  =
         let destinationReadmeFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.ReadmeName)
         match ExistingFilePath.New downloadedPackageInfo.ReadmePath with
@@ -200,9 +211,17 @@ module CreateDriverPackage =
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
             let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)
-            let! extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
-            let! extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
-            return extractInstallerResult
+            let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
+            let extractPackageXmlResult = extractPackageXml (downloadedPackageInfo, existingPackageFolderPath)
+            let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
+            let result = 
+                [|extractReadmeResult;extractPackageXmlResult;extractInstallerResult|]
+                |> toAccumulatedResult
+            let res = 
+                match result with 
+                | Ok r -> extractInstallerResult
+                | Error ex -> Result.Error ex
+            return! res
         }
 
     let extractUpdates rootDirectory downloadedPackageInfos = 
@@ -307,7 +326,6 @@ module CreateDriverPackage =
                 let! extractedUpdates = extractUpdates existingDriversPath updates
                 let extractedUpdates2 = 
                     createInstallScripts (extractedUpdates)
-                    
                 return! extractedUpdates2
             }
         let toolsExtractResult =

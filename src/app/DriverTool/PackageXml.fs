@@ -37,6 +37,7 @@ module DriverTool =
             ReadmeCrc:string;
             ReadmeSize:Int64;
             ReleaseDate:string;
+            PackageXmlName:string
         }
 
     type DownloadJob = 
@@ -52,6 +53,7 @@ module DriverTool =
         {
             InstallerPath:string;
             ReadmePath:string;
+            PackageXmlPath:string;
             Package:PackageInfo;
         }
 
@@ -66,6 +68,9 @@ module DriverTool =
 
     let getDestinationInstallerPath destinationDirectory packageInfo =
         System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
+
+    let getDestinationPackageXmlPath destinationDirectory packageInfo =
+        System.IO.Path.Combine(destinationDirectory, packageInfo.PackageXmlName)
 
     open DriverTool.Web
 
@@ -164,5 +169,6 @@ module DriverTool =
             InstallCommandLine = installCommandLine;                
             Category = category;
             ReleaseDate = releaseDate;
+            PackageXmlName = ((new System.IO.FileInfo(downloadedPackageInfo.FilePath.Value)).Name)
         }        
     
