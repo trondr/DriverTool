@@ -150,8 +150,6 @@ let nullGuard (obj: 'T when 'T : not struct) (argumentName:string) =
     |Null -> raise (new ArgumentNullException("Value cannot be null.",argumentName))
     |NotNull _ -> ()
 
-
-
 let createWithContinuationGeneric success failure validator (value:'T) : Result<'T,Exception> = 
             match value with
             |Null -> failure (new ArgumentNullException("value","Value cannot be null.") :> Exception)
