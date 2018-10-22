@@ -210,6 +210,18 @@ module CreateDriverPackage =
         | false -> 
             directoryContainsDpInst ((new System.IO.FileInfo(installScriptPath.Value)).Directory.FullName)
 
+    let createUnInstallScriptFile (installScriptPath: Path) =
+        try
+            use sw = new System.IO.StreamWriter(installScriptPath.Value)
+            sw.WriteLine("Set ExitCode=0")
+            sw.WriteLine("pushd \"%~dp0\"")
+            sw.WriteLine("@Echo Uninstall is not supported")
+            sw.WriteLine("popd")
+            sw.WriteLine("EXIT /B %ExitCode%")
+            Result.Ok installScriptPath
+        with
+        | _ as ex -> Result.Error ex
+
     let createInstallScriptFile (installScriptPath: Path, installCommandLine:string) =
         try
             use sw = new System.IO.StreamWriter(installScriptPath.Value)
@@ -235,7 +247,17 @@ module CreateDriverPackage =
                 Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"Install-Package.cmd"))
             let installCommandLine = 
                 extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")
-            return! (createInstallScriptFile (installScriptPath,installCommandLine))          
+            let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine))
+            let! unInstallScriptPath = 
+                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"UnInstall-Package.cmd"))
+            let unInstallScriptResult = (createUnInstallScriptFile (unInstallScriptPath))
+            
+            let createInstallScriptResult = 
+                match ([|installScriptResult;unInstallScriptResult|]|> toAccumulatedResult) with
+                |Error ex -> Result.Error ex
+                |Ok _ -> installScriptResult
+
+            return! createInstallScriptResult
         }
 
     let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>) =
@@ -278,22 +300,40 @@ module CreateDriverPackage =
         updates
         |> Seq.map (fun p -> p.Package.ReleaseDate)
         |> Seq.max
+    
+    let writeTextToFile (text:string, filePath:Path) =
+        try
+            use sw = new System.IO.StreamWriter(filePath.Value)
+            sw.Write(text)
+            Result.Ok filePath
+        with
+        | ex -> Result.Error (new Exception(String.Format("Failed to write text to file '{0}'.", filePath.Value), ex))
 
-    let createPackageDefinitionFile (extractedUpdate:ExtractedPackageInfo, logDirectory) = 
+    open PackageDefinition
+
+    let createPackageDefinitionFile (logDirectory, extractedUpdate:ExtractedPackageInfo) = 
         result{
             let! packageDefinitonSmsPath = combine2Paths (extractedUpdate.ExtractedDirectoryPath,"PackageDefinition.sms")   
-            
-
-            return! Result.Error (new NotImplementedException("createPackageDefinitionFile: Not Implemented"):>Exception)
+            let installLogFileName = toValidDirectoryName ("Install_" + extractedUpdate.DownloadedPackage.Package.Title + "_" + extractedUpdate.DownloadedPackage.Package.Version + ".log")
+            let unInstallLogFileName = toValidDirectoryName ("UnInstall_" + extractedUpdate.DownloadedPackage.Package.Title + "_" + extractedUpdate.DownloadedPackage.Package.Version + ".log")
+            let installLogFile = System.IO.Path.Combine(logDirectory,installLogFileName)
+            let unInstallLogFile = System.IO.Path.Combine(logDirectory,unInstallLogFileName)
+            let packageDefinition =
+                {
+                    Name = extractedUpdate.DownloadedPackage.Package.Title;
+                    Version = extractedUpdate.DownloadedPackage.Package.Version;
+                    Language = "EN";
+                    Publisher = "LENOVO";
+                    InstallCommandLine = String.Format("Install-Package.cmd > \"{0}\"",installLogFile);
+                    UnInstallCommandLine = String.Format("UnInstall-Package.cmd > \"{0}\"",unInstallLogFile);
+                }
+            let writeTextToFileResult = writeTextToFile ((getPackageDefinitionContent packageDefinition), packageDefinitonSmsPath)                
+            return! writeTextToFileResult
         }
-         
-        
-        
-        
     
     let createPackageDefinitionFiles (extractedUpdates:seq<ExtractedPackageInfo>, logDirectory:string) =
         extractedUpdates
-        |> PSeq.map (fun u -> (createPackageDefinitionFile (u, logDirectory)))
+        |> PSeq.map (fun u -> (createPackageDefinitionFile (logDirectory, u)))
         |> PSeq.toArray
         |> Seq.ofArray
         |> toAccumulatedResult
@@ -312,11 +352,10 @@ module CreateDriverPackage =
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", versionedPackagePath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
                 let! extractedUpdates = extractUpdates (existingDriversPath, updates)
+                
                 let installScriptResults = createInstallScripts (extractedUpdates)
-
                                
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
-
 
                 let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
                 logger.InfoFormat("Extracting tools to folder '{0}'...", versionedPackagePath.Value)
