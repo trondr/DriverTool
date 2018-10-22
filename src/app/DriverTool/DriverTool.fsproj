@@ -27,6 +27,7 @@
     <EmbeddedResource Include="License\05. Log4NetCMTrace License.xml" />
     <EmbeddedResource Include="Tools\DpInstExitCode2ExitCode.exe" />
     <EmbeddedResource Include="Tools\DpInstExitCode2ExitCode.exe.config" />
+    <None Include="Script.fsx" />
     <Content Include="Debug.txt" />
     <None Include="App.config" />
     <Compile Include="AssemblyInfo.fs" />
@@ -50,6 +51,7 @@
     <Compile Include="PackageXml.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="EmbeddedResouce.fs" />
+    <Compile Include="PackageDefinition.fs" />
     <Compile Include="CreateDriverPackage.fs" />
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
