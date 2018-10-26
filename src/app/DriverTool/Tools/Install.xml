@@ -1,3 +1,4 @@
 <configuration>
-	<LogDirectory>%public%\Logs</LogDirectory>
+	<LogDirectory>%PUBLIC%\Logs</LogDirectory>
+	<LogFileName>DriverPackageInstall-%USERNAME%.log</LogFileName>
 </configuration>
