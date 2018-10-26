@@ -1,0 +1,3 @@
+<configuration>
+	<LogDirectory>%public%\Logs</LogDirectory>
+</configuration>
