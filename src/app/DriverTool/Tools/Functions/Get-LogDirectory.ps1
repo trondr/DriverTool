@@ -1,6 +1,5 @@
 function Get-LogDirectory {
     Write-Verbose "Get-LogDirectory..."
-    $logDirectory = $global:logDirectory
     if($(Test-Path variable:global:logDirectory) -and ($null -ne $logDirectory) -and (Test-Path -Path $logDirectory))
     {
         $logDirectory = $global:logDirectory
