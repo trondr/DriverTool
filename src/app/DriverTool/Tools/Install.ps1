@@ -5,46 +5,35 @@ Param(
     [string]
     $Action=$(throw "Missing command line parameter. First parameter must be an action in the set: Install,UnInstall")
 )
-
 Set-PSDebug -Strict
 
 function Init
 {    
     $exitCode = 0
-    Write-Host "Initializing..."
+    Write-Log -Level INFO "Initializing..."
     return $exitCode
 }
 
 function Install
 {
     $exitCode = 0
-    Write-Host "Installling..."
+    Write-Log -Level INFO "Installling..."
     return $exitCode
 }
-
 
 function UnInstall
 {
     $exitCode = 0
-    Write-Host "UnInstalling..."
+    Write-Log -Level INFO "UnInstalling..."
     return $exitCode
 }
 
-switch($Action)
-{
-    "Install"   { $actionScriptBlock = [scriptblock]$function:Install }
-    "UnInstall" { $actionScriptBlock = [scriptblock]$function:UnInstall }
-    default { 
-        Write-Host "Unknown action: $Action" -ForegroundColor Red
-        EXIT 1
-    }
-}
 ###############################################################################
 #
 #   Logging preference
 #
 ###############################################################################
-$global:VerbosePreference = "SilentlyContinue"
+$global:VerbosePreference = "Continue"
 $global:DebugPreference = "SilentlyContinue"
 $global:WarningPreference = "Continue"
 $global:ErrorActionPreference = "Continue"
@@ -55,48 +44,49 @@ $global:ProgressPreference = "Continue"
 #
 ###############################################################################
 $global:script = $MyInvocation.MyCommand.Definition
-function Get-ScriptFolder
-{
-    Write-Verbose "Get-ScriptFolder..."    
-    $scriptFolder = Split-Path -parent $script
-    Write-Verbose "ScriptFolder=$scriptFolder"
-    return $scriptFolder
-}
-#TEST: Get-ScriptFolder
-
+$global:scriptFolder = Split-Path -parent $script
 ###############################################################################
-#   Loading script library
+#   Loading functions
 ###############################################################################
-$scriptLibrary = [System.IO.Path]::Combine($(Get-ScriptFolder) ,"Library.ps1")
-if((Test-Path $scriptLibrary) -eq $false)
-{
-    Write-Host -ForegroundColor Red "Script library '$scriptLibrary' not found."
-    EXIT 1
+$functionsFolder = [System.IO.Path]::Combine($($global:scriptFolder),"Functions")
+$functionScripts = [System.IO.Directory]::GetFiles($functionsFolder,"*.ps1")
+$functionScripts | ForEach-Object{
+    Write-Verbose "Loading function script '$($_)'..."
+    . $_
+    If($? -eq $false)
+    {
+        Write-Host -ForegroundColor Red "Failed to load function script '$($_)' Error: $($error[0])"
+        EXIT 1
+    }
 }
-Write-Verbose "ScriptLibrary=$scriptLibrary"
-Write-Verbose "Loading script library '$scriptLibrary'..."
-. $scriptLibrary
-If ($? -eq $false) 
-{ 
-    Write-Host -ForegroundColor Red "Failed to load library '$scriptLibrary'. Error: $($error[0])"; break 
-    EXIT 1
-};
+###############################################################################
+#   Parse action
+###############################################################################
+switch($Action)
+{
+    "Install"   { $actionScriptBlock = [scriptblock]$function:Install }
+    "UnInstall" { $actionScriptBlock = [scriptblock]$function:UnInstall }
+    default { 
+        Write-Log -Level ERROR "Unknown action: $Action"
+        EXIT 1
+    }
+}
 ###############################################################################
 #   Executing action
 ###############################################################################
 Write-Verbose "Action=$action"
-Write-Host "Executing Init action..."
+Write-Log -Level INFO "Executing Init action..."
 $exitCode = Invoke-InstallAction([scriptblock]$function:Init)
 if($exitCode -eq 0)
 {
-    Write-Host "Executing $action action..."
+    Write-Log -Level INFO "Executing $action action..."
     $exitCode = Invoke-InstallAction([scriptblock]$actionScriptBlock)
 }
 else
 {
-    Write-Host -ForegroundColor Red "Init() function failed with error code: $exitCode"
+    Write-Log -Level ERROR  "Init() function failed with error code: $exitCode"
 }
-Write-Host "Finished executing Install.ps1. Exit code: $exitCode"
+Write-Log -Level INFO "Finished executing Install.ps1. Exit code: $exitCode"
 EXIT $exitCode
 ###############################################################################
 #
