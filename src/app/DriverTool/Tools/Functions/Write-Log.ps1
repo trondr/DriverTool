@@ -34,20 +34,24 @@ function Write-Log {
         {
             return
         }
-        $Stamp = (Get-Date).toString("yyyy-MM-dd HH:mm:ss")
-        $Line = "$Stamp $($Level.PadRight(7)) $Message"
+        $date = Get-Date
+        $Stamp = $date.toString("yyyy-MM-dd HH:mm:ss")
+        $ConsoleLine = "$Stamp $($Level.PadRight(7)) $Message"
         If($Logfile) {
-            Add-Content -Path "$Logfile" -Value $Line | Out-Null
+            $dateString = $date.ToString("MM-dd-yyyy")
+            $timeString = $date.ToString("HH:mm:ss.654-120")
+            $timeString = Use-Culture en-US {$date.ToString("HH:mm:ss.654-120")}
+            $LogLine = "<![LOG[$Message]LOG]!><time=""$timeString"" date=""$dateString"" component=""ScriptInstaller"" context="""" type=""6"" thread=""$([System.Threading.Thread]::CurrentThread.ManagedThreadId)"" file=""?:?"">"
+            Add-Content -Path "$Logfile" -Value $LogLine | Out-Null
         }
         if(($Level -eq "FATAL") -and ($VerbosePreference -eq "SilentlyContinue"))
         {
-            Write-Host $Line -ForegroundColor $LogLevelColorMap[$Level] -BackgroundColor White
+            Write-Host $ConsoleLine -ForegroundColor $LogLevelColorMap[$Level] -BackgroundColor White
             [System.Console]::Beep(2000,1000)
         }
         else {
-            Write-Host $Line -ForegroundColor $LogLevelColorMap[$Level]                
+            Write-Host $ConsoleLine -ForegroundColor $LogLevelColorMap[$Level]                
         }
-        
     }
     
     end {
