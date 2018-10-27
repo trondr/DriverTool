@@ -1,9 +1,10 @@
 function Get-LogFileName
 {
     Write-Verbose "Get-LogFileName..."
-    $logFileName = [System.Environment]::ExpandEnvironmentVariables($(Get-InstallProperty -PropertyName LogFileName))
+    $logFileName = $(Get-InstallProperty -PropertyName LogFileName -ExpandEnvironmentVariables))
     if($null -eq $logFileName)
     {
+        Write-Verbose "Getting default log file name."
         $logFileName = "DriverPackageInstall.log"
     }
     Write-Verbose "Get-LogFileName->$logFileName"
