@@ -5,8 +5,9 @@ function Trace-FunctionCall
         [ScriptBlock]
         $Script
     )
-    $functionName = $($(Get-PSCallStack)[1].FunctionName) 
-    Write-Verbose "$functionName..."
+    $functionName = $($(Get-PSCallStack)[1].FunctionName)
+    $arguments =  $($(Get-PSCallStack)[1].Arguments)
+    Write-Verbose "$functionName $arguments"
     $returnValue = Invoke-Command $Script
     Write-Verbose "$functionName->$returnValue"
     return $returnValue
