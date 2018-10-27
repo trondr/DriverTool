@@ -16,9 +16,9 @@ function Get-CacedValue {
     }
     else {
         Write-Verbose "Value name '$ValueName' not found in cache, execute cache miss script." 
-        $value = Invoke-Command $OnCacheMiss
+        $value = Invoke-Command $OnCacheMiss -ErrorAction Stop
         $cachedValue = $value
-        if($($cachedValues.ContainsKey($ValueName) -eq $false))
+        if($($null -ne $cachedValue) -and $($cachedValues.ContainsKey($ValueName) -eq $false))
         {
             $cachedValues.Add($ValueName,$cachedValue)
             Write-Verbose "Value name '$ValueName' and value '$cachedValue' has been added to cache."
