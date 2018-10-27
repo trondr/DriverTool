@@ -12,7 +12,7 @@ function Assert-FileExists
         {
             $(throw "$Message Error: File '$FileName' does not exist.")
         }
-        Write-Verbose "File '$FileName' exists!"
+        Write-Log -Level DEBUG -Message "File '$FileName' exists!"
     }
 }
 #TEST : Assert-FileExists -FileName "c:\temp\notes.txt" -Message "Notes.txt was not found."
