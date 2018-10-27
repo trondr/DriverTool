@@ -4,15 +4,14 @@ function Start-ConsoleProcess {
         [string]
         $FilePath,
         [string]
-        $CommandArguments
-        #,
-        # [string]
-        # $WorkingDirectory
+        $CommandArguments,
+        [string]
+        $WorkingDirectory
     )
     Trace-FunctionCall -Level INFO -Script{
         $pinfo = New-Object System.Diagnostics.ProcessStartInfo
         $pinfo.FileName = $FilePath
-        $pinfo.WorkingDirectory = ""#$WorkingDirectory
+        $pinfo.WorkingDirectory = $WorkingDirectory
         $pinfo.RedirectStandardError = $true
         $pinfo.RedirectStandardOutput = $true
         $pinfo.UseShellExecute = $false
