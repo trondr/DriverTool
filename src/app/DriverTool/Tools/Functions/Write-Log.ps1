@@ -16,7 +16,7 @@ function Write-Log {
 
         [Parameter(Mandatory=$False)]
         [string]
-        $Logfile="$(Get-LogFile)"
+        $Logfile
     )
     
     begin {
@@ -30,6 +30,10 @@ function Write-Log {
     }
     
     process {        
+        if( $(Test-Path variable.global.LoggingIsInitialized) -and ($global:LoggingIsInitialized -eq $true) -and ($null -eq $Logfile) )
+        {
+            $LogFile = Get-LogFile
+        }
         if(($Level -eq "DEBUG") -and ($VerbosePreference -eq "SilentlyContinue"))
         {
             return

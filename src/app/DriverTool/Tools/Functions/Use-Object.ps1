@@ -25,7 +25,7 @@ function Use-Object
     {
         if ($null -ne $InputObject -and $InputObject -is [System.IDisposable])
         {
-            Write-Verbose "Disposing object $($InputObject.GetType().Name)"
+            Write-Log -Level DEBUG -Message "Disposing object $($InputObject.GetType().Name)"
             $InputObject.Dispose()
         }
     }

@@ -4,78 +4,80 @@ function Get-RoboCopyResult {
         [int]
         $RoboCopyExitCode
     )
-    $exitCode = 0
-    switch ( $RoboCopyExitCode ) {
-        16 { 
-            Write-Log -Level INFO "Robocopy result 16: ***FATAL ERROR***"
-            $exitCode = 1   
+    Trace-FunctionCall -Script {
+        $exitCode = 0
+        switch ( $RoboCopyExitCode ) {
+            16 { 
+                Write-Log -Level INFO "Robocopy result 16: ***FATAL ERROR***"
+                $exitCode = 1   
+            }
+            15 { 
+                Write-Log -Level INFO "Robocopy result 15: OKCOPY + FAIL + MISMATCHES + XTRA"
+                $exitCode = 1    
+            }
+            14 { 
+                Write-Log -Level INFO "Robocopy result 14: FAIL + MISMATCHES + XTRA"
+                $exitCode = 1    
+            }
+            13 { 
+                Write-Log -Level INFO "Robocopy result 13: OKCOPY + FAIL + MISMATCHES"
+                $exitCode = 1    
+            }
+            12 { 
+                Write-Log -Level INFO "Robocopy result 12: FAIL + MISMATCHES"
+                $exitCode = 1    
+            }
+            11 { 
+                Write-Log -Level INFO "Robocopy result 11: OKCOPY + FAIL + XTRA"
+                $exitCode = 1    
+            }
+            10 { 
+                Write-Log -Level INFO "Robocopy result 10: FAIL + XTRA"
+                $exitCode = 1    
+            }
+            9 { 
+                Write-Log -Level INFO "Robocopy result 9: OKCOPY + FAIL"
+                $exitCode = 1    
+            }
+            8 { 
+                Write-Log -Level INFO "Robocopy result 8: FAIL"
+                $exitCode = 1    
+            }
+            7 { 
+                Write-Log -Level INFO "Robocopy result 7: OKCOPY + MISMATCHES + XTRA"
+                $exitCode = 0    
+            }
+            6 { 
+                Write-Log -Level INFO "Robocopy result 6: MISMATCHES + XTRA"
+                $exitCode = 0    
+            }
+            5 { 
+                Write-Log -Level INFO "Robocopy result 5: OKCOPY + MISMATCHES"
+                $exitCode = 0    
+            }
+            4 { 
+                Write-Log -Level INFO "Robocopy result 4: MISMATCHES"
+                $exitCode = 0    
+            }
+            3 { 
+                Write-Log -Level INFO "Robocopy result 3: OKCOPY + XTRA"
+                $exitCode = 0    
+            }
+            2 { 
+                Write-Log -Level INFO "Robocopy result 2: XTRA"
+                $exitCode = 0    
+            }
+            1 { 
+                Write-Log -Level INFO "Robocopy result 1: OKCOPY"
+                $exitCode = 0    
+            }
+            0 { 
+                Write-Log -Level INFO "Robocopy result 0: No Change"
+                $exitCode = 0    
+            }
         }
-        15 { 
-            Write-Log -Level INFO "Robocopy result 15: OKCOPY + FAIL + MISMATCHES + XTRA"
-            $exitCode = 1    
-        }
-        14 { 
-            Write-Log -Level INFO "Robocopy result 14: FAIL + MISMATCHES + XTRA"
-            $exitCode = 1    
-        }
-        13 { 
-            Write-Log -Level INFO "Robocopy result 13: OKCOPY + FAIL + MISMATCHES"
-            $exitCode = 1    
-        }
-        12 { 
-            Write-Log -Level INFO "Robocopy result 12: FAIL + MISMATCHES"
-            $exitCode = 1    
-        }
-        11 { 
-            Write-Log -Level INFO "Robocopy result 11: OKCOPY + FAIL + XTRA"
-            $exitCode = 1    
-        }
-        10 { 
-            Write-Log -Level INFO "Robocopy result 10: FAIL + XTRA"
-            $exitCode = 1    
-        }
-        9 { 
-            Write-Log -Level INFO "Robocopy result 9: OKCOPY + FAIL"
-            $exitCode = 1    
-        }
-        8 { 
-            Write-Log -Level INFO "Robocopy result 8: FAIL"
-            $exitCode = 1    
-        }
-        7 { 
-            Write-Log -Level INFO "Robocopy result 7: OKCOPY + MISMATCHES + XTRA"
-            $exitCode = 0    
-        }
-        6 { 
-            Write-Log -Level INFO "Robocopy result 6: MISMATCHES + XTRA"
-            $exitCode = 0    
-        }
-        5 { 
-            Write-Log -Level INFO "Robocopy result 5: OKCOPY + MISMATCHES"
-            $exitCode = 0    
-        }
-        4 { 
-            Write-Log -Level INFO "Robocopy result 4: MISMATCHES"
-            $exitCode = 0    
-        }
-        3 { 
-            Write-Log -Level INFO "Robocopy result 3: OKCOPY + XTRA"
-            $exitCode = 0    
-        }
-        2 { 
-            Write-Log -Level INFO "Robocopy result 2: XTRA"
-            $exitCode = 0    
-        }
-        1 { 
-            Write-Log -Level INFO "Robocopy result 1: OKCOPY"
-            $exitCode = 0    
-        }
-        0 { 
-            Write-Log -Level INFO "Robocopy result 0: No Change"
-            $exitCode = 0    
-        }
+        return $exitCode
     }
-    return $exitCode
 }
 
 <#

@@ -10,17 +10,17 @@ function Trace-FunctionCall
     $functionName = $($(Get-PSCallStack)[1].FunctionName)
     $arguments =  $($(Get-PSCallStack)[1].Arguments)
     if($Level -eq "DEBUG"){
-        Write-Verbose "$functionName $arguments"
+        Write-Log -Level DEBUG -Message "$functionName $arguments"
     }
     else {
-        Write-Host "$functionName $arguments"
+        Write-Log -Level INFO -Message "$functionName $arguments"
     }
     $returnValue = Invoke-Command $Script
     if($Level -eq "DEBUG"){
-        Write-Verbose "$functionName->$returnValue"
+        Write-Log -Level DEBUG -Message "$functionName->$returnValue"
     }
     else {
-        Write-Host "$functionName->$returnValue"
+        Write-Log -Level INFO -Message "$functionName->$returnValue"
     }
     return $returnValue
 }

@@ -7,19 +7,19 @@ function Get-InstallProperty {
         [switch]
         $ExpandEnvironmentVariables
     )
-    Write-Verbose "Get-InstallProperty -PropertyName $PropertyName..."
+    Write-Log -Level DEBUG -Message  "Get-InstallProperty -PropertyName $PropertyName..."
     $installXml = [xml] $(Get-Content -Path "$(Get-InstallXml)")
     $unExpandandedPropertyValue = $($installXml.configuration.$PropertyName)
     if($ExpandEnvironmentVariables)
     {
-        Write-Verbose "Expanding '$unExpandandedPropertyValue'..."
+        Write-Log -Level DEBUG -Message  "Expanding '$unExpandandedPropertyValue'..."
         $propertyValue = [System.Environment]::ExpandEnvironmentVariables($unExpandandedPropertyValue)
     }
     else 
     {
         $propertyValue = $unExpandandedPropertyValue
     }
-    Write-Verbose "Get-InstallProperty  -PropertyName $PropertyName->$propertyValue"
+    Write-Log -Level DEBUG -Message "Get-InstallProperty  -PropertyName $PropertyName->$propertyValue"
     return $propertyValue
 }
 # TEST:
