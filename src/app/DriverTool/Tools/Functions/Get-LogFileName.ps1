@@ -1,7 +1,7 @@
 function Get-LogFileName
 {
     Write-Verbose "Get-LogFileName..."
-    $logFileName = $(Get-InstallProperty -PropertyName LogFileName -ExpandEnvironmentVariables))
+    $logFileName = $(Get-InstallProperty -PropertyName LogFileName -ExpandEnvironmentVariables)
     if($null -eq $logFileName)
     {
         Write-Verbose "Getting default log file name."
