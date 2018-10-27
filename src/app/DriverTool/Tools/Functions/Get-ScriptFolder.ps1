@@ -1,7 +1,7 @@
 function Get-ScriptFolder
 {
     Write-Verbose "Get-ScriptFolder..."    
-    if((Test-Path variable:global:scriptFolder) -and ($null -ne $scriptFolder))
+    if((Test-Path variable:global:scriptFolder) -and ([string]::IsNullOrWhiteSpace($global:scriptFolder) -eq $false))
     {
         $scriptFolder = $global:scriptFolder
     }
