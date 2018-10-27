@@ -3,13 +3,25 @@ function Trace-FunctionCall
     param(   
         [Parameter(Mandatory=$true)]
         [ScriptBlock]
-        $Script
+        $Script,
+        [string]
+        $Level="DEBUG"
     )
     $functionName = $($(Get-PSCallStack)[1].FunctionName)
     $arguments =  $($(Get-PSCallStack)[1].Arguments)
-    Write-Verbose "$functionName $arguments"
+    if($Level -eq "DEBUG"){
+        Write-Verbose "$functionName $arguments"
+    }
+    else {
+        Write-Host "$functionName $arguments"
+    }
     $returnValue = Invoke-Command $Script
-    Write-Verbose "$functionName->$returnValue"
+    if($Level -eq "DEBUG"){
+        Write-Verbose "$functionName->$returnValue"
+    }
+    else {
+        Write-Host "$functionName->$returnValue"
+    }
     return $returnValue
 }
 #TEST:
