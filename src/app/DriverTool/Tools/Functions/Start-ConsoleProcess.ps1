@@ -28,4 +28,4 @@ function Start-ConsoleProcess {
     }
 }
 #TEST: 
-Start-ConsoleProcess -FilePath "c:\windows\system32\change.exe" -CommandArguments "user /install"
+#Start-ConsoleProcess -FilePath "c:\windows\system32\change.exe" -CommandArguments "user /install"
