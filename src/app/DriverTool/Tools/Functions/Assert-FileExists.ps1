@@ -7,9 +7,12 @@ function Assert-FileExists
         [String]
         $Message
     )
-    if([System.IO.File]::Exists($FileName) -eq $false)
-    {
-        $(throw "$Message Error: File '$FileName' does not exist.")
-    }    
+    Trace-FunctionCall -Script{
+        if([System.IO.File]::Exists($FileName) -eq $false)
+        {
+            $(throw "$Message Error: File '$FileName' does not exist.")
+        }
+        Write-Verbose "File '$FileName' exists!"
+    }
 }
 #TEST : Assert-FileExists -FileName "c:\temp\notes.txt" -Message "Notes.txt was not found."
