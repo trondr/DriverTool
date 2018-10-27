@@ -4,7 +4,7 @@ function Get-Cache {
         $cachedValues = $global:cachedValues
     }
     else {
-        $global:cachedValues = New-Object 'system.collections.generic.dictionary[string,string]'
+        $global:cachedValues = New-Object 'system.collections.generic.dictionary[string,object]'
         $cachedValues = $global:cachedValues
     }
     return $cachedValues
