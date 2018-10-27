@@ -22,6 +22,6 @@ function Read-IniValue {
     }
 }
 #TEST: 
-$global:VerbosePreference = "Continue"
-Clear-Cache
-Read-IniValue -IniFile "C:\Windows\system.ini" -Section "drivers" -ValueName "timer"
+# $global:VerbosePreference = "Continue"
+# Clear-Cache
+# Read-IniValue -IniFile "C:\Windows\system.ini" -Section "drivers" -ValueName "timer"
