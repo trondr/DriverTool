@@ -1,4 +1,7 @@
 <configuration>
 	<LogDirectory>%PUBLIC%\Logs</LogDirectory>
 	<LogFileName>DriverPackageInstall-%USERNAME%.log</LogFileName>
+	<PackageName>DriverPackageX</PackageName>
+	<Packageversion>1.0</Packageversion>
+	<Publisher>MyCompany</Publisher>
 </configuration>

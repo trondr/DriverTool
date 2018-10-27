@@ -5,7 +5,7 @@ function Get-LogDirectory {
         $logDirectory = $global:logDirectory
     }
     else {
-        $global:logDirectory = Get-LogDirectoryFromInstallXml
+        $global:logDirectory = Get-InstallProperty -PropertyName LogDirectory
         if($null -ne $logDirectory)
         {
             New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
@@ -20,4 +20,6 @@ function Get-LogDirectory {
     Write-Verbose "Get-LogDirectory->$logDirectory"
     return $logDirectory
 }
-#TEST: Get-LogDirectory
+#TEST: 
+# $global:VerbosePreference = "Continue"
+# Get-LogDirectory
