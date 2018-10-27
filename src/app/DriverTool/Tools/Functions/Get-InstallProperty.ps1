@@ -3,20 +3,31 @@ function Get-InstallProperty {
         [Parameter(Mandatory=$true)]
         [ValidateSet("LogDirectory","LogFileName","Publisher","PackageName","PackageVersion")]
         [string]
-        $PropertyName
+        $PropertyName,
+        [switch]
+        $ExpandEnvironmentVariables
     )
     Write-Verbose "Get-InstallProperty -PropertyName $PropertyName..."
     $installXml = [xml] $(Get-Content -Path "$(Get-InstallXml)")
-    $propertyValue = [System.Environment]::ExpandEnvironmentVariables($($installXml.configuration.$PropertyName))
+    $unExpandandedPropertyValue = $($installXml.configuration.$PropertyName)
+    if($ExpandEnvironmentVariables)
+    {
+        Write-Verbose "Expanding '$unExpandandedPropertyValue'..."
+        $propertyValue = [System.Environment]::ExpandEnvironmentVariables($unExpandandedPropertyValue)
+    }
+    else 
+    {
+        $propertyValue = $unExpandandedPropertyValue
+    }
     Write-Verbose "Get-InstallProperty  -PropertyName $PropertyName->$propertyValue"
     return $propertyValue
-
 }
-<# TEST:
-$global:VerbosePreference = "Continue"
-Get-InstallProperty -PropertyName Publisher
-Get-InstallProperty -PropertyName PackageName
-Get-InstallProperty -PropertyName PackageVersion
-Get-InstallProperty -PropertyName LogDirectory
-Get-InstallProperty -PropertyName LogFileName
-#>
+# TEST:
+# $global:VerbosePreference = "Continue"
+# Get-InstallProperty -PropertyName Publisher
+# Get-InstallProperty -PropertyName PackageName
+# Get-InstallProperty -PropertyName PackageVersion
+# Get-InstallProperty -PropertyName LogDirectory
+# Get-InstallProperty -PropertyName LogDirectory -ExpandEnvironmentVariables
+# Get-InstallProperty -PropertyName LogFileName
+
