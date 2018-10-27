@@ -1,25 +1,27 @@
 function Get-LogDirectory {
     Write-Verbose "Get-LogDirectory..."
-    if($(Test-Path variable:global:logDirectory) -and ($null -ne $logDirectory) -and (Test-Path -Path $logDirectory))
-    {
-        $logDirectory = $global:logDirectory
-    }
-    else {
-        $global:logDirectory = Get-InstallProperty -PropertyName LogDirectory
-        if($null -ne $logDirectory)
+    $logDirectory = Get-CacedValue -ValueName LogDirectory -OnCacheMiss {
+        $logDir = $(Get-InstallProperty -PropertyName LogDirectory -ExpandEnvironmentVariables)
+        if($null -ne $logDir)
         {
-            New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
-            $logDirectory = $global:logDirectory
+            if($(Test-Path -Path $logDir) -eq $false)
+            {
+                Write-Verbose "Creating log directory '$logDir'..."
+                New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+            }
         }
         else {
-            $global:logDirectory = [System.IO.Path]::Combine([System.Environment]::ExpandEnvironmentVariables("%PUBLIC%"),"Logs")
-            $logDirectory = $global:logDirectory
-            New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+            Write-Verbose "Getting default log directory"
+            $logDir = [System.IO.Path]::Combine([System.Environment]::ExpandEnvironmentVariables("%PUBLIC%"),"Logs")
+            New-Item -ItemType Directory -Path $logDir -Force | Out-Null
         }
+        $logDir
     }
     Write-Verbose "Get-LogDirectory->$logDirectory"
-    return $logDirectory
+    $logDirectory
 }
 #TEST: 
+# Remove-Variable logDirectory
 # $global:VerbosePreference = "Continue"
+# Clear-Cache
 # Get-LogDirectory
