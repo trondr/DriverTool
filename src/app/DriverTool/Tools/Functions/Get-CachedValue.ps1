@@ -12,14 +12,17 @@ function Get-CacedValue {
     if($cachedValues.ContainsKey($ValueName))
     {
         $cachedValue = $cachedValues[$ValueName]
-        Write-Verbose "Value found in cache: $cachedValue"
+        Write-Verbose "Value name '$ValueName' found in cache with value: '$cachedValue'"
     }
     else {
-        Write-Verbose "$ValueName value not found in cache, execute cache miss script." 
+        Write-Verbose "Value name '$ValueName' not found in cache, execute cache miss script." 
         $value = Invoke-Command $OnCacheMiss
-        $cachedValues.Add($ValueName,$value)
         $cachedValue = $value
-        Write-Verbose "$ValueName value '$cachedValue' has been added to cache."   
+        if($($cachedValues.ContainsKey($ValueName) -eq $false))
+        {
+            $cachedValues.Add($ValueName,$cachedValue)
+            Write-Verbose "Value name '$ValueName' and value '$cachedValue' has been added to cache."
+        }  
     }
     return $cachedValue
 }
