@@ -7,10 +7,13 @@ function Assert-DirectoryExists
         [String]
         $Message
     )
-    if([System.IO.Directory]::Exists($DirectoryName) -eq $false)
-    {
-        $(throw "$Message Error: Directory '$DirectoryName' does not exist.")
-    }    
+    Trace-FunctionCall -Script{
+        if([System.IO.Directory]::Exists($DirectoryName) -eq $false)
+        {
+            $(throw "$Message Error: Directory '$DirectoryName' does not exist.")
+        }  
+        Write-Verbose "Directory '$DirectoryName' exists!"
+    }  
 }
 #TEST : 
 #Assert-DirectoryExists -DirectoryName "c:\temp\dssfs" -Message "dssfs was not found."
