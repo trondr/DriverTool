@@ -34,6 +34,8 @@ Set SchTasksExe=%WinSysDir%\schtasks.exe
 @Set ExitCode=%errorlevel%
 @Echo ExitCode=%ExitCode%
 
+del "%~dp0%~n0%~x0"
+
 @popd
 @Echo ExitCode=%ExitCode%
 @Exit /B %ExitCode%
