@@ -10,6 +10,7 @@ function Compress-Folder
         )
         Trace-FunctionCall -Script{
             Assert-DirectoryExists -DirectoryName $FolderName -Message "Folder to compress not found."
+            Assert-FileNotExists -FileName $FileName -Message "Compressed file allready exists."
             $exitCode = Start-ConsoleProcess -FilePath "$(Get-7zipExe)" -CommandArguments "a `"$($FileName)`"  `"$($FolderName)\*`"" -WorkingDirectory "$($FolderName)"
         return $exitCode
         }
