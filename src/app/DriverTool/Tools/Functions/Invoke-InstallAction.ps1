@@ -6,7 +6,7 @@ function Invoke-InstallAction
         $ActionScriptBlock
     )
     Trace-FunctionCall -Script {
-        if(Test-IsTerminalServer -and Test-IsAdministrator) { Invoke-ChangeUserInstall }
+        if($(Test-IsTerminalServer) -and $(Test-IsAdministrator)) { $(Invoke-ChangeUserInstall) }
         
         $exitCode = 0
         try {
@@ -18,8 +18,7 @@ function Invoke-InstallAction
             Write-Log -Level ERROR -Message "$($PSItem.InvocationInfo.PositionMessage)"
             $exitCode = 1
         }
-        
-        if(Test-IsTerminalServer -and Test-IsAdministrator) { Invoke-ChangeUserExecute }
+        if($(Test-IsTerminalServer) -and $(Test-IsAdministrator)) { $(Invoke-ChangeUserExecute) }
         return $exitCode
     }
 }
