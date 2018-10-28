@@ -12,7 +12,7 @@ function Assert-DirectoryNotExists
         {
             $(throw "$Message Error: Directory '$DirectoryName' exists.")
         }  
-        Write-Log -Level DEBUG -Message "Directory '$DirectoryName' does not exist. Ok."
+        Write-Log -Level DEBUG -Message "Directory '$DirectoryName' does not exist. Ok!"
     }  
 }
 #TEST : 
