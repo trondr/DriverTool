@@ -17,10 +17,10 @@ function Trace-FunctionCall
     }
     $returnValue = Invoke-Command $Script
     if($Level -eq "DEBUG"){
-        Write-Log -Level DEBUG -Message "$functionName->$returnValue"
+        Write-Log -Level DEBUG -Message "$functionName $arguments->$returnValue"
     }
     else {
-        Write-Log -Level INFO -Message "$functionName->$returnValue"
+        Write-Log -Level INFO -Message "$functionName $arguments->$returnValue"
     }
     return $returnValue
 }
