@@ -1,9 +1,9 @@
 Param(
-    [Parameter(Position=0)]
+    [Parameter(Position=0,Mandatory=$true,HelpMessage="Action must be in the set: Install,UnInstall,CompressDrivers,ExpandDrivers")]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet("Install","UnInstall")]
-    [string]
-    $Action=$(throw "Missing command line parameter. First parameter must be an action in the set: Install,UnInstall")
+    [ValidateSet("Install","UnInstall","CompressDrivers","ExpandDrivers")]    
+    [string]    
+    $Action
 )
 Set-PSDebug -Strict
 
@@ -34,6 +34,18 @@ function UnInstall
     Remove-DriverToolProgramDataFolder |Out-Null   
     $exitCode = Resume-BitLockerProtection
     return $exitCode
+}
+
+function CompressDrivers
+{
+    $exitCode = Compress-Drivers
+    $exitCode
+}
+
+function ExpandDrivers
+{
+    $exitCode = Expand-Drivers
+    $exitCode
 }
 
 ###############################################################################
@@ -76,6 +88,8 @@ switch($Action)
 {
     "Install"   { $actionScriptBlock = [scriptblock]$function:Install }
     "UnInstall" { $actionScriptBlock = [scriptblock]$function:UnInstall }
+    "CompressDrivers" {$actionScriptBlock = [scriptblock]$function:CompressDrivers}
+    "ExpandDrivers" {$actionScriptBlock = [scriptblock]$function:ExpandDrivers}
     default { 
         Write-Log -Level ERROR "Unknown action: $Action"
         EXIT 1
