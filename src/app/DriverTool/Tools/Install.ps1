@@ -3,7 +3,7 @@ Param(
     [ValidateNotNullOrEmpty()]
     [ValidateSet("Install","UnInstall")]
     [string]
-    $Action="Install"#$(throw "Missing command line parameter. First parameter must be an action in the set: Install,UnInstall")
+    $Action=$(throw "Missing command line parameter. First parameter must be an action in the set: Install,UnInstall")
 )
 Set-PSDebug -Strict
 
@@ -20,7 +20,7 @@ function Install
     Write-Log -Level INFO "Installling..."
     Assert-IsAdministrator -Message "Administrative privileges are required to run install."
     UnRegister-Application
-
+    $exitCode = Suspend-BitLockerProtection    
     Register-Application
     return $exitCode
 }
@@ -31,6 +31,8 @@ function UnInstall
     Write-Log -Level INFO "UnInstalling..."
     Assert-IsAdministrator -Message "Administrative privileges are required to run uninstall."
     UnRegister-Application
+    Remove-DriverToolProgramDataFolder |Out-Null   
+    $exitCode = Resume-BitLockerProtection
     return $exitCode
 }
 
