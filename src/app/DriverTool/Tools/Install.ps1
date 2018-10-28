@@ -3,7 +3,7 @@ Param(
     [ValidateNotNullOrEmpty()]
     [ValidateSet("Install","UnInstall")]
     [string]
-    $Action=$(throw "Missing command line parameter. First parameter must be an action in the set: Install,UnInstall")
+    $Action="Install"#$(throw "Missing command line parameter. First parameter must be an action in the set: Install,UnInstall")
 )
 Set-PSDebug -Strict
 
@@ -18,6 +18,10 @@ function Install
 {
     $exitCode = 0
     Write-Log -Level INFO "Installling..."
+    Assert-IsAdministrator -Message "Administrative privileges are required to run install."
+    UnRegister-Application
+
+    Register-Application
     return $exitCode
 }
 
@@ -25,6 +29,8 @@ function UnInstall
 {
     $exitCode = 0
     Write-Log -Level INFO "UnInstalling..."
+    Assert-IsAdministrator -Message "Administrative privileges are required to run uninstall."
+    UnRegister-Application
     return $exitCode
 }
 
@@ -59,6 +65,8 @@ $functionScripts | ForEach-Object{
         EXIT 1
     }
 }
+Clear-Cache
+Initialize-Logging
 ###############################################################################
 #   Parse action
 ###############################################################################
@@ -74,13 +82,13 @@ switch($Action)
 ###############################################################################
 #   Executing action
 ###############################################################################
-Write-Verbose "Action=$action"
+Write-Log -Level DEBUG -Message "Action=$action"
 Write-Log -Level INFO "Executing Init action..."
-$exitCode = Invoke-InstallAction([scriptblock]$function:Init)
+$exitCode = Invoke-InstallAction -ActionScriptBlock $([scriptblock]$function:Init)
 if($exitCode -eq 0)
 {
     Write-Log -Level INFO "Executing $action action..."
-    $exitCode = Invoke-InstallAction([scriptblock]$actionScriptBlock)
+    $exitCode = Invoke-InstallAction -ActionScriptBlock $([scriptblock]$actionScriptBlock)
 }
 else
 {
