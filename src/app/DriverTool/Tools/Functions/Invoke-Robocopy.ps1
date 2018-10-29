@@ -12,7 +12,7 @@ function Invoke-RoboCopy
         $Options
         )
         Trace-FunctionCall -Script {
-                $robocopyExitCode = Start-ConsoleProcess -FilePath "$(Get-RobocopyExe)" -Arguments "`"$($SourceFolder)`"  `"$($DestinationFolder)`" $Options"
+                $robocopyExitCode = Start-ConsoleProcess -FilePath "$(Get-RobocopyExe)" -CommandArguments "`"$($SourceFolder)`"  `"$($DestinationFolder)`" $Options"
                 $exitCode = Get-RoboCopyResult -RoboCopyExitCode $robocopyExitCode
                 return $exitCode
         }
