@@ -20,7 +20,10 @@ function Install
     Write-Log -Level INFO "Installling..."
     Assert-IsAdministrator -Message "Administrative privileges are required to run install."
     UnRegister-Application
-    $exitCode = Suspend-BitLockerProtection    
+    $exitCode = Suspend-BitLockerProtection
+    $exitCode = Copy-Drivers
+    #$exitCode = Install-Drivers
+    Reset-ConfigFlags | Out-Null    
     Register-Application
     return $exitCode
 }
