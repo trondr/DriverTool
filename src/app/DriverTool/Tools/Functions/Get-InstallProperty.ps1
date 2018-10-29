@@ -1,7 +1,7 @@
 function Get-InstallProperty {
     param (
         [Parameter(Mandatory=$true)]
-        [ValidateSet("LogDirectory","LogFileName","Publisher","PackageName","PackageVersion")]
+        [ValidateSet("LogDirectory","LogFileName","Publisher","PackageName","PackageVersion","ComputerVendor","ComputerModel","ComputerSystemFamiliy","OsShortName")]
         [string]
         $PropertyName,
         [switch]

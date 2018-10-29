@@ -4,4 +4,8 @@
 	<PackageName>DriverPackageX</PackageName>
 	<Packageversion>1.0</Packageversion>
 	<Publisher>MyCompany</Publisher>
+	<ComputerVendor>LENOVO</ComputerVendor>
+	<ComputerModel>20EQ0022MN</ComputerModel>	
+	<ComputerSystemFamiliy>ThinkPad P50</ComputerSystemFamiliy>
+	<OsShortName>Win10X64</OsShortName>
 </configuration>
