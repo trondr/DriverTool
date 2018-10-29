@@ -18,6 +18,7 @@ function Install
 {
     $exitCode = 0
     Write-Log -Level INFO "Installling..."
+    Assert-IsSupported
     Assert-IsAdministrator -Message "Administrative privileges are required to run install."
     UnRegister-Application
     $exitCode = Suspend-BitLockerProtection
@@ -32,6 +33,7 @@ function UnInstall
 {
     $exitCode = 0
     Write-Log -Level INFO "UnInstalling..."
+    Assert-IsSupported
     Assert-IsAdministrator -Message "Administrative privileges are required to run uninstall."
     UnRegister-Application
     Remove-DriverToolProgramDataFolder |Out-Null   
