@@ -7,8 +7,7 @@ function Copy-Drivers {
         $SourceDriversFolder = Get-DriversFolder
         if($(Test-Path -Path $SourceDriversFolder) -eq $true)
         {
-           $RobocopyExitCode = Invoke-RoboCopy -SourceFolder "$SourceDriversFolder" -DestinationFolder "$LocalDriversFolder" -Options "*.* /MIR"
-           $exitCode = Get-RoboCopyResult -RoboCopyExitCode $RobocopyExitCode
+           $exitCode = Invoke-RoboCopy -SourceFolder "$SourceDriversFolder" -DestinationFolder "$LocalDriversFolder" -Options "*.* /MIR"           
         }
         else {
            $DriversZipFile = Get-DriversZipFile

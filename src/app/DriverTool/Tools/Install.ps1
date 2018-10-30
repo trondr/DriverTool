@@ -18,14 +18,15 @@ function Install
 {
     $exitCode = 0
     Write-Log -Level INFO "Installling..."
-    Assert-IsSupported
-    Assert-IsAdministrator -Message "Administrative privileges are required to run install."
-    UnRegister-Application
-    $exitCode = Suspend-BitLockerProtection
-    $exitCode = Copy-Drivers
-    #$exitCode = Install-Drivers
-    Reset-ConfigFlags | Out-Null    
-    Register-Application
+    Assert-IsSupported | Out-Null
+    Assert-IsAdministrator -Message "Administrative privileges are required to run install." | Out-Null
+    UnRegister-Application | Out-Null
+    $exitCode = Suspend-BitLockerProtection    
+    $exitCode = Install-Drivers        
+    if($exitCode -eq 0 -or $exitCode -eq 3010)
+    {
+        Register-Application | Out-Null
+    }
     return $exitCode
 }
 
@@ -33,11 +34,12 @@ function UnInstall
 {
     $exitCode = 0
     Write-Log -Level INFO "UnInstalling..."
-    Assert-IsSupported
-    Assert-IsAdministrator -Message "Administrative privileges are required to run uninstall."
-    UnRegister-Application
-    Remove-DriverToolProgramDataFolder |Out-Null   
+    Assert-IsSupported | Out-Null
+    Assert-IsAdministrator -Message "Administrative privileges are required to run uninstall." | Out-Null
+    UnRegister-Application | Out-Null
+    Remove-DriverToolProgramDataFolder |Out-Null
     $exitCode = Resume-BitLockerProtection
+    $exitCode = UnInstall-Drivers    
     return $exitCode
 }
 
