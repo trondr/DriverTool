@@ -1,5 +1,5 @@
 <configuration>
-	<LogDirectory>%PUBLIC%\Logs</LogDirectory>
+	<LogDirectory>%PUBLIC%\LogsTest</LogDirectory>
 	<LogFileName>DriverPackageInstall-%USERNAME%.log</LogFileName>
 	<PackageName>DriverPackageX</PackageName>
 	<Packageversion>1.0</Packageversion>
