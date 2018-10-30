@@ -6,7 +6,9 @@ function Start-ConsoleProcess {
         [string]
         $CommandArguments,
         [string]
-        $WorkingDirectory
+        $WorkingDirectory,
+        [string]
+        $LogFile
     )
     Trace-FunctionCall -Level INFO -Script{
         $pinfo = New-Object System.Diagnostics.ProcessStartInfo
@@ -22,8 +24,20 @@ function Start-ConsoleProcess {
         $p.WaitForExit()
         $stdout = $p.StandardOutput.ReadToEnd()
         $stderr = $p.StandardError.ReadToEnd()
-        Write-Host "Stdout: $stdout"
-        Write-Host "Stderr: $stderr"
+        Write-Log -Level INFO -Message "Stdout: $stdout"
+        if([string]::IsNullOrWhiteSpace($stderr) -eq $false)
+        {
+            Write-Log -Level ERROR -Message "Stderr: $stderr"
+        }
+        
+        if($LogFile)
+        {
+            $stdout | Out-File -FilePath $($LogFile) -Encoding utf8
+            if([string]::IsNullOrWhiteSpace($stderr) -eq $false)
+            {                
+                $stderr | Out-File -FilePath $($LogFile) -Encoding utf8 -Append
+            }
+        }
         return $p.ExitCode
     }
 }
