@@ -5,7 +5,7 @@ open System.Net
 
 module Web =
     type Web = class end
-    let logger = Logging.Logger<Web>
+    let logger = Logging.getLoggerByName(typeof<Web>.Name)
 
     type DownloadInfo =
         {
