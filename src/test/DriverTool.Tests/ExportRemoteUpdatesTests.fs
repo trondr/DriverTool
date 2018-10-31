@@ -12,20 +12,18 @@ module ExportRemoteUpdatesTests =
     [<Test>]
     let exportRemoteUpdatesTest() =
         let readFromLocalMachine = false
-        let modelCodeResult = ModelCode.create "20FA" readFromLocalMachine
-        let operatingSystemCodeResult = OperatingSystemCode.create "Win10" readFromLocalMachine
-        let csvPathResult = Path.create "c:\\temp\\test.csv"
-
-        let parametersResult = validateExportRemoteUdateInfoParameters (modelCodeResult, operatingSystemCodeResult, csvPathResult)
-        match parametersResult with
-        |Ok parameters -> 
-            let (modelCode, operatingSystemCode, csvFilePath) = parameters
-            let result = exportRemoteUpdates modelCode operatingSystemCode csvFilePath true
-            match result with
-            |Ok p -> Assert.AreEqual("c:\\temp\\test.csv", p.Value)
-            |Error ex -> Assert.Fail(ex.Message)
+        let testResult = 
+            result  {
+                let! modelCode = ModelCode.create "20FA" readFromLocalMachine
+                let! operatingSystemCode = OperatingSystemCode.create "Win10" readFromLocalMachine
+                let! csvFilePath = Path.create "c:\\temp\\test.csv"
+                let exportResult = exportRemoteUpdates modelCode operatingSystemCode csvFilePath true
+                return! exportResult
+            }
+        match testResult with
+        |Ok p -> Assert.AreEqual("c:\\temp\\test.csv", p.Value)
         |Error ex -> Assert.Fail(ex.Message)
-
+  
     [<Test>]
     [<TestCase("","WIN1","",false,"Failed to validate one or more input parameters.
 The model code '' is not valid. ModelCode cannot be null or empty.
