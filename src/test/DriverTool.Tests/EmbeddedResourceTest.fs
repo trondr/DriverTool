@@ -3,9 +3,7 @@ open NUnit.Framework
 open DriverTool
 
 [<TestFixture>]
-module EmbeddedResourceTest  =
-    open DriverTool
-    open System.Reflection
+module EmbeddedResourceTest  =    
     open DriverTool.EmbeddedResouce
 
     [<Test>]
@@ -13,7 +11,7 @@ module EmbeddedResourceTest  =
         let res =
             result {
                 let! testPath = Path.create @"c:\temp\DpInstExitCode2ExitCode_tst.exe";
-                let! testResourceName = ResourceName.create "DriverTool.Tools.Drivers.DpInstExitCode2ExitCode.exe"
+                let! testResourceName = ResourceName.create "DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe"
                 let! resultPath = EmbeddedResouce.extractEmbeddedResourceToFile (testResourceName, testResourceName.GetType().Assembly,testPath) 
                 return resultPath
             }
