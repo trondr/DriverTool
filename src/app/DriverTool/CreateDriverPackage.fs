@@ -380,9 +380,7 @@ module CreateDriverPackage =
         } 
         |> Seq.toArray
         |> Seq.rev
-    
-    //let resourceNameToDirectory (destinationFolderPath: Path) resourceName =
-    
+        
     let resourceNameToFileName (resourceName:string, dictionary: System.Collections.Generic.IDictionary<string,string>) =          
             let partialResourceNames = resourceNameToPartialResourceNames resourceName
             let directoryPartialName =
@@ -395,30 +393,36 @@ module CreateDriverPackage =
                 | None -> None
             fileName
 
+    let getPackageTemplateEmbeddedResourceNames =
+        let assembly = System.Reflection.Assembly.GetExecutingAssembly()
+        let embededResourceNames = 
+                assembly.GetManifestResourceNames()
+                |> Seq.filter (fun x -> x.StartsWith("DriverTool.PackageTemplate"))
+        embededResourceNames
+
+    let mapResourceNamesToFileNames (destinationFolderPath:Path, resourceNames:seq<string>)=
+        let directoryLookDictionary = resourceNameToDirectoryDictionary destinationFolderPath
+        resourceNames
+        |> Seq.map (fun rn -> 
+            let fileName = resourceNameToFileName (rn, directoryLookDictionary)
+            match fileName with
+            |Some fn -> Some (rn,fn)
+            |None -> None
+            )
+        |> Seq.choose id
+        
     let extractPackageTemplate (destinationFolderPath:Path) =
         result {
-            let assembly = destinationFolderPath.GetType().Assembly
             let! emptyDestinationFolderPath = DriverTool.DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath, true)
-            let lookUpDirectory = resourceNameToDirectoryDictionary emptyDestinationFolderPath
-            let embededResourceNames = 
-                assembly.GetManifestResourceNames() 
-                |> Seq.filter (fun x -> x.StartsWith("DriverTool.PackageTemplate"))
-                |> Seq.map (fun x-> (x, (resourceNameToFileName (x, lookUpDirectory))))
-                |> Seq.toList
-            let res =
-                embededResourceNames
-                |> Seq.map (fun (resourceName, fileName) -> 
-                    match fileName with
-                    |Some fn -> 
-                        extractEmbededResouceToFile (resourceName, fn)
-                    |None -> Result.Error (new Exception(String.Format("{0} -> unknown file", resourceName))
-                    ))
-                |>Seq.toList
-            return res
+            let resourceNamesVsDestinationFilesMap = mapResourceNamesToFileNames (emptyDestinationFolderPath,getPackageTemplateEmbeddedResourceNames)
+            let extractResult =
+                resourceNamesVsDestinationFilesMap
+                |> Seq.map (fun (resourceName, fileName) ->
+                        extractEmbededResouceToFile (resourceName, fileName)
+                    )
+            return! (extractResult |> toAccumulatedResult)
         }
-         
-        
-
+   
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path), logDirectory) = 
         
             result {
@@ -438,13 +442,16 @@ module CreateDriverPackage =
                                
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
-                let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
-                logger.InfoFormat("Extracting tools to folder '{0}'...", versionedPackagePath.Value)
-                let! existingToolsPath = DirectoryOperations.ensureDirectoryExists (toolsPath, true)
-                let toolsExtractResult = extractDpInstExitCodeToExitCodeExe existingToolsPath
+                let! extractedPackagePaths = extractPackageTemplate destinationFolderPath
+                logger.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
+
+                //let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
+                //logger.InfoFormat("Extracting tools to folder '{0}'...", versionedPackagePath.Value)
+                //let! existingToolsPath = DirectoryOperations.ensureDirectoryExists (toolsPath, true)
+                //let toolsExtractResult = extractDpInstExitCodeToExitCodeExe existingToolsPath
 
                 let res = 
-                    match ([|installScriptResults;toolsExtractResult;packageSmsResults|] |> toAccumulatedResult) with
+                    match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with
                     |Ok _ -> Result.Ok ()
                     |Error ex -> Result.Error ex  
                 return! res
