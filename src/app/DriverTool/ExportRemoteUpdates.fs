@@ -72,7 +72,7 @@ module ExportRemoteUpdates =
         |ex -> Result.Error ex
     
     let getTempPath =
-        System.IO.Path.GetTempPath()
+        DriverTool.Configuration.getDownloadCacheDirectoryPath
     
     let getTempFilePath fileName = 
         System.IO.Path.Combine(getTempPath , fileName)
