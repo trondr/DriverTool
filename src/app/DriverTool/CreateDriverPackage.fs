@@ -24,7 +24,7 @@ module CreateDriverPackage =
             let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadJob.DestinationFile,downloadJob.SourceUri.OriginalString)
             match verificationWarningOnly with
             |true ->
-                Logging.getLoggerByName("verifyDownload").Warn(msg)
+                logger.Warn(msg)
                 Result.Ok downloadJob
             |false->Result.Error (new Exception(msg))
  
@@ -232,7 +232,11 @@ module CreateDriverPackage =
             if (packageIsUsingDpInstDuringInstall (installScriptPath, installCommandLine)) then
                 sw.WriteLine("")
                 sw.WriteLine("Set DpInstExitCode=%errorlevel%")
-                sw.WriteLine("%~dp0\\..\\..\\Tools\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")            
+                sw.WriteLine("%~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")
+            else
+                sw.WriteLine("")
+                sw.WriteLine("REM Set DpInstExitCode=%errorlevel%")
+                sw.WriteLine("REM %~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")
             sw.WriteLine("")
             sw.WriteLine("Set ExitCode=%errorlevel%")
             sw.WriteLine("popd")
@@ -244,12 +248,12 @@ module CreateDriverPackage =
     let createInstallScript (extractedUpdate:ExtractedPackageInfo) =
         result{
             let! installScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"Install-Package.cmd"))
+                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"DT-Install-Package.cmd"))
             let installCommandLine = 
                 extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")
             let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine))
             let! unInstallScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"UnInstall-Package.cmd"))
+                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"DT-UnInstall-Package.cmd"))
             let unInstallScriptResult = (createUnInstallScriptFile (unInstallScriptPath))
             
             let createInstallScriptResult = 
@@ -429,10 +433,14 @@ module CreateDriverPackage =
                 let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
-                let! updates = downloadUpdates (System.IO.Path.GetTempPath()) uniqueUpdates
+                
+                let! updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
                 let! versionedPackagePath = combine2Paths (destinationFolderPath.Value,latestRelaseDate)
                 
+                let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
+                logger.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
+
                 let! driversPath = combine2Paths (versionedPackagePath.Value, "Drivers")
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", versionedPackagePath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
@@ -442,8 +450,7 @@ module CreateDriverPackage =
                                
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
-                let! extractedPackagePaths = extractPackageTemplate destinationFolderPath
-                logger.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
+                
 
                 //let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
                 //logger.InfoFormat("Extracting tools to folder '{0}'...", versionedPackagePath.Value)
