@@ -29,6 +29,11 @@ module Configuration =
     let getLogFilePath =
         let logFilePath = System.IO.Path.Combine(getLogDirectoryPath, getLogFileName)
         logFilePath
+    
+    let getDownloadCacheDirectoryPath =
+        let expandedPath = getExpandedValue "DownloadCacheDirectoryPath"
+        let path = System.IO.Path.GetFullPath(expandedPath)
+        path
 
     type Settings = AppSettings<"App.config">
 
