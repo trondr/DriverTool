@@ -273,7 +273,23 @@ module CreateDriverPackage =
         installScripts
     
     open EmbeddedResouce
-    
+
+    let extractEmbededResouceToFile (resourceName:string , destinationFileName:string) = 
+        result {
+                
+                let! resourceNameObject = 
+                    ResourceName.create resourceName
+                let! destinationFilePath = 
+                    Path.create destinationFileName
+                let! parentDirectoryPath = (Path.create (System.IO.Path.GetDirectoryName(destinationFilePath.Value)))
+                let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists (parentDirectoryPath, true)
+                let assembly = destinationFilePath.GetType().Assembly
+                logger.Info(String.Format("Extracting resource '{0}' -> '{1}'",resourceName, destinationFilePath.Value))
+                let! fileResult = 
+                    EmbeddedResouce.extractEmbeddedResourceToFile (resourceNameObject,assembly, destinationFilePath)
+                return fileResult
+            }
+
     let extractEmbeddedResource (resourceName, destinationFolderPath:Path, destinationFileName) =
         result {
                 let assembly = destinationFolderPath.GetType().Assembly
@@ -310,6 +326,7 @@ module CreateDriverPackage =
         | ex -> Result.Error (new Exception(String.Format("Failed to write text to file '{0}'.", filePath.Value), ex))
 
     open PackageDefinition
+    open System.Resources
 
     let createPackageDefinitionFile (logDirectory, extractedUpdate:ExtractedPackageInfo) = 
         result{
@@ -338,6 +355,70 @@ module CreateDriverPackage =
         |> Seq.ofArray
         |> toAccumulatedResult
     
+
+    let resourceNameToDirectoryDictionary (destinationFolderPath:Path) = 
+        dict[
+        "DriverTool.PackageTemplate", destinationFolderPath.Value;
+        "DriverTool.PackageTemplate.Functions", System.IO.Path.Combine(destinationFolderPath.Value,"Functions");
+        "DriverTool.PackageTemplate.Functions.Util", System.IO.Path.Combine(destinationFolderPath.Value,"Functions","Util");
+        "DriverTool.PackageTemplate.Functions.Util.7Zip", System.IO.Path.Combine(destinationFolderPath.Value,"Functions","Util","7Zip");
+        "DriverTool.PackageTemplate.Functions.Util.BitLocker", System.IO.Path.Combine(destinationFolderPath.Value,"Functions","Util","BitLocker");
+        "DriverTool.PackageTemplate.Functions.Util.INIFileParser", System.IO.Path.Combine(destinationFolderPath.Value,"Functions","Util","INIFileParser");
+        "DriverTool.PackageTemplate.Drivers", System.IO.Path.Combine(destinationFolderPath.Value,"Drivers");
+        "DriverTool.PackageTemplate.Drivers_Example", System.IO.Path.Combine(destinationFolderPath.Value,"Drivers_Example");
+        "DriverTool.PackageTemplate.Drivers_Example._020_Audio_Realtek_Audio_Driver_10_64_6._0._1._8224_2017_08_23", System.IO.Path.Combine(destinationFolderPath.Value, "Drivers_Example", "_020_Audio_Realtek_Audio_Driver_10_64_6._0._1._8224_2017_08_23");        
+        "DriverTool.PackageTemplate.Drivers_Example._040_Camera_and_Card_Reader_Re_10_64_10._0._16299._21304_2018_03_29", System.IO.Path.Combine(destinationFolderPath.Value, "Drivers_Example", "_040_Camera_and_Card_Reader_Re_10_64_10._0._16299._21304_2018_03_29");
+        ]
+
+    let resourceNameToPartialResourceNames (resourceName:string) =
+        let split = resourceName.Split(".")
+        let length = split.Length
+        seq{
+            for i in 0..(length-1) do
+                let partialResourceName = System.String.Join(".",split.[0..i])
+                yield partialResourceName
+        } 
+        |> Seq.toArray
+        |> Seq.rev
+    
+    //let resourceNameToDirectory (destinationFolderPath: Path) resourceName =
+    
+    let resourceNameToFileName (resourceName:string, dictionary: System.Collections.Generic.IDictionary<string,string>) =          
+            let partialResourceNames = resourceNameToPartialResourceNames resourceName
+            let directoryPartialName =
+                partialResourceNames |> Seq.tryFind (fun x -> dictionary.ContainsKey(x))
+            let fileName = 
+                match directoryPartialName with
+                | Some pn -> 
+                    let fileN = System.IO.Path.Combine(dictionary.[pn],resourceName.Replace(pn,"").Trim('.'))
+                    Some fileN
+                | None -> None
+            fileName
+
+    let extractPackageTemplate (destinationFolderPath:Path) =
+        result {
+            let assembly = destinationFolderPath.GetType().Assembly
+            let! emptyDestinationFolderPath = DriverTool.DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath, true)
+            let lookUpDirectory = resourceNameToDirectoryDictionary emptyDestinationFolderPath
+            let embededResourceNames = 
+                assembly.GetManifestResourceNames() 
+                |> Seq.filter (fun x -> x.StartsWith("DriverTool.PackageTemplate"))
+                |> Seq.map (fun x-> (x, (resourceNameToFileName (x, lookUpDirectory))))
+                |> Seq.toList
+            let res =
+                embededResourceNames
+                |> Seq.map (fun (resourceName, fileName) -> 
+                    match fileName with
+                    |Some fn -> 
+                        extractEmbededResouceToFile (resourceName, fn)
+                    |None -> Result.Error (new Exception(String.Format("{0} -> unknown file", resourceName))
+                    ))
+                |>Seq.toList
+            return res
+        }
+         
+        
+
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path), logDirectory) = 
         
             result {
