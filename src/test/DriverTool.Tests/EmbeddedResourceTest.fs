@@ -5,24 +5,26 @@ open DriverTool
 [<TestFixture>]
 module EmbeddedResourceTest  =    
     open DriverTool.EmbeddedResouce
-    open DriverTool
-    open NUnit.Framework.Internal
     open System
 
     [<Test>]
-    let extractEmbeddedResourceToFile () =
+    [<TestCase(@"c:\temp\DpInstExitCode2ExitCode_tst.exe",true,"NotUsed",TestName="extractEmbeddedResourceToFile - Expect success")>]
+    [<TestCase(@"c:\temp\folderthatdonotexist\DpInstExitCode2ExitCode_tst.exe",false,"Could not find a part of the path",TestName="extractEmbeddedResourceToFile - Extract to folder that do not exist - Expect failure")>]
+    let extractEmbeddedResourceToFile (destinationFilePathString:string, expectSuccess: bool, expectedErrorMessage:string) =
         let res =
             result {
-                let! testPath = Path.create @"c:\temp\DpInstExitCode2ExitCode_tst.exe";
+                let! testPath = Path.create destinationFilePathString;
                 let! testResourceName = ResourceName.create "DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe"
                 let! resultPath = EmbeddedResouce.extractEmbeddedResourceToFile (testResourceName, testResourceName.GetType().Assembly,testPath) 
                 return resultPath
             }
         match res with
-        | Ok p -> Assert.IsTrue(true,System.String.Format("Success was expected"))
-        | Error e -> Assert.IsTrue(false,System.String.Format("Error: {0}",e.Message))
-
-
+        | Ok p -> 
+            Assert.IsTrue(expectSuccess,System.String.Format("Target call succeded when failure was expected"))
+        | Error e -> 
+            Assert.IsFalse(expectSuccess,System.String.Format("Target call failed when it was expected to succeded. Error: {0}",e.Message))
+            Assert.IsTrue(e.Message.StartsWith(expectedErrorMessage),"Error message was not expected. Actual: " + e.Message)
+ 
     let toStringArray (d:string) =
         d.Split("|",StringSplitOptions.None)
  
