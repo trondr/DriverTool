@@ -18,6 +18,7 @@ module Web =
     let downloadFilePlain (sourceUri:Uri, force, destinationFilePath:Path) =
         try
             use webClient = new WebClient()
+            webClient.Proxy <- null;
             let webHeaderCollection = new WebHeaderCollection()
             webHeaderCollection.Add("User-Agent", "LenovoUtil/1.0") 
             webClient.Headers <- webHeaderCollection                          
