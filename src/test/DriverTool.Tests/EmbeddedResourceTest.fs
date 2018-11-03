@@ -71,4 +71,9 @@ module EmbeddedResourceTest  =
         match res with
         |Ok v -> Assert.IsTrue(true)
         |Error ex -> Assert.IsTrue(false,ex.Message)
-        
+    
+    [<Test>]
+    let getPackageTemplateEmbeddedResourceNamesTest () =
+        let actual = CreateDriverPackage.getPackageTemplateEmbeddedResourceNames
+        let actualResourceNameCount = (actual |> Seq.toList).Length
+        Assert.AreEqual(96,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
