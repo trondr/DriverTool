@@ -23,8 +23,8 @@
         let cachedLogFactory =
             memoize logFactory
             
-        let Logger<'T> = 
-            cachedLogFactory(typeof<'T>)
+        //let Logger<'T> = 
+        //    cachedLogFactory(typeof<'T>)
 
         type System.Object with
             member x.Logger() = 

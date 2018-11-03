@@ -1,8 +1,9 @@
 ﻿namespace DriverTool
 open F
-open Logging
 
 module ProcessOperations =
+    let logger = Logging.getLoggerByName("ProcessOperations")
+
     type ProcessOperations = class end
     open System.Diagnostics
     
@@ -17,11 +18,11 @@ module ProcessOperations =
         startInfo.WorkingDirectory <- System.IO.Path.GetDirectoryName(filePath)
         startInfo.CreateNoWindow <- true
         startInfo.UseShellExecute <- false
-        Logger<ProcessOperations>.InfoFormat("Start Process: '{0}' {1}",filePath,arguments)
+        logger.InfoFormat("Start Process: '{0}' {1}",filePath,arguments)
         let runningProcess = Process.Start(startInfo)
         runningProcess.WaitForExit()
         let exitCode = runningProcess.ExitCode
-        Logger<ProcessOperations>.InfoFormat("Exit Process: '{0}' {1}. Exit code: {2}",filePath,arguments,exitCode)
+        logger.InfoFormat("Exit Process: '{0}' {1}. Exit code: {2}",filePath,arguments,exitCode)
         exitCode
     
     let startProcess (filePath, arguments) =

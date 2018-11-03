@@ -57,7 +57,7 @@ module EmbeddedResouce =
                 FileOperations.ensureFileExists filePath
             |Error ex -> Result.Error ex    
         with
-        |ex -> Result.Error ex
+        | _ as ex -> Result.Error ex
         
         
         
