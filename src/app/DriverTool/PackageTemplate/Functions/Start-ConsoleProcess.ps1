@@ -44,16 +44,10 @@ function Start-ConsoleProcess {
         $oStdOutBuilder = New-Object -TypeName System.Text.StringBuilder
         $oStdErrBuilder = New-Object -TypeName System.Text.StringBuilder
 
-        # Adding event handers for stdout and stderr.
+        # Adding event handlers for stdout and stderr.
         $sScripBlock = {
             if (! [String]::IsNullOrEmpty($EventArgs.Data)) {
                 $Event.MessageData.AppendLine($EventArgs.Data)
-                # Write-Host $($EventArgs.Data) -ForegroundColor Green
-                # Write-Log -Level INFO -Message $($EventArgs.Data)
-                # if($LogFile)
-                # {
-                #     $($EventArgs.Data) | Out-File -FilePath $($LogFile) -Encoding utf8
-                # }
             }
         }
         $oStdOutEvent = Register-ObjectEvent -InputObject $oProcess -Action $sScripBlock -EventName 'OutputDataReceived' -MessageData $oStdOutBuilder
@@ -78,19 +72,28 @@ function Start-ConsoleProcess {
             "StdOut"   = $oStdOutBuilder.ToString().Trim();
             "StdErr"   = $oStdErrBuilder.ToString().Trim()
         })
+        if($LogFile)
+        {
+            $(Get-ConsoleLogLine -Level INFO -Message "'$($oResult.ExeFile)' $($oResult.Args)") | Out-File -FilePath $($LogFile) -Encoding utf8 -Append
+        }
+
         if (! [String]::IsNullOrEmpty($($oResult.StdOut))) {
             Write-Log -Level INFO -Message $($oResult.StdOut)
             if($LogFile)
             {
-                $($oResult.StdErr) | Out-File -FilePath $($LogFile) -Encoding utf8 -Append
+                $($oResult.StdOut) | Out-File -FilePath $($LogFile) -Encoding utf8 -Append
             }
         }
         if (! [String]::IsNullOrEmpty($($oResult.StdErr))) {
             Write-Log -Level ERROR -Message $($oResult.StdErr)
             if($LogFile)
-            {
+            { 
                 $($oResult.StdErr) | Out-File -FilePath $($LogFile) -Encoding utf8 -Append
             }
+        }
+        if($LogFile)
+        {
+            $(Get-ConsoleLogLine -Level INFO -Message "'$($oResult.ExeFile)' $($oResult.Args) -> $($oResult.ExitCode)") | Out-File -FilePath $($LogFile) -Encoding utf8 -Append
         }
         return $oResult.ExitCode
     }
