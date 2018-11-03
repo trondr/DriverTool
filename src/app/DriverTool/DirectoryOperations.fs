@@ -2,7 +2,8 @@
 module DirectoryOperations =
     type DirectoryOperations = class end
     open System
-    open Logging
+
+    let logger = Logging.getLoggerByName("DirectoryOperations")
 
     let createDirectoryUnsafe (directoryPath:Path) =
         System.IO.Directory.CreateDirectory(directoryPath.Value) |> ignore
@@ -22,7 +23,7 @@ module DirectoryOperations =
             directoryPathExists directoryPath
         match (not directoryExists && createIfNotExists) with
         |true->
-            Logger<DirectoryOperations>.InfoFormat("Creating directory: '{0}'...",directoryPath.Value)
+            logger.InfoFormat("Creating directory: '{0}'...",directoryPath.Value)
             createDirectory directoryPath
         |false->
            match directoryExists with
