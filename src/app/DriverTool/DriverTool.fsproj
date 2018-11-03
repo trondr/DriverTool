@@ -31,7 +31,7 @@
     <EmbeddedResource Include="PackageTemplate\Drivers_Example\Drivers-README.txt" />
     <EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\License.txt" />
     <EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\readme.txt" />
-    <EmbeddedResource Include="PackageTemplate\Functions\Util\Resume BitLocker\DriverTool Resume BitLocker Protection.xml" />
+    <EmbeddedResource Include="PackageTemplate\Functions\Util\BitLocker\DriverTool Resume BitLocker Protection.xml" />
     <EmbeddedResource Include="PackageTemplate\Install.xml" />
     <None Include="App.config" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
@@ -118,8 +118,8 @@
     <EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\7-zip.chm" />
     <EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\7za.exe" />
     <EmbeddedResource Include="PackageTemplate\Functions\Util\INIFileParser\INIFileParser.dll" />
-    <EmbeddedResource Include="PackageTemplate\Functions\Util\Resume BitLocker\DriverTool Disable BitLocker Protection.cmd" />
-    <EmbeddedResource Include="PackageTemplate\Functions\Util\Resume BitLocker\DriverTool Resume BitLocker Protection.cmd" />
+    <EmbeddedResource Include="PackageTemplate\Functions\Util\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
+    <EmbeddedResource Include="PackageTemplate\Functions\Util\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
     <EmbeddedResource Include="PackageTemplate\Functions\Write-IniValue.ps1" />
     <EmbeddedResource Include="PackageTemplate\Functions\Write-Log.ps1" />
     <EmbeddedResource Include="PackageTemplate\Install.cmd" />
