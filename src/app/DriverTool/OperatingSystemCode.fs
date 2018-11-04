@@ -1,5 +1,6 @@
 ﻿namespace DriverTool
 open System
+open DriverTool.Util.FSharp
 
 type InvalidOperatingSystemCodeException(operatingSytemCode:string, message : string) =
         inherit Exception(

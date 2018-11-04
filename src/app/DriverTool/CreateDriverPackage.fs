@@ -428,8 +428,13 @@ module CreateDriverPackage =
             return! (extractResult |> toAccumulatedResult)
         }
 
+
+    open DriverTool.Util
+
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path), logDirectory) = 
-        
+            let x = new Class1()
+            logger.Info(x.X)
+            
             result {
                 let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
