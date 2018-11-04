@@ -47,3 +47,4 @@ build.fsx.lock
 build/
 artifact/
 src/app/DriverTool/PackageTemplate/Drivers/[0-9]*
+packages/
