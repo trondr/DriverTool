@@ -15,6 +15,7 @@
     <Compile Include="OperatingSystemCodeTests.fs" />
     <Compile Include="PathsTests.fs" />
     <Compile Include="PathTests.fs" />
+    <Compile Include="EnvironmentTests.fs" />
     <Compile Include="EmbeddedResourceTest.fs" />
     <Compile Include="PackageInfoTests.fs" />
     <Compile Include="WmiHelperTests.fs" />

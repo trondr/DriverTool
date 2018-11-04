@@ -135,6 +135,8 @@
     <Compile Include="PathOperations.fs" />
     <Compile Include="FileOperations.fs" />
     <Compile Include="ExistingPath.fs" />
+    <Compile Include="Environment.fs" />
+    <Compile Include="XmlToolKit.fs" />
     <Compile Include="Checksum.fs" />
     <Compile Include="WmiHelper.fs" />
     <Compile Include="ProcessOperations.fs" />
@@ -142,6 +144,7 @@
     <Compile Include="OperatingSystemCode.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="Web.fs" />
+    <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="EmbeddedResouce.fs" />
@@ -157,6 +160,7 @@
     <PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.1.2" />
     <PackageReference Include="FSharp.Configuration" Version="1.5.0" />
     <PackageReference Include="FSharp.Data" Version="2.4.6" />
+    <PackageReference Include="FSharp.Data.Xsd" Version="1.0.2" />
     <PackageReference Include="FSharpx.Collections" Version="1.17.0" />
     <PackageReference Include="FSharpx.Core" Version="1.8.32" />
     <PackageReference Include="FSharpx.Extras" Version="2.2.1" />
