@@ -287,6 +287,7 @@ module CreateDriverPackage =
                     Path.create destinationFileName
                 let! parentDirectoryPath = (Path.create (System.IO.Path.GetDirectoryName(destinationFilePath.Value)))
                 let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists (parentDirectoryPath, true)
+                logger.Info("Verified that directory exists:" + existingParentDirectoryPath.Value)
                 let assembly = destinationFilePath.GetType().Assembly
                 logger.Info(String.Format("Extracting resource '{0}' -> '{1}'",resourceName, destinationFilePath.Value))
                 let! fileResult = 
@@ -426,7 +427,7 @@ module CreateDriverPackage =
                     )
             return! (extractResult |> toAccumulatedResult)
         }
-   
+
     let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path), logDirectory) = 
         
             result {
@@ -450,13 +451,12 @@ module CreateDriverPackage =
                                
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
-                
-
-                //let! toolsPath = combine2Paths (versionedPackagePath.Value, "Tools")
-                //logger.InfoFormat("Extracting tools to folder '{0}'...", versionedPackagePath.Value)
-                //let! existingToolsPath = DirectoryOperations.ensureDirectoryExists (toolsPath, true)
-                //let toolsExtractResult = extractDpInstExitCodeToExitCodeExe existingToolsPath
-
+                let! installXmlPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"Install.xml"))
+                let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
+                let! installConfiguration = DriverTool.InstallXml.loadInstallXml existingInstallXmlPath
+                let updatedInstallConfiguration = { installConfiguration with LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables logDirectory)}
+                let! savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
+                logger.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath.Value, (Logging.valueToString savedInstallConfiguration))
                 let res = 
                     match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with
                     |Ok _ -> Result.Ok ()
