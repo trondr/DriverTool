@@ -2,7 +2,7 @@
   "profiles": {
     "DriverTool": {
       "commandName": "Project",
-      "commandLineArgs": "ExportRemoteUdateInfo /csvFileName=\"c:\\temp\\updates.csv\" /overWrite=\"True\" /modelCode=\"20EQ\" /operatingSystemCode=\"Win10\""
+      "commandLineArgs": "CreateDriverPackage /modelCode=\"20EQ\" /operatingSystemCode=\"Win10\" /destinationFolder=\"c:\\temp\\20EQ_Driver_Package\" /logDirectory=\"%public%\\Logs\""
     }
   }
 }

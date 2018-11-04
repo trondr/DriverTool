@@ -60,7 +60,7 @@ function ExpandDrivers
 #   Logging preference
 #
 ###############################################################################
-$global:VerbosePreference = "Continue"
+$global:VerbosePreference = "SilentlyContinue"
 $global:DebugPreference = "SilentlyContinue"
 $global:WarningPreference = "Continue"
 $global:ErrorActionPreference = "Continue"

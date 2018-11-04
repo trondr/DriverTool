@@ -20,17 +20,19 @@
     <Compile Include="PackageInfoTests.fs" />
     <Compile Include="WmiHelperTests.fs" />
     <Compile Include="ExportRemoteUpdatesTests.fs" />
+    <Compile Include="OperatingSystemTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FSharpx.Collections" Version="1.17.0" />
     <PackageReference Include="FSharpx.Core" Version="1.8.32" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\app\DriverTool.Util\DriverTool.Util.fsproj" />
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj" />
   </ItemGroup>
 

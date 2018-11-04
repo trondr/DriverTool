@@ -5,6 +5,8 @@ open DriverTool
 
 [<TestFixture>]
 module WmiHelperTests  =
+    open DriverTool.Util.FSharp
+
     [<Test>]
     let WmiHelperTest_Success() =
         let actualResult = WmiHelper.getWmiProperty "Win32_ComputerSystem" "Name"
