@@ -47,6 +47,7 @@
     <Content Include="packages.config" />
     <Compile Include="WmiHelper.fs" />
     <Compile Include="OperatingSystem.fs" />
+    <Compile Include="OperatingSystemOperations.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
