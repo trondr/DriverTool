@@ -27,7 +27,10 @@ function Write-Log {
         $LogLevelColorMap.Add("ERROR","Red")
         $LogLevelColorMap.Add("FATAL","Red")
         $LogLevelColorMap.Add("DEBUG","Cyan")
-        $logger = [log4net.LogManager]::GetLogger("ScriptInstaller")
+        if( $(Test-Path variable.global.LoggingIsInitialized) -and ($global:LoggingIsInitialized -eq $true) )
+        {
+            $logger = [log4net.LogManager]::GetLogger("ScriptInstaller")
+        }
     }
     
     process {        
@@ -52,19 +55,25 @@ function Write-Log {
         if(($Level -eq "FATAL") -and ($VerbosePreference -eq "SilentlyContinue"))
         {
             Write-Host $ConsoleLine -ForegroundColor $LogLevelColorMap[$Level] -BackgroundColor White
-            $logger.Fatal($Message)
+            if( $(Test-Path variable.global.LoggingIsInitialized) -and ($global:LoggingIsInitialized -eq $true) )
+            {
+                $logger.Fatal($Message)
+            }
             [System.Console]::Beep(2000,1000)
         }
         else {
             Write-Host $ConsoleLine -ForegroundColor $LogLevelColorMap[$Level]
-            switch ( $Level )
+            if( $(Test-Path variable.global.LoggingIsInitialized) -and ($global:LoggingIsInitialized -eq $true) )
             {
-                "INFO" { $logger.Info($Message) }
-                "SUCCESS" { $logger.Info($Message) }
-                "WARN" { $logger.Warn($Message) }
-                "ERROR" { $logger.Error($Message) }
-                "DEBUG" { $logger.Debug($Message) }
-            }             
+                switch ( $Level )
+                {
+                    "INFO" { $logger.Info($Message) }
+                    "SUCCESS" { $logger.Info($Message) }
+                    "WARN" { $logger.Warn($Message) }
+                    "ERROR" { $logger.Error($Message) }
+                    "DEBUG" { $logger.Debug($Message) }
+                }   
+            }          
         }
     }
     
