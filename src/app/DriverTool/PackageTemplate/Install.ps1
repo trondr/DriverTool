@@ -5,6 +5,7 @@ Param(
     [string]    
     $Action
 )
+Set-StrictMode -Version Latest
 Set-PSDebug -Strict
 
 function Init
@@ -88,6 +89,7 @@ $functionScripts | ForEach-Object{
 }
 Clear-Cache
 Initialize-Logging
+
 ###############################################################################
 #   Parse action
 ###############################################################################
