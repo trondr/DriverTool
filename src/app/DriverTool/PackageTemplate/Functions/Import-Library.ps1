@@ -23,7 +23,7 @@ if (!("Redirector" -as [type]))
 
         protected Assembly AssemblyResolve(object sender, ResolveEventArgs resolveEventArgs)
         {
-            Console.WriteLine("Attempting to resolve: " + resolveEventArgs.Name); // remove this after its verified to work
+            //Console.WriteLine("Attempting to resolve: " + resolveEventArgs.Name); // remove this after its verified to work
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 var pattern  = "PublicKeyToken=(.*)$";
@@ -39,7 +39,7 @@ if (!("Redirector" -as [type]))
 
                         if (resolveEventArgs.Name.EndsWith("PublicKeyToken=" + publicKeyToken, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Console.WriteLine("Redirecting lib to: " + info.FullName); // remove this after its verified to work
+                            //Console.WriteLine("Redirecting lib to: " + info.FullName); // remove this after its verified to work
                             return assembly;
                         }
                     }
@@ -87,7 +87,7 @@ try
 catch
 {
     #.net core uses a different redirect method
-    write-warning "Unable to register assembly redirect(s). Are you on ARM (.Net Core)?"
+    Write-Warning "Unable to register assembly redirect(s). Are you on ARM (.Net Core)?"
 }
 
 
