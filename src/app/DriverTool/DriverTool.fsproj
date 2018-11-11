@@ -139,6 +139,8 @@
     <Compile Include="XmlToolKit.fs" />
     <Compile Include="Checksum.fs" />
     <Compile Include="ProcessOperations.fs" />
+    <Compile Include="Manufacturer.fs" />
+    <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
