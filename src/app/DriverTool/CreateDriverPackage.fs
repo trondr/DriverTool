@@ -429,12 +429,11 @@ module CreateDriverPackage =
         }
 
 
-    open DriverTool.Util
-
-    let createDriverPackageSimple ((model: ModelCode), (operatingSystem:OperatingSystemCode), (destinationFolderPath: Path), logDirectory) = 
-            let x = new Class1()
-            logger.Info(x.X)
-            
+    let updateInstallXml (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
+        ignore
+        
+    
+    let createDriverPackageSimple (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =             
             result {
                 let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
@@ -459,9 +458,22 @@ module CreateDriverPackage =
                 let! installXmlPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"Install.xml"))
                 let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
                 let! installConfiguration = DriverTool.InstallXml.loadInstallXml existingInstallXmlPath
-                let updatedInstallConfiguration = { installConfiguration with LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables logDirectory)}
-                let! savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
+                let packageName = String.Format("{0} {1} {2} {3} {4} Drv & Sw", packagePublisher, manufacturer.Value, systemFamily.Value, model.Value, operatingSystem.Value)
+                let updatedInstallConfiguration = 
+                    { installConfiguration with 
+                        LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables logDirectory);
+                        LogFileName = toValidDirectoryName (String.Format("{0}.log", packageName));
+                        PackageName = packageName;
+                        PackageVersion = "1.0"
+                        ComputerModel = model.Value;
+                        ComputerSystemFamiliy = systemFamily.Value;
+                        ComputerVendor = manufacturer.Value;
+                        OsShortName = operatingSystem.Value;
+                        Publisher = packagePublisher
+                    }
+                let savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
                 logger.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath.Value, (Logging.valueToString savedInstallConfiguration))
+                
                 let res = 
                     match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with
                     |Ok _ -> Result.Ok ()
@@ -469,7 +481,7 @@ module CreateDriverPackage =
                 return! res
             }
     
-    let createDriverPackage (modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
-        Logging.debugLoggerResult createDriverPackageSimple (modelCode, operatingSystem, destinationFolderPath, logDirectory)
+    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
+        Logging.debugLoggerResult createDriverPackageSimple (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath, logDirectory)
 
         

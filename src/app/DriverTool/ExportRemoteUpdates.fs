@@ -3,10 +3,7 @@ open FileOperations
 
 module ExportRemoteUpdates = 
     open System
-    open System.Net    
-    open System.Collections.Generic
     open System.Text.RegularExpressions
-    open Logging
         
     let validateExportRemoteUdateInfoParameters (modelCode:Result<ModelCode,Exception>, operatingSystemCode:Result<OperatingSystemCode,Exception>, csvPath:Result<Path,Exception>) = 
         
@@ -41,8 +38,14 @@ module ExportRemoteUpdates =
                 |] |> Array.filter (fun m -> (not (String.IsNullOrWhiteSpace(m)) ) )            
             Result.Error (new Exception(String.Format("Failed to validate one or more input parameters.{0}{1}",Environment.NewLine, String.Join(Environment.NewLine, errorMessages))))
 
+    let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
+        operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")
+    
+    let modelCode2DownloadableCode (modelCode: ModelCode) =
+        modelCode.Value.Substring(0,4)
+     
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
-        new Uri(String.Format("https://download.lenovo.com/catalog/{0}_{1}.xml",modelCode.Value,operatingSystemCode.Value))
+        new Uri(String.Format("https://download.lenovo.com/catalog/{0}_{1}.xml", (modelCode2DownloadableCode modelCode), (operatingSystemCode2DownloadableCode operatingSystemCode)))
 
     open FSharp.Data    
     open DriverTool
