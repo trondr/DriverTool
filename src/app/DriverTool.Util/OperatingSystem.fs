@@ -129,8 +129,26 @@ module OperatingSystem =
             |_ -> raise (new Exception(String.Format("Unsupported Operating System versjon '{0}.{1}'. ", osMajorVersion, osMinorVersion)))
         |_ -> raise (new Exception(String.Format("Unsupported Operating System major versjon '{0}'. ",osMajorVersion)))
     
+    open System.Text.RegularExpressions
+    //Source: http://www.fssnip.net/29/title/Regular-expression-active-pattern
+    let (|Regex|_|) pattern input =
+        let m = Regex.Match(input, pattern)
+        if m.Success then Some(List.tail [ for g in m.Groups -> g.Value ])
+        else None
+
+    let versionToMajorMinorVersion (version:string) =
+        match version with
+        |Regex @"^(\d+)\.(\d+)" [majorVersion;minorVersion] -> (Convert.ToInt32(majorVersion),Convert.ToInt32(minorVersion))
+        |_ -> (0,0)
+
+    let getOsVersion =
+        let osVersion = 
+            WmiHelper.getWmiProperty "Win32_OperatingSystem" "Version"
+        match osVersion with
+        |Ok osVer -> versionToMajorMinorVersion osVer
+        |Error ex -> raise (new Exception("Failed to get os version due to: " + ex.Message))
+
     let getOsShortName =
-        let osMajorVersion = System.Environment.OSVersion.Version.Major
-        let osMinorVersion = System.Environment.OSVersion.Version.Minor
+        let (osMajorVersion,osMinorVersion) = getOsVersion
         let isX64 = isOperatingSystemX64        
         getOsShortNameBase (osMajorVersion, osMinorVersion, isX64, isServer)
