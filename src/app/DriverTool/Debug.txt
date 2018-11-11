@@ -1,3 +1,4 @@
 ﻿Help
 ExportRemoteUdateInfo /csvFileName="c:\temp\updates.csv" /overWrite="False" /modelCode="20EQ" /operatingSystemCode="Win10"
 CreateDriverPackage /modelCode="20EQ" /operatingSystemCode="Win10" /destinationFolder="c:\temp\20EQ_Driver_Package"
+CreateDriverPackage /modelCode="20EQ" /operatingSystemCode="Win10" /destinationFolder="c:\temp\20EQ_Driver_Package" /logDirectory="%public%\Logs"
