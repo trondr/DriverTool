@@ -2,7 +2,7 @@
   "profiles": {
     "DriverTool": {
       "commandName": "Project",
-      "commandLineArgs": "CreateDriverPackage /modelCode=\"20EQ\" /operatingSystemCode=\"Win10\" /destinationFolder=\"c:\\temp\\20EQ_Driver_Package\" /logDirectory=\"%public%\\Logs\""
+      "commandLineArgs": "CreateDriverPackage /destinationFolder=\"c:\\temp\\20EQ_Driver_Package\" /logDirectory=\"%public%\\Logs\""
     }
   }
 }
