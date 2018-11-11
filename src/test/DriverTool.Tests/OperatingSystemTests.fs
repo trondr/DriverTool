@@ -1,6 +1,7 @@
 ﻿namespace DriverTool.Tests
 open DriverTool.Util.FSharp
 open NUnit.Framework
+open System
 
 [<TestFixture>]
 module OperatingSystemTests =
@@ -44,3 +45,40 @@ module OperatingSystemTests =
             OperatingSystem.getOsShortNameBase (osMajorVersion,osMinorVersion,isX64,isServer)
         Assert.AreEqual(expectedOsShortName,actual)
 
+    [<Test>]
+    [<TestCase(1u,false)>]
+    [<TestCase(2u,false)>]
+    [<TestCase(3u,false)>]
+    [<TestCase(4u,false)>]
+    [<TestCase(5u,false)>]
+    [<TestCase(6u,false)>]
+    [<TestCase(7u,true)>]
+    [<TestCase(8u,true)>]
+    [<TestCase(9u,true)>]
+    [<TestCase(10u,true)>]
+    [<TestCase(11u,false)>]
+    [<TestCase(12u,true)>]
+    [<TestCase(13u,true)>]
+    [<TestCase(14u,true)>]
+    [<TestCase(15u,true)>]
+    [<TestCase(16u,false)>]
+    [<TestCase(17u,true)>]
+    [<TestCase(18u,true)>]
+    [<TestCase(19u,true)>]
+    [<TestCase(20u,true)>]
+    [<TestCase(21u,true)>]
+    [<TestCase(22u,true)>]
+    [<TestCase(23u,true)>]
+    [<TestCase(24u,true)>]
+    [<TestCase(25u,true)>]
+    [<TestCase(29u,true)>]
+    [<TestCase(39u,true)>]
+    [<TestCase(40u,true)>]
+    [<TestCase(41u,true)>]
+    [<TestCase(42u,true)>]
+    let isServerTests (sku:UInt32, expected:bool) =
+        let actual = OperatingSystem.isServerBase (sku)
+        Assert.AreEqual(expected,actual)
+        let actualCurrent = OperatingSystem.isServer
+        Assert.AreEqual(false,actualCurrent)
+        

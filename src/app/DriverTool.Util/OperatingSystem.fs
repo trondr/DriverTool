@@ -3,46 +3,51 @@
 module OperatingSystem =
     open System
     
-    let getOperatingSystemSku : Result<int,Exception> =
+    let getOperatingSystemSku : Result<UInt32,Exception> =
         let operatingSystemSku = 
             WmiHelper.getWmiProperty "Win32_OperatingSystem" "OperatingSystemSKU"
         operatingSystemSku
-
-    let isServer (operatingSystemSku : int) : bool  =
+    
+    let isServerBase (operatingSystemSku : UInt32) : bool  =
         match operatingSystemSku with
-        |0  -> false
-        |1  -> false
-        |2  -> false
-        |3  -> false
-        |4  -> false
-        |5  -> false
-        |6  -> false
-        |7  -> true
-        |8  -> true
-        |9  -> true
-        |10 -> true
-        |11 -> false
-        |12 -> true
-        |13 -> true
-        |14 -> true
-        |15 -> true
-        |16 -> false
-        |17 -> true
-        |18 -> true
-        |19 -> true
-        |20 -> true
-        |21 -> true
-        |22 -> true
-        |23 -> true
-        |24 -> true
-        |25 -> true
-        |29 -> true
-        |39 -> true
-        |40 -> true
-        |41 -> true
-        |42 -> true
+        |0u  -> false
+        |1u  -> false
+        |2u  -> false
+        |3u  -> false
+        |4u -> false
+        |5u  -> false
+        |6u  -> false
+        |7u  -> true
+        |8u  -> true
+        |9u  -> true
+        |10u -> true
+        |11u -> false
+        |12u -> true
+        |13u -> true
+        |14u -> true
+        |15u -> true
+        |16u -> false
+        |17u -> true
+        |18u -> true
+        |19u -> true
+        |20u -> true
+        |21u -> true
+        |22u -> true
+        |23u -> true
+        |24u -> true
+        |25u -> true
+        |29u -> true
+        |39u -> true
+        |40u -> true
+        |41u -> true
+        |42u -> true
         |_ -> raise (new Exception(String.Format("OperatingSystemSKU '{0}' is unknown. ",operatingSystemSku)))
     
+    let isServer =
+        match(getOperatingSystemSku) with
+        |Ok sku -> isServerBase sku
+        |Error ex -> raise (new Exception("Failed to determine if current operatingsystem is a server edition due to: " + ex.Message))
+
     let isOperatingSystemX64Base intPtrSize processorArchitecture =
         match intPtrSize with
         | 8 -> true
@@ -128,8 +133,4 @@ module OperatingSystem =
         let osMajorVersion = System.Environment.OSVersion.Version.Major
         let osMinorVersion = System.Environment.OSVersion.Version.Minor
         let isX64 = isOperatingSystemX64        
-        match getOperatingSystemSku with
-        |Ok operatingSystemSku -> 
-            let isServerF = (isServer operatingSystemSku)
-            getOsShortNameBase (osMajorVersion, osMinorVersion,isX64,isServerF)
-        |Error _ -> "UNKNOWN_OS"
+        getOsShortNameBase (osMajorVersion, osMinorVersion, isX64, isServer)
