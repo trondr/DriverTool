@@ -51,8 +51,8 @@ module EmbeddedResourceTest  =
                 let dictionary = CreateDriverPackage.resourceNameToDirectoryDictionary destinationFolderPath
                 let fileName = CreateDriverPackage.resourceNameToFileName (resourceName, dictionary)
                 return match fileName with
-                    |Some fn -> fn
-                    |None -> String.Empty
+                        |Some fn -> fn
+                        |None -> String.Empty
              }
          match fileNameResult with         
          |Ok actual -> Assert.AreEqual(expectedFileName, actual, "Resource file name was not expected.")

@@ -21,6 +21,7 @@
     <Compile Include="WmiHelperTests.fs" />
     <Compile Include="ExportRemoteUpdatesTests.fs" />
     <Compile Include="OperatingSystemTests.fs" />
+    <Compile Include="WebParsingTests.fs" />
   </ItemGroup>
 
   <ItemGroup>

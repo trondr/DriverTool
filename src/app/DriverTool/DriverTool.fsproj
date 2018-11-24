@@ -150,6 +150,7 @@
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="EmbeddedResouce.fs" />
     <Compile Include="PackageDefinition.fs" />
+    <Compile Include="WebParsing.fs" />
     <Compile Include="CreateDriverPackage.fs" />
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
@@ -157,11 +158,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="7.1.1" />
+    <PackageReference Include="CsvHelper" Version="9.2.3" />
     <PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.1.2" />
     <PackageReference Include="FSharp.Configuration" Version="1.5.0" />
     <PackageReference Include="FSharp.Data" Version="3.0.0" />
     <PackageReference Include="FSharp.Data.Xsd" Version="1.0.2" />
+    <PackageReference Include="FSharp.Interop.Dynamic" Version="4.0.3.130" />
     <PackageReference Include="FSharpx.Collections" Version="1.17.0" />
     <PackageReference Include="FSharpx.Core" Version="1.8.32" />
     <PackageReference Include="FSharpx.Extras" Version="2.2.1" />
@@ -179,7 +181,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.5.2" />
+    <PackageReference Update="FSharp.Core" Version="4.5.3" />
   </ItemGroup>
 
 </Project>
