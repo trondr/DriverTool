@@ -9,8 +9,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>309e5c18-f8e2-4521-b08c-d98559c67c67</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>DriverTool.Tests2</RootNamespace>
-    <AssemblyName>DriverTool.Tests2</AssemblyName>
+    <RootNamespace>DriverTool.Tests</RootNamespace>
+    <AssemblyName>DriverTool.Tests</AssemblyName>
     <UseStandardResourceNames>true</UseStandardResourceNames>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>19822aea-c088-455d-b5a5-4738a3a9dba7</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DriverTool2</RootNamespace>
-    <AssemblyName>DriverTool2</AssemblyName>
+    <RootNamespace>DriverTool</RootNamespace>
+    <AssemblyName>DriverTool</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <UseStandardResourceNames>true</UseStandardResourceNames>
@@ -45,7 +45,6 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\02. Log4Net Credit.xml" />
     <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />
@@ -56,9 +55,116 @@
     <EmbeddedResource Include="License\02. Log4Net License.xml" />
     <EmbeddedResource Include="License\03. NUnit License.xml" />
     <EmbeddedResource Include="License\04. CsvHelper License.xml" />
-    <EmbeddedResource Include="License\05. Log4NetCMTrace License.xml" />
+    <EmbeddedResource Include="License\05. Log4NetCMTrace License.xml" /> 
+	<EmbeddedResource Include="PackageTemplate\Install.config.xml" />
+	<EmbeddedResource Include="PackageTemplate\Install.xml" />
+	<EmbeddedResource Include="PackageTemplate\Install.cmd" />
+	<EmbeddedResource Include="PackageTemplate\Install.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe.config" />
+	<EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
+	<EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />	
+    <EmbeddedResource Include="PackageTemplate\Drivers_Example\020_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224_2017-08-23\DT-UnInstall-Package.cmd" />
+    <EmbeddedResource Include="PackageTemplate\Drivers_Example\020_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224_2017-08-23\DT-Install-Package.cmd" />
+    <EmbeddedResource Include="PackageTemplate\Drivers_Example\040_Camera_and_Card_Reader_Re_10_64_10.0.16299.21304_2018-03-29\DT-UnInstall-Package.cmd" />
+    <EmbeddedResource Include="PackageTemplate\Drivers_Example\040_Camera_and_Card_Reader_Re_10_64_10.0.16299.21304_2018-03-29\DT-Install-Package.cmd" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Assert-FileExists.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Assert-FileNotExists.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Assert-IsAdministrator.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Assert-IsSupported.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Clear-Cache.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Compress-Drivers.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Compress-Folder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Copy-Drivers.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Expand-Drivers.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Expand-Folder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-7ZipExe.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-ApplicationName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-ApplicationRegistryPath.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-Cache.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-CachedValue.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-ChangeExe.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-CmdExe.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-Company.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-ConsoleLogLine.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-DestinationDriverToolResumeBitLockerProtectionCmd.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-DriversFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-DriversZipFile.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-DriverToolProgramDataFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-DriverToolResumeBitLockerProtectionCmdFileName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-DriverToolResumeBitLockerProtectionScheduledTaskName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-DriverToolResumeBitLockerProtectionScheduledTaskXml.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-FunctionsFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-FunctionsUtilFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-InstallPackageScriptName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-InstallProperty.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-InstallXml.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-LocalDriversFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-LogDirectory.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-LogFile.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-LogFileLogLine.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-LogFileName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-ManageBdeExe.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-OsShortName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-PackageFolderName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-RobocopyExe.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-RobocopyResult.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-SchTasksExe.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-ScriptFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-SourceDriverToolResumeBitLockerProtectionCmd.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-SystemFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Get-UnInstallPackageScriptName.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Import-DriverToolUtilLibrary.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Import-IniFileParserLibrary.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Import-Library.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Import-Log4NetLibrary.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Initialize-Logging.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Install-Drivers.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Install-DriverToolResumeBitLockerProtectionCmd.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Invoke-ChangeUserExecute.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Invoke-ChangeUserInstall.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Invoke-InstallAction.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Invoke-Robocopy.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Read-IniValue.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Register-Application.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Remove-DriverToolProgramDataFolder.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Reset-ConfigFlags.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Resume-BitLockerProtection.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Show-Cache.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Start-ConsoleProcess.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Suspend-BitLockerProtection.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Test-IsAdministrator.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Test-IsBitLockerProtected.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Test-IsPathLocal.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Test-IsTerminalServer.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Trace-FunctionCall.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\UnInstall-Drivers.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\UnInstall-DriverToolResumeBitLockerProtectionCmd.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Unregister-Application.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Use-Culture.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Use-Object.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Write-IniValue.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Write-Log.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Assert-DirectoryExists.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Assert-DirectoryNotExists.ps1" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\7-zip.chm" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\License.txt" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\readme.txt" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\7zip\7za.exe" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\BitLocker\DriverTool Resume BitLocker Protection.xml" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\Log4Net\Log4NetCMTrace.dll.config" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\Log4Net\log4net.dll" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\Log4Net\Log4NetCMTrace.dll" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\DriverTool.Util\DriverTool.Util.pdb" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\DriverTool.Util\FSharp.Core.dll" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\DriverTool.Util\System.ValueTuple.dll" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\DriverTool.Util\DriverTool.Util.dll" />
+	<EmbeddedResource Include="PackageTemplate\Functions\Util\INIFileParser\INIFileParser.dll" />
+
+	<Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config" />    
     <None Include="Script.fsx" />
     <Compile Include="Configuration.fs" />
     <Compile Include="F0.fs" />
@@ -90,6 +196,15 @@
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
     <Compile Include="Program.fs" />
+    <COMReference Include="Microsoft Internet Controls">
+      <Guid>{eab22ac0-30c1-11cf-a7eb-0000c05bae0b}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <Isolated>False</Isolated>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Private>True</Private>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CsvHelper">
@@ -144,8 +259,6 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj">
       <Name>DriverTool.CSharpLib</Name>
       <Project>{09a4cb06-46f7-4b78-b972-686516b67169}</Project>
@@ -157,24 +270,13 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="Microsoft Internet Controls">
-      <Guid>{eab22ac0-30c1-11cf-a7eb-0000c05bae0b}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>1</VersionMinor>
-      <Lcid>0</Lcid>
-      <Isolated>False</Isolated>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Private>True</Private>
-    </COMReference>
-  </ItemGroup>
   <ItemGroup Condition="'$(NCrunch)' == '1'">
-	<Reference Include="FSharp.Data.Xsd.DesignTime">
-	<HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data.xsd\1.0.2\lib\net45\FSharp.Data.Xsd.DesignTime.dll</HintPath>
-	</Reference>
-	<Reference Include="FSharp.Data.DesignTime">
-	<HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
-	</Reference>
+    <Reference Include="FSharp.Data.Xsd.DesignTime">
+      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data.xsd\1.0.2\lib\net45\FSharp.Data.Xsd.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.DesignTime">
+      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

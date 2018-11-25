@@ -6,6 +6,7 @@ open DriverTool
 module EmbeddedResourceTest  =    
     open DriverTool.EmbeddedResouce
     open System
+    open System.Text
 
     [<Test>]
     [<TestCase(@"c:\temp\DpInstExitCode2ExitCode_tst.exe",true,"NotUsed",TestName="extractEmbeddedResourceToFile - Expect success")>]
@@ -61,25 +62,30 @@ module EmbeddedResourceTest  =
 
     [<Test>]
     let extractPackageTemplateTest () = 
-        let destinationFolderPathString = @"c:\temp\testpackage"
+        let destinationFolderPathString = @"c:\temp\testpackage" 
+        if (System.IO.Directory.Exists(destinationFolderPathString)) then
+                    System.IO.Directory.Delete(destinationFolderPathString,true)
+                    |>ignore
         let res =
             result{
                 let! destinationFolderPath = Path.create destinationFolderPathString
-                System.IO.Directory.Delete(destinationFolderPath.Value,true)
                 CreateDriverPackage.extractPackageTemplate destinationFolderPath |> ignore
                 return destinationFolderPath
             }
         match res with
         |Ok p -> 
             Assert.IsTrue(true)
-            Assert.AreEqual(96, System.IO.Directory.GetFiles(p.Value,"*.*",System.IO.SearchOption.AllDirectories).Length, "Extracted file count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
+            Assert.AreEqual(105, System.IO.Directory.GetFiles(p.Value,"*.*",System.IO.SearchOption.AllDirectories).Length, "Extracted file count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
         |Error ex -> Assert.IsTrue(false,ex.Message)
     
+    
+
+
     [<Test>]
     let getPackageTemplateEmbeddedResourceNamesTest () =
         let actual = CreateDriverPackage.getPackageTemplateEmbeddedResourceNames
         let actualResourceNameCount = (actual |> Seq.toList).Length
-        Assert.AreEqual(96,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
+        Assert.AreEqual(105,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
 
 
     [<Test>]
@@ -90,7 +96,12 @@ module EmbeddedResourceTest  =
         |Ok destinationFolderPath ->
             let actual = CreateDriverPackage.mapResourceNamesToFileNames (destinationFolderPath,CreateDriverPackage.getPackageTemplateEmbeddedResourceNames)
             let actualResourceNameToFileMapCount = (actual |> Seq.toList).Length
-            Assert.AreEqual(96, actualResourceNameToFileMapCount,"Resource name vs file name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. If a folder is added to the package templated folder structure, the resourceNameToDirectoryDictionary function must be updated also.")
+            Assert.AreEqual(105, actualResourceNameToFileMapCount,"Resource name vs file name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. If a folder is added to the package templated folder structure, the resourceNameToDirectoryDictionary function must be updated also.")
         |Error ex -> Assert.Fail(ex.Message)
     
-    
+    [<Test>]
+    let getAllEmbeddedResourceNamesTest () =
+        let actual = 
+            CreateDriverPackage.getAllEmbeddedResourceNames
+        let allResourceNames = String.concat Environment.NewLine actual                
+        Assert.AreEqual(118,actual.Length,allResourceNames)

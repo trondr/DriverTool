@@ -397,13 +397,19 @@ module CreateDriverPackage =
                     Some fileN
                 | None -> None
             fileName
+    
+    let getAllEmbeddedResourceNames =
+        let assembly = typeof<ThisAssembly>.Assembly
+        assembly.GetManifestResourceNames()
+
+    let isDriverPackageEmbeddedResourceName (resourceName:string) =
+        resourceName.StartsWith("DriverTool.PackageTemplate")
 
     let getPackageTemplateEmbeddedResourceNames =
-        let assembly = System.Reflection.Assembly.GetExecutingAssembly()
-        let embededResourceNames = 
-                assembly.GetManifestResourceNames()
-                |> Seq.filter (fun x -> x.StartsWith("DriverTool.PackageTemplate"))
-        embededResourceNames
+        let embeddedResourceNames = 
+                getAllEmbeddedResourceNames
+                |> Seq.filter (fun x -> (isDriverPackageEmbeddedResourceName x))
+        embeddedResourceNames
 
     let mapResourceNamesToFileNames (destinationFolderPath:Path, resourceNames:seq<string>)=
         let directoryLookDictionary = resourceNameToDirectoryDictionary destinationFolderPath

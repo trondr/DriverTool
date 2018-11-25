@@ -31,7 +31,7 @@
                 cachedLogFactory(x.GetType())
 
         let getLoggerByName (name:string) =
-            LogManager.GetLogger(Assembly.GetCallingAssembly(),name)
+            LogManager.GetLogger(typeof<F0.ThisAssembly>.Assembly,name)
 
         type LoggingExtensions() = 
             [<Extension>]
