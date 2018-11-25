@@ -26,7 +26,7 @@ module EmbeddedResourceTest  =
             Assert.IsTrue(e.Message.StartsWith(expectedErrorMessage),"Error message was not expected. Actual: " + e.Message)
  
     let toStringArray (d:string) =
-        d.Split("|",StringSplitOptions.None)
+        d.Split([|'|'|],StringSplitOptions.None)
  
     [<Test>]
     [<TestCase("DriverTool.PackageTemplate.Install.xml",@"DriverTool.PackageTemplate.Install.xml|DriverTool.PackageTemplate.Install|DriverTool.PackageTemplate|DriverTool", TestName="resourceNameToPotentialDirectoriesTest 1")>]

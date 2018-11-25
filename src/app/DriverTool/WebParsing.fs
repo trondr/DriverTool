@@ -1,28 +1,18 @@
 ﻿namespace DriverTool
 
 module WebParsing =
-    open System
-    open FSharp.Interop.Dynamic
-    open System.Reflection
+    let logger = 
+        Logging.getLoggerByName("CreateDriverPackage")
+    open System    
 
-    let getContentFromWebPage (uri:string)  =
-        let ieType = Type.GetTypeFromProgID("InternetExplorer.Application", true)
-        let ie = Activator.CreateInstance(ieType)
-        ie?Navigate(uri)
-        while (ie?ReadyState <> 4) do
-            System.Threading.Thread.Sleep(100)
-        let ieDocument = ie?Document
-        let parentWindow = ieDocument?parentWindow
-        parentWindow?execScript("var JSIEVariable = new XMLSerializer().serializeToString(document);", "javascript") |> ignore        
-        let parentWindowType = parentWindow?GetType() :> Type
-        let obj = parentWindowType.InvokeMember("JSIEVariable", BindingFlags.GetProperty, null, parentWindow, null)        
-        let html = obj.ToString()
-        ie?Quit()
-        html
+    let getContentFromWebPage (uri:string)  =  
+        try
+            let html = DriverTool.CSharpLib.WebParser.GetWebPageContentUnSafe(uri, logger)
+            Result.Ok html
+        with
+        | ex -> 
+            let msg = String.Format("Failed to get web content for web page '{0}' due to {1}",uri, ex.Message)
+            Result.Error (new System.Exception(msg,ex))
 
     let getLenovoSccmPackageDownloadUrl (uri:string) =
-        try
-            let content = getContentFromWebPage uri
-            Result.Ok content
-        with
-        |ex -> Result.Error ex
+        getContentFromWebPage uri

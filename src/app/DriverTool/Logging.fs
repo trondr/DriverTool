@@ -17,21 +17,21 @@
             log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
             |>ignore
 
-        let logFactory =
-            LogManager.GetLogger
+        let logFactory (loggerType:Type)=
+            LogManager.GetLogger(loggerType)
 
         let cachedLogFactory =
             memoize logFactory
             
-        //let Logger<'T> = 
-        //    cachedLogFactory(typeof<'T>)
+        let Logger<'T> = 
+            cachedLogFactory(typeof<'T>)
 
         type System.Object with
             member x.Logger() = 
                 cachedLogFactory(x.GetType())
 
         let getLoggerByName (name:string) =
-            LogManager.GetLogger(Assembly.GetEntryAssembly(),name)
+            LogManager.GetLogger(Assembly.GetCallingAssembly(),name)
 
         type LoggingExtensions() = 
             [<Extension>]

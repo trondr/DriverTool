@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DriverTool": {
-      "commandName": "Project",
-      "commandLineArgs": "CreateDriverPackage /destinationFolder=\"c:\\temp\\20EQ_Driver_Package\" /logDirectory=\"%public%\\Logs\""
-    }
-  }
-}

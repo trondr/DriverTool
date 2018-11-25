@@ -3,16 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DriverTool", "src\app\DriverTool\DriverTool.fsproj", "{2EB170B4-6A77-4063-92A2-5D9BDBA5AB28}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5921D7CC-0BDC-4A4D-96A8-68D2BAB047DB}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
 	EndProjectSection
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DriverTool.Tests", "src\test\DriverTool.Tests\DriverTool.Tests.fsproj", "{BFB86A3B-981E-4925-A5C7-695B2D9F04A1}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.Util", "src\app\DriverTool.Util\DriverTool.Util.fsproj", "{3E54F702-5CE2-4424-BFC3-36A020AD576E}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool", "src\app\DriverTool\DriverTool.fsproj", "{19822AEA-C088-455D-B5A5-4738A3A9DBA7}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.Tests", "src\test\DriverTool.Tests\DriverTool.Tests.fsproj", "{309E5C18-F8E2-4521-B08C-D98559C67C67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverTool.CSharpLib", "src\app\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj", "{09A4CB06-46F7-4B78-B972-686516B67169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,18 @@ Global
 		{3E54F702-5CE2-4424-BFC3-36A020AD576E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E54F702-5CE2-4424-BFC3-36A020AD576E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E54F702-5CE2-4424-BFC3-36A020AD576E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19822AEA-C088-455D-B5A5-4738A3A9DBA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19822AEA-C088-455D-B5A5-4738A3A9DBA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19822AEA-C088-455D-B5A5-4738A3A9DBA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19822AEA-C088-455D-B5A5-4738A3A9DBA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{309E5C18-F8E2-4521-B08C-D98559C67C67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{309E5C18-F8E2-4521-B08C-D98559C67C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{309E5C18-F8E2-4521-B08C-D98559C67C67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{309E5C18-F8E2-4521-B08C-D98559C67C67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09A4CB06-46F7-4B78-B972-686516B67169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09A4CB06-46F7-4B78-B972-686516B67169}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09A4CB06-46F7-4B78-B972-686516B67169}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09A4CB06-46F7-4B78-B972-686516B67169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

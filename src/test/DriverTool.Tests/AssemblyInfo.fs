@@ -1,4 +1,4 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Tests
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,18 +7,13 @@ open System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[<assembly: AssemblyTitle("DriverTool")>]
-[<assembly: AssemblyName("DriverTool")>]
-[<assembly: AssemblyProduct("DriverTool")>]
+[<assembly: AssemblyTitle("DriverTool.Tests")>]
+[<assembly: AssemblyDescription("DriverTool.Tests")>]
+[<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("github.com/trondr")>]
+[<assembly: AssemblyProduct("DriverTool.Tests")>]
 [<assembly: AssemblyCopyright("Copyright © <github.com/trondr> 2018")>]
-[<assembly: AssemblyTrademark("Trademark ™")>]
-[<assembly: AssemblyDescription("Driver tool downloads software and drivers for a specific PC model and creates a driver packages that can be installed via SCCM.")>]
-#if DEBUG
-[<assembly: AssemblyConfiguration("Debug")>]
-#else
-[<assembly: AssemblyConfiguration("Release")>]
-#endif
+[<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -27,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("19822aea-c088-455d-b5a5-4738a3a9dba7")>]
+[<assembly: Guid("309e5c18-f8e2-4521-b08c-d98559c67c67")>]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -41,5 +36,6 @@ open System.Runtime.InteropServices
 // [<assembly: AssemblyVersion("1.0.*")>]
 [<assembly: AssemblyVersion("1.0.0.0")>]
 [<assembly: AssemblyFileVersion("1.0.0.0")>]
+
 do
     ()

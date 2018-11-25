@@ -376,11 +376,11 @@ module CreateDriverPackage =
         ]
 
     let resourceNameToPartialResourceNames (resourceName:string) =
-        let split = resourceName.Split(".")
+        let split = resourceName.Split([|'.'|])
         let length = split.Length
         seq{
             for i in 0..(length-1) do
-                let partialResourceName = System.String.Join(".",split.[0..i])
+                let partialResourceName = System.String.Join<string>(".",split.[0..i])
                 yield partialResourceName
         } 
         |> Seq.toArray
