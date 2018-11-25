@@ -107,7 +107,7 @@ let toAccumulatedResult (results:seq<Result<_,Exception>>) =
         | 0 -> 
             let allValues = getAllValues results
             Result.Ok allValues
-        | _ -> Result.Error (new Exception(String.Join(' ', allExceptionMessages)))
+        | _ -> Result.Error (new Exception(String.Join<string>(" ", allExceptionMessages)))
     accumulatedResult
 
 open System.IO

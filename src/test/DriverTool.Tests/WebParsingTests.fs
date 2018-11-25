@@ -4,11 +4,18 @@ open System
 open DriverTool
 
 [<TestFixture>]
-module WebParsingTests  =
-    open DriverTool.Util.FSharp
+module WebParsingTests  =    
+    open System.Threading
 
-    [<Test>]
+    let verifyAppartmentStateSta =
+        if (Thread.CurrentThread.GetApartmentState() <> ApartmentState.STA) then
+            raise (new ThreadStateException("The current threads apartment state is not STA"))
+
+    [<Test>]    
+    [<Apartment(ApartmentState.STA)>]
     let getLenovoSccmPackageDownloadUrlTest_Success() =
+        verifyAppartmentStateSta |> ignore
+        printfn "%s" (System.IntPtr.Size.ToString())
         let actualResult = WebParsing.getLenovoSccmPackageDownloadUrl "https://support.lenovo.com/downloads/ds122238"
         let expected = "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe"
         match actualResult with
