@@ -7,7 +7,7 @@ open System
 module OperatingSystemCodeTests  =
     [<Test>]
     let OperatingSystemCodeTest() =
-        let operatingSystemCodeResult = OperatingSystemCode.create "Win10" false
+        let operatingSystemCodeResult = OperatingSystemCode.create "WIN10X64" false
         match operatingSystemCodeResult with
         |Ok operatingSystemCode -> Assert.IsFalse((String.IsNullOrWhiteSpace(operatingSystemCode.Value)), sprintf "Operating system code: %s" operatingSystemCode.Value)
         |Error ex -> Assert.Fail(sprintf "Did not expect to fail. Error: %s" ex.Message)

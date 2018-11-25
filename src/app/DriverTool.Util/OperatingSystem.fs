@@ -166,3 +166,5 @@ module OperatingSystem =
                }
         versions |> Seq.map (fun v -> getOsShortNameBase v)
         
+    let isValidOsShortName osShortName =
+        getValidOsShortNames |> Seq.exists (fun o -> o = osShortName)

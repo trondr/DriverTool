@@ -23,8 +23,10 @@ type OperatingSystemCode private (operatingSystemCode : string) =
         let validateOperatingSystemCode (operatingSystemCode:string) =
             match operatingSystemCode with
             | operatingSystemCode when System.String.IsNullOrWhiteSpace(operatingSystemCode) -> failure (new InvalidOperatingSystemCodeException(operatingSystemCode,"OperatingSystemCode cannot be null or empty.") :> Exception)
-            | _ ->
+            | operatingSytemCode when (DriverTool.Util.FSharp.OperatingSystem.isValidOsShortName operatingSytemCode) -> 
                 success (OperatingSystemCode (operatingSystemCode))
+            | _ ->
+                failure (new InvalidOperatingSystemCodeException(operatingSystemCode,String.Format("Invalid operating system code. Valid codes are: ...")) :> Exception)
 
         match operatingSystemCode with
         | operatingSystemCode when System.String.IsNullOrWhiteSpace(operatingSystemCode) && defaultToLocal -> 
