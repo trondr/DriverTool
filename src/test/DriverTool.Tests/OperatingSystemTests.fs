@@ -82,3 +82,26 @@ module OperatingSystemTests =
         let actualCurrent = OperatingSystem.isServer
         Assert.AreEqual(false,actualCurrent)
         
+    [<Test>]
+    [<TestCase("WIN10X64")>]
+    [<TestCase("WIN10X86")>]
+    [<TestCase("WIN81X64")>]
+    [<TestCase("WIN81X86")>]
+    [<TestCase("WIN8X64")>]
+    [<TestCase("WIN8X86")>]
+    [<TestCase("WIN7X64")>]
+    [<TestCase("WIN7X86")>]    
+    [<TestCase("WIN2008X64")>]    
+    [<TestCase("WIN2008X86")>]
+    [<TestCase("WIN2008R2X64")>]    
+    [<TestCase("WIN2008R2X64")>]
+    [<TestCase("WIN2012X64")>]    
+    [<TestCase("WIN2012X64")>]
+    [<TestCase("WIN2012R2X64")>]    
+    [<TestCase("WIN2012R2X64")>]
+    [<TestCase("WIN2016X64")>]    
+    [<TestCase("WIN2016X64")>]
+    let getValidOsShortNamesTest (osShortName) =
+        let actual = OperatingSystem.getValidOsShortNames
+        actual |> Seq.map (fun v -> printf "%s" v) |> ignore
+        Assert.AreEqual(osShortName, actual|>Seq.find (fun v -> v = osShortName) )

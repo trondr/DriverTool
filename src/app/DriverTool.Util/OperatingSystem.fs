@@ -152,3 +152,17 @@ module OperatingSystem =
         let (osMajorVersion,osMinorVersion) = getOsVersion
         let isX64 = isOperatingSystemX64        
         getOsShortNameBase (osMajorVersion, osMinorVersion, isX64, isServer)
+
+    let getValidOsShortNames =
+        let versions = 
+            seq{ 
+                   for isX64 in [|true;false|] do                   
+                        for isServer in [|true;false|] do
+                            yield (10, 0, isX64, isServer)
+                            yield (6, 0, isX64, isServer)
+                            yield (6, 1, isX64, isServer)
+                            yield (6, 2, isX64, isServer)
+                            yield (6, 3, isX64, isServer)                
+               }
+        versions |> Seq.map (fun v -> getOsShortNameBase v)
+        
