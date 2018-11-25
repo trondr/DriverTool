@@ -168,6 +168,14 @@
       <Private>True</Private>
     </COMReference>
   </ItemGroup>
+  <ItemGroup Condition="'$(NCrunch)' == '1'">
+	<Reference Include="FSharp.Data.Xsd.DesignTime">
+	<HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data.xsd\1.0.2\lib\net45\FSharp.Data.Xsd.DesignTime.dll</HintPath>
+	</Reference>
+	<Reference Include="FSharp.Data.DesignTime">
+	<HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+	</Reference>
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
