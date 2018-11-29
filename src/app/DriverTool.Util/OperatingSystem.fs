@@ -129,12 +129,7 @@ module OperatingSystem =
             |_ -> raise (new Exception(String.Format("Unsupported Operating System versjon '{0}.{1}'. ", osMajorVersion, osMinorVersion)))
         |_ -> raise (new Exception(String.Format("Unsupported Operating System major versjon '{0}'. ",osMajorVersion)))
     
-    open System.Text.RegularExpressions
-    //Source: http://www.fssnip.net/29/title/Regular-expression-active-pattern
-    let (|Regex|_|) pattern input =
-        let m = Regex.Match(input, pattern)
-        if m.Success then Some(List.tail [ for g in m.Groups -> g.Value ])
-        else None
+    open F    
 
     let versionToMajorMinorVersion (version:string) =
         match version with

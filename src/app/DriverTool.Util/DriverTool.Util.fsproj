@@ -46,6 +46,7 @@
     <Compile Include="Library1.fs" />
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
+    <Compile Include="F.fs" />
     <Compile Include="WmiHelper.fs" />
     <Compile Include="OperatingSystem.fs" />
     <Compile Include="OperatingSystemOperations.fs" />

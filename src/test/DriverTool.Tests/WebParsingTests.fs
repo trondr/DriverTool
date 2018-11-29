@@ -17,7 +17,7 @@ module WebParsingTests  =
         verifyAppartmentStateSta |> ignore
         printfn "%s" (System.IntPtr.Size.ToString())
         let actualResult = WebParsing.getLenovoSccmPackageDownloadUrl "https://support.lenovo.com/downloads/ds122238"
-        let expected = "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe"
+        let expected = ("https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe","6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513")
         match actualResult with
         |Ok actual -> Assert.AreEqual(expected,actual)
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
