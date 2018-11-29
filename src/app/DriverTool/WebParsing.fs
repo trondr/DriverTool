@@ -15,14 +15,21 @@ module WebParsing =
             Result.Error (new System.Exception(msg,ex))
     
     open F
+    open System
     
     let getLenovoSccmPackageDownloadUrl (uri:string) =
         let content = getContentFromWebPage uri
         match content with
         |Ok v -> 
-            match v with
-            |Regex @"((https[s]?):\/\/[^\s]+\.exe).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> Result.Ok (file,sha256)
-            |_ -> Result.Error (new Exception("Failed to get download url"))
+            let exe = 
+                match v with
+                |Regex @"((https[s]?):\/\/[^\s]+\.exe).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> ("installer",file,sha256)            
+                |_ -> ("exe","","")
+            let txt =
+                match v with
+                |Regex @"((https[s]?):\/\/[^\s]+\.txt).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> ("readme",file,sha256)
+                |_ -> ("txt","","")
+            Result.Ok [txt;exe]
         |Error ex -> Result.Error ex
         //let exePattern = @"((https[s]?):\/\/[^\s]+\.exe).+?<p>SHA-256:(.+?)</p>"
         //let tcxPattern = @"((https[s]?):\/\/[^\s]+\.exe).+?<p>SHA-256:(.+?)</p>"
