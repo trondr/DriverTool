@@ -1,10 +1,11 @@
-﻿[<AutoOpen>]
+﻿
+[<AutoOpen>]
 module F
 
 #if DEBUG
 let (|>) value func =
-  let result = func value
-  result
+    let result = func value
+    result
 #endif
 
 open System
@@ -163,3 +164,10 @@ let createGeneric validator (value:'T) =
     let success v = Result.Ok v
     let failure ex = Result.Error ex
     createWithContinuationGeneric success failure validator value 
+
+open System.Text.RegularExpressions
+//Source: http://www.fssnip.net/29/title/Regular-expression-active-pattern
+let (|Regex|_|) pattern input =
+    let m = Regex.Match(input, pattern)
+    if m.Success then Some(List.tail [ for g in m.Groups -> g.Value ])
+    else None
