@@ -18,6 +18,8 @@ module LenovoCatalogTests=
         | Error ex -> Assert.Fail("Did not expect getSccmPackagesInfo to fail. Error: " + ex.Message)
 
     open System.Threading
+    open F
+
     [<Test>]
     [<Apartment(ApartmentState.STA)>]
     let getSccmPackageDownloadInfosTest () =
@@ -134,5 +136,28 @@ module LenovoCatalogTests=
             Assert.IsTrue(modelInfo.OsBuild = v.OsBuild.Value || v.OsBuild.Value = "*")
             Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
-            
+           
+    [<Test>]
+    let findSccmPackageInfoByModelCode4AndOsAndBuildTest () =
+        result{
+                let! products = getSccmPackageInfos
+                let randomProducts = 
+                    products
+                    |>getNRandomItems 10
+                randomProducts 
+                |> Seq.map (fun p -> 
+                                p.ModelCodes
+                                |> Seq.map (fun m -> 
+                                                let actual = (findSccmPackageInfoByModelCode4AndOsAndBuild m p.Os p.OsBuild.Value products)
+                                                Assert.IsTrue(actual.IsSome) |> ignore
+                                            ) |> ignore
+                            )|>ignore
+
+                let actual = findSccmPackageInfoByModelCode4AndOsAndBuild "20FA" "win10" "1709" products
+                Assert.IsTrue(actual.IsSome,"Did not find model 20FA win10 *") |> ignore
+                return ""
+        } |> ignore
+        
+        
+        
         
