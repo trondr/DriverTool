@@ -22,7 +22,7 @@ module LenovoCatalog =
             return downloadResult        
         }
     
-    type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>}
+    type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
 
     let getSccmPackageInfos =
         result{
@@ -37,9 +37,10 @@ module LenovoCatalog =
                             OsBuild=p.Build.String;
                             Name=p.Name;
                             SccmDriverPackUrl= 
-                                match driverPack with
+                                (match driverPack with
                                 |Some v -> Some v.Value
-                                |None -> None
+                                |None -> None);
+                            ModelCodes = p.Queries.Types |> Seq.map (fun m-> m.String.Value) |> Seq.toArray
                         }
                     )
 
@@ -80,10 +81,10 @@ module LenovoCatalog =
         | "WIN81X64" -> "win81"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
     
-    let findSccmPackageInfoByNameAndOsAndBuild name os build products =
+    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild products =
         let sccmPackageInfos = 
             products
-            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = build))
+            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = osbuild))
             |> Seq.toArray
         match sccmPackageInfos.Length > 0 with
         | true -> 
@@ -131,3 +132,19 @@ module LenovoCatalog =
             Os = os;
             OsBuild = osBuild
         }
+
+    let findSccmPackageInfoByModelCode4AndOsAndBuild modelCode4 os osBuild products =
+        let matchedProducts = 
+            products
+            |> Seq.filter (fun p -> 
+                                let foundModelCodes = 
+                                    p.ModelCodes
+                                    |>Array.filter (fun m-> (m = modelCode4))
+                                foundModelCodes.Length > 0
+                           )            
+            |> Seq.filter (fun p -> (p.Os = os) && (p.OsBuild.Value = osBuild))
+            |> Seq.toArray
+        match (matchedProducts.Length > 0) with
+        | true -> Some matchedProducts.[0]
+        | false -> None
+       
