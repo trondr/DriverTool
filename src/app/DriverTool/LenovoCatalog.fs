@@ -22,7 +22,7 @@ module LenovoCatalog =
     
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>}
 
-    let getSccmPackagesInfo =
+    let getSccmPackageInfos =
         result{
             let! catalogXmlPath = downloadCatalog
             let productsXml = CatalogXmlProvider.Load(catalogXmlPath.Value)
@@ -67,3 +67,13 @@ module LenovoCatalog =
             let sccmPackage = {ReadmeUrl = txtUrl; ReadmeChecksum = txtChecksum; InstallerUrl= exeUrl; InstallerChecksum=exeChecksum}
             Result.Ok sccmPackage
         |Error ex -> Result.Error ex
+    
+    let osShortNameToLenovoOs osShortName =
+        match osShortName with
+        | "WIN10X86" -> "win10"
+        | "WIN10X64" -> "win10"
+        | "WIN7X86" -> "win732"
+        | "WIN7X64" -> "win764"
+        | "WIN81X86" -> "win81"
+        | "WIN81X64" -> "win81"
+        | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
