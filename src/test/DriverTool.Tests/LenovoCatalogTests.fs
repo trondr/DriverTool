@@ -104,3 +104,21 @@ module LenovoCatalogTests=
                                                                 Assert.IsTrue(true)
                                            ))|>ignore
         Assert.IsTrue(true)
+
+    [<Test>]
+    [<TestCase("ThinkPad P50","win10","*","P50","ThinkPad P50","win10","*")>]
+    let findSccmPackageInfoByNameAndOsAndBuildTest (name,os,osbuild,expectedmodel,expectedname,expectedos,expectedosbuild) =
+        result{
+            let! products = getSccmPackageInfos
+            let actual = findSccmPackageInfoByNameAndOsAndBuild name os osbuild products
+            Assert.AreEqual(actual.Model.Value,expectedmodel)
+            Assert.AreEqual(actual.Name,expectedname)
+            Assert.AreEqual(actual.Os,expectedos)
+            Assert.AreEqual(actual.OsBuild.Value,expectedosbuild)
+            Assert.AreEqual(actual.Name,expectedname)
+
+            return actual            
+        } |> ignore
+        
+        
+        
