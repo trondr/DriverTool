@@ -158,6 +158,11 @@ module LenovoCatalogTests=
                 return ""
         } |> ignore
         
-        
+    [<Test>]
+    [<TestCase("https://somedomain.com/somefolder/file.txt","file.txt")>]
+    let getFileNameFromUrlTest (url,expected) =     
+        let actual = getFileNameFromUrl url
+        Assert.AreEqual(expected, actual,"File name not expected")
+
         
         

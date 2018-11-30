@@ -46,15 +46,21 @@ module LenovoCatalog =
 
         }
     
-    type SccmPackageDownloadInfo = {
+    type SccmPackageInfo = {
         ReadmeUrl: string;
         ReadmeChecksum: string;
+        ReadmeFileName:string
         InstallerUrl:string;
         InstallerChecksum:string
+        InstallerFileName:string
     }
 
     open F    
-               
+              
+    let getFileNameFromUrl url:string =
+        let uri = new Uri(url)        
+        uri.Segments.[uri.Segments.Length-1]
+
     let getLenovoSccmPackageDownloadInfo (uri:string) =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
         match content with
@@ -67,7 +73,7 @@ module LenovoCatalog =
                 match v with
                 |Regex @"((https[s]?):\/\/[^\s]+\.txt).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> (file,sha256)
                 |_ -> ("","")
-            let sccmPackage = {ReadmeUrl = txtUrl; ReadmeChecksum = txtChecksum; InstallerUrl= exeUrl; InstallerChecksum=exeChecksum}
+            let sccmPackage = {ReadmeUrl = txtUrl; ReadmeChecksum = txtChecksum; ReadmeFileName = (getFileNameFromUrl txtUrl); InstallerUrl= exeUrl; InstallerChecksum=exeChecksum; InstallerFileName = (getFileNameFromUrl exeUrl)}
             Result.Ok sccmPackage
         |Error ex -> Result.Error ex
     
