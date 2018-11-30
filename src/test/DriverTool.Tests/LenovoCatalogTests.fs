@@ -120,5 +120,19 @@ module LenovoCatalogTests=
             return actual            
         } |> ignore
         
-        
+    [<Test>]    
+    let findSccmPackageInfoByNameAndOsAndBuildTestCurrentSystem () =  
+        let modelInfo = getModelInfo
+        match result{
+                        let! products = getSccmPackageInfos
+                        let actual = findSccmPackageInfoByNameAndOsAndBuild modelInfo.Name modelInfo.Os modelInfo.OsBuild products
+                        return actual
+                    } with
+        |Ok v -> 
+            Assert.AreEqual(modelInfo.Name,v.Name)
+            Assert.AreEqual(modelInfo.Os,v.Os)
+            Assert.IsTrue(modelInfo.OsBuild = v.OsBuild.Value || v.OsBuild.Value = "*")
+            Assert.IsTrue(true)
+        |Error ex -> Assert.Fail(ex.Message)
+            
         

@@ -1,7 +1,9 @@
 ﻿namespace DriverTool
 
+open FSharp.Data
+
 module LenovoCatalog =
-    
+    let logger = Logging.getLoggerByName("LenovoCatalog")
     open FSharp.Data
     open System
 
@@ -51,7 +53,7 @@ module LenovoCatalog =
     }
 
     open F    
-           
+               
     let getLenovoSccmPackageDownloadInfo (uri:string) =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
         match content with
@@ -90,3 +92,42 @@ module LenovoCatalog =
             products
             |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = "*"))
             |> Seq.head
+    
+    
+    type ModelInfo = { Name:string; Os:string ; OsBuild: string}
+    
+    let getOsBuildBase osVersion =
+        match osVersion with
+        | "10.0.14393" -> "1607"
+        | "10.0.15063" -> "1703"
+        | "10.0.16299" -> "1709"
+        | "10.0.17134" -> "1803"
+        | "10.0.17763" -> "1809"
+        | "10.0.18290" -> "1903"
+        | _ -> 
+            logger.WarnFormat("Unsupported OS Build for Windows version: {0}. Returning OsBuild=\"*\".", osVersion)
+            "*"
+        
+    open DriverTool.Util.FSharp
+    
+    let getOsBuild = 
+        let osVersion = 
+            match (WmiHelper.getWmiProperty "Win32_OperatingSystem" "Version") with
+            |Ok osv -> osv
+            |Error ex -> raise (new System.Exception("Failed to get OS Build for current system due to: " + ex.Message))        
+        getOsBuildBase osVersion
+    
+    let getModelName = 
+        match (WmiHelper.getWmiProperty "Win32_ComputerSystemProduct" "Version") with
+        |Ok n -> n
+        |Error ex -> raise (new System.Exception("Failed to model name for current system due to: " + ex.Message))        
+
+    let getModelInfo =
+        let name = getModelName
+        let os = osShortNameToLenovoOs (OperatingSystem.getOsShortName)
+        let osBuild = getOsBuild
+        {
+            Name = name;
+            Os = os;
+            OsBuild = osBuild
+        }
