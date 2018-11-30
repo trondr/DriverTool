@@ -79,7 +79,7 @@ module ExportRemoteUpdates =
             DriverTool.Configuration.getDownloadCacheDirectoryPath
         with
         | _ as ex -> 
-            System.Console.WriteLine("Failed to get download cahce directory du to " + ex.Message + "Using %TEMP% path instead.")
+            System.Console.WriteLine("Failed to get download cache directory due to " + ex.Message + "Using %TEMP% path instead.")
             System.IO.Path.GetTempPath()
     
     let getTempFilePath fileName = 
