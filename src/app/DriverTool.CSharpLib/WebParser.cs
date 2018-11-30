@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Threading;
 using log4net;
 using SHDocVw;
 
@@ -28,8 +29,15 @@ namespace DriverTool.CSharpLib
             return ie;
         }
 
+        public static void AssertStaApartmentState()
+        {
+            if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
+                throw new ThreadStateException("The current threads apartment state is not STA");
+        }
+
         public static string GetWebPageContentUnSafe(string uri, ILog logger)
         {
+            AssertStaApartmentState();
             InternetExplorer internetExplorer = null;
             try
             {
