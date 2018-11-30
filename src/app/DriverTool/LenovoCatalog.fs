@@ -77,3 +77,16 @@ module LenovoCatalog =
         | "WIN81X86" -> "win81"
         | "WIN81X64" -> "win81"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
+    
+    let findSccmPackageInfoByNameAndOsAndBuild name os build products =
+        let sccmPackageInfos = 
+            products
+            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = build))
+            |> Seq.toArray
+        match sccmPackageInfos.Length > 0 with
+        | true -> 
+            sccmPackageInfos |> Seq.head
+        | false -> 
+            products
+            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = "*"))
+            |> Seq.head
