@@ -17,7 +17,7 @@ module WebParsingTests  =
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum) =      
         printfn "%s" (System.IntPtr.Size.ToString())
         let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl
-        let expected = {ReadmeUrl=expectedReadmeUrl; ReadmeChecksum = expectedReadmeChecksum;ReadmeFileName=(getFileNameFromUrl expectedReadmeUrl); InstallerUrl = expectedInstallerUrl;InstallerChecksum = expectedInstallerChecksum; InstallerFileName=(getFileNameFromUrl expectedInstallerUrl)}
+        let expected = {ReadmeUrl=expectedReadmeUrl; ReadmeChecksum = expectedReadmeChecksum;ReadmeFileName=(getFileNameFromUrl expectedReadmeUrl); InstallerUrl = expectedInstallerUrl;InstallerChecksum = expectedInstallerChecksum; InstallerFileName=(getFileNameFromUrl expectedInstallerUrl);Released=(getReleaseDateFromUrl expectedInstallerUrl)}
         match actualResult with
         |Ok actual -> Assert.AreEqual(expected,actual)
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))

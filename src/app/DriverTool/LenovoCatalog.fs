@@ -53,13 +53,20 @@ module LenovoCatalog =
         InstallerUrl:string;
         InstallerChecksum:string
         InstallerFileName:string
+        Released:DateTime
     }
 
     open F    
+    open System
               
     let getFileNameFromUrl url:string =
         let uri = new Uri(url)        
         uri.Segments.[uri.Segments.Length-1]
+
+    let getReleaseDateFromUrl (url:string)  =
+        match (getFileNameFromUrl url) with
+        |Regex @"(\d{4})(\d{2})\..+?$" [year;month] -> (new DateTime(year |> int, month|>int, 1))
+        |_ -> (new DateTime(1970,01,01))
 
     let getLenovoSccmPackageDownloadInfo (uri:string) =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
@@ -73,7 +80,7 @@ module LenovoCatalog =
                 match v with
                 |Regex @"((https[s]?):\/\/[^\s]+\.txt).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> (file,sha256)
                 |_ -> ("","")
-            let sccmPackage = {ReadmeUrl = txtUrl; ReadmeChecksum = txtChecksum; ReadmeFileName = (getFileNameFromUrl txtUrl); InstallerUrl= exeUrl; InstallerChecksum=exeChecksum; InstallerFileName = (getFileNameFromUrl exeUrl)}
+            let sccmPackage = {ReadmeUrl = txtUrl; ReadmeChecksum = txtChecksum; ReadmeFileName = (getFileNameFromUrl txtUrl); InstallerUrl= exeUrl; InstallerChecksum=exeChecksum; InstallerFileName = (getFileNameFromUrl exeUrl);Released=(getReleaseDateFromUrl exeUrl);}
             Result.Ok sccmPackage
         |Error ex -> Result.Error ex
     
