@@ -33,5 +33,11 @@ module OperatingSystemCodeTests  =
         |Ok operatingSystemCode -> Assert.IsFalse((String.IsNullOrWhiteSpace(operatingSystemCode.Value)), sprintf "Operating system code: %s" operatingSystemCode.Value)
         |Error ex -> Assert.Fail(ex.Message)
 
-
+    [<Test>]
+    let OperatingSytemCode_DifferentCase_Win10X64 () =
+        let operatingSystemCodeResult = OperatingSystemCode.create "Win10X64" true
+        match operatingSystemCodeResult with
+        |Ok os -> Assert.Fail(os.Value)
+        |Error ex -> Assert.IsTrue(true,"Expected to fail with: " + ex.Message)        
+        
 
