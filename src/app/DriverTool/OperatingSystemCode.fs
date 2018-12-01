@@ -5,8 +5,8 @@ open DriverTool.Util.FSharp
 type InvalidOperatingSystemCodeException(operatingSytemCode:string, message : string) =
         inherit Exception(
             match String.IsNullOrWhiteSpace(message) with
-            |false  -> String.Format("The operating system code '{0}' is not valid. Valid values are: Win7, Win8, Win10. {1}", operatingSytemCode, message)
-            |true -> String.Format("The operating system code '{0}' is not valid. Valid values are: Win7, Win8, Win10.", operatingSytemCode)
+            |false  -> String.Format("The operating system code '{0}' is not valid. Valid values are: {1}. {2}", operatingSytemCode,String.Join<string>("|",OperatingSystem.getValidOsShortNames), message)
+            |true -> String.Format("The operating system code '{0}' is not valid. Valid values are: {1}.", operatingSytemCode, String.Join<string>("|",OperatingSystem.getValidOsShortNames))
             )
 
 type OperatingSystemCode private (operatingSystemCode : string) = 
