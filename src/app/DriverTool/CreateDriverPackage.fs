@@ -332,6 +332,7 @@ module CreateDriverPackage =
 
     open PackageDefinition
     open System.Resources
+    open LenovoCatalog
 
     let createPackageDefinitionFile (logDirectory, extractedUpdate:ExtractedPackageInfo) = 
         result{
@@ -437,7 +438,24 @@ module CreateDriverPackage =
 
     let updateInstallXml (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
         ignore
-        
+    
+    type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
+
+    let downloadSccmPackage cacheDirectory (sccmPackage:SccmPackageInfo) =
+        result{
+            let! installerdestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let installerDownloadInfo = { SourceUri = new Uri(sccmPackage.InstallerUrl);SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
+            let! readmeDestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFileName))
+            let readmeDownloadInfo = { SourceUri = new Uri(sccmPackage.ReadmeUrl);SourceChecksum = sccmPackage.ReadmeChecksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
+
+            let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
+            let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)            
+            return {
+                InstallerPath = installerInfo.DestinationFile.Value
+                ReadmePath = readmeInfo.DestinationFile.Value
+                SccmPackage = sccmPackage;
+            }            
+        }        
     
     let createDriverPackageSimple (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =             
             result {
@@ -448,6 +466,11 @@ module CreateDriverPackage =
                 let! updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
                 let! versionedPackagePath = combine2Paths (destinationFolderPath.Value,latestRelaseDate)
+                
+                let! products = getSccmPackageInfos
+                let product = findSccmPackageInfoByModelCode4AndOsAndBuild (model.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystem.Value) getOsBuild products
+                let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value
+                let! downloadedSccmPackage = downloadSccmPackage (DriverTool.Configuration.getDownloadCacheDirectoryPath) sccmPackage
                 
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
                 logger.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
