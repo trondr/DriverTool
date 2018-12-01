@@ -17,8 +17,8 @@ module Checksum=
             | _  -> SHA512.Create() :> HashAlgorithm
 
     let computeFileHash filePath (hashAlgorithm:HashAlgorithm)  =
-        File.ReadAllBytes(filePath)
-        |> hashAlgorithm.ComputeHash
+        use fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read)
+        hashAlgorithm.ComputeHash(fileStream)
 
     let fileHashToString fileHash =
         BitConverter.ToString(fileHash).Replace("-", "").ToLower()
