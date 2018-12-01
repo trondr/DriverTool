@@ -147,10 +147,18 @@ module LenovoCatalog =
                                     p.ModelCodes
                                     |>Array.filter (fun m-> (m = modelCode4))
                                 foundModelCodes.Length > 0
-                           )            
-            |> Seq.filter (fun p -> (p.Os = os) && (p.OsBuild.Value = osBuild))
+                           )                        
             |> Seq.toArray
-        match (matchedProducts.Length > 0) with
+        let matchedOs = matchedProducts |> Seq.filter (fun p -> (p.Os = os) && (p.OsBuild.Value = osBuild)) |> Seq.toArray
+        match (matchedOs.Length > 0) with
         | true -> Some matchedProducts.[0]
-        | false -> None
+        | false -> 
+            match osBuild <> "*" with
+            |true -> 
+                let matchedOsBuild = matchedProducts |> Seq.filter (fun p -> (p.Os = os) && (p.OsBuild.Value = "*"))|>Seq.toArray
+                match matchedOsBuild.Length > 0 with
+                |true -> Some matchedOsBuild.[0]
+                |false->None
+            |false -> None            
+                  
        
