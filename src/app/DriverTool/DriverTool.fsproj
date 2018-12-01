@@ -25,6 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
+    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\20EQ_Driver_Package" /packagePublisher="MyCompany" /manufacturer="LENOVO" /systemFamily="ThinkPad P50" /modelCode="20EQ" /operatingSystemCode="WIN10X64" /logDirectory="%public%\Logs"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,10 +46,10 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-	<EmbeddedResource Include="Data\Lenovo\n1cww12w_2_.xml" />
-	<EmbeddedResource Include="Data\Lenovo\20FA_Win7.xml" />
-	<EmbeddedResource Include="Data\Lenovo\catalog.xml" />		
-	<EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
+    <EmbeddedResource Include="Data\Lenovo\n1cww12w_2_.xml" />
+    <EmbeddedResource Include="Data\Lenovo\20FA_Win7.xml" />
+    <EmbeddedResource Include="Data\Lenovo\catalog.xml" />
+    <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\02. Log4Net Credit.xml" />
     <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />
     <EmbeddedResource Include="Credits\04. CsvHelper Credit.xml" />
@@ -165,7 +166,7 @@
     <EmbeddedResource Include="PackageTemplate\Functions\Util\DriverTool.Util\DriverTool.Util.dll" />
     <EmbeddedResource Include="PackageTemplate\Functions\Util\INIFileParser\INIFileParser.dll" />
     <Compile Include="AssemblyInfo.fs" />
-    <None Include="App.config" />    
+    <None Include="App.config" />
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
     <Compile Include="Configuration.fs" />
@@ -199,6 +200,7 @@
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
     <Compile Include="Program.fs" />
+    <Content Include="Debug.txt" />
     <COMReference Include="Microsoft Internet Controls">
       <Guid>{eab22ac0-30c1-11cf-a7eb-0000c05bae0b}</Guid>
       <VersionMajor>1</VersionMajor>
