@@ -20,6 +20,7 @@ let runCommand (args)=
     debugLogger runCommandSimple (args)
 
 [<EntryPoint>]
+[< STAThread >]
 let main argv =
     configureLogging
     logger.Info("Start: DriverTool. Command Line: " + Environment.CommandLine)
