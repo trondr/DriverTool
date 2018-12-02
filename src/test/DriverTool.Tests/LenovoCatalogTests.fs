@@ -35,7 +35,7 @@ module LenovoCatalogTests=
                 products
                 |> F.getNRandomItems 4
                 |> Seq.map (fun p -> 
-                                getLenovoSccmPackageDownloadInfo  p.SccmDriverPackUrl.Value                            
+                                getLenovoSccmPackageDownloadInfo  p.SccmDriverPackUrl.Value "WIN10X64" "1809"
                                 )
                 |> F.toAccumulatedResult                
             match downloadInfosResult with
@@ -181,7 +181,7 @@ module LenovoCatalogTests=
     [<TestCase("https://support.lenovo.com/downloads/ds112090","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt","442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe","a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1")>]
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum) =      
         printfn "%s" (System.IntPtr.Size.ToString())
-        let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl
+        let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl "WIN10X64" "*"
         let expected = {ReadmeUrl=expectedReadmeUrl; ReadmeChecksum = expectedReadmeChecksum;ReadmeFileName=(getFileNameFromUrl expectedReadmeUrl); InstallerUrl = expectedInstallerUrl;InstallerChecksum = expectedInstallerChecksum; InstallerFileName=(getFileNameFromUrl expectedInstallerUrl);Released=(getReleaseDateFromUrl expectedInstallerUrl);Os="";OsBuild=""}
         match actualResult with
         |Ok actual -> Assert.AreEqual(expected,actual)
