@@ -9,3 +9,10 @@ module PathOperations =
     let combine4Paths (path1, path2, path3, path4) =
         Path.create (System.IO.Path.Combine(path1, path2, path3, path4))
     
+    let getTempPath = 
+        System.IO.Path.GetTempPath()
+        
+    let getTempFile fileName =
+        System.IO.Path.Combine(getTempPath,fileName)
+
+    
