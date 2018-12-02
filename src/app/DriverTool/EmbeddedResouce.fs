@@ -4,7 +4,7 @@ module EmbeddedResouce =
     let logger =
         Logging.getLoggerByName "EmbeddedResouce"
     open System
-    
+        
     type ResourceName private (resourceName:string) =
         member x.Value = resourceName
         static member private validator value = 
@@ -33,7 +33,7 @@ module EmbeddedResouce =
             |> ignore
         ()
 
-    let extractEmbeddedResourceToStream (resourceName:ResourceName, assembly:Assembly) =
+    let extractEmbeddedResourceInAssemblyToStream (resourceName:ResourceName, assembly:Assembly) =
         nullGuard assembly "assembly" |> ignore
         let resourceStream = assembly.GetManifestResourceStream(resourceName.Value)
         match resourceStream with
@@ -42,11 +42,11 @@ module EmbeddedResouce =
             Result.Error (new Exception(String.Format("Failed to extract embedded resource '{0}' from assembly '{1}'.", resourceName.Value, assembly.FullName)))
         |NotNull rs -> Result.Ok rs
 
-    let extractEmbeddedResourceToFile (resourceName:ResourceName, assembly:Assembly, filePath:Path) =
+    let extractEmbeddedResourceInAssemblyToFile (resourceName:ResourceName, assembly:Assembly, filePath:Path) =
         nullGuard assembly "assembly" |> ignore
         try
             use fileStream = new System.IO.FileStream(filePath.Value,System.IO.FileMode.OpenOrCreate,System.IO.FileAccess.ReadWrite,System.IO.FileShare.None)
-            let stream = extractEmbeddedResourceToStream (resourceName, assembly)
+            let stream = extractEmbeddedResourceInAssemblyToStream (resourceName, assembly)
             match stream with
             | Ok s -> 
                 let bufferLength = Convert.ToInt32(s.Length)
@@ -60,4 +60,69 @@ module EmbeddedResouce =
         | _ as ex -> Result.Error ex
         
         
+    let resourceNameToPartialResourceNames (resourceName:string) =
+        let split = resourceName.Split([|'.'|])
+        let length = split.Length
+        seq{
+            for i in 0..(length-1) do
+                let partialResourceName = System.String.Join<string>(".",split.[0..i])
+                yield partialResourceName
+        } 
+        |> Seq.toArray
+        |> Seq.rev
         
+    let resourceNameToFileName (resourceName:string, dictionary: System.Collections.Generic.IDictionary<string,string>) =          
+            let partialResourceNames = resourceNameToPartialResourceNames resourceName
+            let directoryPartialName =
+                partialResourceNames |> Seq.tryFind (fun x -> dictionary.ContainsKey(x))
+            let fileName = 
+                match directoryPartialName with
+                | Some pn -> 
+                    let fileN = System.IO.Path.Combine(dictionary.[pn],resourceName.Replace(pn,"").Trim('.'))
+                    Some fileN
+                | None -> None
+            fileName
+    
+    let getAllEmbeddedResourceNames =
+        let assembly = typeof<ThisAssembly>.Assembly
+        assembly.GetManifestResourceNames()    
+
+    let extractEmbededResouceToFile (resourceName:string , destinationFileName:string) = 
+        result {
+                
+                let! resourceNameObject = 
+                    ResourceName.create resourceName
+                let! destinationFilePath = 
+                    Path.create destinationFileName
+                let! parentDirectoryPath = (Path.create (System.IO.Path.GetDirectoryName(destinationFilePath.Value)))
+                let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists (parentDirectoryPath, true)
+                logger.Info("Verified that directory exists:" + existingParentDirectoryPath.Value)
+                let assembly = destinationFilePath.GetType().Assembly
+                logger.Info(String.Format("Extracting resource '{0}' -> '{1}'",resourceName, destinationFilePath.Value))
+                let! fileResult = 
+                    extractEmbeddedResourceInAssemblyToFile (resourceNameObject,assembly, destinationFilePath)
+                return fileResult
+            }
+
+    let extractEmbeddedResource (resourceName, destinationFolderPath:Path, destinationFileName) =
+        result {
+                let assembly = destinationFolderPath.GetType().Assembly
+                let! exeResourceName = 
+                    ResourceName.create resourceName
+                let! exeFilePath = 
+                    Path.create (System.IO.Path.Combine(destinationFolderPath.Value, destinationFileName))
+                let! fileResult = 
+                    extractEmbeddedResourceInAssemblyToFile (exeResourceName,assembly, exeFilePath)
+                return fileResult
+            }
+    
+    let mapResourceNamesToFileNames (destinationFolderPath:Path, resourceNames:seq<string>,resourceNameToDirectoryDictionary)=
+        let directoryLookDictionary = resourceNameToDirectoryDictionary destinationFolderPath
+        resourceNames
+        |> Seq.map (fun rn -> 
+            let fileName = resourceNameToFileName (rn, directoryLookDictionary)
+            match fileName with
+            |Some fn -> Some (rn,fn)
+            |None -> None
+            )
+        |> Seq.choose id
