@@ -6,17 +6,16 @@ open DriverTool
 module EmbeddedResourceTest  =    
     open DriverTool.EmbeddedResouce
     open System
-    open System.Text
-
+    
     [<Test>]
     [<TestCase(@"c:\temp\DpInstExitCode2ExitCode_tst.exe",true,"NotUsed",TestName="extractEmbeddedResourceToFile - Expect success")>]
     [<TestCase(@"c:\temp\folderthatdonotexist\DpInstExitCode2ExitCode_tst.exe",false,"Could not find a part of the path",TestName="extractEmbeddedResourceToFile - Extract to folder that do not exist - Expect failure")>]
-    let extractEmbeddedResourceToFile (destinationFilePathString:string, expectSuccess: bool, expectedErrorMessage:string) =
+    let extractEmbeddedResourceInAssemblyToFileTest (destinationFilePathString:string, expectSuccess: bool, expectedErrorMessage:string) =
         let res =
             result {
                 let! testPath = Path.create destinationFilePathString;
                 let! testResourceName = ResourceName.create "DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe"
-                let! resultPath = EmbeddedResouce.extractEmbeddedResourceToFile (testResourceName, testResourceName.GetType().Assembly,testPath) 
+                let! resultPath = EmbeddedResouce.extractEmbeddedResourceInAssemblyToFile (testResourceName, testResourceName.GetType().Assembly,testPath) 
                 return resultPath
             }
         match res with
@@ -38,7 +37,7 @@ module EmbeddedResourceTest  =
 
     let resourceNameToPotentialDirectoriesTest (resourceName:string, expectedDirectories:string) =
         let expectedDirectoriesArray = toStringArray expectedDirectories 
-        let actual = CreateDriverPackage.resourceNameToPartialResourceNames (resourceName)
+        let actual = EmbeddedResouce.resourceNameToPartialResourceNames (resourceName)
         Assert.AreEqual(expectedDirectoriesArray, actual, "Potential directories were no expected.")   
         
     [<Test>]
@@ -49,8 +48,8 @@ module EmbeddedResourceTest  =
          let fileNameResult =
              result{
                 let! destinationFolderPath = Path.create destinationFolderPathString
-                let dictionary = CreateDriverPackage.resourceNameToDirectoryDictionary destinationFolderPath
-                let fileName = CreateDriverPackage.resourceNameToFileName (resourceName, dictionary)
+                let dictionary = PackageTemplate.resourceNameToDirectoryDictionary destinationFolderPath
+                let fileName = EmbeddedResouce.resourceNameToFileName (resourceName, dictionary)
                 return match fileName with
                         |Some fn -> fn
                         |None -> String.Empty
@@ -69,7 +68,7 @@ module EmbeddedResourceTest  =
         let res =
             result{
                 let! destinationFolderPath = Path.create destinationFolderPathString
-                CreateDriverPackage.extractPackageTemplate destinationFolderPath |> ignore
+                PackageTemplate.extractPackageTemplate destinationFolderPath |> ignore
                 return destinationFolderPath
             }
         match res with
@@ -77,15 +76,12 @@ module EmbeddedResourceTest  =
             Assert.IsTrue(true)
             Assert.AreEqual(108, System.IO.Directory.GetFiles(p.Value,"*.*",System.IO.SearchOption.AllDirectories).Length, "Extracted file count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
         |Error ex -> Assert.IsTrue(false,ex.Message)
-    
-    
-
 
     [<Test>]
     let getPackageTemplateEmbeddedResourceNamesTest () =
-        let actual = CreateDriverPackage.getPackageTemplateEmbeddedResourceNames
+        let actual = PackageTemplate.getPackageTemplateEmbeddedResourceNames
         let actualResourceNameCount = (actual |> Seq.toList).Length
-        Assert.AreEqual(105,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
+        Assert.AreEqual(108,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
 
 
     [<Test>]
@@ -94,7 +90,7 @@ module EmbeddedResourceTest  =
         let destinationFolderPathResult = Path.create @"c:\temp\testpackage2"
         match destinationFolderPathResult with
         |Ok destinationFolderPath ->
-            let actual = CreateDriverPackage.mapResourceNamesToFileNames (destinationFolderPath,CreateDriverPackage.getPackageTemplateEmbeddedResourceNames)
+            let actual = EmbeddedResouce.mapResourceNamesToFileNames (destinationFolderPath,PackageTemplate.getPackageTemplateEmbeddedResourceNames,PackageTemplate.resourceNameToDirectoryDictionary)
             let actualResourceNameToFileMapCount = (actual |> Seq.toList).Length
             Assert.AreEqual(108, actualResourceNameToFileMapCount,"Resource name vs file name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. If a folder is added to the package templated folder structure, the resourceNameToDirectoryDictionary function must be updated also.")
         |Error ex -> Assert.Fail(ex.Message)
@@ -102,6 +98,6 @@ module EmbeddedResourceTest  =
     [<Test>]
     let getAllEmbeddedResourceNamesTest () =
         let actual = 
-            CreateDriverPackage.getAllEmbeddedResourceNames
+            EmbeddedResouce.getAllEmbeddedResourceNames
         let allResourceNames = String.concat Environment.NewLine actual                
-        Assert.AreEqual(121,actual.Length,allResourceNames)
+        Assert.AreEqual(124,actual.Length,allResourceNames)
