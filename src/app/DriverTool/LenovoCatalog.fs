@@ -253,19 +253,15 @@ module LenovoCatalog =
                 |> Seq.concat
         downloadLinks
 
-    let getLenovoSccmPackageDownloadInfo (uri:string) =
+    let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
         match content with
         |Ok v -> 
-            let (exeUrl, exeChecksum) = 
-                match v with
-                |Regex @"((https[s]?):\/\/[^\s]+\.exe).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> (file,sha256)            
-                |_ -> ("","")
-            let (txtUrl,txtChecksum) =
-                match v with
-                |Regex @"((https[s]?):\/\/[^\s]+\.txt).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> (file,sha256)
-                |_ -> ("","")
-            let sccmPackage = {ReadmeUrl = txtUrl; ReadmeChecksum = txtChecksum; ReadmeFileName = (getFileNameFromUrl txtUrl); InstallerUrl= exeUrl; InstallerChecksum=exeChecksum; InstallerFileName = (getFileNameFromUrl exeUrl);Released=(getReleaseDateFromUrl exeUrl);Os="Win10";OsBuild="*"}
+            let sccmPackage =
+                v
+                |> getDownloadLinksFromWebPageContent
+                |> Seq.filter (fun s -> (s.Os = (osShortNameToLenovoOs os) && osbuild = osbuild))
+                |> Seq.head
             Result.Ok sccmPackage
         |Error ex -> Result.Error ex
     

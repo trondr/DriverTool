@@ -392,7 +392,8 @@ module CreateDriverPackage =
                 
                 let! products = getSccmPackageInfos
                 let product = findSccmPackageInfoByModelCode4AndOsAndBuild (model.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystem.Value) getOsBuild products
-                let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value
+                let osBuild = product.Value.OsBuild.Value
+                let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystem.Value osBuild
                 let! downloadedSccmPackage = downloadSccmPackage (DriverTool.Configuration.getDownloadCacheDirectoryPath) sccmPackage
                                 
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
