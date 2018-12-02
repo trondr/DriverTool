@@ -44,7 +44,7 @@ module EmbeddedResourceTest  =
     [<Test>]
     [<TestCase("DriverTool.PackageTemplate.Install.xml",@"c:\temp\testpackage",@"c:\temp\testpackage\Install.xml")>]
     [<TestCase("DriverTool.PackageTemplate.Functions.Copy-Drivers.ps1",@"c:\temp\testpackage",@"c:\temp\testpackage\Functions\Copy-Drivers.ps1")>]
-    [<TestCase("DriverTool.PackageTemplate.Functions.Util.7Zip.7za.exe",@"c:\temp\testpackage",@"c:\temp\testpackage\Functions\Util\7Zip\7za.exe")>]
+    [<TestCase("DriverTool.PackageTemplate.Functions.Util._7Zip.7za.exe",@"c:\temp\testpackage",@"c:\temp\testpackage\Functions\Util\7Zip\7za.exe")>]
     let resourceNameToFileNameTest (resourceName:string, destinationFolderPathString:string,expectedFileName:string) =
          let fileNameResult =
              result{
@@ -75,7 +75,7 @@ module EmbeddedResourceTest  =
         match res with
         |Ok p -> 
             Assert.IsTrue(true)
-            Assert.AreEqual(105, System.IO.Directory.GetFiles(p.Value,"*.*",System.IO.SearchOption.AllDirectories).Length, "Extracted file count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
+            Assert.AreEqual(108, System.IO.Directory.GetFiles(p.Value,"*.*",System.IO.SearchOption.AllDirectories).Length, "Extracted file count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
         |Error ex -> Assert.IsTrue(false,ex.Message)
     
     
@@ -96,7 +96,7 @@ module EmbeddedResourceTest  =
         |Ok destinationFolderPath ->
             let actual = CreateDriverPackage.mapResourceNamesToFileNames (destinationFolderPath,CreateDriverPackage.getPackageTemplateEmbeddedResourceNames)
             let actualResourceNameToFileMapCount = (actual |> Seq.toList).Length
-            Assert.AreEqual(105, actualResourceNameToFileMapCount,"Resource name vs file name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. If a folder is added to the package templated folder structure, the resourceNameToDirectoryDictionary function must be updated also.")
+            Assert.AreEqual(108, actualResourceNameToFileMapCount,"Resource name vs file name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. If a folder is added to the package templated folder structure, the resourceNameToDirectoryDictionary function must be updated also.")
         |Error ex -> Assert.Fail(ex.Message)
     
     [<Test>]
