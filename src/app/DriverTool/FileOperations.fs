@@ -44,8 +44,16 @@ module FileOperations =
     let getFileSize filePath =
         (new System.IO.FileInfo(filePath)).Length
  
-open FileOperations
-open System.IO
-
-
-
+    let writeContentToFile (filePath:string) (content:string) =         
+        try
+            use sw = (new System.IO.StreamWriter(filePath))
+            Result.Ok (sw.Write(content))
+        with
+        |ex -> Result.Error ex
+    
+    let readContentFromFile (filePath:string) = 
+        try
+            use sr = (new System.IO.StreamReader(filePath))
+            Result.Ok (sr.ReadToEnd())
+        with
+        |ex -> Result.Error ex
