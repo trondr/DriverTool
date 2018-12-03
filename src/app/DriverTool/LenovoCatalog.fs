@@ -256,13 +256,33 @@ module LenovoCatalog =
     let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
         match content with
-        |Ok v -> 
-            let sccmPackage =
-                v
-                |> getDownloadLinksFromWebPageContent
-                |> Seq.filter (fun s -> (s.Os = (osShortNameToLenovoOs os) && osbuild = osbuild))
-                |> Seq.head
-            Result.Ok sccmPackage
+        |Ok downloadPageContent -> 
+            let downloadLinks =             
+                downloadPageContent
+                |> getDownloadLinksFromWebPageContent                
+                |> Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
+                |> Seq.toArray
+                |> Array.rev
+            let lenovoOs = (osShortNameToLenovoOs os)
+            let sccmPackages =
+                downloadLinks
+                |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
+                |> Seq.toArray
+            match (sccmPackages.Length > 0) with
+            |true -> Result.Ok sccmPackages.[0]
+            |false -> 
+                match osbuild with
+                |"*" ->
+                    let sccmPackages =
+                        downloadLinks
+                        |> Seq.filter (fun s -> (s.Os = lenovoOs))
+                        |> Seq.toArray
+                    match (sccmPackages.Length > 0) with
+                    |true -> Result.Ok sccmPackages.[0]
+                    | false ->
+                        Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
+                |_ ->
+                    Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
         |Error ex -> Result.Error ex
     
     
