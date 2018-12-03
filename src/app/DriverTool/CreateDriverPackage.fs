@@ -386,16 +386,20 @@ module CreateDriverPackage =
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
                 
+                logger.Info("Downloading software and drivers...")
                 let! updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
-                let! versionedPackagePath = combine2Paths (destinationFolderPath.Value,latestRelaseDate)
-                
+                                
                 let! products = getSccmPackageInfos
                 let product = findSccmPackageInfoByModelCode4AndOsAndBuild (model.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystem.Value) getOsBuild products
                 let osBuild = product.Value.OsBuild.Value
                 let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystem.Value osBuild
                 let! downloadedSccmPackage = downloadSccmPackage (DriverTool.Configuration.getDownloadCacheDirectoryPath) sccmPackage
-                                
+                
+                let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
+                let! versionedPackagePath = combine2Paths (destinationFolderPath.Value, releaseDate)
+
+                logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath.Value)
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
                 logger.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
 
