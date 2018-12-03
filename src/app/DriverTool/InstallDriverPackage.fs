@@ -35,10 +35,22 @@ module InstallDriverPackage =
                 |>Seq.toArray
             let isSupportedResult =
                 match notSupportedMessageArray.Length with
-                |0 -> Result.Ok ()
+                |0 -> Result.Ok true
                 |_ -> Result.Error (new Exception(String.Join(" ",notSupportedMessageArray)))
             return! isSupportedResult
        }
+
+    let isAdministrator () =
+        let windowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent()
+        let windowsPrincipal= new System.Security.Principal.WindowsPrincipal(windowsIdentity)
+        let administratorRole=System.Security.Principal.WindowsBuiltInRole.Administrator
+        windowsPrincipal.IsInRole(administratorRole)        
+
+    let assertIsAdministrator (message) =
+        let isAdministrator = isAdministrator()
+        match isAdministrator with
+        |true -> Result.Ok true
+        |false-> Result.Error (new Exception(message))
 
     let installDriverPackage (driverPackagePath:Path) =
         result{
@@ -48,7 +60,8 @@ module InstallDriverPackage =
             logger.Info("Checking if driver package is supported...")
             let! isSupported = assertIsSupported installConfiguration systemInfo
             logger.Info("Driver package is supported: " + isSupported.ToString())
-            //assertIsAdministrator
+            let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
+            logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())
             //unregisterApplication
             //suspendBitLockerProtection
             //let exitCodeResult = installDrivers driverPackagePath
@@ -59,6 +72,6 @@ module InstallDriverPackage =
             //        registerApplication
             //        Result.Ok ec
             //    |_ -> Result.Error ec
-            return Result.Error (new NotImplementedException():> Exception)
+            return "Not implemented"//Result.Error (new NotImplementedException():> Exception)
         }
         
