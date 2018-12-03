@@ -38,3 +38,10 @@ module Commands =
                                             logDirectory : string
                                          ) : NCmdLiner.Result<int> = 
             CommandProviders.createDriverPackage (packagePublisher,manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder, logDirectory)
+        
+        [<Command(Description="Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.",Summary="Install driver package")>]
+        static member InstallDriverPackage(
+                                            [<RequiredCommandParameter(Description = "Driver package folder path. Below this path there should be a .\Drivers sub folder.",ExampleValue = @"c:\temp\Drivers\SomeModel",AlternativeName = "dpp")>]
+                                            driverPackagePath :string
+                      ) : NCmdLiner.Result<int> =
+            CommandProviders.installDriverPackage (driverPackagePath)
