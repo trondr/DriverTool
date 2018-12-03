@@ -6,7 +6,7 @@ open Logging
 
 let logger = getLoggerByName "DriverTool"
 
-let runCommandSimple args =        
+let runCommandBase args =        
     let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args)    
     let exitCode = 
         match result.IsSuccess with
@@ -17,7 +17,7 @@ let runCommandSimple args =
     exitCode
 
 let runCommand (args)=
-    debugLogger runCommandSimple (args)
+    debugLogger runCommandBase (args)
 
 [<EntryPoint>]
 [< STAThread >]

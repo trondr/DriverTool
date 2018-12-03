@@ -2,7 +2,6 @@
 open F
 
 module CommandProviders =
-    open System
 
     let exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
         match (result {
