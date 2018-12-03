@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\20EQ_Driver_Package" /packagePublisher="MyCompany" /manufacturer="LENOVO" /systemFamily="ThinkPad P50" /modelCode="20EQ" /operatingSystemCode="WIN10X64" /logDirectory="%public%\Logs"</StartArguments>
+    <StartArguments>InstallDriverPackage /driverPackagePath="C:\Temp\20EQ_Driver_Package\2018-11-16-CommentedOut"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
