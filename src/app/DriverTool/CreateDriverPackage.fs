@@ -244,16 +244,19 @@ module CreateDriverPackage =
             Result.Ok installScriptPath
         with
         | _ as ex -> Result.Error ex
+    
+    let dtInstallPackageCmd = "DT-Install-Package.cmd"
+    let dtUnInstallPackageCmd = "DT-UnInstall-Package.cmd"
 
     let createInstallScript (extractedUpdate:ExtractedPackageInfo) =
         result{
             let! installScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"DT-Install-Package.cmd"))
+                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,dtInstallPackageCmd))
             let installCommandLine = 
-                extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")
+                extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")            
             let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine))
             let! unInstallScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,"DT-UnInstall-Package.cmd"))
+                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,dtUnInstallPackageCmd))
             let unInstallScriptResult = (createUnInstallScriptFile (unInstallScriptPath))
             
             let createInstallScriptResult = 
@@ -317,8 +320,8 @@ module CreateDriverPackage =
                     Version = extractedUpdate.DownloadedPackage.Package.Version;
                     Language = "EN";
                     Publisher = "LENOVO";
-                    InstallCommandLine = String.Format("Install-Package.cmd > \"{0}\"",installLogFile);
-                    UnInstallCommandLine = String.Format("UnInstall-Package.cmd > \"{0}\"",unInstallLogFile);
+                    InstallCommandLine = String.Format(dtInstallPackageCmd + " > \"{0}\"",installLogFile);
+                    UnInstallCommandLine = String.Format(dtUnInstallPackageCmd + " > \"{0}\"",unInstallLogFile);
                 }
             let writeTextToFileResult = writeTextToFile ((getPackageDefinitionContent packageDefinition), packageDefinitonSmsPath)                
             return! writeTextToFileResult
@@ -362,11 +365,11 @@ module CreateDriverPackage =
             |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
         |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
 
-    let createSccmPackageInstallScript (extractedSccmPackagePath:Path) =        
+    let createSccmPackageInstallScript (extractedSccmPackagePath:Path) =
         result{
             let! installScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-Install-Package.cmd"))
-            let installCommandLine = "pnputil.exe /add-driver *.inf /install /subdirs"                
+            let installCommandLine = "pnputil.exe /add-driver *.inf /install /subdirs"                      
             let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine))
             let! unInstallScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-UnInstall-Package.cmd"))
