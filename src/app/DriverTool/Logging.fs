@@ -10,7 +10,7 @@
         open System.Reflection        
         open System.Text.RegularExpressions        
                 
-        let configureLogging =
+        let configureLogging () =
             log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
             let appConfigFile = new FileInfo(getAppConfigFilePath)            
             let loggerRepository = LogManager.GetRepository(Assembly.GetEntryAssembly())
