@@ -2,6 +2,7 @@
 open F
 
 module CommandProviders =
+    open System
 
     let exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
         match (result {
@@ -32,3 +33,9 @@ module CommandProviders =
 
     let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,logDirectory) =
         Logging.debugLogger createDriverPackageSimple (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder, logDirectory)
+    
+    let installDriverPackageBase (driverPackagePath) =
+        NCmdLiner.Result.Fail<int>(new NotImplementedException())
+
+    let installDriverPackage(driverPackagePath) =
+        Logging.debugLogger installDriverPackageBase (driverPackagePath)
