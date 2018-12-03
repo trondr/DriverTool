@@ -34,8 +34,14 @@ module CommandProviders =
     let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,logDirectory) =
         Logging.debugLogger createDriverPackageSimple (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder, logDirectory)
     
-    let installDriverPackageBase (driverPackagePath) =
-        NCmdLiner.Result.Fail<int>(new NotImplementedException())
+    let installDriverPackageBase (driverPackagePathString) =
+        match( result {
+                    let! driverPackagePath = Path.create driverPackagePathString            
+                    let! installDriverPackageResult = InstallDriverPackage.installDriverPackage driverPackagePath
+                    return installDriverPackageResult
+        }) with        
+        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let installDriverPackage(driverPackagePath) =
         Logging.debugLogger installDriverPackageBase (driverPackagePath)
