@@ -22,7 +22,7 @@ let runCommand (args)=
 [<EntryPoint>]
 [< STAThread >]
 let main argv =
-    configureLogging
+    configureLogging ()
     logger.Info("Start: DriverTool. Command Line: " + Environment.CommandLine)
     let exitCode = runCommand argv
     logger.Info("Stop: DriverTool. Exit code: " + exitCode.ToString())
