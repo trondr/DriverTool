@@ -54,6 +54,7 @@
     <Compile Include="EnvironmentTests.fs" />
     <Compile Include="ExportRemoteUpdatesTests.fs" />
     <Compile Include="FileOperationTests.fs" />
+    <Compile Include="RegistryOperationTests.fs" />
     <Compile Include="FTests.fs" />
     <Compile Include="LoggingTests.fs" />
     <Compile Include="ModelCodeTests.fs" />
