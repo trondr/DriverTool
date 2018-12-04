@@ -52,6 +52,24 @@ module InstallDriverPackage =
         |true -> Result.Ok true
         |false-> Result.Error (new Exception(message))
 
+    let getApplicationRegistryPath companyName applicationName =
+        String.Format("HKLM\SOFTWARE\{0}\Applications\{1}",companyName,applicationName)
+    
+    open DriverTool.RegistryOperations
+    
+    let unRegisterSccmApplication (installConfiguration:InstallConfigurationData) =        
+        let applicationRegistryKeyPath = (getApplicationRegistryPath installConfiguration.Publisher installConfiguration.PackageName)
+        logger.Info("Unregister application: " + applicationRegistryKeyPath)
+        match (regKeyExists applicationRegistryKeyPath) with
+        | true -> deleteRegKey applicationRegistryKeyPath
+        | _ -> ()        
+
+    let registerSccmApplication (installConfiguration:InstallConfigurationData) =        
+        let applicationRegistryKeyPath = (getApplicationRegistryPath installConfiguration.Publisher installConfiguration.PackageName)
+        logger.Info("Register application: " + applicationRegistryKeyPath)
+        use regKey = createRegKey applicationRegistryKeyPath
+        regKey.SetValue("InstallRevision","000")
+
     let installDriverPackage (driverPackagePath:Path) =
         result{
             let! installXmlPath = getInstallXmlPath driverPackagePath
@@ -62,16 +80,42 @@ module InstallDriverPackage =
             logger.Info("Driver package is supported: " + isSupported.ToString())
             let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
             logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())
-            //unregisterApplication
+            let unregisterSccmApplication = unRegisterSccmApplication installConfiguration
             //suspendBitLockerProtection
             //let exitCodeResult = installDrivers driverPackagePath
-            //match exitCodeResult with
-            //|Ok ec -> 
-            //    match ec with
-            //    |0|3010 -> 
-            //        registerApplication
-            //        Result.Ok ec
-            //    |_ -> Result.Error ec
-            return "Not implemented"//Result.Error (new NotImplementedException():> Exception)
+            let exitCodeResult = Result.Ok 3010
+            let! res = 
+                match exitCodeResult with
+                |Ok ec -> 
+                    match ec with
+                    |0|3010 -> 
+                        registerSccmApplication installConfiguration
+                        Result.Ok ec
+                    |_ -> Result.Ok ec
+                |Error ex -> Result.Error ex
+            return res
         }
         
+    let unInstallDriverPackage (driverPackagePath:Path) =
+        result{
+            let! installXmlPath = getInstallXmlPath driverPackagePath
+            let! installConfiguration = InstallXml.loadInstallXml installXmlPath
+            let! systemInfo = getSystemInfo
+            logger.Info("Checking if driver package is supported...")
+            let! isSupported = assertIsSupported installConfiguration systemInfo
+            logger.Info("Driver package is supported: " + isSupported.ToString())
+            let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
+            logger.Info("Uninstallation is running with admin privileges: " + isAdministrator.ToString())
+            //let exitCodeResult = unInstallDrivers driverPackagePath
+            let exitCodeResult = Result.Ok 3010
+            let! res = 
+                match exitCodeResult with
+                |Ok ec -> 
+                    match ec with
+                    |0|3010 -> 
+                        unRegisterSccmApplication installConfiguration
+                        Result.Ok ec
+                    |_ -> Result.Ok ec
+                |Error ex -> Result.Error ex
+            return res
+        }

@@ -41,7 +41,14 @@ module Commands =
         
         [<Command(Description="Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.",Summary="Install driver package")>]
         static member InstallDriverPackage(
-                                            [<RequiredCommandParameter(Description = "Driver package folder path. Below this path there should be a .\Drivers sub folder.",ExampleValue = @"c:\temp\Drivers\SomeModel",AlternativeName = "dpp")>]
+                                            [<RequiredCommandParameter(Description = "Driver package folder path. Below this path there should be a .\Drivers sub folder or Drivers.zip.",ExampleValue = @"c:\temp\Drivers\SomeModel",AlternativeName = "dpp")>]
                                             driverPackagePath :string
                       ) : NCmdLiner.Result<int> =
             CommandProviders.installDriverPackage (driverPackagePath)
+        
+        [<Command(Description="Uninstall driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-UnInstall-Package.cmd in any sub folders below the .\Drivers folder.",Summary="Uninstall driver package.")>]
+        static member UnInstallDriverPackage(
+                                            [<RequiredCommandParameter(Description = "Driver package folder path. Below this path there should be a .\Drivers sub folder or a Drivers.zip.",ExampleValue = @"c:\temp\Drivers\SomeModel",AlternativeName = "dpp")>]
+                                            driverPackagePath :string
+                      ) : NCmdLiner.Result<int> =
+            CommandProviders.unInstallDriverPackage (driverPackagePath)
