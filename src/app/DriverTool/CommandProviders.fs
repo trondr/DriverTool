@@ -44,3 +44,15 @@ module CommandProviders =
 
     let installDriverPackage(driverPackagePath) =
         Logging.debugLogger installDriverPackageBase (driverPackagePath)
+    
+    let unInstallDriverPackageBase (driverPackagePathString) =
+        match( result {
+                    let! driverPackagePath = Path.create driverPackagePathString            
+                    let! unInstallDriverPackageResult = InstallDriverPackage.unInstallDriverPackage driverPackagePath
+                    return unInstallDriverPackageResult
+        }) with        
+        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+
+    let unInstallDriverPackage(driverPackagePath) =
+        Logging.debugLogger unInstallDriverPackageBase (driverPackagePath)
