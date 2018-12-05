@@ -14,7 +14,7 @@ module ProcessOperationsTests =
             System.IO.File.Delete(logFile)
         Assert.IsFalse(System.IO.File.Exists(logFile),"Log file exists: " + logFile)
 
-        let actualResult = ProcessOperations.startConsoleProcess (@"c:\Windows\System32\cmd.exe","/c dir *.* /s","c:\Program Files",@"c:\temp\startConsoleProcess.txt",false)
+        let actualResult = ProcessOperations.startConsoleProcess (@"c:\Windows\System32\cmd.exe","/c dir *.* /s","c:\Program Files",@"c:\temp\startConsoleProcessTest.txt",false)
         match actualResult with
         |Ok exitCode -> Assert.AreEqual(0,exitCode)
-        |Error ex -> Assert.Fail(ex.Message)
+        |Error ex -> Assert.Fail(ex.ToString())
