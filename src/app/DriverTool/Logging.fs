@@ -199,8 +199,8 @@
             if(doLog) then
                 let resultString = 
                     match result with
-                    |Ok v -> "OK" + valueToString v
-                    |Result.Error ex -> "ERROR:" + getAccumulatedExceptionMessages ex
+                    |Ok v -> "OK: " + valueToString v
+                    |Result.Error ex -> "ERROR: " + getAccumulatedExceptionMessages ex
                 let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , resultString, (getDurationString duration))
                 match result with
                 |Ok _ -> writeLog (functionCallResult)
