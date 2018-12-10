@@ -181,6 +181,7 @@
             let logger = getFunctionLogger func
             let doLog = isLoggingEnabled logger logLevel
             let writeLog = log logger logLevel
+            let writeErrorLog = log logger LogLevel.Error
             
             let mutable functionCall = String.Empty
             if(doLog) then
@@ -201,6 +202,7 @@
                     |Ok v -> "OK" + valueToString v
                     |Result.Error ex -> "ERROR:" + getAccumulatedExceptionMessages ex
                 let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , resultString, (getDurationString duration))
-                writeLog (functionCallResult)
-            
+                match result with
+                |Ok _ -> writeLog (functionCallResult)
+                |Result.Error _ -> writeErrorLog (functionCallResult)
             result
