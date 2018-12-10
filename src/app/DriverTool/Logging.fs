@@ -13,7 +13,7 @@
         let configureLogging () =
             log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
             let appConfigFile = new FileInfo(getAppConfigFilePath)            
-            let loggerRepository = LogManager.GetRepository(Assembly.GetEntryAssembly())
+            let loggerRepository = LogManager.GetRepository(typeof<F0.ThisAssembly>.Assembly)
             log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
             |>ignore
 
@@ -40,13 +40,19 @@
                 
         let getFunctionName func = 
             let functionName = 
-                System.Text.RegularExpressions.Regex.Replace(func.GetType().Name,"(@\d+-{0,1}\d+)$","",RegexOptions.None)
+                let funcTypeName = func.GetType().Name
+                System.Text.RegularExpressions.Regex.Replace(funcTypeName,"(@[0-9a-zA-Z\-]+)$","",RegexOptions.None)
             functionName
+
+        let getFunctionFullName func =
+            let functionName = getFunctionName func
+            let functionFullName =
+                let reflectedType = func.GetType().ReflectedType
+                reflectedType.FullName + "+" + functionName
+            functionFullName
             
         let getFuncLoggerName func =
-            let funcLoggerName = 
-                System.Text.RegularExpressions.Regex.Replace(func.GetType().FullName,"(@\d+-{0,1}\d+)$","",RegexOptions.None)
-            funcLoggerName
+            getFunctionFullName func            
 
         let getFunctionLogger func =
             let funcLoggerName = getFuncLoggerName func
@@ -63,14 +69,17 @@
         let valueToString value =
             Newtonsoft.Json.JsonConvert.SerializeObject(value) + ":" + value.GetType().ToString()
         
-        let getParametersString (input:obj) =
+        let getParametersString (input:obj) =            
             let parametersString = 
-                match input.GetType() with
-                | t when Microsoft.FSharp.Reflection.FSharpType.IsTuple(t) -> 
-                    let inputValues = Microsoft.FSharp.Reflection.FSharpValue.GetTupleFields input
-                    let stringValues = inputValues |> Array.map (fun x -> valueToString x)
-                    "(" + (stringValues |> String.concat ",") + ")"                    
-                | _ -> valueToString input
+                match input with
+                |null -> "()"
+                |_ ->
+                    match input.GetType() with
+                    | t when Microsoft.FSharp.Reflection.FSharpType.IsTuple(t) -> 
+                        let inputValues = Microsoft.FSharp.Reflection.FSharpValue.GetTupleFields input
+                        let stringValues = inputValues |> Array.map (fun x -> valueToString x)
+                        "(" + (stringValues |> String.concat ",") + ")"                    
+                    | _ -> valueToString input
             parametersString
 
         let exceptionToString (ex:Exception) =
@@ -137,6 +146,59 @@
                     |Error ex -> "ERROR:" + getAccumulatedExceptionMessages ex
                 let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , resultString, (getDurationString duration))
                 logger.Debug (functionCallResult)
+                
             result
+        
+        type LogLevel = Info|Warn|Error|Fatal|Debug
 
-        //let genericDebugLogger 
+        let isLoggingEnabled (logger:ILog) logLevel =
+            match logLevel with
+            |Info -> logger.IsInfoEnabled
+            |Warn -> logger.IsWarnEnabled
+            |Error -> logger.IsErrorEnabled
+            |Fatal -> logger.IsFatalEnabled
+            |Debug -> logger.IsDebugEnabled
+        
+        let log (logger:ILog) logLevel =
+            match logLevel with
+            |Info -> logger.Info
+            |Warn -> logger.Warn
+            |Error -> logger.Error
+            |Fatal -> logger.Fatal
+            |Debug -> logger.Debug
+        
+        let logFormat (logger:ILog) logLevel =
+            match logLevel with
+            |Info -> logger.InfoFormat
+            |Warn -> logger.WarnFormat
+            |Error -> logger.ErrorFormat
+            |Fatal -> logger.FatalFormat
+            |Debug -> logger.DebugFormat
+        
+        let genericLoggerResult logLevel func input : Result<'T,Exception> =
+            let logger = getFunctionLogger func
+            let doLog = isLoggingEnabled logger logLevel
+            let writeLog = log logger logLevel
+            
+            let mutable functionCall = String.Empty
+            if(doLog) then
+                let functionName = getFunctionName func
+                let parametersString = (getParametersString input)
+                functionCall <- String.Format("{0}({1})",functionName, parametersString)
+                writeLog ("Call: " + functionCall)
+            
+            let startTime = DateTime.Now
+            
+            let result = func input
+            
+            let stopTime = DateTime.Now
+            let duration = stopTime - startTime
+            if(doLog) then
+                let resultString = 
+                    match result with
+                    |Ok v -> "OK" + valueToString v
+                    |Result.Error ex -> "ERROR:" + getAccumulatedExceptionMessages ex
+                let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , resultString, (getDurationString duration))
+                writeLog (functionCallResult)
+            
+            result

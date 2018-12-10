@@ -51,3 +51,45 @@ module LoggingTests =
         let input = ("arg1","arg2")
         let actual = getParametersString input
         Assert.AreEqual(expected,actual,"Unexpected value") 
+
+    [<Test>]
+    let getFuncLoggerNameTest1 () =
+        let expected = "DriverTool.Tests.LoggingTests+testFuncOk"
+        let testFuncOk () : Result<_,Exception> =
+            System.Threading.Thread.Sleep(505)
+            Result.Ok expected
+        let actual = getFuncLoggerName testFuncOk
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    let getFuncLoggerNameTest2 () =
+        let expected = "DriverTool.Tests.LoggingTests+testFuncError"
+        let testFuncError () : Result<_,Exception> =
+            System.Threading.Thread.Sleep(505)
+            Result.Error (new Exception(expected))
+        let actual = getFuncLoggerName testFuncError
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    let genericLoggerResultTest_Success () =
+        Logging.configureLogging()
+        let expected = "Status:OK"
+        let testFuncOk () : Result<_,Exception> =
+            System.Threading.Thread.Sleep(505)
+            Result.Ok expected
+        let actualResult = genericLoggerResult LogLevel.Info testFuncOk ()
+        match actualResult with
+        |Ok actual -> Assert.AreEqual(expected,actual)
+        |Result.Error ex -> Assert.Fail(ex.Message)
+    
+    [<Test>]
+    let genericLoggerResultTest_Error () =
+        Logging.configureLogging()
+        let expected = "Status:ERROR"
+        let testFuncError () : Result<_,Exception> =
+            System.Threading.Thread.Sleep(505)
+            Result.Error (new Exception(expected))
+        let actualResult = genericLoggerResult LogLevel.Info testFuncError ()
+        match actualResult with
+        |Ok actual -> Assert.Fail("Test should not return ok result.")
+        |Result.Error ex -> Assert.AreEqual(expected,ex.Message)
