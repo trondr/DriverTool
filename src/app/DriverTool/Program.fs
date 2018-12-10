@@ -12,7 +12,7 @@ let runCommandBase args =
         match result.IsSuccess with
             |true -> 0
             |false ->                
-                result.OnFailure(new Action<exn>(fun ex -> logger.Error(ex.Message)))|> ignore
+                result.OnFailure(new Action<exn>(fun ex -> logger.Error(ex.ToString())))|> ignore
                 1    
     exitCode
 
