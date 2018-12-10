@@ -7,7 +7,7 @@ module ProcessOperations =
     type ProcessOperations = class end
     open System.Diagnostics
     open System.Text    
-    open System
+    open System    
     
     let startProcessUnsafe (filePath, arguments) =
         nullGuard filePath "filePath"
@@ -76,11 +76,6 @@ module ProcessOperations =
                 StdError = stdErrorBuilder.ToString().Trim()
             }
         
-        let getConsoleLogLine (level:string) (message:string) =
-            let stamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            let consoleLogLine = String.Format("{0} {1} {2}",stamp,level.PadRight(7),message)
-            consoleLogLine
-        
         let writeToFileBase logFileName appendToLogFile (text:string) =
             use sw =
                 match appendToLogFile with
@@ -94,27 +89,29 @@ module ProcessOperations =
         let logToFile = 
             not (String.IsNullOrWhiteSpace(logFileName))
 
-        if(logToFile) then            
-            getConsoleLogLine "INFO" (String.Format("'{0}' {1}",processExitData.FileName,processExitData.Arguments)) 
-            |> writeToFile 
+        let writeToLog logFunction (line:string) =
+            seq{ yield line}
+            |>Seq.map(fun s -> 
+                                logFunction(s)
+                                s
+                        )
+            |>Seq.filter(fun _ -> logToFile)
+            |>Seq.map(fun s -> (writeToFile s))
+            |>Seq.toArray
+            |>ignore
         
-        let logStdOut =
-           not (String.IsNullOrWhiteSpace(processExitData.StdOutput)) 
-        if (logStdOut) then
-            logger.Info(processExitData.StdOutput)
-            if(logToFile) then
-                getConsoleLogLine "INFO" processExitData.StdOutput
-                |> writeToFile
+        writeToLog logger.Info (String.Format("'{0}' {1}",processExitData.FileName,processExitData.Arguments))
+                
+        if (not (String.IsNullOrWhiteSpace(processExitData.StdOutput))) then
+            writeToLog logger.Info processExitData.StdOutput
          
-        let logStdError =
-           not (String.IsNullOrWhiteSpace(processExitData.StdError))
-        if (logStdError) then
-            logger.Error(processExitData.StdError)
-            if(logToFile) then
-                getConsoleLogLine "ERROR" processExitData.StdError
-                |> writeToFile
+        if (not (String.IsNullOrWhiteSpace(processExitData.StdError))) then
+            writeToLog logger.Error processExitData.StdError
         
         processExitData.ExitCode
     
-    let startConsoleProcess (fileName, arguments, workingDirectory, logFileName, appendToLogFile) =
+    let startConsoleProcessBase (fileName, arguments, workingDirectory, logFileName, appendToLogFile) =
         tryCatchWithMessage startConsoleProcessUnsafe (fileName, arguments, workingDirectory, logFileName, appendToLogFile) (String.Format("Start of console process ('{0}' {1}) failed.",fileName,arguments))
+    
+    let startConsoleProcess (fileName, arguments, workingDirectory, logFileName, appendToLogFile) =        
+        Logging.genericLoggerResult Logging.LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory, logFileName, appendToLogFile)
