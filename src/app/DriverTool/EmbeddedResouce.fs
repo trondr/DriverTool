@@ -116,6 +116,16 @@ module EmbeddedResouce =
                 return fileResult
             }
     
+    let extractEmbeddedResouceByFileName (fileName, destinationFolderPath:Path, destinationFileName) =
+        let resourceNames = 
+            getAllEmbeddedResourceNames
+            |> Seq.filter (fun rn -> rn.EndsWith(fileName))
+            |> Seq.toArray
+        match resourceNames.Length with
+        | 1 -> 
+            extractEmbeddedResource (resourceNames.[0],destinationFolderPath,destinationFileName)
+        | _ -> raise (new Exception("File not found in embedded resource: " + fileName))
+
     let mapResourceNamesToFileNames (destinationFolderPath:Path, resourceNames:seq<string>,resourceNameToDirectoryDictionary)=
         let directoryLookDictionary = resourceNameToDirectoryDictionary destinationFolderPath
         resourceNames
