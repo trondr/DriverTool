@@ -66,8 +66,10 @@
             | t when t < 1000.0 * 60.0 * 60.0 -> String.Format("{0}m {1}s {2}ms",duration.Minutes, duration.Seconds, duration.Milliseconds)
             | _ -> String.Format("{0}h {1}m {2}s",duration.Hours,duration.Minutes, duration.Seconds)
 
-        let valueToString value =
-            Newtonsoft.Json.JsonConvert.SerializeObject(value) + ":" + value.GetType().ToString()
+        let valueToString value =   
+            match box value with
+            | null -> ""
+            |_ -> Newtonsoft.Json.JsonConvert.SerializeObject(value) + ":" + value.GetType().ToString()
         
         let getParametersString (input:obj) =            
             let parametersString = 
