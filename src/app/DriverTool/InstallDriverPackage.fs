@@ -69,6 +69,8 @@ module InstallDriverPackage =
         logger.Info("Register application: " + applicationRegistryKeyPath)
         use regKey = createRegKey applicationRegistryKeyPath
         regKey.SetValue("InstallRevision","000")
+    
+    open DriverTool.BitLockerOperations
 
     let installDriverPackage (driverPackagePath:Path) =
         result{
@@ -79,9 +81,10 @@ module InstallDriverPackage =
             let! isSupported = assertIsSupported installConfiguration systemInfo
             logger.Info("Driver package is supported: " + isSupported.ToString())
             let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
-            logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())
+            logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())            
+            logger.Info("Process is 64 bit: " + (IntPtr.Size = 8).ToString())
             let unregisterSccmApplication = unRegisterSccmApplication installConfiguration
-            //suspendBitLockerProtection
+            let bitLockerSuspendResult = suspendBitLockerProtection()
             //let exitCodeResult = installDrivers driverPackagePath
             let exitCodeResult = Result.Ok 3010
             let! res = 
