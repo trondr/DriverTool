@@ -71,6 +71,46 @@ module InstallDriverPackage =
         regKey.SetValue("InstallRevision","000")
     
     open DriverTool.BitLockerOperations
+    //open System.Environment
+    
+    let getDriverPackageName (installConfiguration:InstallConfigurationData) =
+        String.Format("{0}_{1}_{2}",installConfiguration.ComputerVendor,installConfiguration.ComputerModel,installConfiguration.OsShortName)
+    
+    let windowsFolder =
+        System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows)
+
+    let getLocalDriversPackageFolder driverPackageName =
+        System.IO.Path.Combine(windowsFolder,"Drivers", driverPackageName)
+    
+    let copyDrivers (driverPackagePath:Path, installConfiguration:InstallConfigurationData) = 
+        result{
+            let! sourceDriversFolderPath = PathOperations.combine2Paths(driverPackagePath.Value,"Drivers")            
+            let! sourceDriversZipFilePath = PathOperations.combine2Paths(driverPackagePath.Value,"Drivers.zip")
+            let driverPackageName = getDriverPackageName installConfiguration
+            let localDriversFolder = getLocalDriversPackageFolder driverPackageName
+            let! destinationDriversFolderPath = Path.create localDriversFolder
+            let copyResult =   
+                match (System.IO.Directory.Exists(sourceDriversFolderPath.Value)) with
+                |true ->
+                    //Copy Drivers folder
+                    result{
+                        let! robocopyResult = Robocopy.roboCopy (sourceDriversFolderPath,destinationDriversFolderPath,"*.* /MIR")
+                        return robocopyResult
+                    }
+                            
+                |false ->
+                    result{
+                        //Unzip Drivers.zip
+                        let! existingSourceDriversZipFilePath = FileOperations.ensureFileExists sourceDriversZipFilePath
+                        let! unzipResult = Compression.unzipFile (existingSourceDriversZipFilePath, destinationDriversFolderPath)
+                        return unzipResult                    
+                    }
+            return copyResult
+        }
+
+    let installDrivers driverPackagePath =
+        raise (new NotImplementedException())
+        Result.Ok 1
 
     let installDriverPackage (driverPackagePath:Path) =
         result{
@@ -84,8 +124,8 @@ module InstallDriverPackage =
             logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())            
             logger.Info("Process is 64 bit: " + (IntPtr.Size = 8).ToString())
             let unregisterSccmApplication = unRegisterSccmApplication installConfiguration
-            let bitLockerSuspendResult = suspendBitLockerProtection()
-            //let exitCodeResult = installDrivers driverPackagePath
+            let! bitLockerSuspendExitCode = suspendBitLockerProtection()
+            let! installDriversExitCode = installDrivers driverPackagePath
             let exitCodeResult = Result.Ok 3010
             let! res = 
                 match exitCodeResult with
