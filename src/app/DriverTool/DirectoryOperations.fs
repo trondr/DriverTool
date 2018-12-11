@@ -43,10 +43,21 @@ module DirectoryOperations =
              isEmpty
          |false -> true
     
-    let ensureDirectoryExistsAndIsEmpty (directoryPath:Path, createIfNotExists) =
+    let ensureDirectoryExistsAndIsEmptyWithMessage  message (directoryPath:Path) createIfNotExists =
         match (ensureDirectoryExists (directoryPath, createIfNotExists)) with
         |Ok dp -> 
             match (directoryIsEmpty dp) with
             |true -> Result.Ok dp
-            |false -> Result.Error (new Exception(String.Format("Directory '{0}' is not empty.", dp.Value)))
+            |false -> Result.Error (new Exception(String.Format("Directory '{0}' is not empty. " + message, dp.Value)))
         |Error ex -> Result.Error ex
+
+    let ensureDirectoryExistsAndIsEmpty (directoryPath:Path, createIfNotExists) =
+        ensureDirectoryExistsAndIsEmptyWithMessage String.Empty directoryPath createIfNotExists
+
+    let ensureDirectoryNotExistsWithMessage message (directoryPath:Path) =
+        match directoryPathExists(directoryPath) with
+        |true -> Result.Error (new Exception(String.Format("Directory '{0}' allready exists. " + message, directoryPath.Value)))
+        |false -> Result.Ok directoryPath
+    
+    let getParentFolderPath (folderPath:Path)=        
+        Path.create (System.IO.DirectoryInfo(folderPath.Value).Parent.FullName)

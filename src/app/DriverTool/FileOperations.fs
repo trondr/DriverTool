@@ -32,6 +32,11 @@ module FileOperations =
         match System.IO.File.Exists(path.Value) with
         | true -> Result.Ok path            
         | false -> Result.Error (new System.IO.FileNotFoundException(String.Format("File does not exist: '{0}'", path.Value)) :> Exception)
+    
+    let ensureFileExistsWithMessage message (path:Path) = 
+        match System.IO.File.Exists(path.Value) with
+        | true -> Result.Ok path            
+        | false -> Result.Error (new System.IO.FileNotFoundException(message) :> Exception)
 
     let ensureFileExistsR (path:Result<Path, Exception>) : Result<Path, Exception> = 
         match path with
