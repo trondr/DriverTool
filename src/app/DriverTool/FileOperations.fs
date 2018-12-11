@@ -15,13 +15,16 @@ module FileOperations =
     type FileExistsException(message : string) =
         inherit Exception(message)    
     
-    let ensureFileDoesNotExist (overwrite, path:Path) : Result<Path, Exception> = 
-        match System.IO.File.Exists(path.Value) with
+    let ensureFileDoesNotExistWithMessage (message,overwrite,filePath:Path) =
+        match System.IO.File.Exists(filePath.Value) with
         | true -> 
             match overwrite with
-            | true -> deleteFile path        
-            | false -> Result.Error (new FileExistsException(String.Format("File exists: '{0}'", path.Value)) :> Exception)
-        | false -> Result.Ok path
+            | true -> deleteFile filePath        
+            | false -> Result.Error (new FileExistsException(String.Format("File allready exists: '{0}'. {1}", filePath.Value, message)) :> Exception)
+        | false -> Result.Ok filePath
+    
+    let ensureFileDoesNotExist (overwrite, filePath:Path) : Result<Path, Exception> = 
+        ensureFileDoesNotExistWithMessage (String.Empty,overwrite, filePath)
     
     let ensureFileDoesNotExistR overwrite (path:Result<Path, Exception>) : Result<Path, Exception> = 
         match path with

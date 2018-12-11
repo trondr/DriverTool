@@ -23,7 +23,7 @@ module DirectoryOperations =
     let directoryPathExists (directoryPath:Path) =
         System.IO.Directory.Exists(directoryPath.Value)
 
-    let ensureDirectoryExists (directoryPath:Path, createIfNotExists) =
+    let ensureDirectoryExistsWithMessage (message,directoryPath:Path, createIfNotExists) =
         let directoryExists = 
             directoryPathExists directoryPath
         match (not directoryExists && createIfNotExists) with
@@ -33,8 +33,10 @@ module DirectoryOperations =
         |false->
            match directoryExists with
            | true -> Result.Ok directoryPath
-           | false -> Result.Error (new Exception(String.Format("Directory not found: '{0}'", directoryPath.Value)))
+           | false -> Result.Error (new Exception(String.Format("Directory not found: '{0}'. {1}", directoryPath.Value, message)))
 
+    let ensureDirectoryExists (directoryPath:Path, createIfNotExists) =
+        ensureDirectoryExistsWithMessage (String.Empty,directoryPath,createIfNotExists)
     
     let directoryIsEmpty (directoryPath:Path) =
          match (directoryPathExists directoryPath) with
