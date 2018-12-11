@@ -3,17 +3,8 @@
 module BitLockerOperations=
     let logger = Logging.getLoggerByName("BitLockerOperations")
     open System
-        
-    let windowsFolder =
-        System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows)
+    open DriverTool.Environment
 
-    let systemFolder =
-        let sysNative = System.IO.Path.Combine(windowsFolder,"sysnative")
-        if(System.IO.Directory.Exists(sysNative)) then
-            sysNative
-        else
-            System.Environment.GetFolderPath(System.Environment.SpecialFolder.System)
-    
     let schtasksExe =
         System.IO.Path.Combine(systemFolder,"schtasks.exe")
     
