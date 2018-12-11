@@ -203,6 +203,8 @@
     <Compile Include="PackageTemplate.fs" />
     <Compile Include="CreateDriverPackage.fs" />
     <Compile Include="BitLockerOperations.fs" />
+    <Compile Include="Robocopy.fs" />
+    <Compile Include="Compression.fs" />
     <Compile Include="InstallDriverPackage.fs" />
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
