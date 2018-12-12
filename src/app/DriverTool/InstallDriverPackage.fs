@@ -152,8 +152,8 @@ module InstallDriverPackage =
                 existingInstallScripts
                 |>Seq.map(fun script ->
                         let parentDirectory = (new System.IO.FileInfo(script.Value)).Directory
-                        let scriptLogFile = System.IO.Path.Combine(installConfiguration.LogDirectory,String.Format("DT-Driver-Install-{0}-{1}.log",driverPackageName,parentDirectory.Name.Replace(".","_")))                        
-                        ProcessOperations.startConsoleProcess (existingCmdExePath.Value,String.Format(""),parentDirectory.FullName,scriptLogFile,true)
+                        let scriptLogFile = System.IO.Path.Combine(System.Environment.ExpandEnvironmentVariables(installConfiguration.LogDirectory),String.Format("DT-Driver-Install-{0}-{1}.log",driverPackageName,parentDirectory.Name.Replace(".","_")))                        
+                        ProcessOperations.startConsoleProcess (existingCmdExePath.Value,String.Format("/c \"{0}\"", script.Value),parentDirectory.FullName,scriptLogFile,true)
                     )
                 |>toAccumulatedResult
                 
