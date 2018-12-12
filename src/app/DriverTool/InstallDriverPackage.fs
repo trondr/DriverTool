@@ -71,7 +71,6 @@ module InstallDriverPackage =
         regKey.SetValue("InstallRevision","000")
     
     open DriverTool.BitLockerOperations
-    //open System.Environment
     
     let getDriverPackageName (installConfiguration:InstallConfigurationData) =
         String.Format("{0}_{1}_{2}",installConfiguration.ComputerVendor,installConfiguration.ComputerModel,installConfiguration.OsShortName)
@@ -82,13 +81,10 @@ module InstallDriverPackage =
     let getLocalDriversPackageFolder driverPackageName =
         System.IO.Path.Combine(windowsFolder,"Drivers", driverPackageName)
     
-    let copyDrivers (driverPackagePath:Path, installConfiguration:InstallConfigurationData) = 
+    let copyDrivers (driverPackagePath:Path, destinationDriversFolderPath:Path) = 
         result{
             let! sourceDriversFolderPath = PathOperations.combine2Paths(driverPackagePath.Value,"Drivers")            
-            let! sourceDriversZipFilePath = PathOperations.combine2Paths(driverPackagePath.Value,"Drivers.zip")
-            let driverPackageName = getDriverPackageName installConfiguration
-            let localDriversFolder = getLocalDriversPackageFolder driverPackageName
-            let! destinationDriversFolderPath = Path.create localDriversFolder
+            let! sourceDriversZipFilePath = PathOperations.combine2Paths(driverPackagePath.Value,"Drivers.zip")            
             let copyResult =   
                 match (System.IO.Directory.Exists(sourceDriversFolderPath.Value)) with
                 |true ->
@@ -109,8 +105,67 @@ module InstallDriverPackage =
         }
 
     let installDrivers driverPackagePath =
-        raise (new NotImplementedException())
-        Result.Ok 1
+        result{
+            let! installXmlPath = getInstallXmlPath driverPackagePath
+            let! installConfiguration = InstallXml.loadInstallXml installXmlPath
+            let driverPackageName = getDriverPackageName installConfiguration
+            let localDriversFolder = getLocalDriversPackageFolder driverPackageName
+            let! localDriversFolderPath = Path.create localDriversFolder
+            let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
+            let activeDriverFolders = 
+                System.IO.Directory.GetDirectories(localDriversFolderPath.Value)
+                |>Seq.filter (fun x-> not (x.StartsWith("_")))
+            logger.Info("Getting active drivers...")
+            let activeDriverFolders = 
+                System.IO.Directory.GetDirectories(localDriversFolderPath.Value)
+                |>Seq.filter (fun path-> not (path.StartsWith("_")))
+                |>Seq.map (fun path -> 
+                                logger.Info("Will be processed: " + path)
+                                path
+                           )
+                |>Seq.toArray
+            logger.Info("Getting inactive drivers...")
+            let inactiveDriverFolders = 
+                System.IO.Directory.GetDirectories(localDriversFolderPath.Value)
+                |>Seq.filter (fun path-> (path.StartsWith("_")))
+                |>Seq.map (fun path -> 
+                                logger.Info("Will NOT be processed: " + path)
+                                path
+                           )
+                |>Seq.toArray
+            logger.Info("Verifying that active driver install scripts exists...")
+            let! existingInstallScripts =
+                activeDriverFolders
+                |> Seq.map (fun p -> Path.create (System.IO.Path.Combine(p,DriverTool.CreateDriverPackage.dtInstallPackageCmd)))
+                |> Seq.map (fun pr -> 
+                                match pr with
+                                |Ok p -> FileOperations.ensureFileExistsWithMessage (String.Format("It is required that a install script '{0}' exists in each active driver folder.",CreateDriverPackage.dtInstallPackageCmd)) p
+                                |Error _ -> pr
+                            )
+                |> toAccumulatedResult
+            logger.Info("Installing drivers...")
+            let! cmdExePath = 
+                Path.create (System.IO.Path.Combine(Environment.systemFolder,"cmd.exe"))
+            let! existingCmdExePath = FileOperations.ensureFileExists cmdExePath
+
+            let! installedDriverExitCodes =
+                existingInstallScripts
+                |>Seq.map(fun script ->
+                        let parentDirectory = (new System.IO.FileInfo(script.Value)).Directory
+                        let scriptLogFile = System.IO.Path.Combine(installConfiguration.LogDirectory,String.Format("DT-Driver-Install-{0}-{1}.log",driverPackageName,parentDirectory.Name.Replace(".","_")))                        
+                        ProcessOperations.startConsoleProcess (existingCmdExePath.Value,String.Format(""),parentDirectory.FullName,scriptLogFile,true)
+                    )
+                |>toAccumulatedResult
+                
+            let adjustedExitCode = 
+                let exitCodeSum = 
+                    installedDriverExitCodes
+                    |>Seq.sum
+                match exitCodeSum with
+                | ec when ec > 3010 -> 3010
+                | ec -> ec
+            return adjustedExitCode
+        }
 
     let installDriverPackage (driverPackagePath:Path) =
         result{
