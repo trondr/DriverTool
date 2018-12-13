@@ -5,3 +5,5 @@ CreateDriverPackage /modelCode="20EQ" /operatingSystemCode="Win10" /destinationF
 CreateDriverPackage /destinationFolder="c:\temp\20EQ_Driver_Package" /packagePublisher="MyCompany" /manufacturer="LENOVO" /systemFamily="ThinkPad P50" /modelCode="20EQ" /operatingSystemCode="Win10X64" /logDirectory="%public%\Logs"
 
 InstallDriverPackage /driverPackagePath="C:\Temp\20EQ_Driver_Package\2018-11-16-CommentedOut"
+
+DriverTool.exe InstallDriverPackage /driverPackagePath="C:\Temp\20EQ_Driver_Package\2018-11-16-CommentedOut"
