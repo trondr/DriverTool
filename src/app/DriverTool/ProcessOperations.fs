@@ -71,7 +71,7 @@ module ProcessOperations =
         if (not (String.IsNullOrWhiteSpace(processExitData.StdError))) then
             writeToLog logger.Error processExitData.StdError
 
-    let startConsoleProcessUnsafe (fileName, arguments, workingDirectory, logFileName, appendToLogFile) =
+    let startConsoleProcessUnsafe (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
         let startInfo = new ProcessStartInfo()
         startInfo.CreateNoWindow <- true
         startInfo.UseShellExecute <- false
@@ -81,45 +81,43 @@ module ProcessOperations =
         if(not (System.String.IsNullOrWhiteSpace(arguments))) then
             startInfo.Arguments <- arguments
         if(not (System.String.IsNullOrWhiteSpace(workingDirectory))) then
-            startInfo.WorkingDirectory <- workingDirectory
-        let consoleProcess = new Process()
+            startInfo.WorkingDirectory <- workingDirectory        
+        use consoleProcess = new Process()
         consoleProcess.StartInfo <- startInfo
+        if(not (System.String.IsNullOrWhiteSpace(inputData))) then
+            consoleProcess.StandardInput.Write(inputData)
+            consoleProcess.StandardInput.Close()
 
         let stdOutBuilder = new StringBuilder()
         let stdErrorBuilder = new StringBuilder()
 
         let outputDataReceivedHandler =
-           new DataReceivedEventHandler(fun s e -> 
-                                            logger.Debug("StdOut handler data: " + e.Data)
+           new DataReceivedEventHandler(fun s e ->                                             
                                             stdOutBuilder.AppendLine(e.Data) |> ignore
                                        )
         let errorDataReceivedHandler =           
-           new DataReceivedEventHandler(fun s e -> 
-                                            logger.Debug("StdErr handler data: " + e.Data)
+           new DataReceivedEventHandler(fun s e ->                                             
                                             stdErrorBuilder.AppendLine(e.Data) |> ignore                                            
                                             )
 
         consoleProcess.OutputDataReceived.AddHandler(outputDataReceivedHandler)
         consoleProcess.ErrorDataReceived.AddHandler(errorDataReceivedHandler)
 
-        logger.Debug("Start process")
         consoleProcess.EnableRaisingEvents <- true
         consoleProcess.Start() |> ignore
-        logger.Debug("BeginOutputReadLine")
         consoleProcess.BeginOutputReadLine()
-        logger.Debug("BeginErrorReadLine")
         consoleProcess.BeginErrorReadLine()
-        logger.Debug("WaitForExit")
-        consoleProcess.WaitForExit()
-        logger.Debug("CancelErrorRead")
+        match consoleProcess.WaitForExit(timeout) with
+        |true -> ignore
+        |false ->            
+            consoleProcess.Close()
+            raise (new Exception(String.Format("Process execution timed out: \"{0}\" {1}",fileName,arguments)))
+        |>ignore
+            
         consoleProcess.CancelErrorRead()
-        logger.Debug("CancelOutputRead")
         consoleProcess.CancelOutputRead()
-        logger.Debug("RemoveHandler ErrorDataReceived errorDataReceivedHandler")
         consoleProcess.ErrorDataReceived.RemoveHandler(errorDataReceivedHandler)
-        logger.Debug("RemoveHandler OutputDataReceived outputDataReceivedHandler")
         consoleProcess.OutputDataReceived.RemoveHandler(outputDataReceivedHandler)
-        logger.Debug("processExitData")
         let processExitData =
             {
                 FileName = fileName
@@ -133,11 +131,11 @@ module ProcessOperations =
         
         processExitData.ExitCode
     
-    let startConsoleProcessBase (fileName, arguments, workingDirectory, logFileName, appendToLogFile) =
-        tryCatchWithMessage startConsoleProcessUnsafe (fileName, arguments, workingDirectory, logFileName, appendToLogFile) (String.Format("Start of console process ('{0}' {1}) failed.",fileName,arguments))
+    let startConsoleProcessBase (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
+        tryCatchWithMessage startConsoleProcessUnsafe (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) (String.Format("Start of console process ('{0}' {1}) failed.",fileName,arguments))
     
-    let startConsoleProcess (fileName, arguments, workingDirectory, logFileName, appendToLogFile) = 
-        Logging.genericLoggerResult Logging.LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory, logFileName, appendToLogFile)
+    let startConsoleProcess (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) = 
+        Logging.genericLoggerResult Logging.LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile)
     
     let startConsoleProcessUnsafe2 (fileName, arguments, workingDirectory, timeout:int, inputData, logFileName, appendToLogFile) =
         use consoleProcess = new Process()
@@ -181,7 +179,9 @@ module ProcessOperations =
                         (not endOfStream) && peek > -1
                      ) do
                     logger.Debug("StandardOutput read data to end")
-                    standardErrorData.Append(consoleProcess.StandardOutput.Read())|>ignore
+                    let cancellationTokenSource = new CancellationTokenSource(3000)
+                    let task = System.Threading.Tasks.Task.Factory.StartNew(fun () -> standardErrorData.Append(consoleProcess.StandardOutput.Read())|>ignore, cancellationTokenSource.Token)
+                    task.Wait()
                     logger.Debug("StandardOutput finished read data to end")
                                 
                 while(
@@ -378,9 +378,7 @@ module ProcessOperations =
         use outputTextWriter = new System.IO.StreamWriter(oms)
         use ems = new System.IO.MemoryStream()
         use errorTextWriter = new System.IO.StreamWriter(ems)
-        let standardOutPutData = new StringBuilder()
-        let standardErrorData = new StringBuilder()
-
+        
         consoleProcess.Start()|>ignore
         let cancellationTokenSource =
             match timeout > 0 with

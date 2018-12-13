@@ -14,7 +14,7 @@ module Compression =
             let! parentDestinationFolderPath = (DirectoryOperations.getParentFolderPath destinationFolderPath)
             let! sevenZipExeFilePath = extract7ZipExeFromEmbededResource parentDestinationFolderPath
             let! existing7ZipExeFilePath = FileOperations.ensureFileExistsWithMessage (String.Format("{0} not found.",sevenZipExeFilePath.Value)) sevenZipExeFilePath
-            let! sevenZipExitCode = ProcessOperations.startConsoleProcess (existing7ZipExeFilePath.Value, String.Format("x \"{0}\"  -o\"{1}\" -y", existingZipFilePath.Value, existingAndEmptyDestinationFolderPath.Value),existingAndEmptyDestinationFolderPath.Value,null,false)
+            let! sevenZipExitCode = ProcessOperations.startConsoleProcess (existing7ZipExeFilePath.Value, String.Format("x \"{0}\"  -o\"{1}\" -y", existingZipFilePath.Value, existingAndEmptyDestinationFolderPath.Value),existingAndEmptyDestinationFolderPath.Value,-1,null,null,false)
             let! cleanupResult = FileOperations.deleteFile existing7ZipExeFilePath
             return sevenZipExitCode
         }
@@ -26,7 +26,7 @@ module Compression =
             let! parentSourceFolderPath = (DirectoryOperations.getParentFolderPath sourceFolderPath)
             let! sevenZipExeFilePath = extract7ZipExeFromEmbededResource parentSourceFolderPath
             let! existing7ZipExeFilePath = FileOperations.ensureFileExistsWithMessage (String.Format("{0} not found.",sevenZipExeFilePath.Value)) sevenZipExeFilePath
-            let! sevenZipExitCode = ProcessOperations.startConsoleProcess (existing7ZipExeFilePath.Value, String.Format("a \"{0}\" \"{1}\\*\"", nonExistingZipFilePath.Value, existingSourceFolderPath.Value),existingSourceFolderPath.Value,null,false)
+            let! sevenZipExitCode = ProcessOperations.startConsoleProcess (existing7ZipExeFilePath.Value, String.Format("a \"{0}\" \"{1}\\*\"", nonExistingZipFilePath.Value, existingSourceFolderPath.Value),existingSourceFolderPath.Value,-1,null,null,false)
             let! cleanupResult = FileOperations.deleteFile existing7ZipExeFilePath
             return sevenZipExitCode
         }
