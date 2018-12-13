@@ -88,19 +88,19 @@ module BitLockerOperations=
             let! driverToolProgramDataFolderPath = Path.create driverToolProgramDataFolder
             let! existingDriverToolProgramDataFolderPath = DirectoryOperations.ensureDirectoryExists (driverToolProgramDataFolderPath, true)
             let! resumeBitLockerCmdFilePath = EmbeddedResouce.extractEmbeddedResouceByFileName (resumeBitLockerCmdFileName,existingDriverToolProgramDataFolderPath, resumeBitLockerCmdFileName)
-            let! exitCode = ProcessOperations.startConsoleProcess (schtasksExe, String.Format("/Delete /tn \"{0}\"", resumeBitLockerTaskName), systemFolder, null, false)
+            let! exitCode = ProcessOperations.startConsoleProcess4 (schtasksExe, String.Format("/Delete /tn \"{0}\"", resumeBitLockerTaskName), systemFolder,-1,null, null, false)
             let! destinationFolderPath = Path.create driverToolProgramDataFolder
             let! resumeBitLockerTaskXmlFilePath = installResumeBitLockerTaskXmlFile (destinationFolderPath,resumeBitLockerCmdFilePath,resumeBitLockerTaskName)
-            let! exitCode = ProcessOperations.startConsoleProcess (schtasksExe, String.Format("/Create /tn \"{0}\" /XML \"{1}\"",resumeBitLockerTaskName, resumeBitLockerTaskXmlFilePath.Value), systemFolder, null, false)
+            let! exitCode = ProcessOperations.startConsoleProcess4 (schtasksExe, String.Format("/Create /tn \"{0}\" /XML \"{1}\"",resumeBitLockerTaskName, resumeBitLockerTaskXmlFilePath.Value), systemFolder,-1,null, null, false)
             return exitCode
         }
 
     let suspendBitLockerProtection () =
         result{
             logger.Info("Suspending BitLocker...")
-            let! exitCodeManagedBdeStatusBefore = ProcessOperations.startConsoleProcess (manageBdeExe,"-status",systemFolder,null,false)
-            let! exitCodeManagedBde = ProcessOperations.startConsoleProcess (manageBdeExe,"-protectors -disable C:",systemFolder,null,false)
-            let! exitCodeManagedBdeStatusAfter = ProcessOperations.startConsoleProcess (manageBdeExe,"-status",systemFolder,null,false)
+            let! exitCodeManagedBdeStatusBefore = ProcessOperations.startConsoleProcess2 (manageBdeExe,"-status",systemFolder,-1,null,null,false)
+            let! exitCodeManagedBde = ProcessOperations.startConsoleProcess2 (manageBdeExe,"-protectors -disable C:",systemFolder,-1,null,null,false)
+            let! exitCodeManagedBdeStatusAfter = ProcessOperations.startConsoleProcess3 (manageBdeExe,"-status",systemFolder,-1,null,null,false)
             logger.Info("Installing scheduled task to resume BitLocker at next boot")
             let! exitCodeScheduledTask = installBitLockerResumeTask ()
             return exitCodeScheduledTask
