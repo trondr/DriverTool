@@ -1,6 +1,6 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
-open F
+open DriverTool.F
 
 [<TestFixture>]
 module FTests =    
