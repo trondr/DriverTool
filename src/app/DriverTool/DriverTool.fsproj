@@ -245,21 +245,6 @@
     <Reference Include="FSharp.Interop.Dynamic">
       <HintPath>..\..\..\packages\FSharp.Interop.Dynamic.4.0.3.130\lib\net40\FSharp.Interop.Dynamic.dll</HintPath>
     </Reference>
-    <Reference Include="FSharp.Management">
-      <HintPath>..\..\..\packages\FSharp.Management.0.4.5\lib\net40\FSharp.Management.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Management.PowerShell">
-      <HintPath>..\..\..\packages\FSharp.Management.0.4.5\lib\net40\FSharp.Management.PowerShell.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Management.PowerShell.ExternalRuntime">
-      <HintPath>..\..\..\packages\FSharp.Management.0.4.5\lib\net40\FSharp.Management.PowerShell.ExternalRuntime.exe</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Management.WMI">
-      <HintPath>..\..\..\packages\FSharp.Management.0.4.5\lib\net40\FSharp.Management.WMI.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Management.WMI.DesignTime">
-      <HintPath>..\..\..\packages\FSharp.Management.0.4.5\lib\net40\FSharp.Management.WMI.DesignTime.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
@@ -281,10 +266,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Management.Automation">
-      <HintPath>..\..\..\packages\FSharp.Management.0.4.5\lib\net40\System.Management.Automation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
