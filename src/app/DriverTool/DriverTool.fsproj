@@ -180,7 +180,6 @@
     <EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
     <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
     <EmbeddedResource Include="Libs\log4net.dll" />
-    <EmbeddedResource Include="Libs\Log4NetCMTrace.dll" />
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
@@ -266,9 +265,6 @@
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Log4NetCMTrace">
-      <HintPath>..\..\..\packages\Log4NetCMTrace.1.0.0.9\lib\net452\Log4NetCMTrace.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="mscorlib" />
