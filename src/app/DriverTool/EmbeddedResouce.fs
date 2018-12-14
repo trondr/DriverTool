@@ -9,7 +9,7 @@ module EmbeddedResouce =
         member x.Value = resourceName
         static member private validator value = 
             match value with
-            |v when (String.IsNullOrWhiteSpace(v)) -> Result.Error (new Exception("Resource name cannot be empty"))
+            |v when (String.IsNullOrWhiteSpace(v)) -> Result.Error (new Exception("Resource name cannot be empty."))
             |v -> Result.Ok v
         static member createWithContinuation success failure value =
             match (createWithContinuationGeneric success failure ResourceName.validator value) with
