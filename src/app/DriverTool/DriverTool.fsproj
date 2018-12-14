@@ -168,23 +168,23 @@
     <EmbeddedResource Include="PackageTemplate\Functions\Util\DriverTool.Util\System.ValueTuple.dll" />
     <EmbeddedResource Include="PackageTemplate\Functions\Util\DriverTool.Util\DriverTool.Util.dll" />
     <EmbeddedResource Include="PackageTemplate\Functions\Util\INIFileParser\INIFileParser.dll" />
-	<EmbeddedResource Include="Libs\CsvHelper.dll" />
-	<EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
-	<EmbeddedResource Include="Libs\DriverTool.Util.dll" />
-	<EmbeddedResource Include="Libs\Dynamitey.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Core.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Data.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Data.Xsd.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
-	<EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
-	<EmbeddedResource Include="Libs\log4net.dll" />
-	<EmbeddedResource Include="Libs\Log4NetCMTrace.dll" />
-	<EmbeddedResource Include="Libs\NCmdLiner.dll" />
-	<EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
-	<EmbeddedResource Include="Libs\SharpYaml.dll" />
-	<EmbeddedResource Include="Libs\System.ValueTuple.dll" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
+    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
+    <EmbeddedResource Include="Libs\DriverTool.Util.dll" />
+    <EmbeddedResource Include="Libs\Dynamitey.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Core.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.Xsd.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
+    <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
+    <EmbeddedResource Include="Libs\log4net.dll" />
+    <EmbeddedResource Include="Libs\Log4NetCMTrace.dll" />
+    <EmbeddedResource Include="Libs\NCmdLiner.dll" />
+    <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Libs\SharpYaml.dll" />
+    <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
@@ -225,6 +225,8 @@
     <Compile Include="InstallDriverPackage.fs" />
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
+    <Compile Include="AssemblyResolver.fs" />
+    <Compile Include="RunCommand.fs" />
     <Compile Include="Program.fs" />
     <Content Include="Debug.txt" />
     <COMReference Include="Microsoft Internet Controls">
@@ -310,7 +312,8 @@
     </Reference>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll</PostBuildEvent>
+    <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
+exit /b 0</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
