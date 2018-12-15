@@ -381,10 +381,24 @@ module CreateDriverPackage =
             return! createInstallScriptResult
         }        
     
+    open DriverTool.Requirements
+
+    let assertDriverPackageCreateRequirements =
+        result{
+                let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package create from an elevated command prompt."
+                logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())
+                let! isRunningNativeProcess = assertIsRunningNativeProcess (String.Format("Driver package create must be run in native process (64-bit on a x64 operating system, 32-bit on a x86 operating system). The current process is {0}. Contact the developer or use CoreFlags.exe (in the .NET SDK) to change the prefered execution bit on the current assembly.", Environment.processBit))
+                logger.Info(String.Format("Installation is running in native process: {0} ({1})",isRunningNativeProcess.ToString(), Environment.processBit))
+                return (isAdministrator && isRunningNativeProcess)
+        }
+
     open DriverTool.PackageTemplate
 
     let createDriverPackageSimple (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =             
             result {
+                let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
+                logger.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
+                
                 let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
