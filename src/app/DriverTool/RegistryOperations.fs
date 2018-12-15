@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
 
 module RegistryOperations =
+    let logger = Logging.getLoggerByName("RegistryOperations")
     open System
     open Microsoft.Win32;
         
@@ -40,3 +41,51 @@ module RegistryOperations =
         match regKey with
         |null -> regHive.CreateSubKey(subKeyPath)
         |_ -> regKey
+    
+    let openRegKeyUnsafe (regKeyPath:string, writeable:bool) =
+        nullGuard regKeyPath "regKeyPath"
+        logger.Info(String.Format("Opening registry key: [{0}] (writeable: {1})", regKeyPath, writeable.ToString()))
+        let (regHive,subPath) = parseRegKeyPath regKeyPath
+        regHive.OpenSubKey(subPath,writeable)
+    
+    let openRegKey (regKeyPath:string, writeable:bool) =
+        tryCatch openRegKeyUnsafe  (regKeyPath, writeable)
+
+    let rec getRegistrySubKeyPaths (regKeyPath:string) recursive : seq<string> =       
+        use regKey = openRegKeyUnsafe (regKeyPath, false)
+        let subKeyNames = regKey.GetSubKeyNames()
+        let subKeyPaths = 
+            subKeyNames
+            |>Seq.map(fun n -> 
+                        let subKeyPath = regKeyPath + @"\" + n
+                        subKeyPath
+                     )
+            |>Seq.toArray
+
+        seq {
+            for keyPath in subKeyPaths do  
+                yield keyPath
+                if recursive then
+                    for childSubKeyPath in (getRegistrySubKeyPaths keyPath recursive) do
+                        yield childSubKeyPath
+        }
+    
+    let regValueExists (regKeyPath:string) valueName =
+        use regKey = openRegKeyUnsafe (regKeyPath, false)
+        let value = regKey.GetValue(valueName)
+        match value with
+        |null -> false
+        |_ -> true
+    
+    let regValueIs (regKeyPath:string) valueName value =
+        use regKey = openRegKeyUnsafe (regKeyPath, false)
+        let actualValue = regKey.GetValue(valueName)
+        if actualValue.Equals(value) then
+            true
+        else
+            false
+
+    let setRegValue (regKeyPath:string) valueName value = 
+        use regKey = openRegKeyUnsafe (regKeyPath, true)                
+        regKey.SetValue(valueName,value)
+        
