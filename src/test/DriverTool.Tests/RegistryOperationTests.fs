@@ -34,3 +34,14 @@ module RegistryOperationTests =
         Assert.IsTrue(regKeyExists regKeyPath,"Registry path does not exist:" + regKeyPath)
         deleteRegKey regKeyPath
         Assert.IsFalse(regKeyExists regKeyPath,"Registry path exists:" + regKeyPath)
+
+    [<Test>]
+    [<TestCase(true,100000)>]
+    [<TestCase(false,100)>]
+    let getRegistrySubKeyPathsTest (recursive,max) =
+        let regKeyPath = @"HKEY_CURRENT_USER\Software"
+        let actual = 
+            getRegistrySubKeyPaths regKeyPath recursive
+            |> Seq.map (fun p -> System.Console.WriteLine(p))
+            |> Seq.toArray
+        Assert.IsTrue(actual.Length > 0 && actual.Length < max,"Number of sub keys was 0 or higher than " + max.ToString() + ". Actual: " + actual.Length.ToString() )

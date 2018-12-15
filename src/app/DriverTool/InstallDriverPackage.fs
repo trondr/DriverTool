@@ -148,7 +148,6 @@ module InstallDriverPackage =
         }
     
     open DriverTool.Requirements
-    open Microsoft.Win32
 
     let assertDriverInstallRequirements installConfiguration systemInfo =
         result{
@@ -161,8 +160,6 @@ module InstallDriverPackage =
                 logger.Info(String.Format("Installation is running in native process: {0} ({1})",isRunningNativeProcess.ToString(), Environment.processBit))
                 return (isSupported && isAdministrator && isRunningNativeProcess)
         }
-
-        
     
     let resetConfigFlagsUnsafe (_:unit) =
         logger.Info("Reset all ConfigFlag's having value 131072 to 0. This will avoid UAC prompts due driver initialization at standard user logon.")
@@ -173,9 +170,8 @@ module InstallDriverPackage =
         |> Seq.map (fun p ->
                         //The ConfigFlag value 131072 signals a driver initialization, 
                         //which we do not want for a standard user user at logon, so set 
-                        //ConfigFlags to 0
-                        //TEST: Comment out below line.
-                        //(setRegValue p "ConfigFlags" 0) |> ignore
+                        //ConfigFlags to 0                        
+                        (setRegValue p "ConfigFlags" 0) |> ignore
                         logger.Info(String.Format("ConfigFlag value in '[{0}]' was reset to 0.",p))
                     )
         |>Seq.toArray
