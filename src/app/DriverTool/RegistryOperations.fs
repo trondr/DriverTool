@@ -19,12 +19,39 @@ module RegistryOperations =
         |Regex @"(HKLM|HKEY_LOCAL_MACHINE|HKCU|HKEY_CURRENT_USER|HKCR|HKEY_CLASSES_ROOT|HKU|HKEY_USERS|HKCC|HKEY_CURRENT_CONFIG)\\(.*)$" [regHiveName;subKeyPath] -> (toRegHive regHiveName,subKeyPath)
         |_ -> raise (new Exception("Invalid registry key path: " + regKeyPath))
 
-    let regKeyExists regKeyPath =
-        let (regHive, subKeyPath) = parseRegKeyPath regKeyPath
-        use regKey = regHive.OpenSubKey(subKeyPath)
-        match regKey with
-        |null -> false
-        |_ -> true
+    let openRegKeyUnsafe (regKeyPath:string, writeable:bool) =
+        nullGuard regKeyPath "regKeyPath"
+        if (logger.IsDebugEnabled) then logger.Debug(String.Format("Opening registry key: [{0}] (writeable: {1})", regKeyPath, writeable.ToString()))
+        let (regHive,subPath) = parseRegKeyPath regKeyPath
+        regHive.OpenSubKey(subPath,writeable)
+    
+    let openRegKey (regKeyPath:string, writeable:bool) =
+        tryCatch openRegKeyUnsafe  (regKeyPath, writeable)
+
+    let regKeyExists (regKeyPath:string) =
+        let regKeyResult = openRegKey (regKeyPath, false)
+        match regKeyResult with        
+        |Ok rk ->
+            use regKey = rk            
+            match regKey with
+            |null -> false
+            |_ -> true
+        |Error ex ->
+            if (logger.IsDebugEnabled) then logger.Debug(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            false
+
+    let regValueExists (regKeyPath:string) valueName =
+        let regKeyResult = openRegKey  (regKeyPath, false)
+        match regKeyResult with        
+        |Ok rk ->
+            use regKey = rk
+            let value = regKey.GetValue(valueName)
+            match value with
+            |null -> false
+            |_ -> true
+        |Error ex ->
+            if (logger.IsDebugEnabled) then logger.Debug(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            false
 
     let deleteRegKey regKeyPath =
         let (regHive, subKeyPath) = parseRegKeyPath regKeyPath
@@ -42,40 +69,29 @@ module RegistryOperations =
         |null -> regHive.CreateSubKey(subKeyPath)
         |_ -> regKey
     
-    let openRegKeyUnsafe (regKeyPath:string, writeable:bool) =
-        nullGuard regKeyPath "regKeyPath"
-        logger.Info(String.Format("Opening registry key: [{0}] (writeable: {1})", regKeyPath, writeable.ToString()))
-        let (regHive,subPath) = parseRegKeyPath regKeyPath
-        regHive.OpenSubKey(subPath,writeable)
     
-    let openRegKey (regKeyPath:string, writeable:bool) =
-        tryCatch openRegKeyUnsafe  (regKeyPath, writeable)
 
     let rec getRegistrySubKeyPaths (regKeyPath:string) recursive : seq<string> =       
-        use regKey = openRegKeyUnsafe (regKeyPath, false)
-        let subKeyNames = regKey.GetSubKeyNames()
-        let subKeyPaths = 
-            subKeyNames
-            |>Seq.map(fun n -> 
-                        let subKeyPath = regKeyPath + @"\" + n
-                        subKeyPath
-                     )
-            |>Seq.toArray
+        if(not (regKeyExists regKeyPath)) then
+            Seq.empty<string>
+        else
+            use regKey = openRegKeyUnsafe (regKeyPath, false)
+            let subKeyNames = regKey.GetSubKeyNames()
+            let subKeyPaths = 
+                subKeyNames
+                |>Seq.map(fun n -> 
+                            let subKeyPath = regKeyPath + @"\" + n
+                            subKeyPath
+                         )
+                |>Seq.toArray
 
-        seq {
-            for keyPath in subKeyPaths do  
-                yield keyPath
-                if recursive then
-                    for childSubKeyPath in (getRegistrySubKeyPaths keyPath recursive) do
-                        yield childSubKeyPath
-        }
-    
-    let regValueExists (regKeyPath:string) valueName =
-        use regKey = openRegKeyUnsafe (regKeyPath, false)
-        let value = regKey.GetValue(valueName)
-        match value with
-        |null -> false
-        |_ -> true
+            seq {
+                for keyPath in subKeyPaths do  
+                    yield keyPath
+                    if recursive then
+                        for childSubKeyPath in (getRegistrySubKeyPaths keyPath recursive) do
+                            yield childSubKeyPath
+            }
     
     let regValueIs (regKeyPath:string) valueName value =
         use regKey = openRegKeyUnsafe (regKeyPath, false)
