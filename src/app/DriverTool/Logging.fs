@@ -52,7 +52,7 @@
             functionFullName
             
         let getFuncLoggerName func =
-            getFunctionName func            
+            getFunctionFullName func            
 
         let getFunctionLogger func =
             let funcLoggerName = getFuncLoggerName func
