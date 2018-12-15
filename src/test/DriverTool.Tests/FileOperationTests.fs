@@ -29,7 +29,7 @@ module FileOperationTests =
         let actualResult = ensureFileDoesNotExist (false, path)
         match actualResult with
         |Ok p -> Assert.Fail((sprintf "The test should have failed. File %s exists" p.Value))
-        |Error ex -> Assert.AreEqual(String.Format("File exists: '{0}'", path.Value),ex.Message)
+        |Error ex -> Assert.AreEqual(String.Format("File allready exists: '{0}'. ", path.Value),ex.Message)
 
     [<Test>]
     let ensureFileDoesNotExistTest_FileExists_Overwrite() =
