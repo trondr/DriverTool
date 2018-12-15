@@ -92,7 +92,7 @@ module InstallDriverPackage =
             return copyResult
         }
 
-    let installDrivers driverPackagePath =
+    let installDrivers driverPackagePath installScriptName =
         result{
             let! installXmlPath = getInstallXmlPath driverPackagePath
             let! installConfiguration = InstallXml.loadInstallXml installXmlPath
@@ -124,23 +124,22 @@ module InstallDriverPackage =
             logger.Info("Verifying that active driver install scripts exists...")
             let! existingInstallScripts =
                 activeDriverFolders
-                |> Seq.map (fun p -> Path.create (System.IO.Path.Combine(p,DriverTool.CreateDriverPackage.dtInstallPackageCmd)))
+                |> Seq.map (fun p -> Path.create (System.IO.Path.Combine(p,installScriptName)))
                 |> Seq.map (fun pr -> 
                                 match pr with
-                                |Ok p -> FileOperations.ensureFileExistsWithMessage (String.Format("It is required that a install script '{0}' exists in each active driver folder.",CreateDriverPackage.dtInstallPackageCmd)) p
+                                |Ok p -> FileOperations.ensureFileExistsWithMessage (String.Format("It is required that the script '{0}' exists in each active driver folder.",installScriptName)) p
                                 |Error _ -> pr
                             )
                 |> toAccumulatedResult
-            logger.Info("Installing drivers...")
+            logger.Info(String.Format("Executing '{0}' for each driver folder...", installScriptName))
             let! cmdExePath = 
                 Path.create (System.IO.Path.Combine(Environment.systemFolder,"cmd.exe"))
             let! existingCmdExePath = FileOperations.ensureFileExists cmdExePath
-
             let! installedDriverExitCodes =
                 existingInstallScripts
                 |>Seq.map(fun script ->
                         let parentDirectory = (new System.IO.FileInfo(script.Value)).Directory
-                        let scriptLogFile = System.IO.Path.Combine(System.Environment.ExpandEnvironmentVariables(installConfiguration.LogDirectory),String.Format("DT-Driver-Install-{0}-{1}.log",driverPackageName,parentDirectory.Name.Replace(".","_")))                        
+                        let scriptLogFile = System.IO.Path.Combine(System.Environment.ExpandEnvironmentVariables(installConfiguration.LogDirectory),String.Format("{0}-{1}-{2}.log",installScriptName,driverPackageName,parentDirectory.Name.Replace(".","_")))                        
                         ProcessOperations.startConsoleProcess (existingCmdExePath.Value,String.Format("/c \"{0}\"", script.Value),parentDirectory.FullName,-1,null,scriptLogFile,true)
                     )
                 |>toAccumulatedResult
@@ -178,10 +177,9 @@ module InstallDriverPackage =
             logger.Info("All install requirements are fullfilled: " + requirementsAreFullfilled.ToString())            
             let unregisterSccmApplication = unRegisterSccmApplication installConfiguration
             let! bitLockerSuspendExitCode = suspendBitLockerProtection()
-            let! installDriversExitCode = installDrivers driverPackagePath
-            let exitCodeResult = Result.Ok 3010
+            let installDriversExitCode = installDrivers driverPackagePath DriverTool.CreateDriverPackage.dtInstallPackageCmd            
             let! res = 
-                match exitCodeResult with
+                match installDriversExitCode with
                 |Ok ec -> 
                     match ec with
                     |0|3010 -> 
@@ -198,10 +196,10 @@ module InstallDriverPackage =
             let! installConfiguration = InstallXml.loadInstallXml installXmlPath
             let! systemInfo = getSystemInfo
             let! requirementsAreFullfilled = assertDriverInstallRequirements installConfiguration systemInfo
-            logger.Info("All install requirements are fullfilled: " + requirementsAreFullfilled.ToString())            
-            let exitCodeResult = Result.Ok 3010
+            logger.Info("All install requirements are fullfilled: " + requirementsAreFullfilled.ToString())
+            let uninstallDriversExitCode = installDrivers driverPackagePath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd            
             let! res = 
-                match exitCodeResult with
+                match uninstallDriversExitCode with
                 |Ok ec -> 
                     match ec with
                     |0|3010 -> 
