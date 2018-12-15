@@ -43,3 +43,23 @@ module Environment=
             sysNative
         else
             System.Environment.GetFolderPath(System.Environment.SpecialFolder.System)
+    
+    let is64BitOperatingSystem =
+        System.Environment.Is64BitOperatingSystem
+    
+    let is64BitProcess =
+        System.Environment.Is64BitProcess
+
+    let isNativeProcessBit =
+        if((is64BitOperatingSystem && is64BitProcess) || (not is64BitOperatingSystem)) then
+            true        
+        else
+            false
+
+    let processBit =
+        match (System.IntPtr.Size) with
+        |8 -> "64-Bit"
+        |4 -> "32-Bit"
+        |_ -> (raise (new System.Exception("Failed to calculate process bit due to unknown IntPtr size: " + System.IntPtr.Size.ToString() )))
+    
+    
