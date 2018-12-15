@@ -40,18 +40,6 @@ module InstallDriverPackage =
             return! isSupportedResult
        }
 
-    let isAdministrator () =
-        let windowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent()
-        let windowsPrincipal= new System.Security.Principal.WindowsPrincipal(windowsIdentity)
-        let administratorRole=System.Security.Principal.WindowsBuiltInRole.Administrator
-        windowsPrincipal.IsInRole(administratorRole)        
-
-    let assertIsAdministrator (message) =
-        let isAdministrator = isAdministrator()
-        match isAdministrator with
-        |true -> Result.Ok true
-        |false-> Result.Error (new Exception(message))
-
     let getApplicationRegistryPath companyName applicationName =
         String.Format("HKLM\SOFTWARE\{0}\Applications\{1}",companyName,applicationName)
     
@@ -166,18 +154,28 @@ module InstallDriverPackage =
                 | ec -> ec
             return adjustedExitCode
         }
+    
+    open DriverTool.Requirements
+
+    let assertDriverInstallRequirements installConfiguration systemInfo =
+        result{
+                logger.Info("Checking if driver package is supported...")
+                let! isSupported = assertIsSupported installConfiguration systemInfo
+                logger.Info("Driver package is supported: " + isSupported.ToString())
+                let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
+                logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())
+                let! isRunningNativeProcess = assertIsRunningNativeProcess (String.Format("Driver install must be run in native process (64-bit on a x64 operating system, 32-bit on a x86 operating system). The current process is {0}. Contact the developer or use CoreFlags.exe (in the .NET SDK) to change the prefered execution bit on the current assembly.", Environment.processBit))
+                logger.Info(String.Format("Installation is running in native process: {0} ({1})",isRunningNativeProcess.ToString(), Environment.processBit))
+                return (isSupported && isAdministrator && isRunningNativeProcess)
+        }
 
     let installDriverPackage (driverPackagePath:Path) =
         result{
             let! installXmlPath = getInstallXmlPath driverPackagePath
             let! installConfiguration = InstallXml.loadInstallXml installXmlPath
             let! systemInfo = getSystemInfo
-            logger.Info("Checking if driver package is supported...")
-            let! isSupported = assertIsSupported installConfiguration systemInfo
-            logger.Info("Driver package is supported: " + isSupported.ToString())
-            let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
-            logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())            
-            logger.Info("Process is 64 bit: " + (IntPtr.Size = 8).ToString())
+            let! requirementsAreFullfilled = assertDriverInstallRequirements installConfiguration systemInfo
+            logger.Info("All install requirements are fullfilled: " + requirementsAreFullfilled.ToString())            
             let unregisterSccmApplication = unRegisterSccmApplication installConfiguration
             let! bitLockerSuspendExitCode = suspendBitLockerProtection()
             let! installDriversExitCode = installDrivers driverPackagePath
@@ -199,12 +197,8 @@ module InstallDriverPackage =
             let! installXmlPath = getInstallXmlPath driverPackagePath
             let! installConfiguration = InstallXml.loadInstallXml installXmlPath
             let! systemInfo = getSystemInfo
-            logger.Info("Checking if driver package is supported...")
-            let! isSupported = assertIsSupported installConfiguration systemInfo
-            logger.Info("Driver package is supported: " + isSupported.ToString())
-            let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
-            logger.Info("Uninstallation is running with admin privileges: " + isAdministrator.ToString())
-            //let exitCodeResult = unInstallDrivers driverPackagePath
+            let! requirementsAreFullfilled = assertDriverInstallRequirements installConfiguration systemInfo
+            logger.Info("All install requirements are fullfilled: " + requirementsAreFullfilled.ToString())            
             let exitCodeResult = Result.Ok 3010
             let! res = 
                 match exitCodeResult with
