@@ -92,17 +92,8 @@ module InstallDriverPackage =
             return copyResult
         }
 
-    let installDrivers driverPackagePath installScriptName =
-        result{
-            let! installXmlPath = getInstallXmlPath driverPackagePath
-            let! installConfiguration = InstallXml.loadInstallXml installXmlPath
-            let driverPackageName = getDriverPackageName installConfiguration
-            let localDriversFolder = getLocalDriversPackageFolder driverPackageName
-            let! localDriversFolderPath = Path.create localDriversFolder
-            let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
-            let activeDriverFolders = 
-                System.IO.Directory.GetDirectories(localDriversFolderPath.Value)
-                |>Seq.filter (fun x-> not (x.StartsWith("_")))
+    let installDrivers (localDriversFolderPath:Path) installScriptName installConfiguration driverPackageName =
+        result{            
             logger.Info("Getting active drivers...")
             let activeDriverFolders = 
                 System.IO.Directory.GetDirectories(localDriversFolderPath.Value)
@@ -127,7 +118,7 @@ module InstallDriverPackage =
                 |> Seq.map (fun p -> Path.create (System.IO.Path.Combine(p,installScriptName)))
                 |> Seq.map (fun pr -> 
                                 match pr with
-                                |Ok p -> FileOperations.ensureFileExistsWithMessage (String.Format("It is required that the script '{0}' exists in each active driver folder.",installScriptName)) p
+                                |Ok p -> FileOperations.ensureFileExistsWithMessage (String.Format("It is required that the script '{0}' exists in each active driver folder. Not found: {1}. ",installScriptName, p.Value)) p
                                 |Error _ -> pr
                             )
                 |> toAccumulatedResult
@@ -176,8 +167,12 @@ module InstallDriverPackage =
             let! requirementsAreFullfilled = assertDriverInstallRequirements installConfiguration systemInfo
             logger.Info("All install requirements are fullfilled: " + requirementsAreFullfilled.ToString())            
             let unregisterSccmApplication = unRegisterSccmApplication installConfiguration
-            let! bitLockerSuspendExitCode = suspendBitLockerProtection()
-            let installDriversExitCode = installDrivers driverPackagePath DriverTool.CreateDriverPackage.dtInstallPackageCmd            
+            let! bitLockerSuspendExitCode = suspendBitLockerProtection()            
+            let driverPackageName = getDriverPackageName installConfiguration
+            let localDriversFolder = getLocalDriversPackageFolder driverPackageName
+            let! localDriversFolderPath = Path.create localDriversFolder
+            let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
+            let installDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtInstallPackageCmd installConfiguration driverPackageName           
             let! res = 
                 match installDriversExitCode with
                 |Ok ec -> 
@@ -197,7 +192,12 @@ module InstallDriverPackage =
             let! systemInfo = getSystemInfo
             let! requirementsAreFullfilled = assertDriverInstallRequirements installConfiguration systemInfo
             logger.Info("All install requirements are fullfilled: " + requirementsAreFullfilled.ToString())
-            let uninstallDriversExitCode = installDrivers driverPackagePath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd            
+            let driverPackageName = getDriverPackageName installConfiguration
+            let localDriversFolder = getLocalDriversPackageFolder driverPackageName
+            let! localDriversFolderPath = Path.create localDriversFolder
+            let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
+            let uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd installConfiguration driverPackageName
+            let! deleteDirectoryResult = DirectoryOperations.deleteDirectory true localDriversFolderPath
             let! res = 
                 match uninstallDriversExitCode with
                 |Ok ec -> 
