@@ -94,9 +94,11 @@ module InstallDriverPackage =
 
     let installDrivers (localDriversFolderPath:Path) installScriptName installConfiguration driverPackageName =
         result{            
+            let! existingLocalDriversFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage (String.Format("Can not run install scripts '{0}' due to the local driver folder '{1}', where the scripts should be located, does not exist. ",installScriptName,localDriversFolderPath.Value),localDriversFolderPath,false)
+            
             logger.Info("Getting active drivers...")
             let activeDriverFolders = 
-                System.IO.Directory.GetDirectories(localDriversFolderPath.Value)
+                System.IO.Directory.GetDirectories(existingLocalDriversFolderPath.Value)
                 |>Seq.filter (fun path-> not (path.StartsWith("_")))
                 |>Seq.map (fun path -> 
                                 logger.Info("Will be processed: " + path)
@@ -105,7 +107,7 @@ module InstallDriverPackage =
                 |>Seq.toArray
             logger.Info("Getting inactive drivers...")
             let inactiveDriverFolders = 
-                System.IO.Directory.GetDirectories(localDriversFolderPath.Value)
+                System.IO.Directory.GetDirectories(existingLocalDriversFolderPath.Value)
                 |>Seq.filter (fun path-> (path.StartsWith("_")))
                 |>Seq.map (fun path -> 
                                 logger.Info("Will NOT be processed: " + path)
