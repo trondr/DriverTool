@@ -59,5 +59,11 @@ RegistryValueIs64Bit=
             packageDefinition.Language,
             packageDefinition.InstallCommandLine,
             packageDefinition.UnInstallCommandLine)
+    
+    let writePackageDefinitionToFile (packageDefinition:PackageDefinition, filePath:Path) =
+        match FileOperations.writeContentToFile filePath.Value (getPackageDefinitionContent packageDefinition) with
+        |Ok p -> Result.Ok filePath
+        |Error ex -> Result.Error ex        
+
 
     
