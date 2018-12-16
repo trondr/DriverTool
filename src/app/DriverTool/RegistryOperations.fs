@@ -27,9 +27,11 @@ module RegistryOperations =
     
     let openRegKey (regKeyPath:string, writeable:bool) =
         tryCatch openRegKeyUnsafe  (regKeyPath, writeable)
+    
+    type OpenRegKeyFunc = (string*bool) -> Result<RegistryKey,Exception>
 
-    let regKeyExists (regKeyPath:string) =
-        let regKeyResult = openRegKey (regKeyPath, false)
+    let regKeyExistsBase (openRegKeyFunc:OpenRegKeyFunc) (regKeyPath:string) loggerIsEnabled logWrite =
+        let regKeyResult = openRegKeyFunc (regKeyPath, false)
         match regKeyResult with        
         |Ok rk ->
             use regKey = rk            
@@ -37,21 +39,39 @@ module RegistryOperations =
             |null -> false
             |_ -> true
         |Error ex ->
-            if (logger.IsDebugEnabled) then logger.Debug(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            if (loggerIsEnabled) then logWrite(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            false
+
+    let regKeyExists (regKeyPath:string) =
+        regKeyExistsBase openRegKey (regKeyPath) logger.IsDebugEnabled logger.Debug
+    
+    let getRegkeyValue (regKey:RegistryKey, valueName) =
+        nullGuard regKey "regKey"
+        let value = regKey.GetValue(valueName)
+        match (value) with
+        |null -> None
+        |_ -> Some(value)
+
+    type GetRegKeyValueFunc = (RegistryKey*string) -> option<obj>
+
+    let regValueExistsBase (openRegKeyFunc:OpenRegKeyFunc) (getRegkeyValueFunc:GetRegKeyValueFunc) (regKeyPath:string) valueName loggerIsEnabled logWrite =
+        let regKeyResult = openRegKeyFunc  (regKeyPath, false)
+        match regKeyResult with        
+        |Ok rk ->
+            match rk with
+            |null -> false
+            |_ ->
+                use regKey = rk
+                let value = getRegkeyValueFunc (regKey,valueName)
+                match value with
+                |Some _ -> true
+                |None -> false
+        |Error ex ->
+            if (loggerIsEnabled) then logWrite(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
             false
 
     let regValueExists (regKeyPath:string) valueName =
-        let regKeyResult = openRegKey  (regKeyPath, false)
-        match regKeyResult with        
-        |Ok rk ->
-            use regKey = rk
-            let value = regKey.GetValue(valueName)
-            match value with
-            |null -> false
-            |_ -> true
-        |Error ex ->
-            if (logger.IsDebugEnabled) then logger.Debug(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
-            false
+        regValueExistsBase openRegKey getRegkeyValue regKeyPath valueName logger.IsDebugEnabled logger.Debug
 
     let deleteRegKey regKeyPath =
         let (regHive, subKeyPath) = parseRegKeyPath regKeyPath
