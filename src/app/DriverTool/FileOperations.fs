@@ -65,3 +65,24 @@ module FileOperations =
             Result.Ok (sr.ReadToEnd())
         with
         |ex -> Result.Error ex
+    
+    let copyFileUnsafe (sourceFilePath:Path, destinationFilePath:Path, force) =
+        System.IO.File.Copy(sourceFilePath.Value, destinationFilePath.Value, force)
+        destinationFilePath
+    
+    let copyFile (sourceFilePath:Path, destinationFilePath:Path, force) =
+        tryCatchWithMessage copyFileUnsafe (sourceFilePath, destinationFilePath, force) (String.Format("Failed to copy file: '{0}'->{1}. ",sourceFilePath.Value,destinationFilePath.Value))
+
+    let copyFiles (destinationFolderPath:Path) (files:seq<string>) =
+        files
+        |>Seq.map(fun fp -> 
+                    result{
+                        let sourceFile = (new System.IO.FileInfo(fp))
+                        let! sourceFilePath = Path.create sourceFile.FullName
+                        let! destinationFilePath = Path.create (System.IO.Path.Combine(destinationFolderPath.Value, sourceFile.Name))
+                        let! copyResult = copyFile (sourceFilePath,destinationFilePath,true)
+                        return copyResult
+                    }
+                 )
+        |>Seq.toArray
+        |>toAccumulatedResult
