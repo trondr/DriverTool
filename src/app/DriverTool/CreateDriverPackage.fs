@@ -157,7 +157,7 @@ module CreateDriverPackage =
             let arguments = extractCommandLine.Replace(fileName,"")
             match (ExistingFilePath.New downloadedPackageInfo.InstallerPath) with
             |Ok fp -> 
-                match DriverTool.ProcessOperations.startProcess (fp.Value, arguments) with
+                match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments,packageFolderPath.Value,-1,null,null,false) with
                 |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex
@@ -360,7 +360,7 @@ module CreateDriverPackage =
         let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath.Value)
         match (ExistingFilePath.New downloadedSccmPackage.InstallerPath) with
         |Ok fp -> 
-            match DriverTool.ProcessOperations.startProcess (fp.Value, arguments) with
+            match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments, destinationPath.Value, -1, null, null, false) with
             |Ok _ -> Result.Ok destinationPath
             |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
         |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
