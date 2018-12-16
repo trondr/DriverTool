@@ -28,6 +28,20 @@ module RegistryOperations =
     let openRegKey (regKeyPath:string, writeable:bool) =
         tryCatch openRegKeyUnsafe  (regKeyPath, writeable)
     
+    let openRegKeyOptionalBase (regKeyPath:string, writeable:bool) loggerIsEnabled logWrite =
+        let regKeyResult = openRegKey (regKeyPath,writeable)
+        match regKeyResult with
+        |Ok regKey ->
+            match regKey with
+            |null -> None
+            |_ -> Some regKey
+        |Error ex ->
+            if(loggerIsEnabled) then logWrite(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            None
+    
+    let openRegKeyOptional (regKeyPath:string, writeable:bool) =
+        openRegKeyOptionalBase (regKeyPath, writeable) logger.IsDebugEnabled logger.Debug
+
     type OpenRegKeyFunc = (string*bool) -> Result<RegistryKey,Exception>
 
     let regKeyExistsBase (openRegKeyFunc:OpenRegKeyFunc) (regKeyPath:string) loggerIsEnabled logWrite =
@@ -88,8 +102,6 @@ module RegistryOperations =
         match regKey with
         |null -> regHive.CreateSubKey(subKeyPath)
         |_ -> regKey
-    
-    
 
     let rec getRegistrySubKeyPaths (regKeyPath:string) recursive : seq<string> =       
         if(not (regKeyExists regKeyPath)) then
@@ -113,13 +125,37 @@ module RegistryOperations =
                             yield childSubKeyPath
             }
     
-    let regValueIs (regKeyPath:string) valueName value =
-        use regKey = openRegKeyUnsafe (regKeyPath, false)
-        let actualValue = regKey.GetValue(valueName)
-        if actualValue.Equals(value) then
-            true
-        else
+    type OpenRegKeyOptionalFunc = (string*bool) -> option<RegistryKey>
+
+    let getRegValueBase (openRegKeyFunc:OpenRegKeyOptionalFunc) (getRegkeyValueFunc:GetRegKeyValueFunc) regKeyPath valueName =
+        let regKeyResult = openRegKeyFunc (regKeyPath, false)
+        match regKeyResult with
+        |Some regKey ->
+            getRegkeyValueFunc (regKey, valueName)
+        |None -> None
+    
+    let getRegValue regKeyPath valueName =
+        getRegValueBase openRegKeyOptional getRegkeyValue regKeyPath valueName
+
+    let regValueIsBase (openRegKey:OpenRegKeyOptionalFunc) (getRegValueFunc:GetRegKeyValueFunc) regKeyPath valueName value =
+        let regKeyOptional = openRegKey (regKeyPath, false)
+        match regKeyOptional with
+        |Some rk -> 
+            use regKey = rk
+            let actualValue = getRegValueFunc (regKey, valueName)
+            match actualValue with
+            |Some v ->
+                if v.Equals(value) then
+                    true
+                else
+                    false
+            |None -> 
+                false
+        |None ->            
             false
+
+    let regValueIs (regKeyPath:string) valueName value =
+        regValueIsBase openRegKeyOptional getRegkeyValue regKeyPath valueName value
 
     let setRegValue (regKeyPath:string) valueName value = 
         use regKey = openRegKeyUnsafe (regKeyPath, true)                
