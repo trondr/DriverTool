@@ -101,4 +101,70 @@ module RegistryOperationTests =
         let actual = regValueExistsBase regKeyOpenStub getRegKeyValueStub (regKeyPath) valueName true logWriteStub
         Assert.AreEqual(expected,actual)
         ()
+     
+    [<Test>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",true,"TestValueName","Value1","Value1",true,TestName="ValueIsEqual")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",true,"TestValueName","Value1","Value2",false,TestName="ValueIsUnEqual")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",true,"TestValueName",null,"Value2",false,TestName="ValueIsNull")>]
+
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value1","Value1",false,TestName="ValueIsEqual")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value1","Value2",false,TestName="ValueIsUnEqual")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName",null,"Value2",false,TestName="ValueIsNull")>]
+
+    let regValueIsTest(regKeyPath:string,regKeyExists,valueName,value1,value2,expected) =
+        let openRegKeyStub (regKeyPath,writeable) = 
+            Assert.AreEqual(false,writeable,"writeable should be false")
+            if(regKeyExists) then
+                let regKey = createRegKey regKeyPath
+                Assert.IsTrue(RegistryOperations.regKeyExists regKeyPath, "Registry key does not exist: " + regKeyPath)
+                Some regKey
+            else
+                deleteRegKey regKeyPath
+                Assert.IsFalse(RegistryOperations.regKeyExists regKeyPath, "Registry key exists: " + regKeyPath)
+                None
         
+        let getRegKeyValueStub (regKey, valueN) =
+            Assert.IsTrue(regKey <> null,"RegKey is null.")
+            Assert.AreEqual(valueName,valueN,"Value name is not: " + valueName)
+            match value1 with
+            |null -> None
+            |_ -> Some value1
+
+        let actual = regValueIsBase openRegKeyStub getRegKeyValueStub regKeyPath valueName value2 
+        Assert.AreEqual(expected,actual)
+        if(RegistryOperations.regKeyExists regKeyPath) then
+            deleteRegKey regKeyPath
+        ()
+    
+    [<Test>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",true,"TestValueName","Value1","Value1",TestName="getRegValueTest1")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",true,"TestValueName","Value2","Value2",TestName="getRegValueTest2")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",true,"TestValueName","Value3","Value3",TestName="getRegValueTest3")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",true,"TestValueName",null,null,TestName="getRegValueTest4")>]
+
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value1",null,TestName="getRegValueTest5")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value2",null,TestName="getRegValueTest6")>]
+    [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value2",null,TestName="getRegValueTest7")>]
+    let getRegValueTest (regKeyPath:string,regKeyExists,valueName,value1:obj,expected:obj) =
+        let openRegKeyStub (regKeyPath,writeable) = 
+            Assert.AreEqual(false,writeable,"writeable should be false")
+            if(regKeyExists) then
+                let regKey = createRegKey regKeyPath
+                Assert.IsTrue(RegistryOperations.regKeyExists regKeyPath, "Registry key does not exist: " + regKeyPath)
+                Some regKey
+            else
+                deleteRegKey regKeyPath
+                Assert.IsFalse(RegistryOperations.regKeyExists regKeyPath, "Registry key exists: " + regKeyPath)
+                None
+        
+        let getRegKeyValueStub (regKey, valueN) =
+            Assert.IsTrue(regKey <> null,"RegKey is null.")
+            Assert.AreEqual(valueName,valueN,"Value name is not: " + valueName)
+            match value1 with
+            |null -> None
+            |_ -> Some value1
+
+        let actual = getRegValueBase openRegKeyStub getRegKeyValueStub regKeyPath valueName
+        match actual with
+        |Some av -> Assert.AreEqual(expected,av)
+        |None -> Assert.AreEqual(expected,null)
