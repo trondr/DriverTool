@@ -32,7 +32,7 @@ module Web =
         | ex -> Result.Error (new Exception( String.Format("Failed to download '{0}' due to '{1}'", sourceUri.OriginalString, ex.Message),ex))
     
     let downloadFile (sourceUri:Uri, force, destinationFilePath) =
-        Logging.debugLoggerResult downloadFilePlain (sourceUri, force, destinationFilePath)
+        Logging.genericLoggerResult Logging.LogLevel.Debug downloadFilePlain (sourceUri, force, destinationFilePath)
 
     let hasSameFileHash downloadInfo =
         (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile.Value, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
@@ -57,7 +57,7 @@ module Web =
             match (downloadFile (downloadInfo.SourceUri, true, downloadInfo.DestinationFile)) with
             |Ok s -> 
                 verifyDownload downloadInfo ignoreVerificationErrors
-            |Error ex -> Result.Error (new Exception("Download could not be verified. " + ex.Message))
+            |Result.Error ex -> Result.Error (new Exception("Download could not be verified. " + ex.Message))
         |false -> 
             logger.Info(String.Format("Destination file '{0}' allready exists.", downloadInfo.DestinationFile.Value))
             Result.Ok downloadInfo
