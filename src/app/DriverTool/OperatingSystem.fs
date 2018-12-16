@@ -1,4 +1,4 @@
-﻿namespace DriverTool.Util.FSharp
+﻿namespace DriverTool
 
 module OperatingSystem =
     open System

@@ -5,8 +5,7 @@ module InstallDriverPackage =
     
     open System
     open InstallXml
-    open DriverTool.Util.FSharp
-    
+        
     let getInstallXmlPath (driverPackagePath:Path) =
         Path.create (System.IO.Path.Combine(driverPackagePath.Value,"Install.xml"))
 

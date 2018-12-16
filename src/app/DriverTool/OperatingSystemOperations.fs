@@ -1,7 +1,6 @@
-﻿namespace DriverTool.Util
+﻿namespace DriverTool
 
 module OperatingSystemOperations =
-    open DriverTool.Util.FSharp
     
     let GetOsShortName () =
         OperatingSystem.getOsShortName

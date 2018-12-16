@@ -1,6 +1,6 @@
 ﻿namespace DriverTool
 open System
-open DriverTool.Util.FSharp
+open DriverTool
 
 type InvalidManufacturerException(manufacturer:string, message : string) =
         inherit Exception(

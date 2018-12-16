@@ -62,19 +62,18 @@
     <EmbeddedResource Include="License\05. Log4NetCMTrace License.xml" />
     <EmbeddedResource Include="PackageTemplate\Install.xml" />
     <EmbeddedResource Include="PackageTemplate\Install.cmd" />
-	<EmbeddedResource Include="PackageTemplate\UnInstall.cmd" />
+    <EmbeddedResource Include="PackageTemplate\UnInstall.cmd" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe.config" />
     <EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
-    <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />    
+    <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
     <EmbeddedResource Include="Tools\7Zip\7za.exe" />
     <EmbeddedResource Include="Tools\7Zip\7zip.chm" />
     <EmbeddedResource Include="Tools\7Zip\License.txt" />
     <EmbeddedResource Include="Tools\7Zip\readme.txt" />
-	<EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
-	<EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
+    <EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
+    <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
-    <EmbeddedResource Include="Libs\DriverTool.Util.dll" />
     <EmbeddedResource Include="Libs\Dynamitey.dll" />
     <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
     <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
@@ -107,9 +106,12 @@
     <Compile Include="Checksum.fs" />
     <Compile Include="ProcessOperations.fs" />
     <Compile Include="RegistryOperations.fs" />
+	<Compile Include="WmiHelper.fs" />
+	<Compile Include="OperatingSystem.fs" />
+    <Compile Include="OperatingSystemOperations.fs" />
     <Compile Include="Manufacturer.fs" />
     <Compile Include="SystemFamily.fs" />
-    <Compile Include="ModelCode.fs" />
+    <Compile Include="ModelCode.fs" />		
     <Compile Include="OperatingSystemCode.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="Web.fs" />
@@ -196,11 +198,6 @@
     <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj">
       <Name>DriverTool.CSharpLib</Name>
       <Project>{09a4cb06-46f7-4b78-b972-686516b67169}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\DriverTool.Util\DriverTool.Util.fsproj">
-      <Name>DriverTool.Util</Name>
-      <Project>{3e54f702-5ce2-4424-bfc3-36a020ad576e}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

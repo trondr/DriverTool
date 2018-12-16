@@ -5,7 +5,7 @@ open DriverTool
 
 [<TestFixture>]
 module WmiHelperTests  =
-    open DriverTool.Util.FSharp
+    open DriverTool
 
     [<Test>]
     let WmiHelperTest_Success() =
