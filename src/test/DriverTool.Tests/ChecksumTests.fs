@@ -13,7 +13,7 @@ module ChecksumTests =
     [<TestCase("File hash should not be the same due file size difference.",true,0,1234,@"c:\temp\somedestinationfile.txt","NOTUSED","NOTUSED",false,true,true,false)>]
     [<TestCase("File hash should not be the same due destinaton file not exists.",false,1234,1234,@"c:\temp\somedestinationfile.txt","NOTUSED","NOTUSED",false,true,false,false)>]
     
-    let hasSameFileHashPartial (testDescription:string) (destinationFileExists:Boolean) (destinationFileSize:Int64) (sourceFileSize:Int64) (destinationFilePath:string) (sourceFileHash:string) (destinatinationFileHash:string)  (expected:Boolean) (callFileExists:Boolean) (callgetFileSize:Boolean) (callComputeFileHashFromHashLength:Boolean) =
+    let hasSameFileHashPartialTest (testDescription:string) (destinationFileExists:Boolean) (destinationFileSize:Int64) (sourceFileSize:Int64) (destinationFilePath:string) (sourceFileHash:string) (destinatinationFileHash:string)  (expected:Boolean) (callFileExists:Boolean) (callgetFileSize:Boolean) (callComputeFileHashFromHashLength:Boolean) =
         //Setup
         let fileExistsStub = (fun f ->
             Assert.IsTrue(callFileExists,"FileExists should not have been called")
