@@ -1,7 +1,7 @@
 ﻿namespace DriverTool.Tests
-open DriverTool.Util.FSharp
 open NUnit.Framework
 open System
+open DriverTool
 
 [<TestFixture>]
 module OperatingSystemTests =

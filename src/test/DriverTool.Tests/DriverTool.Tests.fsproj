@@ -81,11 +81,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\app\DriverTool.Util\DriverTool.Util.fsproj">
-      <Name>DriverTool.Util</Name>
-      <Project>{3e54f702-5ce2-4424-bfc3-36a020ad576e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj">
       <Name>DriverTool</Name>
       <Project>{19822aea-c088-455d-b5a5-4738a3a9dba7}</Project>

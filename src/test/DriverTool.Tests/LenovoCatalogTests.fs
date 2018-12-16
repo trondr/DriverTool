@@ -17,8 +17,7 @@ module LenovoCatalogTests=
             Assert.IsTrue(productArray.Length > 300,"Expected product array greater than zeror." )
         | Error ex -> Assert.Fail("Did not expect getSccmPackagesInfo to fail. Error: " + ex.Message)
 
-    open System.Threading
-    open F
+    open System.Threading    
     open System
     open DriverTool
 

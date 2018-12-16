@@ -1,6 +1,6 @@
 ﻿namespace DriverTool
 open System
-open DriverTool.Util.FSharp
+open DriverTool
 
 type InvalidSystemFamilyException(systemFamily:string, message : string) =
         inherit Exception(

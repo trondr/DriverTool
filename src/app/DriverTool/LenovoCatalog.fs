@@ -315,7 +315,7 @@ module LenovoCatalog =
             logger.WarnFormat("Unsupported OS Build for Windows version: {0}. Returning OsBuild=\"*\".", osVersion)
             "*"
         
-    open DriverTool.Util.FSharp
+    open DriverTool
     
     let getOsBuild = 
         let osVersion = 

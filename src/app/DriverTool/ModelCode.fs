@@ -1,6 +1,6 @@
 ﻿namespace DriverTool
 open System
-open DriverTool.Util.FSharp
+open DriverTool
 
 type InvalidModelCodeException(modelCode:string, message : string) =
         inherit Exception(
