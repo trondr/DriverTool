@@ -2,7 +2,7 @@
 
 module PackageTemplate =
     open DriverTool.EmbeddedResouce
-
+    
     let isDriverPackageEmbeddedResourceName (resourceName:string) =
         resourceName.StartsWith("DriverTool.PackageTemplate")
 
@@ -28,14 +28,36 @@ module PackageTemplate =
         "DriverTool.PackageTemplate.Drivers_Example._040_Camera_and_Card_Reader_Re_10_64_1_2_2018_03_29", System.IO.Path.Combine(destinationFolderPath.Value, "Drivers_Example", "040_Camera_and_Card_Reader_Re_10_64_1_2_2018_03_29");
         ]
 
+    let getDriverToolFiles =
+        let exeFileName = System.Reflection.Assembly.GetExecutingAssembly().Location
+        let exeFileDirectoryName = (new System.IO.FileInfo(exeFileName)).Directory.FullName
+        seq{
+            yield exeFileName
+            yield exeFileName + ".config"
+            yield System.IO.Path.Combine(exeFileDirectoryName,"FSharp.Core.dll")
+        }
+
+    let copyDriverToolToDriverPackage (destinationFolderPath:Path) =
+        result{
+            let! driverToolFolderPath = Path.create (System.IO.Path.Combine(destinationFolderPath.Value,"DriverTool"))
+            let! existingDriverToolDirectoryPath = DriverTool.DirectoryOperations.ensureDirectoryExists (driverToolFolderPath, true)
+            let! copyResult = 
+                getDriverToolFiles
+                |> (DriverTool.FileOperations.copyFiles existingDriverToolDirectoryPath)            
+            return copyResult
+        }
+
     let extractPackageTemplate (destinationFolderPath:Path) =
         result {
             let! emptyDestinationFolderPath = DriverTool.DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath, true)
             let resourceNamesVsDestinationFilesMap = mapResourceNamesToFileNames (emptyDestinationFolderPath,getPackageTemplateEmbeddedResourceNames,resourceNameToDirectoryDictionary)
-            let extractResult =
+            let! extractedFiles =
                 resourceNamesVsDestinationFilesMap
                 |> Seq.map (fun (resourceName, fileName) ->
                         extractEmbededResouceToFile (resourceName, fileName)
                     )
-            return! (extractResult |> toAccumulatedResult)
+                |> toAccumulatedResult
+            let! copiedFiles = copyDriverToolToDriverPackage destinationFolderPath
+            let files = Seq.append extractedFiles copiedFiles
+            return files
         }

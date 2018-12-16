@@ -125,7 +125,7 @@ module PackageTemplateTests =
         
         result{
             let! destinationFolderPath = Path.create (System.IO.Path.Combine(System.IO.Path.GetTempPath(),"extractPackageTemplateTest"))
-            DriverTool.DirectoryOperations.deleteDirectory true destinationFolderPath
+            DriverTool.DirectoryOperations.deleteDirectory true destinationFolderPath|>ignore
             let! existingDestinationFolderPath = DirectoryOperations.ensureDirectoryExists (destinationFolderPath, true)
             let! extractedFiles = DriverTool.PackageTemplate.extractPackageTemplate existingDestinationFolderPath
             let expectedFileCount = expectedPackageTemplateFiles.Length
