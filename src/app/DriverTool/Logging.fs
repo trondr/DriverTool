@@ -6,8 +6,7 @@
         open System
         open System.IO         
         open System.Runtime.CompilerServices
-        open log4net
-        open System.Reflection        
+        open log4net                
         open System.Text.RegularExpressions        
                 
         let configureLogging () =
@@ -110,23 +109,6 @@
                 | _ -> valueToString result
             resultString            
 
-        let debugLogger func input =
-            let logger = getFunctionLogger func
-            let mutable functionCall = String.Empty
-            if(logger.IsDebugEnabled) then
-                functionCall <- String.Format("{0}({1})",(getFunctionName func), (getParametersString input))
-                logger.Debug ("Call:   " + functionCall)
-            let startTime = DateTime.Now
-            
-            let result = func input
-            
-            let stopTime = DateTime.Now
-            let duration = stopTime - startTime
-            if(logger.IsDebugEnabled) then                
-                let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , (resultToString result), (getDurationString duration))
-                logger.Debug (functionCallResult)
-            result
-        
         type LogLevel = Info|Warn|Error|Fatal|Debug
 
         let isLoggingEnabled (logger:ILog) logLevel =
@@ -182,3 +164,34 @@
                 |Ok _ -> writeLog (functionCallResult)
                 |Result.Error _ -> writeErrorLog (functionCallResult)
             result
+        
+
+        let genericLogger logLevel func input =
+            let logger = getFunctionLogger func
+            let doLog = isLoggingEnabled logger logLevel
+            let writeLog = log logger logLevel
+            let writeErrorLog = log logger LogLevel.Error
+
+            let mutable functionCall = String.Empty
+            if(doLog) then
+                let functionName = getFunctionName func
+                let parametersString = (getParametersString input)
+                functionCall <- String.Format("{0}({1})",functionName, parametersString)
+                writeLog ("Call: " + functionCall)
+            
+            let startTime = DateTime.Now
+            let mutable returnValue = box null
+            try
+                try
+                    returnValue <- func input
+                with
+                |ex -> 
+                    writeErrorLog (String.Format("'{0}' failed due to: {1}",functionCall, ex.Message))
+                    raise ex
+            finally
+                let stopTime = DateTime.Now
+                let duration = stopTime - startTime
+                if(doLog) then                
+                    let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , (resultToString returnValue), (getDurationString duration))
+                    writeLog (functionCallResult)
+            unbox returnValue

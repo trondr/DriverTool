@@ -29,5 +29,5 @@ module RunCommand =
         exitCode
     
     let runCommand (args)=
-        debugLogger runCommandBase (args)
+        Logging.genericLogger Logging.LogLevel.Debug runCommandBase (args)
 

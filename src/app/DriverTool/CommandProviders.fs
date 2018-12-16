@@ -15,7 +15,7 @@ module CommandProviders =
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let exportRemoteUdateInfo (modelCodeString, operatingSystemString, csvFilePathString, overwrite) =
-        Logging.debugLogger exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite)
+        Logging.genericLogger Logging.LogLevel.Debug exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite)
     
     let createDriverPackageSimple (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder, logDirectory) =
         match (result {
@@ -31,7 +31,7 @@ module CommandProviders =
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,logDirectory) =
-        Logging.debugLogger createDriverPackageSimple (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder, logDirectory)
+        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageSimple (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder, logDirectory)
     
     let installDriverPackageBase (driverPackagePathString) =
         match( result {
@@ -43,7 +43,7 @@ module CommandProviders =
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let installDriverPackage(driverPackagePath) =
-        Logging.debugLogger installDriverPackageBase (driverPackagePath)
+        Logging.genericLogger Logging.LogLevel.Debug installDriverPackageBase (driverPackagePath)
     
     let unInstallDriverPackageBase (driverPackagePathString) =
         match( result {
@@ -55,4 +55,4 @@ module CommandProviders =
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let unInstallDriverPackage(driverPackagePath) =
-        Logging.debugLogger unInstallDriverPackageBase (driverPackagePath)
+        Logging.genericLogger Logging.LogLevel.Debug unInstallDriverPackageBase (driverPackagePath)

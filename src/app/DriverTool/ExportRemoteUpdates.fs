@@ -247,7 +247,7 @@ module ExportRemoteUpdates =
         }
 
     let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
-        Logging.debugLogger getRemoteUpdatesPlain (modelCode, operatingSystemCode, overwrite)
+        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesPlain (modelCode, operatingSystemCode, overwrite)
 
     let exportToCsv (csvFilePath:Path, packageInfos) : Result<Path,Exception> =
         try
