@@ -34,7 +34,7 @@ module CreateDriverPackage =
         downloadIfDifferent (downloadInfo, ignoreVerificationErrors)         
 
     let downloadUpdate (downloadJob, ignoreVerificationErrors) =
-        Logging.debugLoggerResult downloadUpdatePlain (downloadJob, ignoreVerificationErrors)
+        Logging.genericLoggerResult Logging.LogLevel.Debug downloadUpdatePlain (downloadJob, ignoreVerificationErrors)
 
     let packageInfosToDownloadedPackageInfos destinationDirectory packageInfos =
         packageInfos
@@ -460,6 +460,6 @@ module CreateDriverPackage =
             }
     
     let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
-        Logging.debugLoggerResult createDriverPackageSimple (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath, logDirectory)
+        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageSimple (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath, logDirectory)
 
         
