@@ -72,6 +72,7 @@
     <Compile Include="PathsTests.fs" />
     <Compile Include="PathTests.fs" />
     <Compile Include="WmiHelperTests.fs" />
+    <Compile Include="WebTests.fs" />
     <Compile Include="WebParsingTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
     <Compile Include="PackageTemplateTests.fs" />
@@ -89,6 +90,9 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\packages\RhinoMocks.3.6.1\lib\net\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj">
       <Name>DriverTool</Name>
@@ -100,6 +104,13 @@
     </Reference>
     <Reference Include="FSharp.Data.DesignTime">
       <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions">
+      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
