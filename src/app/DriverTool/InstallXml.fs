@@ -1,12 +1,9 @@
 ﻿namespace DriverTool
 
-
-
 module InstallXml =
     
     open FSharp.Data
-    //type InstallConfiguration = XmlProvider<"<configuration><LogDirectory>%PUBLIC%\LogsTest</LogDirectory><LogFileName>DriverPackageInstall-%USERNAME%.log</LogFileName><PackageName>DriverPackageX</PackageName><Packageversion>1.0</Packageversion><Publisher>MyCompany</Publisher><ComputerVendor>LENOVO</ComputerVendor><ComputerModel>20EQ0022MN</ComputerModel><ComputerSystemFamiliy>ThinkPad P50</ComputerSystemFamiliy><OsShortName>Win10X64</OsShortName></configuration>">
-
+    
     type InstallConfiguration = XmlProvider<Schema="""   
     <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <xs:element name="configuration">
@@ -16,6 +13,7 @@ module InstallXml =
             <xs:element name="LogFileName" type="xs:string" />
             <xs:element name="PackageName" type="xs:string" />
             <xs:element name="PackageVersion" type="xs:string" />
+            <xs:element name="PackageRevision" type="xs:string" />
             <xs:element name="Publisher" type="xs:string" />
             <xs:element name="ComputerVendor" type="xs:string" />
             <xs:element name="ComputerModel" type="xs:string" />
@@ -32,6 +30,7 @@ module InstallXml =
         LogFileName:string;
         PackageName:string;
         PackageVersion:string;
+        PackageRevision:string;
         Publisher:string;
         ComputerVendor:string;
         ComputerModel:string;
@@ -49,6 +48,7 @@ module InstallXml =
                 LogFileName = installXml.LogFileName;
                 PackageName = installXml.PackageName;
                 PackageVersion = installXml.PackageVersion;
+                PackageRevision = installXml.PackageRevision;
                 Publisher = installXml.Publisher;
                 ComputerVendor = installXml.ComputerVendor;
                 ComputerModel = installXml.ComputerModel;
@@ -71,6 +71,7 @@ module InstallXml =
                         XElement "LogFileName" [installConfigurationData.LogFileName]
                         XElement "PackageName" [installConfigurationData.PackageName]
                         XElement "PackageVersion" [installConfigurationData.PackageVersion]
+                        XElement "PackageRevision" [installConfigurationData.PackageRevision]
                         XElement "Publisher" [installConfigurationData.Publisher]
                         XElement "ComputerVendor" [installConfigurationData.ComputerVendor]
                         XElement "ComputerModel" [installConfigurationData.ComputerModel]
