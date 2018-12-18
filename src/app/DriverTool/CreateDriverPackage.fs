@@ -459,7 +459,7 @@ module CreateDriverPackage =
                 let! packageDefintionWriteResult = 
                     getPackageDefinitionFromInstallConfiguration updatedInstallConfiguration
                     |> writePackageDefinitionToFile packageDefinitionSmsPath
-                logger.Info("Created PackageDefinition.sms" + packageDefintionWriteResult.ToString())
+                logger.Info("Created PackageDefinition.sms")
                 let res = 
                     match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with
                     |Ok _ -> Result.Ok ()
