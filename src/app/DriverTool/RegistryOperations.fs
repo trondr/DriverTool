@@ -94,7 +94,7 @@ module RegistryOperations =
         |null -> ()
         |_ ->
             regKey.Dispose()
-            regHive.DeleteSubKey(subKeyPath)
+            regHive.DeleteSubKeyTree(subKeyPath)
      
     let createRegKey regKeyPath =
         let (regHive, subKeyPath) = parseRegKeyPath regKeyPath
