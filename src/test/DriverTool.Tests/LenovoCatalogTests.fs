@@ -170,8 +170,9 @@ module LenovoCatalogTests=
     [<TestCase("https://somedomain.com/somefolder/file_201806.exe","2018-06-01")>]
     [<TestCase("https://somedomain.com/somefolder/file_201806.exe2232","2018-06-01")>]
     [<TestCase("https://somedomain.com/somefolder/file_201806.exe2232.txt","2018-06-01")>]
+    [<TestCase("https://somedomain.com/somefolder/ts_p520p520c_w1064_20180613.exe","2018-06-13")>]
     let getReleaseDateFromUrlTest (url,expected) =     
-        let actual = getReleaseDateFromUrl url
+        let actual = getReleaseDateFromUrlBase url
         Assert.AreEqual(expected, actual.ToString("yyyy-MM-dd"),"Release month not expected")    
         
     [<Test>]    
