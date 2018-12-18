@@ -79,26 +79,20 @@ RegistryValueIs64Bit={7}
             packageDefinition.RegistryValueIs64Bit
             )
     
-    let writePackageDefinitionToFile (packageDefinition:PackageDefinition, filePath:Path) =
+    let writePackageDefinitionToFile (filePath:Path) (packageDefinition:PackageDefinition) =
         match FileOperations.writeContentToFile filePath.Value (getPackageDefinitionContent packageDefinition) with
-        |Ok p -> Result.Ok filePath
+        |Ok p -> Result.Ok ()
         |Error ex -> Result.Error ex
     
-    let updatePackageDefintionFromInstallConfiguration (installConfiguration:InstallConfigurationData, packageDefinitionSmsPath:Path) =
-        result{
-            let applicationRegistryValue = getApplicationRegistryValue installConfiguration
-            let packageDefinition =  
-                {
-                    Name=installConfiguration.PackageName;
-                    Version=installConfiguration.PackageVersion;
-                    Publisher=installConfiguration.Publisher;
-                    Language="EN";
-                    InstallCommandLine = String.Format("Install.cmd > \"{0}\\{1}_{2}_Install.cmd.log\"",installConfiguration.LogDirectory,installConfiguration.PackageName, installConfiguration.PackageVersion)
-                    UnInstallCommandLine = String.Format("UnInstall.cmd > \"{0}\\{1}_{2}_UnInstall.cmd.log\"",installConfiguration.LogDirectory,installConfiguration.PackageName, installConfiguration.PackageVersion)
-                    RegistryValue=String.Format("[{0}]{1}={2}",applicationRegistryValue.Path, applicationRegistryValue.ValueName, applicationRegistryValue.Value)
-                    RegistryValueIs64Bit="true"
-                }
-            let! packageDefintionFile = writePackageDefinitionToFile (packageDefinition, packageDefinitionSmsPath)
-            return packageDefintionFile
+    let getPackageDefinitionFromInstallConfiguration (installConfiguration:InstallConfigurationData) =
+        let applicationRegistryValue = getApplicationRegistryValue installConfiguration
+        {
+            Name=installConfiguration.PackageName;
+            Version=installConfiguration.PackageVersion;
+            Publisher=installConfiguration.Publisher;
+            Language="EN";
+            InstallCommandLine = String.Format("Install.cmd > \"{0}\\{1}_{2}_Install.cmd.log\"",installConfiguration.LogDirectory,installConfiguration.PackageName, installConfiguration.PackageVersion)
+            UnInstallCommandLine = String.Format("UnInstall.cmd > \"{0}\\{1}_{2}_UnInstall.cmd.log\"",installConfiguration.LogDirectory,installConfiguration.PackageName, installConfiguration.PackageVersion)
+            RegistryValue=String.Format("[{0}]{1}={2}",applicationRegistryValue.Path, applicationRegistryValue.ValueName, applicationRegistryValue.Value)
+            RegistryValueIs64Bit="true"
         }
-    
