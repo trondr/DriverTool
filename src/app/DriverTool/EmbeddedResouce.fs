@@ -59,7 +59,6 @@ module EmbeddedResouce =
         with
         | _ as ex -> Result.Error ex
         
-        
     let resourceNameToPartialResourceNames (resourceName:string) =
         let split = resourceName.Split([|'.'|])
         let length = split.Length

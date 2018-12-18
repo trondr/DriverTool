@@ -42,8 +42,7 @@ module EmbeddedResourceTest  =
         
     [<Test>]
     [<TestCase("DriverTool.PackageTemplate.Install.xml",@"c:\temp\testpackage",@"c:\temp\testpackage\Install.xml")>]
-    [<TestCase("DriverTool.PackageTemplate.Functions.Copy-Drivers.ps1",@"c:\temp\testpackage",@"c:\temp\testpackage\Functions\Copy-Drivers.ps1")>]
-    [<TestCase("DriverTool.PackageTemplate.Functions.Util._7Zip.7za.exe",@"c:\temp\testpackage",@"c:\temp\testpackage\Functions\Util\7Zip\7za.exe")>]
+    [<TestCase("DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe",@"c:\temp\testpackage",@"c:\temp\testpackage\Drivers\DpInstExitCode2ExitCode.exe")>]
     let resourceNameToFileNameTest (resourceName:string, destinationFolderPathString:string,expectedFileName:string) =
          let fileNameResult =
              result{
@@ -100,4 +99,4 @@ module EmbeddedResourceTest  =
         let actual = 
             EmbeddedResouce.getAllEmbeddedResourceNames
         let allResourceNames = String.concat Environment.NewLine actual                
-        Assert.AreEqual(44,actual.Length,allResourceNames)
+        Assert.AreEqual(43,actual.Length,allResourceNames)
