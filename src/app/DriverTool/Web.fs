@@ -43,13 +43,20 @@ module Web =
     let verifyDownload downloadInfo ignoreVerificationErrors =
         match (hasSameFileHash downloadInfo) with
         |true  -> Result.Ok downloadInfo
-        |false -> 
-            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadInfo.DestinationFile.Value,downloadInfo.SourceUri.OriginalString)
+        |false ->
+            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash. ", downloadInfo.DestinationFile.Value,downloadInfo.SourceUri.OriginalString)
             match ignoreVerificationErrors with
             |true ->
                 Logging.getLoggerByName("verifyDownload").Warn(msg)
                 Result.Ok downloadInfo
-            |false->Result.Error (new Exception(msg))
+            |false->
+                let isTrusted = Cryptography.isTrusted downloadInfo.DestinationFile
+                match isTrusted with
+                |true ->                    
+                    Logging.getLoggerByName("verifyDownload").Warn(msg + "However the file is trusted (the file is digitally signed) so it is assumed that there is a mistake in the published checksum data on the vendor web page.")
+                    Result.Ok downloadInfo
+                |false ->    
+                    Result.Error (new Exception(msg + "Additionally the file is not trusted (not signed or signature has been invalidated.)"))
 
     let downloadIfDifferent (downloadInfo, ignoreVerificationErrors) =        
         match (downloadIsRequired downloadInfo) with
