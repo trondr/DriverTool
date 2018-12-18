@@ -39,23 +39,21 @@ module InstallDriverPackage =
             return! isSupportedResult
        }
 
-    let getApplicationRegistryPath companyName applicationName =
-        String.Format("HKLM\SOFTWARE\{0}\Applications\{1}",companyName,applicationName)
-    
     open DriverTool.RegistryOperations
+    open DriverTool.PackageDefinition
     
     let unRegisterSccmApplication (installConfiguration:InstallConfigurationData) =        
-        let applicationRegistryKeyPath = (getApplicationRegistryPath installConfiguration.Publisher installConfiguration.PackageName)
-        logger.Info("Unregister application: " + applicationRegistryKeyPath)
-        match (regKeyExists applicationRegistryKeyPath) with
-        | true -> deleteRegKey applicationRegistryKeyPath
-        | _ -> ()        
+        let applicationRegistryValue = (getApplicationRegistryValue installConfiguration)
+        logger.Info("Unregister application: " + applicationRegistryValue.Path)
+        match (regKeyExists applicationRegistryValue.Path) with
+        | true -> deleteRegKey applicationRegistryValue.Path
+        | _ -> ()
 
     let registerSccmApplication (installConfiguration:InstallConfigurationData) =        
-        let applicationRegistryKeyPath = (getApplicationRegistryPath installConfiguration.Publisher installConfiguration.PackageName)
-        logger.Info("Register application: " + applicationRegistryKeyPath)
-        use regKey = createRegKey applicationRegistryKeyPath
-        regKey.SetValue("InstallRevision","000")
+        let applicationRegistryValue = (getApplicationRegistryValue installConfiguration)
+        logger.Info("Register application: " + applicationRegistryValue.Path)
+        use regKey = createRegKey applicationRegistryValue.Path
+        regKey.SetValue(applicationRegistryValue.ValueName,applicationRegistryValue.Value)
     
     open DriverTool.BitLockerOperations
     
