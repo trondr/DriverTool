@@ -17,7 +17,7 @@ module Web =
             DestinationFile:Path;            
         }
 
-    let downloadFilePlain (sourceUri:Uri, force, destinationFilePath:Path) =
+    let downloadFileBase (sourceUri:Uri, force, destinationFilePath:Path) =
         try
             use webClient = new WebClient()
             webClient.Proxy <- null;
@@ -34,7 +34,7 @@ module Web =
         | ex -> Result.Error (new Exception( String.Format("Failed to download '{0}' due to '{1}'", sourceUri.OriginalString, ex.Message),ex))
     
     let downloadFile (sourceUri:Uri, force, destinationFilePath) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug downloadFilePlain (sourceUri, force, destinationFilePath)
+        Logging.genericLoggerResult Logging.LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
 
     let hasSameFileHash downloadInfo =
         (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile.Value, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
