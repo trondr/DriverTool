@@ -322,6 +322,8 @@ module CreateDriverPackage =
                     Publisher = "LENOVO";
                     InstallCommandLine = String.Format(dtInstallPackageCmd + " > \"{0}\"",installLogFile);
                     UnInstallCommandLine = String.Format(dtUnInstallPackageCmd + " > \"{0}\"",unInstallLogFile);
+                    RegistryValue="";
+                    RegistryValueIs64Bit="";
                 }
             let writeTextToFileResult = writeTextToFile ((getPackageDefinitionContent packageDefinition), packageDefinitonSmsPath)                
             return! writeTextToFileResult
@@ -436,13 +438,14 @@ module CreateDriverPackage =
                 let! installXmlPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"Install.xml"))
                 let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
                 let! installConfiguration = DriverTool.InstallXml.loadInstallXml existingInstallXmlPath
-                let packageName = String.Format("{0} {1} {2} {3} {4} Drv & Sw", packagePublisher, manufacturer.Value, systemFamily.Value, model.Value, operatingSystem.Value)
+                let packageName = String.Format("{0} {1} {2} {3} {4} Drivers And Software {5}", packagePublisher, manufacturer.Value, systemFamily.Value, model.Value, operatingSystem.Value, releaseDate)
                 let updatedInstallConfiguration = 
                     { installConfiguration with 
                         LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables logDirectory);
                         LogFileName = toValidDirectoryName (String.Format("{0}.log", packageName));
                         PackageName = packageName;
                         PackageVersion = "1.0"
+                        PackageRevision = "000"
                         ComputerModel = model.Value;
                         ComputerSystemFamiliy = systemFamily.Value;
                         ComputerVendor = manufacturer.Value;
@@ -451,19 +454,9 @@ module CreateDriverPackage =
                     }
                 let savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
                 logger.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath.Value, (Logging.valueToString savedInstallConfiguration))
-
                 logger.Info("Create PackageDefinition.sms")
-                let! packageDefinitionSmsPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"PackageDefinition.sms"))
-                let packageDefinition =  
-                    {
-                        Name=updatedInstallConfiguration.PackageName;
-                        Version=updatedInstallConfiguration.PackageVersion;
-                        Publisher=updatedInstallConfiguration.Publisher;
-                        Language="EN";
-                        InstallCommandLine = String.Format("Install.cmd > \"{0}\\{1}_{2}_Install.cmd.log\"",installConfiguration.LogDirectory,updatedInstallConfiguration.PackageName, updatedInstallConfiguration.PackageVersion)
-                        UnInstallCommandLine = String.Format("UnInstall.cmd > \"{0}\\{1}_{2}_UnInstall.cmd.log\"",installConfiguration.LogDirectory,updatedInstallConfiguration.PackageName, updatedInstallConfiguration.PackageVersion)
-                    }
-                let! packageDefintionFile = writePackageDefinitionToFile (packageDefinition, packageDefinitionSmsPath)
+                let! packageDefinitionSmsPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"PackageDefinition.sms"))                
+                let! packageDefintionFile = updatePackageDefintionFromInstallConfiguration (updatedInstallConfiguration, packageDefinitionSmsPath)
                 logger.Info("Created PackageDefinition.sms: " + packageDefintionFile.Value)
                 let res = 
                     match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with

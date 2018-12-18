@@ -22,6 +22,7 @@ module InstallDriverPackageTests =
             LogFileName="";
             PackageName="";
             PackageVersion="";
+            PackageRevision="000";
             Publisher="";
             ComputerVendor="";            
             ComputerSystemFamiliy="";            
