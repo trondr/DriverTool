@@ -61,15 +61,22 @@ module LenovoCatalog =
     open F    
     open System
               
-    let getFileNameFromUrl url:string =
+    let getFileNameFromUrl (url:string) =
         let uri = new Uri(url)        
         uri.Segments.[uri.Segments.Length-1]
 
-    let getReleaseDateFromUrl (url:string)  =
-        match (getFileNameFromUrl url) with
+    let getReleaseDateFromUrlBase (url:string)  =
+        let fileName = (getFileNameFromUrl url)
+        match fileName with
+        |Regex @"(\d{4})(\d{2})(\d{2})\..+?$" [year;month;day] -> (new DateTime(year |> int, month|>int, day|>int))        
         |Regex @"(\d{4})(\d{2})\..+?$" [year;month] -> (new DateTime(year |> int, month|>int, 1))
-        |_ -> (new DateTime(1970,01,01))
+        |_ -> 
+            (new DateTime(1970,01,01))
 
+    let getReleaseDateFromUrl (url:string) =
+        match (tryCatchWithMessage getReleaseDateFromUrlBase url (String.Format("Failed to get release date from url '{0}'.",url))) with
+        |Ok r -> r
+        |Error ex -> raise ex
     
     open FSharp.Data
 
