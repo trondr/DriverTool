@@ -168,3 +168,21 @@ module RegistryOperationTests =
         match actual with
         |Some av -> Assert.AreEqual(expected,av)
         |None -> Assert.AreEqual(expected,null)
+
+    
+    [<Test>]
+    let deleteRegKeyTest() =
+        
+        //Setup
+        let regKeyPath = @"HKEY_CURRENT_USER\TestKey123"
+        let regSubKeyPath = regKeyPath + @"\SubKey123"
+        use regKey = createRegKey regSubKeyPath
+        use subRegKey = createRegKey regSubKeyPath
+
+        Assert.IsTrue(regKeyExists regKeyPath,"Reg key does not exist: " + regKeyPath)
+        Assert.IsTrue(regKeyExists regSubKeyPath,"Sub reg key does not exist: " + regSubKeyPath)
+
+        deleteRegKey regKeyPath
+
+        Assert.False(regKeyExists regKeyPath,"Reg key exists: " + regKeyPath)
+        Assert.False(regKeyExists regSubKeyPath,"Sub reg key exists: " + regSubKeyPath)
