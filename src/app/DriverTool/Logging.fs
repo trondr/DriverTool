@@ -186,6 +186,9 @@
                     returnValue <- func input
                 with
                 |ex -> 
+                    let functionName = getFunctionName func
+                    let parametersString = (getParametersString input)
+                    functionCall <- String.Format("{0}({1})",functionName, parametersString)
                     writeErrorLog (String.Format("'{0}' failed due to: {1}",functionCall, ex.Message))
                     raise ex
             finally
