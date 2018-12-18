@@ -87,29 +87,6 @@ module LenovoCatalog =
         sw.Flush()
         stream.Position <- 0L
         stream
-
-    let getSccmPackageInfoFromContent (content:string) =
-        let contentLine = content.Replace(Environment.NewLine,"")
-        let (exeUrl, exeChecksum) = 
-            match contentLine with
-            |Regex @"((https[s]?):\/\/[^\s]+\.exe).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> (file,sha256)            
-            |_ -> ("","")
-        let (txtUrl,txtChecksum) =
-            match contentLine with
-            |Regex @"((https[s]?):\/\/[^\s]+\.txt).+?<p>SHA-256:(.+?)</p>" [file;na;sha256] -> (file,sha256)
-            |_ -> ("","")
-        let sccmPackage = 
-            {
-                ReadmeUrl = txtUrl;
-                ReadmeChecksum = txtChecksum;
-                ReadmeFileName = (getFileNameFromUrl txtUrl);
-                InstallerUrl= exeUrl;
-                InstallerChecksum=exeChecksum;
-                InstallerFileName = (getFileNameFromUrl exeUrl);
-                Released=(getReleaseDateFromUrl exeUrl);
-                Os="Win10";
-                OsBuild="*"}
-        sccmPackage
     
     type DownloadType = |Unknown = 0|Readme = 1|Installer = 2
 
