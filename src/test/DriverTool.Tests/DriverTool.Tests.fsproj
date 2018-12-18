@@ -45,10 +45,18 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\packages\NUnit.3.11.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\NUnit.3.11.0\build\NUnit.props'))" />
+    <Error Condition="!Exists('..\..\..\packages\NUnit3TestAdapter.3.11.2\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\NUnit3TestAdapter.3.11.2\build\net35\NUnit3TestAdapter.props'))" />
+  </Target>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="packages.config" />
     <Content Include="App.config" />
+    <Compile Include="Init.fs" />
     <Compile Include="ChecksumTests.fs" />
     <Compile Include="EmbeddedResourceTest.fs" />
     <Compile Include="EnvironmentTests.fs" />
@@ -69,6 +77,9 @@
     <Compile Include="PackageTemplateTests.fs" />
     <Compile Include="InstallDriverPackageTests.fs" />
     <Compile Include="ProcessOperationsTests.fs" />
+    <Compile Include="CryptographyTests.fs" />
+    <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
+    <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=4.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -79,15 +90,11 @@
       <HintPath>..\..\..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj">
       <Name>DriverTool</Name>
       <Project>{19822aea-c088-455d-b5a5-4738a3a9dba7}</Project>
       <Private>True</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(NCrunch)' == '1'">
     <Reference Include="FSharp.Data.Xsd.DesignTime">
       <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data.xsd\1.0.2\lib\net45\FSharp.Data.Xsd.DesignTime.dll</HintPath>
     </Reference>
@@ -95,13 +102,6 @@
       <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\packages\NUnit.3.11.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\NUnit.3.11.0\build\NUnit.props'))" />
-    <Error Condition="!Exists('..\..\..\packages\NUnit3TestAdapter.3.11.2\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\NUnit3TestAdapter.3.11.2\build\net35\NUnit3TestAdapter.props'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
