@@ -1,11 +1,12 @@
 <configuration>
-	<LogDirectory>%PUBLIC%\LogsTest</LogDirectory>
-	<LogFileName>DriverPackageInstall-%USERNAME%.log</LogFileName>
-	<PackageName>DriverPackageX</PackageName>
-	<PackageVersion>1.0</PackageVersion>
-	<Publisher>MyCompany</Publisher>
-	<ComputerVendor>LENOVO</ComputerVendor>
-	<ComputerModel>20EQ0022MN</ComputerModel>	
-	<ComputerSystemFamiliy>ThinkPad P50</ComputerSystemFamiliy>
-	<OsShortName>Win10X64</OsShortName>
+  <LogDirectory>%PUBLIC%\LogsTest</LogDirectory>
+  <LogFileName>DriverPackageInstall-%USERNAME%.log</LogFileName>
+  <PackageName>DriverPackageX</PackageName>
+  <PackageVersion>1.0</PackageVersion>
+  <PackageRevision>000</PackageRevision>
+  <Publisher>MyCompany</Publisher>
+  <ComputerVendor>LENOVO</ComputerVendor>
+  <ComputerModel>20EQ0022MN</ComputerModel>	
+  <ComputerSystemFamiliy>ThinkPad P50</ComputerSystemFamiliy>
+  <OsShortName>Win10X64</OsShortName>
 </configuration>
