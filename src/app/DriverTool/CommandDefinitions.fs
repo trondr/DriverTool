@@ -43,10 +43,15 @@ module Commands =
                                             modelCode : string,
                                          [<OptionalCommandParameter(Description = "Operating system code. If operating system code is not specified the current system operating system code will be looked up and used.", ExampleValue = @"WIN10X64", AlternativeName = "op", DefaultValue = "")>] 
                                             operatingSystemCode : string,
+
+                                         [<OptionalCommandParameter(Description = "Create driver package based on locally installed updates. Use this on a a fully updated reference machine where the vendor specific update utility (Lenovo System Update) has been run and no more updates are available.", ExampleValue = false, AlternativeName = "lu", DefaultValue = false)>]
+                                            baseOnLocallyInstalledUpdates : bool,
+                                        
+
                                          [<OptionalCommandParameter(Description = "Log directory where install logs will be written.", ExampleValue = @"%public%\Logs", AlternativeName = "ld", DefaultValue = "%public%\Logs")>] 
                                             logDirectory : string
                                          ) : NCmdLiner.Result<int> = 
-            CommandProviders.createDriverPackage (packagePublisher,manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder, logDirectory)
+            CommandProviders.createDriverPackage (packagePublisher,manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder,baseOnLocallyInstalledUpdates, logDirectory)
         
         [<Command(Description="Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.",Summary="Install driver package")>]
         static member InstallDriverPackage(

@@ -39,9 +39,10 @@ module LenovoSystemUpdate =
                             }                            
                     )
             |>toAccumulatedResult
-        let packageInfos = match packageInfosResult with
+        let packageInfos = 
+            match packageInfosResult with
             |Ok packageInfos-> packageInfos
-            |Error ex -> raise (new Exception("Failed to get local update info due to: " + ex.Message,ex))
+            |Error ex -> raise (new Exception("Failed to get local update info due to: " + ex.Message, ex))
         database.ShutDownDataBase()
         logger.Info("Finished getting update info from Lenovo System Update database!");
         packageInfos        
