@@ -20,6 +20,15 @@ module Commands =
                                             ) : NCmdLiner.Result<int> =                
                 CommandProviders.exportRemoteUdateInfo (modelCode, operatingSystemCode, csvFileName, overWrite)                
         
+        [<Command(Description = "Export Lenovo system update information for the current system to csv file. The current system is typically a reference machine and the exported info can be used to automate download of updates to be installed on new systems with the same specification. It is required that Lenovo System Update is installed on the system and that Lenovo System Update has been run to install all relevant updates.", Summary="Export Lenovo system update information for the current system to csv file")>]
+        static member ExportLocalUdateInfo (
+                                            [<RequiredCommandParameter(Description = "Path to csv file.", ExampleValue = @"c:\temp\updates.csv", AlternativeName = "f")>] 
+                                            csvFileName: string,
+                                            [<OptionalCommandParameter(Description = "Overwrite csv file if it allready exists.", ExampleValue = false,DefaultValue = false, AlternativeName = "o")>] 
+                                            overWrite : bool
+                                            ) : NCmdLiner.Result<int> =                
+                CommandProviders.exportLocalUdateInfo (csvFileName, overWrite)
+
         [<Command(Description="",Summary="")>]
         static member CreateDriverPackage(
                                          [<RequiredCommandParameter(Description = "Destination folder.",ExampleValue = @"c:\temp\Drivers\SomeModel",AlternativeName = "df")>]

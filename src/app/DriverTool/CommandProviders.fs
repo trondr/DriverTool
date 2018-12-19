@@ -3,7 +3,7 @@ open F
 
 module CommandProviders =
 
-    let exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
+    let exportRemoteUdateInfoBase (modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
         match (result {
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
@@ -15,8 +15,22 @@ module CommandProviders =
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let exportRemoteUdateInfo (modelCodeString, operatingSystemString, csvFilePathString, overwrite) =
-        Logging.genericLogger Logging.LogLevel.Debug exportRemoteUdateInfoSimple (modelCodeString, operatingSystemString, csvFilePathString, overwrite)
+        Logging.genericLogger Logging.LogLevel.Debug exportRemoteUdateInfoBase (modelCodeString, operatingSystemString, csvFilePathString, overwrite)
     
+
+    let exportLocalUdateInfoBase (csvFilePathString, overwrite) = 
+        match (result{
+                let! csvFilePath = Path.create csvFilePathString
+                let! nonExistingCsvFilePath = FileOperations.ensureFileDoesNotExist (overwrite, csvFilePath)
+                let! exportResult = DriverTool.ExportLocalUpdates.exportLocalUpdates nonExistingCsvFilePath
+                return exportResult        
+        }) with
+        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+
+    let exportLocalUdateInfo (csvFilePathString, overwrite) =
+        Logging.genericLogger Logging.LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite)
+
     let createDriverPackageSimple (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder, logDirectory) =
         match (result {
                 let! manufacturer = Manufacturer.create manufacturerString true
