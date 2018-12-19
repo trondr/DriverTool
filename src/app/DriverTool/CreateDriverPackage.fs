@@ -7,6 +7,7 @@ module CreateDriverPackage =
     
     open System
     open DriverTool
+    open DriverTool.PackageXml
     open FSharp.Collections.ParallelSeq
     open Checksum
 

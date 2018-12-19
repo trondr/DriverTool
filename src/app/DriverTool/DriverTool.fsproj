@@ -24,7 +24,7 @@
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
     <StartArguments>Help</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -114,10 +114,11 @@
     <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
-    <Compile Include="LenovoSystemUpdate.fs" />
+    <Compile Include="LenovoSystemUpdateCheck.fs" />
     <Compile Include="Web.fs" />
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
+    <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="ExportLocalUpdates.fs" />
     <Compile Include="EmbeddedResouce.fs" />

@@ -26,10 +26,10 @@ type ModelCode private (modelCode : string) =
         | modelCode when System.String.IsNullOrWhiteSpace(modelCode) -> failure ((new InvalidModelCodeException(modelCode,"ModelCode cannot be null or empty.")) :> Exception)
         | _ -> success (ModelCode modelCode)
 
-    static member create (modelCode : string) =
+    static member create (modelCode : string) (defaultToLocal:bool) =
         let success (value : ModelCode) = Result.Ok value
         let failure ex = Result.Error ex
-        ModelCode.createWithContinuation success failure modelCode
+        ModelCode.createWithContinuation success failure modelCode defaultToLocal
     
     override x.GetHashCode() =
         hash (modelCode)

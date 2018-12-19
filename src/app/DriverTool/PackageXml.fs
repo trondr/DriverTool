@@ -2,7 +2,7 @@
 
 open System.Xml.Linq
 
-module DriverTool = 
+module PackageXml = 
     open System
     
     type PackageXmlInfo = 
