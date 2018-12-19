@@ -63,8 +63,8 @@
     <EmbeddedResource Include="PackageTemplate\Install.xml" />
     <EmbeddedResource Include="PackageTemplate\Install.cmd" />
     <EmbeddedResource Include="PackageTemplate\UnInstall.cmd" />
-	<EmbeddedResource Include="PackageTemplate\_Compress.cmd" />
-	<EmbeddedResource Include="PackageTemplate\_Decompress.cmd" />
+    <EmbeddedResource Include="PackageTemplate\_Compress.cmd" />
+    <EmbeddedResource Include="PackageTemplate\_Decompress.cmd" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe.config" />
     <EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
@@ -122,6 +122,7 @@
     <Compile Include="Web.fs" />
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
+    <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="ExportLocalUpdates.fs" />
