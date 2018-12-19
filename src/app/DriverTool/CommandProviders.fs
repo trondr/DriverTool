@@ -70,3 +70,27 @@ module CommandProviders =
 
     let unInstallDriverPackage(driverPackagePath) =
         Logging.genericLogger Logging.LogLevel.Debug unInstallDriverPackageBase (driverPackagePath)
+    
+    let compressDriverPackageBase  (driverPackagePathString) =
+        match( result {
+                    let! driverPackagePath = Path.create driverPackagePathString            
+                    let! compressDriverPackageResult = CompressDriverPackage.compressDriverPackage driverPackagePath
+                    return compressDriverPackageResult
+        }) with        
+        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+    
+    let compressDriverPackage(driverPackagePath) =
+        Logging.genericLogger Logging.LogLevel.Debug compressDriverPackageBase (driverPackagePath)
+
+    let decompressDriverPackageBase  (driverPackagePathString) =
+        match( result {
+                    let! driverPackagePath = Path.create driverPackagePathString            
+                    let! decompressDriverPackageResult = CompressDriverPackage.decompressDriverPackage driverPackagePath
+                    return decompressDriverPackageResult
+        }) with        
+        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+    
+    let decompressDriverPackage(driverPackagePath) =
+        Logging.genericLogger Logging.LogLevel.Debug decompressDriverPackageBase (driverPackagePath)

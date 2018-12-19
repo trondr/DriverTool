@@ -1,7 +1,7 @@
 @Echo Off
 @pushd %~dp0
 
-title Driver Package Installl
+title Uninstall driver package
 
 @Echo Run DriverTool InstallDriverPacakge
 Set DriverToolExe=%~dp0DriverTool\DriverTool.exe
