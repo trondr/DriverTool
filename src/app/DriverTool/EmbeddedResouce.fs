@@ -20,17 +20,18 @@ module EmbeddedResouce =
             |Ok v -> Result.Ok (ResourceName v)
             |Error ex -> Result.Error ex
 
-
     open System.Reflection
            
     let debugPrintResourceNames (assembly:Assembly) =
         nullGuard assembly "assembly" |> ignore
-        let resourceNames = assembly.GetManifestResourceNames()
-        logger.DebugFormat("Assembly {0} has {1} embedded resources.", assembly.GetName(),resourceNames.Length)
-        resourceNames
-            |> Array.toSeq
-            |> Seq.map (fun rn -> logger.Debug("Embeded resource: " + rn))
-            |> ignore
+        if(logger.IsDebugEnabled) then
+            let resourceNames = assembly.GetManifestResourceNames()
+            logger.DebugFormat("Assembly {0} has {1} embedded resources.", assembly.GetName(),resourceNames.Length)
+            resourceNames
+                |> Array.toSeq
+                |> Seq.map (fun rn -> logger.Debug("Embeded resource: " + rn))
+                |> Seq.toArray
+                |> ignore
         ()
 
     let extractEmbeddedResourceInAssemblyToStream (resourceName:ResourceName, assembly:Assembly) =
@@ -86,8 +87,16 @@ module EmbeddedResouce =
         assembly.GetManifestResourceNames()    
     
     let getAllEmbeddedResourceNames =
-        let assembly = typeof<ThisAssembly>.Assembly
-        getAllEmbeddedResourceNamesBase assembly
+        let resourceAssembly = typeof<ThisAssembly>.Assembly
+        getAllEmbeddedResourceNamesBase resourceAssembly
+
+    let embeddedResourceExistsBase resourceName resourceAssembly =
+        (getAllEmbeddedResourceNamesBase resourceAssembly)
+        |> Seq.exists (fun rn -> rn = resourceName)
+
+    let embeddedResourceExists resourceName =
+        let resourceAssembly = typeof<ThisAssembly>.Assembly
+        embeddedResourceExistsBase resourceName resourceAssembly
 
     let extractEmbededResouceToFile (resourceName:string , destinationFileName:string) = 
         result {
