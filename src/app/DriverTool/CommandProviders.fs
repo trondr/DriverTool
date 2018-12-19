@@ -31,21 +31,21 @@ module CommandProviders =
     let exportLocalUdateInfo (csvFilePathString, overwrite) =
         Logging.genericLogger Logging.LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite)
 
-    let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder, logDirectory) =
+    let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates, logDirectory) =
         match (result {
                 let! manufacturer = Manufacturer.create manufacturerString true
                 let! systemFamily = SystemFamily.create systemFamilyString true
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! destinationFolderPath = Path.create destinationFolder
-                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystemCode, destinationFolderPath, logDirectory)
+                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystemCode, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory)
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,logDirectory) =
-        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder, logDirectory)
+    let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates,logDirectory) =
+        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates, logDirectory)
     
     let installDriverPackageBase (driverPackagePathString) =
         match( result {

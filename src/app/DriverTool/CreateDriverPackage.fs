@@ -10,8 +10,8 @@ module CreateDriverPackage =
     open DriverTool.PackageXml
     open FSharp.Collections.ParallelSeq
     open Checksum
-
-    let getUniqueUpdates packageInfos = 
+            
+    let getUniqueUpdatesByInstallerName packageInfos = 
         let uniqueUpdates = 
             packageInfos
             |> Seq.groupBy (fun p -> p.InstallerName)
@@ -392,14 +392,19 @@ module CreateDriverPackage =
 
     open DriverTool.PackageTemplate
 
-    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =             
+    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, baseOnLocallyInstalledUpdates, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
                 
-                let! packageInfos = ExportRemoteUpdates.getRemoteUpdates (model, operatingSystem, true)
+                let getUpdates = 
+                    match baseOnLocallyInstalledUpdates with
+                    |true -> ExportLocalUpdates.getLocalUpdates
+                    |false -> ExportRemoteUpdates.getRemoteUpdates
+
+                let! packageInfos = getUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
-                let uniqueUpdates = uniquePackageInfos |> getUniqueUpdates
+                let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
                 logger.Info("Downloading software and drivers...")
                 let! updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
@@ -463,7 +468,7 @@ module CreateDriverPackage =
                 return! res
             }
     
-    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath, logDirectory)
+    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path,baseOnLocallyInstalledUpdates:bool, logDirectory) =
+        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory)
 
         
