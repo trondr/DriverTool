@@ -72,6 +72,8 @@
     <EmbeddedResource Include="Tools\7Zip\readme.txt" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
+    <EmbeddedResource Include="Tools\CorFlags\x86\CorFlags.exe" />
+    <EmbeddedResource Include="Tools\CorFlags\x64\CorFlags.exe" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
     <EmbeddedResource Include="Libs\Dynamitey.dll" />
@@ -125,6 +127,7 @@
     <Compile Include="PackageDefinition.fs" />
     <Compile Include="WebParsing.fs" />
     <Compile Include="LenovoCatalog.fs" />
+    <Compile Include="CorFlags.fs" />
     <Compile Include="PackageTemplate.fs" />
     <Compile Include="Requirements.fs" />
     <Compile Include="CreateDriverPackage.fs" />
