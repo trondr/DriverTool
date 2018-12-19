@@ -35,10 +35,10 @@ type OperatingSystemCode private (operatingSystemCode : string) =
             | Error ex -> failure ((new InvalidOperatingSystemCodeException(String.Empty,ex.Message)) :> Exception)
         | _ -> validateOperatingSystemCode operatingSystemCode
 
-    static member create (modelCode : string) =
+    static member create (operatingSystemCode : string) (defaultToLocal:bool) =
         let success (value : OperatingSystemCode) = Result.Ok value
         let failure ex = Result.Error ex
-        OperatingSystemCode.createWithContinuation success failure modelCode
+        OperatingSystemCode.createWithContinuation success failure operatingSystemCode defaultToLocal
     
     override x.GetHashCode() =
         hash (operatingSystemCode)

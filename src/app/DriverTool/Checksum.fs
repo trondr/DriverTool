@@ -22,6 +22,14 @@ module Checksum=
 
     let fileHashToString fileHash =
         BitConverter.ToString(fileHash).Replace("-", "").ToLower()
+    
+    let computeFileHashString filePath (hashAlgorithm:HashAlgorithm) =
+        (computeFileHash filePath hashAlgorithm)
+        |>fileHashToString
+    
+    let computeFileHashSha256String filePath =
+        (computeFileHash filePath (SHA256.Create()))
+        |>fileHashToString
 
     let computeFileHashFromHashLength filePath hashLength =
         (getHashAlgorithmFromHashStringLength hashLength)                

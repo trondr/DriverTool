@@ -49,6 +49,7 @@ module ExportRemoteUpdates =
 
     open FSharp.Data    
     open DriverTool
+    open DriverTool.PackageXml
 
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
     type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
@@ -232,7 +233,7 @@ module ExportRemoteUpdates =
 
     
 
-    let getRemoteUpdatesPlain (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
+    let getRemoteUpdatesBase (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
         result{
             let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
             let! path = getModelInfoXmlFilePath modelCode operatingSystemCode
@@ -247,9 +248,9 @@ module ExportRemoteUpdates =
         }
 
     let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesPlain (modelCode, operatingSystemCode, overwrite)
+        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase (modelCode, operatingSystemCode, overwrite)
 
-    let exportToCsv (csvFilePath:Path, packageInfos) : Result<Path,Exception> =
+    let exportToCsv (csvFilePath:Path) packageInfos : Result<Path,Exception> =
         try
             use sw = new System.IO.StreamWriter(csvFilePath.Value)
             use csv = new CsvHelper.CsvWriter(sw)
@@ -257,15 +258,16 @@ module ExportRemoteUpdates =
             csv.WriteRecords(packageInfos)
             Result.Ok csvFilePath
         with
-        | ex -> Result.Error ex
+        | ex -> 
+            Result.Error (new Exception(String.Format("Failed to export package infos to csv file '{0}' due to: {1}.",csvFilePath.Value, ex.Message),ex))
     
     let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite =         
         result {
             let! csvFilePath = ensureFileDoesNotExist (overwrite, csvFilePath)    
             let! r = getRemoteUpdates (model, operatingSystem, overwrite)
             let u = getUnique r
-            let e = exportToCsv (csvFilePath,u)
-            return! e
+            let! e = exportToCsv csvFilePath u
+            return e
         }        
         
         

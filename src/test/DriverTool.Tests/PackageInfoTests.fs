@@ -1,6 +1,6 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
-open DriverTool.DriverTool
+open DriverTool.PackageXml
 
 [<TestFixture>]
 module PackageInfoTests  =
