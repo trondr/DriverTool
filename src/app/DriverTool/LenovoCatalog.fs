@@ -4,7 +4,7 @@ open FSharp.Data
 
 module LenovoCatalog =
     let logger = Logging.getLoggerByName("LenovoCatalog")
-    open FSharp.Data
+    
     open System
 
     type CatalogXmlProvider = XmlProvider<"https://download.lenovo.com/cdrt/td/catalog.xml">
@@ -19,7 +19,7 @@ module LenovoCatalog =
         result {
             let! destinationFile = getLocalLenvoCatalogXmlFilePath
             let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml"), true, destinationFile)
-            return downloadResult        
+            return downloadResult
         }
     
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
