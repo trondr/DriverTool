@@ -31,7 +31,7 @@ module CommandProviders =
     let exportLocalUdateInfo (csvFilePathString, overwrite) =
         Logging.genericLogger Logging.LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite)
 
-    let createDriverPackageSimple (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder, logDirectory) =
+    let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder, logDirectory) =
         match (result {
                 let! manufacturer = Manufacturer.create manufacturerString true
                 let! systemFamily = SystemFamily.create systemFamilyString true
@@ -45,7 +45,7 @@ module CommandProviders =
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,logDirectory) =
-        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageSimple (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder, logDirectory)
+        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder, logDirectory)
     
     let installDriverPackageBase (driverPackagePathString) =
         match( result {
