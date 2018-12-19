@@ -37,7 +37,7 @@ module Environment=
     let windowsFolder =
         System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows)
 
-    let systemFolder =
+    let nativeSystemFolder =
         let sysNative = System.IO.Path.Combine(windowsFolder,"sysnative")
         if(System.IO.Directory.Exists(sysNative)) then
             sysNative

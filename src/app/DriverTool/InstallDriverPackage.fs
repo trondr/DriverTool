@@ -123,7 +123,7 @@ module InstallDriverPackage =
                 |> toAccumulatedResult
             logger.Info(String.Format("Executing '{0}' for each driver folder...", installScriptName))
             let! cmdExePath = 
-                Path.create (System.IO.Path.Combine(Environment.systemFolder,"cmd.exe"))
+                Path.create (System.IO.Path.Combine(Environment.nativeSystemFolder,"cmd.exe"))
             let! existingCmdExePath = FileOperations.ensureFileExists cmdExePath
             let! installedDriverExitCodes =
                 existingInstallScripts

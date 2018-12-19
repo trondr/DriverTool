@@ -65,7 +65,7 @@ module Robocopy=
 
 
     let roboCopyExe =
-        System.IO.Path.Combine(systemFolder,"Robocopy.exe")
+        System.IO.Path.Combine(nativeSystemFolder,"Robocopy.exe")
         
     let roboCopy (sourceFolderPath:Path, destinationFolderPath:Path, robocopyOptions:string) =
         result{
