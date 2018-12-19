@@ -31,11 +31,11 @@ module CreateDriverPackage =
  
     open DriverTool.Web
     
-    let downloadUpdatePlain (downloadInfo:DownloadInfo, ignoreVerificationErrors) =
+    let downloadUpdateBase (downloadInfo:DownloadInfo, ignoreVerificationErrors) =
         downloadIfDifferent (downloadInfo, ignoreVerificationErrors)         
 
     let downloadUpdate (downloadJob, ignoreVerificationErrors) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug downloadUpdatePlain (downloadJob, ignoreVerificationErrors)
+        Logging.genericLoggerResult Logging.LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
 
     let packageInfosToDownloadedPackageInfos destinationDirectory packageInfos =
         packageInfos
@@ -392,7 +392,7 @@ module CreateDriverPackage =
 
     open DriverTool.PackageTemplate
 
-    let createDriverPackageSimple (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =             
+    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
@@ -464,6 +464,6 @@ module CreateDriverPackage =
             }
     
     let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, logDirectory) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageSimple (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath, logDirectory)
+        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath, logDirectory)
 
         

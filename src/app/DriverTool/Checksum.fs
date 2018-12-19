@@ -49,8 +49,8 @@ module Checksum=
                 | false  -> false
             |false -> false
 
-    let hasSameFileHashPlain (filePath:string, sourceFileHash:string, fileSize:Int64) =
+    let hasSameFileHashBase (filePath:string, sourceFileHash:string, fileSize:Int64) =
         hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (filePath, sourceFileHash, fileSize)
 
     let hasSameFileHash (filePath:string, crc:string, fileSize:Int64) =
-        Logging.genericLogger Logging.LogLevel.Debug hasSameFileHashPlain (filePath, crc, fileSize)
+        Logging.genericLogger Logging.LogLevel.Debug hasSameFileHashBase (filePath, crc, fileSize)

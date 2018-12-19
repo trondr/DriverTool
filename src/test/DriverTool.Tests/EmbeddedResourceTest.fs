@@ -99,4 +99,4 @@ module EmbeddedResourceTest  =
         let actual = 
             EmbeddedResouce.getAllEmbeddedResourceNames
         let allResourceNames = String.concat Environment.NewLine actual                
-        Assert.AreEqual(43,actual.Length,allResourceNames)
+        Assert.AreEqual(45,actual.Length,allResourceNames)
