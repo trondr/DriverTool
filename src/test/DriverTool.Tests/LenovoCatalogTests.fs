@@ -193,7 +193,8 @@ module LenovoCatalogTests=
     open DriverTool.PathOperations
 
 
-    [<Test>]    
+    [<Test>] 
+    [<Apartment(ApartmentState.STA)>]
     let getDownloadLinksFromWebPageContentTest () =
 
         let expectedSccmPacakages = seq {            
