@@ -63,6 +63,8 @@
     <EmbeddedResource Include="PackageTemplate\Install.xml" />
     <EmbeddedResource Include="PackageTemplate\Install.cmd" />
     <EmbeddedResource Include="PackageTemplate\UnInstall.cmd" />
+	<EmbeddedResource Include="PackageTemplate\_Compress.cmd" />
+	<EmbeddedResource Include="PackageTemplate\_Decompress.cmd" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe.config" />
     <EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
@@ -135,6 +137,7 @@
     <Compile Include="Robocopy.fs" />
     <Compile Include="Compression.fs" />
     <Compile Include="InstallDriverPackage.fs" />
+    <Compile Include="CompressDriverPackage.fs" />
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
     <Compile Include="AssemblyResolver.fs" />

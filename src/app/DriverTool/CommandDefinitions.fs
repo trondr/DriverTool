@@ -66,3 +66,17 @@ module Commands =
                                             driverPackagePath :string
                       ) : NCmdLiner.Result<int> =
             CommandProviders.unInstallDriverPackage (driverPackagePath)
+
+        [<Command(Description="Compress the Drivers folder to Drivers.zip",Summary="Compress Drivers folder.")>]
+        static member CompressDriverPackage(
+                                            [<RequiredCommandParameter(Description = "Driver package folder path. Below this path there should be a .\Drivers sub folder.",ExampleValue = @"c:\temp\Drivers\SomeModel",AlternativeName = "dpp")>]
+                                            driverPackagePath :string
+                      ) : NCmdLiner.Result<int> =
+            CommandProviders.compressDriverPackage (driverPackagePath)
+
+        [<Command(Description="Decompress Drivers.zip to \Drivers folder.",Summary="Decompress Drivers.zip.")>]
+        static member DecompressDriverPackage(
+                                                [<RequiredCommandParameter(Description = "Driver package folder path. Below this path there should be a .\Drivers.zip file.",ExampleValue = @"c:\temp\Drivers\SomeModel",AlternativeName = "dpp")>]
+                                                driverPackagePath :string
+                      ) : NCmdLiner.Result<int> =
+            CommandProviders.decompressDriverPackage (driverPackagePath)

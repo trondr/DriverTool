@@ -1,12 +1,12 @@
 @Echo Off
 @pushd %~dp0
 
-title Install driver package
+title Decompress .\Drivers.zip to .\Drivers folder
 
 @Echo Run DriverTool InstallDriverPacakge
 Set DriverToolExe=%~dp0DriverTool\DriverTool.exe
 @Echo DriverToolExe=%DriverToolExe%
-"%DriverToolExe%" InstallDriverPackage /driverPackagePath="%~dp0"
+"%DriverToolExe%" DecompressDriverPackage /driverPackagePath="%~dp0"
 @Set ExitCode=%errorlevel%
 
 @popd
