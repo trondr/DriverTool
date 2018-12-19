@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-    <StartArguments>InstallDriverPackage /driverPackagePath="C:\Temp\20EQ_Driver_Package\2018-11-16-CommentedOut"</StartArguments>
+    <StartArguments>Help</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -119,6 +119,7 @@
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
+    <Compile Include="ExportLocalUpdates.fs" />
     <Compile Include="EmbeddedResouce.fs" />
     <Compile Include="PackageDefinition.fs" />
     <Compile Include="WebParsing.fs" />
@@ -147,6 +148,12 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Client">
+      <HintPath>C:\Program Files (x86)\Lenovo\System Update\Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Common">
+      <HintPath>C:\Program Files (x86)\Lenovo\System Update\Common.dll</HintPath>
+    </Reference>
     <Reference Include="CsvHelper">
       <HintPath>..\..\..\packages\CsvHelper.12.1.0\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
