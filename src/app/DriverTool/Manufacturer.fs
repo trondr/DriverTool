@@ -14,7 +14,7 @@ type Manufacturer private (manufacturerString : string) =
     member x.Value = manufacturerString
     
     static member createWithContinuation success failure (manufacturerString:string) (defaultToLocal:bool) : Result<Manufacturer, Exception> =
-        
+
         match manufacturerString with
         | manufacturer when System.String.IsNullOrWhiteSpace(manufacturer) && defaultToLocal -> 
             match getManufacturerForCurrentSystem() with
