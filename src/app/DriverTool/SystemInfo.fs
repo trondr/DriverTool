@@ -2,27 +2,12 @@
 
 module SystemInfo=
 
-    type ManufacturerName = |Dell = 1 |Lenovo =2
-
     open F
     open System.Text.RegularExpressions
     open System
 
-    let arrayToSeq (array:Array) =
-        seq{
-            for item in array do
-                yield item
-        }
+    type ManufacturerName = |Dell = 1 |Lenovo =2
 
-    let getEnumValuesToString (enumType) =
-        let enumValues = 
-            Enum.GetValues(enumType)
-            |>arrayToSeq
-            |>Seq.map(fun v -> v.ToString())
-            |>Seq.toArray
-
-        "[" + String.Join("|",enumValues) + "]"
-    
     let getValidManufacturerNames () =
         getEnumValuesToString (typeof<ManufacturerName>)
     
@@ -49,3 +34,14 @@ module SystemInfo=
 
     let getManufacturerForCurrentSystem () =
         getManufacturerForCurrentSystemBase getWmiManufacturerForCurrentSystem
+
+    let getModelCodeForCurrentSystem () =
+        result{
+            let! manufacturer = getManufacturerForCurrentSystem()
+            let! modelCode = 
+                match manufacturer with
+                |ManufacturerName.Dell -> WmiHelper.getWmiProperty "Win32_ComputerSystem" "SystemSKUNumber"
+                |ManufacturerName.Lenovo -> WmiHelper.getWmiProperty "Win32_ComputerSystem" "Model"
+                |_ -> Result.Error (new Exception("Manufacturer not supported."))
+            return modelCode            
+        } 
