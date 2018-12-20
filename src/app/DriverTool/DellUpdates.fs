@@ -65,6 +65,8 @@ module DellUpdates =
             return softwareCatalogXml
         }
     
-    
-    
-    //let getUpdates =
+    let getUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode) =
+        result{
+            
+            return Result.Error (new Exception("Not implemented"))
+        }

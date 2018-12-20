@@ -6,6 +6,7 @@ open NUnit.Framework
 module DellUpdatesTests =
     open DriverTool
     open F
+    open System
 
     [<Test>]
     let downloadAndLoadSoftwareCatalogTest () =
@@ -19,5 +20,14 @@ module DellUpdatesTests =
         |Error ex ->Assert.Fail(ex.Message)
         
         
-
+    [<Test>]
+    [<TestCase("07A7","WIN10X64")>]
+    let getUpdatesTest (modelCode,operatingSystemCode) =
+        match(result{
+            //let! actual = getUpdates (modelCode, operatingSystemCode)
+            let! result = Result.Ok 1
+            return! Result.Error (new Exception("Not implemented"))
+        }) with
+        |Ok _->Assert.IsTrue(true)
+        |Error ex ->Assert.Fail(ex.Message)
 
