@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
 open System
 open DriverTool
+open DriverTool.SystemInfo
 
 type InvalidManufacturerException(manufacturer:string, message : string) =
         inherit Exception(
@@ -13,15 +14,12 @@ type Manufacturer private (manufacturerString : string) =
     member x.Value = manufacturerString
     
     static member createWithContinuation success failure (manufacturerString:string) (defaultToLocal:bool) : Result<Manufacturer, Exception> =
-        let getManufacturerForLocalSystem : Result<string, Exception> = 
-            let localManufacturerResult = WmiHelper.getWmiProperty "Win32_ComputerSystem" "Manufacturer"
-            localManufacturerResult
         
         match manufacturerString with
         | manufacturer when System.String.IsNullOrWhiteSpace(manufacturer) && defaultToLocal -> 
-            match getManufacturerForLocalSystem with
+            match getManufacturerForCurrentSystem() with
             | Ok mc -> success (Manufacturer (mc.ToString()) )
-            | Error ex -> failure ((new InvalidManufacturerException(String.Empty,String.Format("Failed to get model code from WMI. {0}", ex.Message))):> Exception)  
+            | Error ex -> failure ((new InvalidManufacturerException(String.Empty,String.Format("Failed to model code for current system. {0}", ex.Message))):> Exception)  
         | manufacturer when System.String.IsNullOrWhiteSpace(manufacturer) -> 
             failure ((new InvalidManufacturerException(manufacturer,"Manufacturer cannot be null or empty.")) :> Exception)
         | _ -> success (Manufacturer manufacturerString)
