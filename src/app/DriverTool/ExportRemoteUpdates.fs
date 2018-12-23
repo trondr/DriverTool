@@ -265,7 +265,7 @@ module ExportRemoteUpdates =
         result {
             let! csvFilePath = ensureFileDoesNotExist (overwrite, csvFilePath)    
             let! r = getRemoteUpdates (model, operatingSystem, overwrite)
-            let u = getUnique r
+            let u = Seq.distinct r
             let! e = exportToCsv csvFilePath u
             return e
         }        

@@ -36,20 +36,6 @@ module F=
         with
             | ex -> Result.Error ex
 
-    let getUniqueRecords records =
-        let uniqueRecords = 
-            records |> Seq.distinct
-        uniqueRecords
-
-    let getUnique list =
-        list |> Seq.distinct
-
-    let getUniqueR list =
-        match list with
-        |Error ex -> Result.Error ex
-        |Ok l -> 
-            Result.Ok (l |> Seq.distinct)
-
     //Source: http://www.fssnip.net/7UJ/title/ResultBuilder-Computational-Expression
     let ofOption error = function Some s -> Ok s | None -> Error error
     //Source: http://www.fssnip.net/7UJ/title/ResultBuilder-Computational-Expression
