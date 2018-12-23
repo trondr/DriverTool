@@ -31,8 +31,6 @@ module DellUpdates =
     open FSharp.Data
     open System
 
-    type DellSoftwareCatalogXmlProvider = XmlProvider<"C:\\Dev\\github.trondr\\DriverTool\\example_data\\Dell_CatalogPC.xml">
-
     let getCacheDirectory =
         DriverTool.Configuration.getDownloadCacheDirectoryPath
 
@@ -65,13 +63,6 @@ module DellUpdates =
             return existingSoftwareCatalogXmlPath
         }
 
-    let downloadAndLoadSoftwareComponentsCatalog () =
-        result {            
-            let! existingSoftwareCatalogXmlPath = downloadSoftwareComponentsCatalog ()
-            let softwareCatalogXml = DellSoftwareCatalogXmlProvider.Load(existingSoftwareCatalogXmlPath.Value)
-            return softwareCatalogXml
-        }
-    
     let optionToBoolean option = 
         match option with
         |None -> false
@@ -86,26 +77,6 @@ module DellUpdates =
             (directory.Trim('/'),file)
         |_ -> raise (new Exception("Failed to get directory and file path from path: "+ path ))        
 
-    let toPackageInfo (softwareComponent: DellSoftwareCatalogXmlProvider.SoftwareComponent) =
-            let (directory, installerName) = pathToDirectoryAndFile softwareComponent.Path            
-            {
-                Name=softwareComponent.Name.Display.Value;
-                Title=softwareComponent.Description.Display.Value;
-                Version=softwareComponent.VendorVersion;
-                BaseUrl=downloadsBaseUrl + "/" + directory;
-                InstallerName=installerName;
-                InstallerCrc=softwareComponent.HashMd5.ToString();
-                InstallerSize=int64 softwareComponent.Size;
-                ExtractCommandLine="";
-                InstallCommandLine=installerName + "/s";
-                Category=softwareComponent.Category.Display.Value;
-                ReadmeName="";
-                ReadmeCrc="";
-                ReadmeSize=0L;
-                ReleaseDate=softwareComponent.DateTime.ToString("yyyy-MM-dd");
-                PackageXmlName="";
-            }
-
     let operatingSystemCodeToDellOsCodeUnsafe (operatingSystemCode:OperatingSystemCode) =
         match operatingSystemCode.Value with
         |"WIN10X64" -> "W10P4" //Microsoft Windows 10 Pro X64
@@ -115,38 +86,6 @@ module DellUpdates =
     let operatingSystemCodeToDellOsCode (operatingSystemCode:OperatingSystemCode) =
         tryCatch operatingSystemCodeToDellOsCodeUnsafe operatingSystemCode
 
-    let isSupportedForModel (softwareComponent:DellSoftwareCatalogXmlProvider.SoftwareComponent, modelCode:ModelCode) =
-        softwareComponent.SupportedSystems.Brands
-                    |>Seq.tryFind(fun b ->                         
-                            b.Models
-                            |>Seq.tryFind(fun m -> m.SystemId.Value = modelCode.Value)
-                            |>optionToBoolean
-                        )
-                    |>optionToBoolean
-    
-    let isSupportedForOs (softwareComponent:DellSoftwareCatalogXmlProvider.SoftwareComponent, dellOsCode) =
-        if(softwareComponent.XElement.Elements(Xml.Linq.XName.Get("SupportedOperatingSystems")).Any()) then                                
-            softwareComponent.SupportedOperatingSystems.OperatingSystems
-            |>Seq.tryFind(fun os -> 
-                    (os.OsCode = dellOsCode)                                
-                )
-            |>optionToBoolean                                        
-        else
-            true
-
-    let getUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode) =
-        result{
-            let! dellManifestXml = downloadAndLoadSoftwareComponentsCatalog()
-            let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode
-            let softwareComponents = 
-                dellManifestXml.SoftwareComponents
-                |>Seq.filter (fun sc -> isSupportedForModel (sc, modelCode) )                
-                |>Seq.filter(fun sc -> isSupportedForOs (sc,dellOsCode))
-                |>Seq.map(fun sc -> toPackageInfo sc)
-                |>Seq.toArray
-            return softwareComponents    
-        }
-    
     open System.Xml.Linq    
 
     let isSupportedForModel2 (softwareComponent:XElement, modelCode:ModelCode) =
