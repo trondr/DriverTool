@@ -26,7 +26,7 @@ type OperatingSystemCode private (operatingSystemCode : string) =
             | operatingSytemCode when (DriverTool.OperatingSystem.isValidOsShortName operatingSytemCode) -> 
                 success (OperatingSystemCode (operatingSystemCode))
             | _ ->
-                failure (new InvalidOperatingSystemCodeException(operatingSystemCode,String.Format("Invalid operating system code. Valid codes are: ...")) :> Exception)
+                failure (new InvalidOperatingSystemCodeException(operatingSystemCode,String.Empty) :> Exception)
 
         match operatingSystemCode with
         | operatingSystemCode when System.String.IsNullOrWhiteSpace(operatingSystemCode) && defaultToLocal -> 
