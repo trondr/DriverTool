@@ -88,7 +88,7 @@ module DellUpdates =
 
     open System.Xml.Linq    
 
-    let isSupportedForModel2 (softwareComponent:XElement, modelCode:ModelCode) =
+    let isSupportedForModel (softwareComponent:XElement, modelCode:ModelCode) =
         softwareComponent
             .Descendants(XName.Get("SupportedSystems"))
             .Descendants(XName.Get("Brand"))
@@ -102,7 +102,7 @@ module DellUpdates =
                     )
         |>optionToBoolean
     
-    let isSupportedForOs2 (softwareComponent:XElement, dellOsCode) =        
+    let isSupportedForOs (softwareComponent:XElement, dellOsCode) =        
         softwareComponent
             .Descendants(XName.Get("SupportedOperatingSystems"))
             .Descendants(XName.Get("OperatingSystem"))
@@ -142,7 +142,7 @@ module DellUpdates =
                                 )
                   )
 
-    let toPackageInfo2 (sc: XElement) =
+    let toPackageInfo (sc: XElement) =
         let path = getAttribute(sc,"path")
         let dellVersion = getAttribute(sc,"dellVersion")
         let vendorVersion = getAttribute (sc, "vendorVersion")
@@ -166,7 +166,7 @@ module DellUpdates =
             PackageXmlName="";
         }
 
-    let getUpdates2 (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode) =
+    let getUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode) =
         result{
             let! softwareCatalogXmlFile = downloadSoftwareComponentsCatalog()            
             let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode            
@@ -176,9 +176,9 @@ module DellUpdates =
             let softwareComponents = manifestRoot.Descendants(XName.Get("SoftwareComponent"))
             let updates =
                 softwareComponents
-                |>Seq.filter(fun sc -> isSupportedForModel2 (sc,modelCode))
-                |>Seq.filter(fun sc -> isSupportedForOs2 (sc,dellOsCode))                                
-                |>Seq.map(fun sc -> toPackageInfo2 sc)
+                |>Seq.filter(fun sc -> isSupportedForModel (sc,modelCode))
+                |>Seq.filter(fun sc -> isSupportedForOs (sc,dellOsCode))                                
+                |>Seq.map(fun sc -> toPackageInfo sc)
                 |>getLatestPackageInfoVersion
                 |>Seq.toArray
             System.Console.WriteLine("Updates: " + updates.Length.ToString())            
