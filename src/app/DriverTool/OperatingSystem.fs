@@ -10,38 +10,103 @@ module OperatingSystem =
     
     let isServerBase (operatingSystemSku : UInt32) : bool  =
         match operatingSystemSku with
-        |0u  -> false
-        |1u  -> false
-        |2u  -> false
-        |3u  -> false
-        |4u -> false
-        |5u  -> false
-        |6u  -> false
-        |7u  -> true
-        |8u  -> true
-        |9u  -> true
-        |10u -> true
-        |11u -> false
-        |12u -> true
-        |13u -> true
-        |14u -> true
-        |15u -> true
-        |16u -> false
-        |17u -> true
-        |18u -> true
-        |19u -> true
-        |20u -> true
-        |21u -> true
-        |22u -> true
-        |23u -> true
-        |24u -> true
-        |25u -> true
-        |29u -> true
-        |39u -> true
-        |40u -> true
-        |41u -> true
-        |42u -> true
-        |_ -> raise (new Exception(String.Format("OperatingSystemSKU '{0}' is unknown. ",operatingSystemSku)))
+        |0u -> false //An unknown product
+        |1u -> false //Ultimate
+        |2u -> false //Home Basic
+        |3u -> false //Home Premium
+        |4u -> false //Windows 10 Enterprise
+        |5u -> false //Home Basic N
+        |6u -> false //Business
+        |7u -> true //Server Standard (full installation. For Server Core installations of Windows Server 2012 and later, use the method Determining whether Server Core is running.)
+        |8u -> true //Server Datacenter (full installation. For Server Core installations of Windows Server 2012 and later, use the method Determining whether Server Core is running.)|9u -> true //Windows Small Business Server
+        |9u -> true //Windows Small Business Server Edition
+        |10u -> true //Server Enterprise (full installation)
+        |11u -> false //Starter
+        |12u -> true //Server Datacenter (core installation, Windows Server 2008 R2 and earlier)
+        |13u -> true //Server Standard (core installation, Windows Server 2008 R2 and earlier)
+        |14u -> true //Server Enterprise (core installation)
+        |15u -> true //Server Enterprise for Itanium-based Systems
+        |16u -> false //Business N
+        |17u -> true //Web Server (full installation)
+        |18u -> true //HPC Edition
+        |19u -> true //Windows Storage Server 2008 R2 Essentials
+        |20u -> true //Storage Server Express
+        |21u -> true //Storage Server Standard
+        |22u -> true //Storage Server Workgroup
+        |23u -> true //Storage Server Enterprise
+        |24u -> true //Windows Server 2008 for Windows Essential Server Solutions
+        |25u -> true //Small Business Server Premium
+        |26u -> false //Home Premium N
+        |27u -> false //Windows 10 Enterprise N
+        |28u -> false //Ultimate N
+        |29u -> true //Web Server (core installation)
+        |30u -> true //Windows Essential Business Server Management Server
+        |31u -> true //Windows Essential Business Server Security Server
+        |32u -> true //Windows Essential Business Server Messaging Server
+        |33u -> true //Server Foundation
+        |34u -> true //Windows Home Server 2011
+        |35u -> true //Windows Server 2008 without Hyper-V for Windows Essential Server Solutions
+        |36u -> true //Server Standard without Hyper-V
+        |37u -> true //Server Datacenter without Hyper-V (full installation)
+        |38u -> true //Server Enterprise without Hyper-V (full installation)
+        |39u -> true //Server Datacenter without Hyper-V (core installation)
+        |40u -> true //Server Standard without Hyper-V (core installation)
+        |41u -> true //Server Enterprise without Hyper-V (core installation)
+        |42u -> true //Microsoft Hyper-V Server
+        |43u -> true //Storage Server Express (core installation)
+        |44u -> true //Storage Server Standard (core installation)
+        |45u -> true //Storage Server Workgroup (core installation)
+        |46u -> true //Storage Server Enterprise (core installation)
+        |47u -> false //Starter N
+        |48u -> false //Windows 10 Pro
+        |49u -> false //Windows 10 Pro N
+        |50u -> true //Windows Small Business Server 2011 Essentials
+        |51u -> true //Server For SB Solutions
+        |52u -> true //Server Solutions Premium
+        |53u -> true //Server Solutions Premium (core installation)
+        |54u -> true //Server For SB Solutions EM
+        |55u -> true //Server For SB Solutions EM
+        |56u -> true //Windows MultiPoint Server
+        |59u -> true //Windows Essential Server Solution Management
+        |60u -> true //Windows Essential Server Solution Additional
+        |61u -> true //Windows Essential Server Solution Management SVC
+        |62u -> true //Windows Essential Server Solution Additional SVC
+        |63u -> true //Small Business Server Premium (core installation)
+        |64u -> true //Server Hyper Core V
+        |66u -> false //Not supported
+        |67u -> false //Not supported
+        |68u -> false //Not supported
+        |69u -> false //Not supported
+        |70u -> false //Windows 10 Enterprise E
+        |71u -> false //Not supported
+        |72u -> false //Windows 10 Enterprise Evaluation
+        |76u -> true //Windows MultiPoint Server Standard (full installation)
+        |77u -> true //Windows MultiPoint Server Premium (full installation)
+        |79u -> true //Server Standard (evaluation installation)
+        |80u -> true //Server Datacenter (evaluation installation)
+        |84u -> false //Windows 10 Enterprise N Evaluation
+        |95u -> true //Storage Server Workgroup (evaluation installation)
+        |96u -> true //Storage Server Standard (evaluation installation)
+        |98u -> false //Windows 10 Home N
+        |99u -> false //Windows 10 Home China
+        |100u -> false //Windows 10 Home Single Language
+        |101u -> false //Windows 10 Home
+        |103u -> false //Professional with Media Center
+        |104u -> false //Windows 10 Mobile
+        |121u -> false //Windows 10 Education
+        |122u -> false //Windows 10 Education N
+        |123u -> false //Windows 10 IoT Core
+        |125u -> false //Windows 10 Enterprise 2015 LTSB
+        |126u -> false //Windows 10 Enterprise 2015 LTSB N
+        |129u -> false //Windows 10 Enterprise 2015 LTSB Evaluation
+        |130u -> false //Windows 10 Enterprise 2015 LTSB N Evaluation
+        |131u -> false //Windows 10 IoT Core Commercial
+        |133u -> false //Windows 10 Mobile Enterprise
+        |145u -> true //Server Datacenter, Semi-Annual Channel (core installation)
+        |146u -> true //Server Standard, Semi-Annual Channel (core installation)
+        |161u -> false //Windows 10 Pro for Workstations
+        |162u -> false //Windows 10 Pro for Workstations N
+        |_ -> raise (new Exception(String.Format("OperatingSystemSKU '{0}' is unknown. ", operatingSystemSku)))
     
     let isServer =
         match(getOperatingSystemSku) with
