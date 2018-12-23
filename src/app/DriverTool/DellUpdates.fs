@@ -128,7 +128,20 @@ module DellUpdates =
         name
             .Replace(","+vendorVersion,"")
             .Replace(","+dellVersion,"")
-        
+       
+    let toVersion (versionString) = 
+        (new System.Version(versionString))
+
+    let getLatestPackageInfoVersion (packageInfos:seq<PackageInfo>) =
+        packageInfos
+        |>Seq.groupBy(fun p -> p.Name)
+        |>Seq.map(fun (_,ps) -> 
+                       ps
+                       |>Seq.maxBy(fun p -> 
+                                    toVersion(p.Version)                                    
+                                )
+                  )
+
     let toPackageInfo2 (sc: XElement) =
         let path = getAttribute(sc,"path")
         let dellVersion = getAttribute(sc,"dellVersion")
@@ -165,7 +178,8 @@ module DellUpdates =
                 softwareComponents
                 |>Seq.filter(fun sc -> isSupportedForModel2 (sc,modelCode))
                 |>Seq.filter(fun sc -> isSupportedForOs2 (sc,dellOsCode))                                
-                |>Seq.map(fun sc -> toPackageInfo2 sc)                
+                |>Seq.map(fun sc -> toPackageInfo2 sc)
+                |>getLatestPackageInfoVersion
                 |>Seq.toArray
             System.Console.WriteLine("Updates: " + updates.Length.ToString())            
             return updates
