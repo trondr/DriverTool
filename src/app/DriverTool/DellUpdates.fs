@@ -31,7 +31,7 @@ module DellUpdates =
     open FSharp.Data
     open System
 
-    type DellSoftwareCatalogXmlProvider = XmlProvider<"E:\\Dev\\github.trondr\\DriverTool\\example_data\\Dell_CatalogPC.xml">
+    type DellSoftwareCatalogXmlProvider = XmlProvider<"C:\\Dev\\github.trondr\\DriverTool\\example_data\\Dell_CatalogPC.xml">
 
     let getCacheDirectory =
         DriverTool.Configuration.getDownloadCacheDirectoryPath
@@ -52,7 +52,7 @@ module DellUpdates =
             return expandResult
         }
 
-    let downloadAndLoadSoftwareCatalog () =
+    let downloadSoftwareComponentsCatalog () =
         result {
             let! destinationCabFile = getLocalDellSoftwareCatalogCabFilePath
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist (true, destinationCabFile)
@@ -61,7 +61,13 @@ module DellUpdates =
             let! destinationFolderPath = Path.create getCacheDirectory
             let! expandResult = expandCabFile (existingDestinationCabFile, destinationFolderPath)
             let! softwareCatalogXmlPath = getLocalDellSoftwareCatalogXmlFilePath
-            let! existingSoftwareCatalogXmlPath = FileOperations.ensureFileExists softwareCatalogXmlPath
+            let! existingSoftwareCatalogXmlPath = FileOperations.ensureFileExists softwareCatalogXmlPath            
+            return existingSoftwareCatalogXmlPath
+        }
+
+    let downloadAndLoadSoftwareComponentsCatalog () =
+        result {            
+            let! existingSoftwareCatalogXmlPath = downloadSoftwareComponentsCatalog ()
             let softwareCatalogXml = DellSoftwareCatalogXmlProvider.Load(existingSoftwareCatalogXmlPath.Value)
             return softwareCatalogXml
         }
@@ -130,7 +136,7 @@ module DellUpdates =
 
     let getUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode) =
         result{
-            let! dellManifestXml = downloadAndLoadSoftwareCatalog()
+            let! dellManifestXml = downloadAndLoadSoftwareComponentsCatalog()
             let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode
             let softwareComponents = 
                 dellManifestXml.SoftwareComponents
@@ -138,5 +144,90 @@ module DellUpdates =
                 |>Seq.filter(fun sc -> isSupportedForOs (sc,dellOsCode))
                 |>Seq.map(fun sc -> toPackageInfo sc)
                 |>Seq.toArray
-            return softwareComponents
+            return softwareComponents    
+        }
+    
+    open System.Xml.Linq    
+
+    let isSupportedForModel2 (softwareComponent:XElement, modelCode:ModelCode) =
+        softwareComponent
+            .Descendants(XName.Get("SupportedSystems"))
+            .Descendants(XName.Get("Brand"))
+        |>Seq.tryFind(fun brand-> 
+                        brand.Descendants(XName.Get("Model"))
+                        |>Seq.tryFind(fun model-> 
+                                        let systemId = model.Attribute(XName.Get("systemID")).Value                                        
+                                        systemId = modelCode.Value
+                                    )
+                        |>optionToBoolean
+                    )
+        |>optionToBoolean
+    
+    let isSupportedForOs2 (softwareComponent:XElement, dellOsCode) =        
+        softwareComponent
+            .Descendants(XName.Get("SupportedOperatingSystems"))
+            .Descendants(XName.Get("OperatingSystem"))
+        |>Seq.tryFind(fun os -> 
+                        let osCode = os.Attribute(XName.Get("osCode")).Value
+                        osCode = dellOsCode
+                        )
+        |>optionToBoolean
+
+    let getAttribute (xElement:XElement, attributeName:string) =        
+        xElement.Attribute(XName.Get(attributeName)).Value
+    
+    let getElementValue (xElement:XElement, elementName:string) =
+        xElement
+            .Element(XName.Get(elementName))
+            .Element(XName.Get("Display"))
+            .Value
+
+    let toDateString (dateTimeString:string) =
+        DateTime.Parse(dateTimeString).ToString("yyyy-MM-dd")
+
+    let toName (name:string, vendorVersion:string, dellVersion:string) =
+        name
+            .Replace(","+vendorVersion,"")
+            .Replace(","+dellVersion,"")
+        
+    let toPackageInfo2 (sc: XElement) =
+        let path = getAttribute(sc,"path")
+        let dellVersion = getAttribute(sc,"dellVersion")
+        let vendorVersion = getAttribute (sc, "vendorVersion")
+
+        let (directory, installerName) = pathToDirectoryAndFile path            
+        {
+            Name = toName (getElementValue (sc,"Name"),vendorVersion,dellVersion)
+            Title = getElementValue (sc,"Name")
+            Version = getAttribute (sc, "vendorVersion")
+            BaseUrl = downloadsBaseUrl + "/" + directory;
+            InstallerName = installerName
+            InstallerCrc = getAttribute (sc,"hashMD5")
+            InstallerSize = int64 (getAttribute (sc,"size"))
+            ExtractCommandLine = ""
+            InstallCommandLine = installerName + "/s"
+            Category = getElementValue (sc,"Category")
+            ReadmeName = "";
+            ReadmeCrc = "";
+            ReadmeSize=0L;
+            ReleaseDate= (getAttribute (sc,"dateTime"))|>toDateString
+            PackageXmlName="";
+        }
+
+    let getUpdates2 (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode) =
+        result{
+            let! softwareCatalogXmlFile = downloadSoftwareComponentsCatalog()            
+            let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode            
+            let softwareComponentsXDocument = XDocument.Load(softwareCatalogXmlFile.Value)
+            let manifestRoot = softwareComponentsXDocument.Root
+            System.Console.WriteLine(softwareComponentsXDocument.Root.Name.LocalName)
+            let softwareComponents = manifestRoot.Descendants(XName.Get("SoftwareComponent"))
+            let updates =
+                softwareComponents
+                |>Seq.filter(fun sc -> isSupportedForModel2 (sc,modelCode))
+                |>Seq.filter(fun sc -> isSupportedForOs2 (sc,dellOsCode))                                
+                |>Seq.map(fun sc -> toPackageInfo2 sc)                
+                |>Seq.toArray
+            System.Console.WriteLine("Updates: " + updates.Length.ToString())            
+            return updates
         }
