@@ -56,7 +56,7 @@ module LenovoCatalogTests=
                     let uniqueOses = 
                         products 
                         |> Seq.map(fun p -> p.Os)                        
-                        |> getUnique
+                        |> Seq.distinct
                         |> Seq.toArray
                     uniqueOses 
                     |> Seq.map(fun os -> System.Console.WriteLine(os))

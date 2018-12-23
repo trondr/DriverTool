@@ -53,7 +53,7 @@ module ExportLocalUpdates =
             let! remotePackageInfos = ExportRemoteUpdates.getRemoteUpdates (modelCode, operatingSystemCode, overwrite)
             let localUpdates = 
                 packageInfos
-                |> getUnique
+                |> Seq.distinct
                 |> updateFromRemote remotePackageInfos                
             return localUpdates
         }
