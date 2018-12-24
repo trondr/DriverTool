@@ -30,10 +30,21 @@ module Configuration =
         let logFilePath = System.IO.Path.Combine(getLogDirectoryPath, getLogFileName)
         logFilePath
     
-    let getDownloadCacheDirectoryPath =
+    let getDownloadCacheDirectoryPathUnsafe =
         let expandedPath = getExpandedValue "DownloadCacheDirectoryPath"
         let path = System.IO.Path.GetFullPath(expandedPath)
         path
+
+    let getDownloadCacheDirectoryPath =
+        try
+            getDownloadCacheDirectoryPathUnsafe
+        with
+        | _ as ex -> 
+            System.Console.WriteLine("Failed to get download cache directory due to " + ex.Message + "Using %TEMP% path instead.")
+            System.IO.Path.GetTempPath()
+
+    let getDownloadCacheFilePath fileName = 
+        System.IO.Path.Combine(getDownloadCacheDirectoryPath , fileName)
 
     type Settings = AppSettings<"App.config">
 

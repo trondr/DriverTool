@@ -124,7 +124,9 @@
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="DellUpdates.fs" />
+    <Compile Include="DellCommandUpdate.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
+    <Compile Include="LenovoUpdates.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="ExportLocalUpdates.fs" />
     <Compile Include="EmbeddedResouce.fs" />
@@ -158,10 +160,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Client">
-      <HintPath>C:\Program Files (x86)\Lenovo\System Update\Client.dll</HintPath>
+      <HintPath>..\..\..\packages_manual\Lenovo\Client.dll</HintPath>
     </Reference>
     <Reference Include="Common">
-      <HintPath>C:\Program Files (x86)\Lenovo\System Update\Common.dll</HintPath>
+      <HintPath>..\..\..\packages_manual\Lenovo\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Core">
+      <HintPath>..\..\..\packages_manual\Dell\Core.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper">
       <HintPath>..\..\..\packages\CsvHelper.12.1.0\lib\net45\CsvHelper.dll</HintPath>

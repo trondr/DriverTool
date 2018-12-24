@@ -399,8 +399,8 @@ module CreateDriverPackage =
                 
                 let getUpdates = 
                     match baseOnLocallyInstalledUpdates with
-                    |true -> ExportLocalUpdates.getLocalUpdates
-                    |false -> ExportRemoteUpdates.getRemoteUpdates
+                    |true -> LenovoUpdates.getLocalUpdates
+                    |false -> LenovoUpdates.getRemoteUpdates
 
                 let! packageInfos = getUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
