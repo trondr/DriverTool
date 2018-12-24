@@ -201,7 +201,7 @@ module LenovoUpdates =
             let! packageInfos = 
                 (parsePackageXmls downloadedPackageXmls)
                 |>toAccumulatedResult
-            return packageInfos
+            return packageInfos |> Seq.toArray
         }
 
     let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
@@ -254,6 +254,7 @@ module LenovoUpdates =
             let localUpdates = 
                 packageInfos
                 |> Seq.distinct
-                |> updateFromRemote remotePackageInfos                
+                |> updateFromRemote remotePackageInfos
+                |>Seq.toArray
             return localUpdates
         }
