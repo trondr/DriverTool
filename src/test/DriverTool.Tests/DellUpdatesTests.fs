@@ -20,7 +20,7 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create modelCodeString false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-            let! actual = DriverTool.DellUpdates.getUpdates (modelCode, operatingSystemCode)
+            let! actual = DriverTool.DellUpdates.getRemoteUpdates (modelCode, operatingSystemCode,true)
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())
             actual

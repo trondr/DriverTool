@@ -391,16 +391,26 @@ module CreateDriverPackage =
         }
 
     open DriverTool.PackageTemplate
+    open DriverTool.SystemInfo
+
+    let getUpdatesFunc (manufacturer:Manufacturer,baseOnLocallyInstalledUpdates:bool) = 
+        match manufacturer.Value with
+        |ManufacturerName.Dell ->        
+            match baseOnLocallyInstalledUpdates with
+            |true -> DellUpdates.getLocalUpdates
+            |false -> DellUpdates.getRemoteUpdates
+        |ManufacturerName.Lenovo ->        
+            match baseOnLocallyInstalledUpdates with
+            |true -> LenovoUpdates.getLocalUpdates
+            |false -> LenovoUpdates.getRemoteUpdates
+        |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
 
     let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, baseOnLocallyInstalledUpdates, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
                 
-                let getUpdates = 
-                    match baseOnLocallyInstalledUpdates with
-                    |true -> LenovoUpdates.getLocalUpdates
-                    |false -> LenovoUpdates.getRemoteUpdates
+                let getUpdates = getUpdatesFunc (manufacturer,baseOnLocallyInstalledUpdates) 
 
                 let! packageInfos = getUpdates (model, operatingSystem, true)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
@@ -449,7 +459,7 @@ module CreateDriverPackage =
                         PackageRevision = "000"
                         ComputerModel = model.Value;
                         ComputerSystemFamiliy = systemFamily.Value;
-                        ComputerVendor = manufacturer.Value;
+                        ComputerVendor = manufacturer.Value.ToString();
                         OsShortName = operatingSystem.Value;
                         Publisher = packagePublisher
                     }

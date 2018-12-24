@@ -166,7 +166,7 @@ module DellUpdates =
             PackageXmlName="";
         }
 
-    let getUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode) =
+    let getRemoteUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool) =
         result{
             let! softwareCatalogXmlFile = downloadSoftwareComponentsCatalog()            
             let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode            
@@ -184,3 +184,6 @@ module DellUpdates =
             System.Console.WriteLine("Updates: " + updates.Length.ToString())            
             return updates
         }
+
+    let getLocalUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool) : Result<PackageInfo[],Exception> =
+        Result.Error (new Exception("Not implemented"))

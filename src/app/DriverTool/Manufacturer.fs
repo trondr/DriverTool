@@ -10,19 +10,23 @@ type InvalidManufacturerException(manufacturer:string, message : string) =
             |true -> String.Format("The manufacturer value '{0}' is not valid.", manufacturer)
             )
 
-type Manufacturer private (manufacturerString : string) = 
-    member x.Value = manufacturerString
+type Manufacturer private (manufacturerName : ManufacturerName) = 
+    member x.Value = manufacturerName
     
     static member createWithContinuation success failure (manufacturerString:string) (defaultToLocal:bool) : Result<Manufacturer, Exception> =
 
         match manufacturerString with
         | manufacturer when System.String.IsNullOrWhiteSpace(manufacturer) && defaultToLocal -> 
             match getManufacturerForCurrentSystem() with
-            | Ok mc -> success (Manufacturer (mc.ToString()) )
+            | Ok mc -> success (Manufacturer (mc) )
             | Error ex -> failure ((new InvalidManufacturerException(String.Empty,String.Format("Failed to model code for current system. {0}", ex.Message))):> Exception)  
         | manufacturer when System.String.IsNullOrWhiteSpace(manufacturer) -> 
             failure ((new InvalidManufacturerException(manufacturer,"Manufacturer cannot be null or empty.")) :> Exception)
-        | _ -> success (Manufacturer manufacturerString)
+        | _ ->  
+            let manufacturerNameResult = manufacturerToManufacturerName manufacturerString
+            match manufacturerNameResult with
+            |Ok m -> success (Manufacturer (m))
+            |Error ex -> failure ((new InvalidManufacturerException(manufacturerString,ex.Message)) :> Exception)
 
     static member create (manufacturer : string) =
         let success (value : Manufacturer) = Result.Ok value
@@ -30,12 +34,12 @@ type Manufacturer private (manufacturerString : string) =
         Manufacturer.createWithContinuation success failure manufacturer
     
     override x.GetHashCode() =
-        hash (manufacturerString)
+        hash (manufacturerName)
     
     override x.Equals(b) =
         match b with
-        | :? Manufacturer as m -> (manufacturerString) = (m.Value)
+        | :? Manufacturer as m -> (manufacturerName) = (m.Value)
         | _ -> false
     
     override x.ToString() =
-        x.Value
+        x.Value.ToString()
