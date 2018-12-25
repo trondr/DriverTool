@@ -14,6 +14,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.Tests", "src\tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverTool.CSharpLib", "src\app\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj", "{09A4CB06-46F7-4B78-B972-686516B67169}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.DupExitCode2ExitCode", "src\app\DriverTool.DupExitCode2ExitCode\DriverTool.DupExitCode2ExitCode.fsproj", "{82862F39-8FE4-4F54-90B2-CC190462832F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{09A4CB06-46F7-4B78-B972-686516B67169}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09A4CB06-46F7-4B78-B972-686516B67169}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09A4CB06-46F7-4B78-B972-686516B67169}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82862F39-8FE4-4F54-90B2-CC190462832F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82862F39-8FE4-4F54-90B2-CC190462832F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82862F39-8FE4-4F54-90B2-CC190462832F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82862F39-8FE4-4F54-90B2-CC190462832F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
