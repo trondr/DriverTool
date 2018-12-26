@@ -73,7 +73,7 @@ module Web =
             match (downloadFile (downloadInfo.SourceUri, true, downloadInfo.DestinationFile)) with
             |Ok s -> 
                 verifyDownload downloadInfo ignoreVerificationErrors
-            |Result.Error ex -> Result.Error (new Exception("Download could not be verified. " + ex.Message))
+            |Result.Error ex -> Result.Error (new Exception(String.Format("Failed to download '{0}' due to: {1} ",downloadInfo.SourceUri.ToString(),ex.Message), ex))
         |false -> 
             logger.Info(String.Format("Destination file '{0}' allready exists.", downloadInfo.DestinationFile.Value))
             Result.Ok downloadInfo
