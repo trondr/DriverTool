@@ -69,124 +69,26 @@ module CreateDriverPackage =
         |Error ex -> 
             Result.Error ex
 
-    let toTitlePostFix (title:string) (version:string) (releaseDate:string) = 
-        nullOrWhiteSpaceGuard title "title"
-        let parts = title.Split('-');
-        let titlePostfix = 
-            match parts.Length with
-            | 0 -> String.Empty
-            | _ -> parts.[parts.Length - 1]
-        toValidDirectoryName (String.Format("{0}_{1}_{2}",titlePostfix,version,releaseDate))
-    
-    open System.Linq
     open ExistingPath
-    
-    let toTitlePrefix (title:string) (category:string) (postFixLength: int) = 
-        nullOrWhiteSpaceGuard title "title"
-        nullGuard category "category"
-        let parts = title.Split('-');
-        let partsString =
-            (parts.[0]).AsEnumerable().Take(57 - postFixLength - category.Length).ToArray()
-        let titlePrefix = 
-            category + "_" + new String(partsString);
-        toValidDirectoryName titlePrefix    
+    open System.Linq  
 
-    let getPackageFolderName (packageInfo:PackageInfo) =
-        let validDirectoryName = 
-            toValidDirectoryName packageInfo.Title
-        let postfix = 
-            toTitlePostFix validDirectoryName packageInfo.Version packageInfo.ReleaseDate
-        let prefix = 
-            toTitlePrefix validDirectoryName (packageInfo.Category |? String.Empty) postfix.Length
-        let packageFolderName = 
-            String.Format("{0}_{1}",prefix,postfix).Replace("__", "_").Replace("__", "_");
-        packageFolderName
+    open DriverTool.SystemInfo
 
-    let downloadedPackageInfoToExtractedPackageInfo (packageFolderPath:Path,downloadedPackageInfo) =
-        {
-            ExtractedDirectoryPath = packageFolderPath.Value;
-            DownloadedPackage = downloadedPackageInfo;
-        }
-
-    let copyFile (sourceFilePath, destinationFilePath) =
-        try
-            System.IO.File.Copy(sourceFilePath, destinationFilePath, true)
-            Result.Ok destinationFilePath
-        with
-        | ex -> Result.Error (new Exception(String.Format("Failed to copy file '{0}'->'{1}'.", sourceFilePath, destinationFilePath), ex))
-    
-    let extractPackageXml (downloadedPackageInfo, packageFolderPath:Path)  =
-        let destinationFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.PackageXmlName)
-        match ExistingFilePath.create downloadedPackageInfo.PackageXmlPath with
-        |Ok filePath -> 
-            match (copyFile (filePath.Value, destinationFilePath)) with
-            |Ok _ -> 
-                Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
-            |Error ex -> Result.Error ex
-        |Error ex -> Result.Error ex
-
-    let extractReadme (downloadedPackageInfo, packageFolderPath:Path)  =
-        let destinationReadmeFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.ReadmeName)
-        match ExistingFilePath.create downloadedPackageInfo.ReadmePath with
-        |Ok readmeFilePath -> 
-            match (copyFile (readmeFilePath.Value, destinationReadmeFilePath)) with
-            |Ok _ -> 
-                Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
-            |Error ex -> Result.Error ex
-        |Error ex -> Result.Error ex
-
-    let getFileNameFromCommandLine (commandLine:string) = 
-        let fileName = commandLine.Split(' ').[0];
-        fileName;
-
-    let extractInstaller (downloadedPackageInfo, packageFolderPath:Path) =
-        if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine)) then
-           logger.Info("Installer does not support extraction, copy the installer directly to package folder...")
-           let destinationInstallerFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.InstallerName)
-           match ExistingFilePath.create downloadedPackageInfo.InstallerPath with
-           |Ok installerPath -> 
-                match copyFile (installerPath.Value, destinationInstallerFilePath) with
-                |Ok _ -> 
-                    Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
-                |Error ex -> Result.Error ex
-           |Error ex -> 
-                Result.Error ex
-        else
-            logger.Info("Installer supports extraction, extract installer...")
-            let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",String.Format("\"{0}\"",packageFolderPath.Value))
-            let fileName = getFileNameFromCommandLine extractCommandLine
-            let arguments = extractCommandLine.Replace(fileName,"")
-            match (ExistingFilePath.create downloadedPackageInfo.InstallerPath) with
-            |Ok fp -> 
-                match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments,packageFolderPath.Value,-1,null,null,false) with
-                |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
-                |Error ex -> Result.Error ex
-            |Error ex -> Result.Error ex
-
-    let extractUpdate (rootDirectory:Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
-        result{
-            let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, prefix + "_" + packageFolderName)
-            let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)
-            let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
-            let extractPackageXmlResult = extractPackageXml (downloadedPackageInfo, existingPackageFolderPath)
-            let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
-            let result = 
-                [|extractReadmeResult;extractPackageXmlResult;extractInstallerResult|]
-                |> toAccumulatedResult
-            let res = 
-                match result with 
-                | Ok r -> extractInstallerResult
-                | Error ex -> Result.Error ex
-            return! res
-        }
+    let extractUpdateFunc (manufacturer:Manufacturer) = 
+        match manufacturer.Value with
+        |ManufacturerName.Dell ->        
+            DellUpdates.extractUpdate
+        |ManufacturerName.Lenovo ->        
+            LenovoUpdates.extractUpdate
+        |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
 
     let getPrefixes count =
         Array.init count (fun index -> ((index+1)*10).ToString("D3"))
     
-    let extractUpdates (rootDirectory, downloadedPackageInfos:seq<DownloadedPackageInfo>) = 
+    let extractUpdates (rootDirectory,manufacturer:Manufacturer, downloadedPackageInfos:seq<DownloadedPackageInfo>) = 
         let downloadedPackageInfosList = downloadedPackageInfos.ToList()
         let prefixes = getPrefixes downloadedPackageInfosList.Count
+        let extractUpdate = extractUpdateFunc manufacturer
         downloadedPackageInfosList
         |> Seq.zip prefixes
         |> PSeq.map (fun dp -> extractUpdate (rootDirectory, dp))
@@ -364,8 +266,7 @@ module CreateDriverPackage =
         }
 
     open DriverTool.PackageTemplate
-    open DriverTool.SystemInfo
-    
+        
     let getUpdatesFunc (manufacturer:Manufacturer,baseOnLocallyInstalledUpdates:bool) = 
         match manufacturer.Value with
         |ManufacturerName.Dell ->        
@@ -401,7 +302,7 @@ module CreateDriverPackage =
         |ManufacturerName.Lenovo ->        
             LenovoUpdates.extractSccmPackage
         |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
-
+    
     let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, baseOnLocallyInstalledUpdates, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
@@ -434,7 +335,7 @@ module CreateDriverPackage =
                 let! driversPath = combine2Paths (versionedPackagePath.Value, "Drivers")
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", driversPath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
-                let! extractedUpdates = extractUpdates (existingDriversPath, updates)
+                let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updates)
                 let installScriptResults = createInstallScripts (extractedUpdates)
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
