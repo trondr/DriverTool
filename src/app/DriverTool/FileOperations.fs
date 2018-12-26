@@ -86,3 +86,8 @@ module FileOperations =
                  )
         |>Seq.toArray
         |>toAccumulatedResult
+    
+    let ensureFileExtension (path:Path, extension:string) : Result<Path, Exception> = 
+        match System.IO.Path.GetExtension(path.Value).ToLower() with
+        | e when e = extension -> Result.Ok path            
+        | _ -> Result.Error (new Exception(String.Format("File does not have extension '{0}': '{1}'",extension, path.Value)))
