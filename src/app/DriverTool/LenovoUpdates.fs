@@ -351,3 +351,21 @@ module LenovoUpdates =
             |Ok _ -> Result.Ok destinationPath
             |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
         |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
+    
+    let extractUpdate (rootDirectory:Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
+        result{
+            let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
+            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, prefix + "_" + packageFolderName)
+            let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)
+            let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
+            let extractPackageXmlResult = extractPackageXml (downloadedPackageInfo, existingPackageFolderPath)
+            let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
+            let result = 
+                [|extractReadmeResult;extractPackageXmlResult;extractInstallerResult|]
+                |> toAccumulatedResult
+            let res = 
+                match result with 
+                | Ok r -> extractInstallerResult
+                | Error ex -> Result.Error ex
+            return! res
+        }
