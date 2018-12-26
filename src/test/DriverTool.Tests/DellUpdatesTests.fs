@@ -60,3 +60,15 @@ module DellUpdatesTests =
         Assert.AreEqual("Name2",actualPackageInfo2.Name,"Name")
         Assert.AreEqual("002.01.20.0",actualPackageInfo2.Version,"Version")
         ()
+    
+    [<Test>]
+    [<TestCase("07A0","WIN10X64")>]
+    let getSccmDriverPackageInfoTest(model, operatingSystem) =
+        match(result{
+            let! modelCode = ModelCode.create model false
+            let! operatingSystemCode = OperatingSystemCode.create operatingSystem false
+            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
+            return actual
+        }) with
+        |Ok _->Assert.IsTrue(true)
+        |Error ex ->Assert.Fail(ex.Message)
