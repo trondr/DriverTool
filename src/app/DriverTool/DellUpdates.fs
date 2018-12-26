@@ -125,18 +125,18 @@ module DellUpdates =
         let path = getAttribute(sc,"path")
         let dellVersion = getAttribute(sc,"dellVersion")
         let vendorVersion = getAttribute (sc, "vendorVersion")
-
+        let name = toName (getElementValue (sc,"Name"),vendorVersion,dellVersion)
         let (directory, installerName) = pathToDirectoryAndFile path            
         {
-            Name = toName (getElementValue (sc,"Name"),vendorVersion,dellVersion)
-            Title = getElementValue (sc,"Name")
+            Name = name
+            Title = name
             Version = getAttribute (sc, "vendorVersion")
             BaseUrl = downloadsBaseUrl + "/" + directory;
             InstallerName = installerName
             InstallerCrc = getAttribute (sc,"hashMD5")
             InstallerSize = int64 (getAttribute (sc,"size"))
             ExtractCommandLine = ""
-            InstallCommandLine = installerName + "/s"
+            InstallCommandLine = installerName + " /s"
             Category = getElementValue (sc,"Category")
             ReadmeName = "";
             ReadmeCrc = "";

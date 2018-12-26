@@ -31,3 +31,11 @@ module PackageInfoTests  =
             packageInfosToDownloadJobs @"c:\temp" packageInfos
             |>Seq.toArray
         Assert.AreEqual(4,actual.Length,"Number of download jobs was not expected")
+    
+    [<Test>]
+    [<TestCase("DW5811e_Customer_Kit_Module_Qualcomm_Snapdragon_X7_LTE_Firmware_and_GNSS_Driver","DW5811_Cstmr_Kt_Mdl_Qlcmm_Snpdrgn_X7_LT_Frmwr_nd_GNSS_Drvr")>]
+    [<TestCase("This is A Another Test","Ths s  nthr Tst")>]
+    let removeVowelsTest (text,expected)=
+        let actual = removeVowels text
+        Assert.AreEqual(expected,actual)
+        

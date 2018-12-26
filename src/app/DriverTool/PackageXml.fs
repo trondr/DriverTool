@@ -200,6 +200,7 @@ module PackageXml =
         toValidDirectoryName (String.Format("{0}_{1}_{2}",titlePostfix,version,releaseDate))
     
     open System.Linq
+    open System.Text.RegularExpressions
     
     let toTitlePrefix (title:string) (category:string) (postFixLength: int) = 
         nullOrWhiteSpaceGuard title "title"
@@ -211,9 +212,18 @@ module PackageXml =
             category + "_" + new String(partsString);
         toValidDirectoryName titlePrefix    
 
-    let getPackageFolderName (packageInfo:PackageInfo) =
+    let removeVowels (text:string) =
+        System.Text.RegularExpressions.Regex.Replace(text,"[aeiouy]","",RegexOptions.IgnoreCase)
+    
+    let reducePackageTitle  (title:string) =
+        if((String.length title) > 60) then
+            removeVowels title
+        else
+            title
+
+    let getPackageFolderName (packageInfo:PackageInfo) =                
         let validDirectoryName = 
-            toValidDirectoryName packageInfo.Title
+            toValidDirectoryName (reducePackageTitle packageInfo.Title)
         let postfix = 
             toTitlePostFix validDirectoryName packageInfo.Version packageInfo.ReleaseDate
         let prefix = 
