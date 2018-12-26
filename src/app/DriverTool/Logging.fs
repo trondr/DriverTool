@@ -198,3 +198,15 @@
                     let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , (resultToString returnValue), (getDurationString duration))
                     writeLog (functionCallResult)
             unbox returnValue
+    
+        let logSeqToConsole records =
+            records
+            |> Seq.map  (fun dj -> 
+                                printfn "%s" (valueToString dj)
+                                dj
+                            )
+        
+        let logToConsole record =
+            printfn "%s" (valueToString record)
+            record
+        
