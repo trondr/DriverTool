@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
 
 open FSharp.Data
+open DriverTool.PackageXml
 
 module LenovoCatalog =
     let logger = Logging.getLoggerByName("LenovoCatalog")
@@ -46,18 +47,6 @@ module LenovoCatalog =
 
         }
     
-    type SccmPackageInfo = {
-        ReadmeUrl: string;
-        ReadmeChecksum: string;
-        ReadmeFileName:string
-        InstallerUrl:string;
-        InstallerChecksum:string;
-        InstallerFileName:string;
-        Released:DateTime;
-        Os:string;
-        OsBuild:string
-    }
-
     open F    
     open System
               
@@ -236,54 +225,6 @@ module LenovoCatalog =
                            )        
                 |> Seq.concat
         downloadLinks
-
-    let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
-        let content = DriverTool.WebParsing.getContentFromWebPage uri
-        match content with
-        |Ok downloadPageContent -> 
-            let downloadLinks =             
-                downloadPageContent
-                |> getDownloadLinksFromWebPageContent                
-                |> Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
-                |> Seq.toArray
-                |> Array.rev
-            let lenovoOs = (osShortNameToLenovoOs os)
-            let sccmPackages =
-                downloadLinks
-                |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
-                |> Seq.toArray
-            match (sccmPackages.Length > 0) with
-            |true -> Result.Ok sccmPackages.[0]
-            |false -> 
-                match osbuild with
-                |"*" ->
-                    let sccmPackages =
-                        downloadLinks
-                        |> Seq.filter (fun s -> (s.Os = lenovoOs))
-                        |> Seq.toArray
-                    match (sccmPackages.Length > 0) with
-                    |true -> Result.Ok sccmPackages.[0]
-                    | false ->
-                        Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
-                |_ ->
-                    Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
-        |Error ex -> Result.Error ex
-    
-    
-    
-    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild products =
-        let sccmPackageInfos = 
-            products
-            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = osbuild))
-            |> Seq.toArray
-        match sccmPackageInfos.Length > 0 with
-        | true -> 
-            sccmPackageInfos |> Seq.head
-        | false -> 
-            products
-            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = "*"))
-            |> Seq.head
-    
     
     type ModelInfo = { Name:string; Os:string ; OsBuild: string}
     

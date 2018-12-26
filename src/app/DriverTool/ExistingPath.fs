@@ -7,7 +7,7 @@ module ExistingPath=
 
     type ExistingFilePath private (filePath:string) =
         member x.Value = filePath
-        static member NewWithContinutation success failure (filePath:string) : Result<ExistingFilePath,Exception> =
+        static member createWithContinutation success failure (filePath:string) : Result<ExistingFilePath,Exception> =
             let path = Path.create filePath
             match path with
             |Ok p -> 
@@ -16,10 +16,10 @@ module ExistingPath=
                 |false-> failure (new FileNotFoundException("File not found: " + filePath):>Exception)
             |Error ex -> failure ex
 
-        static member New (filePath:string) =
+        static member create (filePath:string) =
             let success e = Result.Ok e
             let failure ex = Result.Error ex
-            ExistingFilePath.NewWithContinutation success failure filePath
+            ExistingFilePath.createWithContinutation success failure filePath
 
     type ExistingDirectoryPath private (directoryPath:string) =
         member x.Value = directoryPath

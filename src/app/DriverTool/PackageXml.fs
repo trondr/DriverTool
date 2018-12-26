@@ -63,11 +63,31 @@ module PackageXml =
             DownloadedPackage:DownloadedPackageInfo;
         }
 
+    type SccmPackageInfo = {
+        ReadmeUrl: string;
+        ReadmeChecksum: string;
+        ReadmeFileName:string
+        InstallerUrl:string;
+        InstallerChecksum:string;
+        InstallerFileName:string;
+        Released:DateTime;
+        Os:string;
+        OsBuild:string
+    }
+
+    type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
+
     let getDestinationReadmePath destinationDirectory packageInfo =
-        System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
+        if(String.IsNullOrWhiteSpace(packageInfo.ReadmeName)) then
+            String.Empty
+        else
+            System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
 
     let getDestinationInstallerPath destinationDirectory packageInfo =
-        System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
+        if(String.IsNullOrWhiteSpace(packageInfo.InstallerName)) then
+            String.Empty
+        else
+            System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
 
     let getDestinationPackageXmlPath destinationDirectory packageInfo =
         System.IO.Path.Combine(destinationDirectory, packageInfo.PackageXmlName)
@@ -93,8 +113,7 @@ module PackageXml =
                 match Path.create (getDestinationInstallerPath destinationDirectory packageInfo) with
                 |Ok p -> yield {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.InstallerCrc; SourceFileSize = packageInfo.InstallerSize; DestinationFile = p; }
                 |Error ex -> Result.Error ex |> ignore
-                
-        } 
+        }        
         //Make sure destination file is unique
         |> Seq.groupBy (fun p -> p.DestinationFile) 
         |> Seq.map (fun (k,v) -> v |>Seq.head)

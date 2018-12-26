@@ -1,6 +1,9 @@
 ﻿namespace DriverTool
 
 module LenovoUpdates =
+    type LenovoUpdates = class end
+    let logger = Logging.getLoggerByName(typeof<LenovoUpdates>.Name)
+    
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
         operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")
     
@@ -258,3 +261,72 @@ module LenovoUpdates =
                 |>Seq.toArray
             return localUpdates
         }
+   
+    open DriverTool.PackageXml
+    open DriverTool.ExistingPath
+    open DriverTool.LenovoCatalog
+
+    let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
+        let content = DriverTool.WebParsing.getContentFromWebPage uri
+        match content with
+        |Ok downloadPageContent -> 
+            let downloadLinks =             
+                downloadPageContent
+                |> getDownloadLinksFromWebPageContent                
+                |> Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
+                |> Seq.toArray
+                |> Array.rev
+            let lenovoOs = (osShortNameToLenovoOs os)
+            let sccmPackages =
+                downloadLinks
+                |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
+                |> Seq.toArray
+            match (sccmPackages.Length > 0) with
+            |true -> Result.Ok sccmPackages.[0]
+            |false -> 
+                match osbuild with
+                |"*" ->
+                    let sccmPackages =
+                        downloadLinks
+                        |> Seq.filter (fun s -> (s.Os = lenovoOs))
+                        |> Seq.toArray
+                    match (sccmPackages.Length > 0) with
+                    |true -> Result.Ok sccmPackages.[0]
+                    | false ->
+                        Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
+                |_ ->
+                    Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
+        |Error ex -> Result.Error ex
+
+    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<Product>) =
+        let sccmPackageInfos = 
+            products
+            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = osbuild))
+            |> Seq.toArray
+        match sccmPackageInfos.Length > 0 with
+        | true -> 
+            sccmPackageInfos |> Seq.head
+        | false -> 
+            products
+            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = "*"))
+            |> Seq.head
+
+    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode)  : Result<SccmPackageInfo,Exception> =
+        result
+            {
+                let! products = getSccmPackageInfos
+                let product = findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystemCode.Value) getOsBuild products
+                let osBuild = product.Value.OsBuild.Value
+                let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
+                return sccmPackage
+            }
+
+    let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
+        logger.Info("Extract SccmPackage installer...")        
+        let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath.Value)
+        match (ExistingFilePath.create downloadedSccmPackage.InstallerPath) with
+        |Ok fp -> 
+            match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments, destinationPath.Value, -1, null, null, false) with
+            |Ok _ -> Result.Ok destinationPath
+            |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
+        |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))

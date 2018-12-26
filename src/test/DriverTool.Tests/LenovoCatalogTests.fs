@@ -6,6 +6,8 @@ open NUnit.Framework
 module LenovoCatalogTests=
     
     open DriverTool.LenovoCatalog
+    open DriverTool.LenovoUpdates
+    open DriverTool.PackageXml
     open Microsoft.FSharp.Core
 
     [<Test>]
