@@ -173,6 +173,8 @@ module LenovoCatalog =
         | "WIN81X86" -> "win81"
         | "WIN81X64" -> "win81"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
+    
+    open DriverTool.Web
 
     let getSccmPackageInfoFromUlNodes ulNodes =
         let infos = 
@@ -184,9 +186,13 @@ module LenovoCatalog =
                             let installer = links|> Seq.filter (fun d -> d.Type = DownloadType.Installer) |> Seq.head
                             let sccmPackage = 
                                 {
-                                    ReadmeUrl = readme.Url;
-                                    ReadmeChecksum = readme.Checksum;
-                                    ReadmeFileName = readme.FileName;
+                                    ReadmeFile =                                         
+                                        {
+                                        Url = readme.Url;
+                                        Checksum = readme.Checksum;
+                                        FileName = readme.FileName;
+                                        Size=0L;
+                                        }
                                     InstallerUrl= installer.Url;
                                     InstallerChecksum=installer.Checksum;
                                     InstallerFileName = installer.FileName;

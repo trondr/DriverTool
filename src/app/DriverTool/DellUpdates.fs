@@ -185,13 +185,19 @@ module DellUpdates =
             return existingDriverPackageCatalogXmlPath
         }
     
+    open DriverTool.Web
+
     let toSccmPackageInfo (dp:XElement) (operatingSystemCode:OperatingSystemCode) : SccmPackageInfo =
         let path = getAttribute(dp,"path")        
         let (directory, installerName) = pathToDirectoryAndFile path
         {
-            ReadmeUrl="";
-            ReadmeChecksum="";
-            ReadmeFileName="";
+            ReadmeFile =
+                {
+                    Url="";
+                    Checksum="";
+                    FileName="";
+                    Size=0L;
+                }
             InstallerUrl=downloadsBaseUrl + "/" + path;
             InstallerChecksum=getAttribute (dp,"hashMD5");
             InstallerFileName=installerName;
@@ -255,6 +261,23 @@ module DellUpdates =
                 |None -> Result.Error (new Exception(sprintf "Failed to find Dell sccm driver package for model '%s' and operating system '%s' " modelCode.Value operatingSystemCode.Value))
             return sccmPackageInfo
         }
+
+    open DriverTool.Web
+
+    let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
+        result{                        
+            let! installerdestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let! installerUri = toUri sccmPackage.InstallerUrl
+            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
+            let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
+            let installerPath = installerInfo.DestinationFile.Value
+
+            return {
+                InstallerPath = installerPath
+                ReadmePath = String.Empty
+                SccmPackage = sccmPackage;
+            }
+        }         
 
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
         logger.Info("Extract Sccm Driver Package CAB...")
