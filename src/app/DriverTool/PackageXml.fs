@@ -61,12 +61,11 @@ module PackageXml =
         {
             ExtractedDirectoryPath:string;
             DownloadedPackage:DownloadedPackageInfo;
-        }
+        }    
 
-    type SccmPackageInfo = {
-        ReadmeUrl: string;
-        ReadmeChecksum: string;
-        ReadmeFileName:string
+    open DriverTool.Web
+    type SccmPackageInfo = {        
+        ReadmeFile:WebFile
         InstallerUrl:string;
         InstallerChecksum:string;
         InstallerFileName:string;

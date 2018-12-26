@@ -321,6 +321,27 @@ module LenovoUpdates =
                 return sccmPackage
             }
 
+    let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
+        result{
+            let! installerdestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let! installerUri = toUri sccmPackage.InstallerUrl
+            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
+            let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
+            let installerPath = installerInfo.DestinationFile.Value
+
+            let! readmeDestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFile.FileName))
+            let! readmeUri = toUri sccmPackage.ReadmeFile.Url
+            let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeFile.Checksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
+            let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)
+            let readmePath = readmeInfo.DestinationFile.Value
+
+            return {
+                InstallerPath = installerPath
+                ReadmePath = readmePath
+                SccmPackage = sccmPackage;
+            }            
+        }         
+    
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
         logger.Info("Extract SccmPackage installer...")        
         let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath.Value)

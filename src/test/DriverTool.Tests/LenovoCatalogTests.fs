@@ -184,7 +184,22 @@ module LenovoCatalogTests=
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum,os,osBuild) =      
         printfn "%s" (System.IntPtr.Size.ToString())
         let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl "WIN10X64" "*"
-        let expected = {ReadmeUrl=expectedReadmeUrl; ReadmeChecksum = expectedReadmeChecksum;ReadmeFileName=(getFileNameFromUrl expectedReadmeUrl); InstallerUrl = expectedInstallerUrl;InstallerChecksum = expectedInstallerChecksum; InstallerFileName=(getFileNameFromUrl expectedInstallerUrl);Released=(getReleaseDateFromUrl expectedInstallerUrl);Os=os;OsBuild=osBuild}
+        let expected = 
+            {
+                ReadmeFile=
+                    {
+                        Url=expectedReadmeUrl; 
+                        Checksum = expectedReadmeChecksum;
+                        FileName=(getFileNameFromUrl expectedReadmeUrl);
+                        Size=0L;
+                    };
+                InstallerUrl = expectedInstallerUrl;
+                InstallerChecksum = expectedInstallerChecksum; 
+                InstallerFileName=(getFileNameFromUrl expectedInstallerUrl);
+                Released=(getReleaseDateFromUrl expectedInstallerUrl);
+                Os=os;
+                OsBuild=osBuild
+            }
         match actualResult with
         |Ok actual -> Assert.AreEqual(expected,actual)
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
@@ -203,9 +218,13 @@ module LenovoCatalogTests=
             let readmeUrl1 = "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_201710.txt"
             let installerUrl1 = "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_201710.exe"
             yield { 
-                    ReadmeUrl = readmeUrl1; 
-                    ReadmeChecksum = "25444b51d04288ac041a6b21a318cb88f3fa58c6c049a294e0e8bcfbe060ec8c"; 
-                    ReadmeFileName = (getFileNameFromUrl readmeUrl1); 
+                    ReadmeFile=
+                        {
+                            Url = readmeUrl1; 
+                            Checksum = "25444b51d04288ac041a6b21a318cb88f3fa58c6c049a294e0e8bcfbe060ec8c"; 
+                            FileName = (getFileNameFromUrl readmeUrl1);
+                            Size=0L;
+                        }                    
                     InstallerUrl= installerUrl1; 
                     InstallerChecksum="9ae55aa67c48809cb845957e32df5894cbdff0ab2933a75e3daef5ae895774c7"; 
                     InstallerFileName = (getFileNameFromUrl installerUrl1);
@@ -216,9 +235,13 @@ module LenovoCatalogTests=
             let readmeUrl2 = "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1803_201807.txt"
             let installerUrl2 = "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1803_201807.exe"
             yield { 
-                    ReadmeUrl = readmeUrl2; 
-                    ReadmeChecksum = "1bc74a7d91b5dc45585d92d03c14fee59e4d8055cb27374211c462a2b362d6f7"; 
-                    ReadmeFileName = (getFileNameFromUrl readmeUrl2); 
+                    ReadmeFile=
+                        {
+                            Url = readmeUrl2; 
+                            Checksum = "1bc74a7d91b5dc45585d92d03c14fee59e4d8055cb27374211c462a2b362d6f7"; 
+                            FileName = (getFileNameFromUrl readmeUrl2);
+                            Size=0L;
+                        }                    
                     InstallerUrl= installerUrl2; 
                     InstallerChecksum="d424c27eae77e2ec1df973dc25ffa60854bc833e2b11df007d8f5985add4ea1d"; 
                     InstallerFileName = (getFileNameFromUrl installerUrl2);
@@ -229,9 +252,13 @@ module LenovoCatalogTests=
             let readmeUrl3 = "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt"
             let installerUrl3 = "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe"
             yield { 
-                    ReadmeUrl = readmeUrl3; 
-                    ReadmeChecksum = "442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1"; 
-                    ReadmeFileName = (getFileNameFromUrl readmeUrl3); 
+                    ReadmeFile =
+                        {
+                            Url = readmeUrl3; 
+                            Checksum = "442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1"; 
+                            FileName = (getFileNameFromUrl readmeUrl3);
+                            Size=0L;
+                        }                    
                     InstallerUrl= installerUrl3; 
                     InstallerChecksum="a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1"; 
                     InstallerFileName = (getFileNameFromUrl installerUrl3);
@@ -253,13 +280,12 @@ module LenovoCatalogTests=
                     Assert.AreEqual(expectedArray.[i].InstallerChecksum,actual.[i].InstallerChecksum,"InstallerChecksum"  + i.ToString())
                     Assert.AreEqual(expectedArray.[i].InstallerFileName,actual.[i].InstallerFileName,"InstallerFileName"  + i.ToString())
                     Assert.AreEqual(expectedArray.[i].InstallerUrl,actual.[i].InstallerUrl,"InstallerUrl" + i.ToString())
-                    Assert.AreEqual(expectedArray.[i].ReadmeChecksum,actual.[i].ReadmeChecksum,"ReadmeChecksum" + i.ToString())
-                    Assert.AreEqual(expectedArray.[i].ReadmeFileName,actual.[i].ReadmeFileName,"ReadmeFileName" + i.ToString())
-                    Assert.AreEqual(expectedArray.[i].ReadmeUrl,actual.[i].ReadmeUrl,"ReadmeUrl" + i.ToString())
+                    Assert.AreEqual(expectedArray.[i].ReadmeFile.Checksum,actual.[i].ReadmeFile.Checksum,"ReadmeChecksum" + i.ToString())
+                    Assert.AreEqual(expectedArray.[i].ReadmeFile.FileName,actual.[i].ReadmeFile.FileName,"ReadmeFileName" + i.ToString())
+                    Assert.AreEqual(expectedArray.[i].ReadmeFile.Url,actual.[i].ReadmeFile.Url,"ReadmeUrl" + i.ToString())
                     Assert.AreEqual(expectedArray.[i].Os,actual.[i].Os,"Os" + i.ToString())
                     Assert.AreEqual(expectedArray.[i].OsBuild,actual.[i].OsBuild,"OsBuild" + i.ToString())
                     Assert.AreEqual(expectedArray.[i].Released,actual.[i].Released,"Released" + i.ToString())
-
                 //Assert.IsTrue( (expectedArray = actual) )
                 //Assert.Fail()
                 return ()

@@ -78,4 +78,19 @@ module Web =
             logger.Info(String.Format("Destination file '{0}' allready exists.", downloadInfo.DestinationFile.Value))
             Result.Ok downloadInfo
 
-        
+    type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
+
+    let toUriUnsafe url =
+        new Uri(url)
+    
+    let toUri url =
+        tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
+
+    let downloadWebFile (destinationFolderPath:Path, webFile:WebFile) =
+        result{
+            let! destinationFilePath = Path.create (System.IO.Path.Combine(destinationFolderPath.Value,webFile.FileName))
+            let! sourceUri = toUri webFile.Url
+            let downloadInfo = { SourceUri = sourceUri;SourceChecksum = webFile.Checksum;SourceFileSize = webFile.Size;DestinationFile = destinationFilePath}
+            let! downloadedInfo = downloadIfDifferent (downloadInfo,false)            
+            return downloadedInfo
+        }

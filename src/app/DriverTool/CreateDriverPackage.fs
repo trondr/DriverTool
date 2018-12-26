@@ -337,30 +337,6 @@ module CreateDriverPackage =
         |> Seq.ofArray
         |> toAccumulatedResult
     
-    let toUriUnsafe url =
-        new Uri(url)
-    
-    let toUri url =
-        tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
-
-    let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
-        result{
-            let! installerdestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
-            let! installerUri = toUri sccmPackage.InstallerUrl
-            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
-            
-            let! readmeDestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFileName))
-            let! readmeUri = toUri sccmPackage.ReadmeUrl
-            let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeChecksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
-            let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)
-
-            return {
-                InstallerPath = installerInfo.DestinationFile.Value
-                ReadmePath = readmeInfo.DestinationFile.Value
-                SccmPackage = sccmPackage;
-            }            
-        }         
     
     let createSccmPackageInstallScript (extractedSccmPackagePath:Path) =
         result{
@@ -410,6 +386,14 @@ module CreateDriverPackage =
             LenovoUpdates.getSccmDriverPackageInfo
         |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
     
+    let downloadSccmPackageFunc (manufacturer:Manufacturer) = 
+        match manufacturer.Value with
+        |ManufacturerName.Dell ->        
+            DellUpdates.downloadSccmPackage
+        |ManufacturerName.Lenovo ->        
+            LenovoUpdates.downloadSccmPackage
+        |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
+
     let extractSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer.Value with
         |ManufacturerName.Dell ->        
@@ -436,6 +420,8 @@ module CreateDriverPackage =
                 let getSccmPackage = getSccmPackageFunc manufacturer
                 let! sccmPackage = getSccmPackage (model,operatingSystem)
                 sccmPackage |> Logging.logToConsole |> ignore
+                
+                let downloadSccmPackage = downloadSccmPackageFunc manufacturer
                 let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.getDownloadCacheDirectoryPath), sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
