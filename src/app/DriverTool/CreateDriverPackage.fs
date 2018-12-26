@@ -57,8 +57,8 @@ module CreateDriverPackage =
     
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
-            packageInfos 
-            |> packageInfosToDownloadJobs destinationDirectory
+            packageInfos             
+            |> packageInfosToDownloadJobs destinationDirectory            
             |> PSeq.map (fun dj -> downloadUpdate (dj,ignoreVerificationErrors dj))
             |> PSeq.toArray
             |> Seq.ofArray
@@ -117,7 +117,7 @@ module CreateDriverPackage =
     
     let extractPackageXml (downloadedPackageInfo, packageFolderPath:Path)  =
         let destinationFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.PackageXmlName)
-        match ExistingFilePath.New downloadedPackageInfo.PackageXmlPath with
+        match ExistingFilePath.create downloadedPackageInfo.PackageXmlPath with
         |Ok filePath -> 
             match (copyFile (filePath.Value, destinationFilePath)) with
             |Ok _ -> 
@@ -127,7 +127,7 @@ module CreateDriverPackage =
 
     let extractReadme (downloadedPackageInfo, packageFolderPath:Path)  =
         let destinationReadmeFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.ReadmeName)
-        match ExistingFilePath.New downloadedPackageInfo.ReadmePath with
+        match ExistingFilePath.create downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
             match (copyFile (readmeFilePath.Value, destinationReadmeFilePath)) with
             |Ok _ -> 
@@ -143,7 +143,7 @@ module CreateDriverPackage =
         if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine)) then
            logger.Info("Installer does not support extraction, copy the installer directly to package folder...")
            let destinationInstallerFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.InstallerName)
-           match ExistingFilePath.New downloadedPackageInfo.InstallerPath with
+           match ExistingFilePath.create downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
                 match copyFile (installerPath.Value, destinationInstallerFilePath) with
                 |Ok _ -> 
@@ -156,7 +156,7 @@ module CreateDriverPackage =
             let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",String.Format("\"{0}\"",packageFolderPath.Value))
             let fileName = getFileNameFromCommandLine extractCommandLine
             let arguments = extractCommandLine.Replace(fileName,"")
-            match (ExistingFilePath.New downloadedPackageInfo.InstallerPath) with
+            match (ExistingFilePath.create downloadedPackageInfo.InstallerPath) with
             |Ok fp -> 
                 match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments,packageFolderPath.Value,-1,null,null,false) with
                 |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
@@ -336,35 +336,32 @@ module CreateDriverPackage =
         |> PSeq.toArray
         |> Seq.ofArray
         |> toAccumulatedResult
-            
-    type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
+    
+    let toUriUnsafe url =
+        new Uri(url)
+    
+    let toUri url =
+        tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
 
-    let downloadSccmPackage cacheDirectory (sccmPackage:SccmPackageInfo) =
+    let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{
             let! installerdestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
-            let installerDownloadInfo = { SourceUri = new Uri(sccmPackage.InstallerUrl);SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! readmeDestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFileName))
-            let readmeDownloadInfo = { SourceUri = new Uri(sccmPackage.ReadmeUrl);SourceChecksum = sccmPackage.ReadmeChecksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
-
+            let! installerUri = toUri sccmPackage.InstallerUrl
+            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
-            let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)            
+            
+            let! readmeDestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFileName))
+            let! readmeUri = toUri sccmPackage.ReadmeUrl
+            let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeChecksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
+            let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)
+
             return {
                 InstallerPath = installerInfo.DestinationFile.Value
                 ReadmePath = readmeInfo.DestinationFile.Value
                 SccmPackage = sccmPackage;
             }            
-        } 
-        
-    let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
-        logger.Info("Extract SccmPackage installer...")        
-        let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath.Value)
-        match (ExistingFilePath.New downloadedSccmPackage.InstallerPath) with
-        |Ok fp -> 
-            match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments, destinationPath.Value, -1, null, null, false) with
-            |Ok _ -> Result.Ok destinationPath
-            |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
-        |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
-
+        }         
+    
     let createSccmPackageInstallScript (extractedSccmPackagePath:Path) =
         result{
             let! installScriptPath = 
@@ -392,7 +389,7 @@ module CreateDriverPackage =
 
     open DriverTool.PackageTemplate
     open DriverTool.SystemInfo
-
+    
     let getUpdatesFunc (manufacturer:Manufacturer,baseOnLocallyInstalledUpdates:bool) = 
         match manufacturer.Value with
         |ManufacturerName.Dell ->        
@@ -403,6 +400,22 @@ module CreateDriverPackage =
             match baseOnLocallyInstalledUpdates with
             |true -> LenovoUpdates.getLocalUpdates
             |false -> LenovoUpdates.getRemoteUpdates
+        |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
+
+    let getSccmPackageFunc (manufacturer:Manufacturer) = 
+        match manufacturer.Value with
+        |ManufacturerName.Dell ->        
+            DellUpdates.getSccmDriverPackageInfo
+        |ManufacturerName.Lenovo ->        
+            LenovoUpdates.getSccmDriverPackageInfo
+        |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
+    
+    let extractSccmPackageFunc (manufacturer:Manufacturer) = 
+        match manufacturer.Value with
+        |ManufacturerName.Dell ->        
+            DellUpdates.extractSccmPackage
+        |ManufacturerName.Lenovo ->        
+            LenovoUpdates.extractSccmPackage
         |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
 
     let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, baseOnLocallyInstalledUpdates, logDirectory) =             
@@ -420,11 +433,10 @@ module CreateDriverPackage =
                 let! updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
                                 
-                let! products = getSccmPackageInfos
-                let product = findSccmPackageInfoByModelCode4AndOsAndBuild (model.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystem.Value) getOsBuild products
-                let osBuild = product.Value.OsBuild.Value
-                let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystem.Value osBuild
-                let! downloadedSccmPackage = downloadSccmPackage (DriverTool.Configuration.getDownloadCacheDirectoryPath) sccmPackage
+                let getSccmPackage = getSccmPackageFunc manufacturer
+                let! sccmPackage = getSccmPackage (model,operatingSystem)
+                sccmPackage |> Logging.logToConsole |> ignore
+                let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.getDownloadCacheDirectoryPath), sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let! versionedPackagePath = combine2Paths (destinationFolderPath.Value, releaseDate)
@@ -443,6 +455,8 @@ module CreateDriverPackage =
                 let! sccmPackageDestinationPath = Path.create (System.IO.Path.Combine(existingDriversPath.Value,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
                 let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists (sccmPackageDestinationPath, true)
                 logger.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath.Value)
+                
+                let extractSccmPackage = extractSccmPackageFunc (manufacturer)                
                 let! extractedSccmPackagePath = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
                 let! sccmPackageInstallScriptResult = createSccmPackageInstallScript extractedSccmPackagePath
 
