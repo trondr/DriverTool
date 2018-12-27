@@ -14,7 +14,7 @@ module ExportLocalUpdates =
         result{       
             let! actualModelCode = ModelCode.create String.Empty true
             let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
-            let! localUpdates = LenovoUpdates.getLocalUpdates (actualModelCode, actualOperatingSystemCode, true)
+            let! localUpdates = LenovoUpdates.getLocalUpdates (actualModelCode, actualOperatingSystemCode, true,DriverTool.Configuration.getDriverPackageLogDirectoryPath)
             let! exportResult = 
                 localUpdates
                 |> DriverTool.ExportRemoteUpdates.exportToCsv csvFilePath

@@ -121,11 +121,11 @@ module DellUpdates =
                                 )
                   )
 
-    let toPackageInfo (sc: XElement) =
+    let toPackageInfo (sc: XElement,logDirectory:string) =
         let path = getAttribute(sc,"path")
         let dellVersion = getAttribute(sc,"dellVersion")
         let vendorVersion = getAttribute (sc, "vendorVersion")
-        let name = toName (getElementValue (sc,"Name"),vendorVersion,dellVersion)
+        let name = toName (getElementValue (sc,"Name"),vendorVersion,dellVersion)        
         let (directory, installerName) = pathToDirectoryAndFile path            
         {
             Name = name
@@ -136,7 +136,7 @@ module DellUpdates =
             InstallerCrc = getAttribute (sc,"hashMD5")
             InstallerSize = int64 (getAttribute (sc,"size"))
             ExtractCommandLine = ""
-            InstallCommandLine = installerName + " /s"
+            InstallCommandLine = String.Format("\"{0}\" /s /l=\"{1}\\DUP_{0}.log\"",installerName,logDirectory)
             Category = getElementValue (sc,"Category")
             ReadmeName = "";
             ReadmeCrc = "";
@@ -145,7 +145,7 @@ module DellUpdates =
             PackageXmlName="";
         }
 
-    let getRemoteUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool) =
+    let getRemoteUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool,logDirectory:string) =
         result{
             let! softwareCatalogXmlFile = downloadSoftwareComponentsCatalog()            
             let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode            
@@ -156,14 +156,14 @@ module DellUpdates =
                 softwareComponents
                 |>Seq.filter(fun sc -> isSupportedForModel (sc,modelCode))                
                 |>Seq.filter(fun sc -> isSupportedForOs (sc,dellOsCode))
-                |>Seq.map(fun sc -> toPackageInfo sc)
+                |>Seq.map(fun sc -> toPackageInfo (sc,logDirectory))
                 |>getLatestPackageInfoVersion
                 |>Seq.toArray
             System.Console.WriteLine("Updates: " + updates.Length.ToString())            
             return updates
         }
 
-    let getLocalUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool) : Result<PackageInfo[],Exception> =
+    let getLocalUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool,logDirectory:string) : Result<PackageInfo[],Exception> =
         Result.Error (new Exception("Not implemented"))
 
     let getLocalDriverPackageCatalogCabFilePath =
@@ -291,7 +291,6 @@ module DellUpdates =
         |Ok _ -> Result.Ok destinationPath
         |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))        
     
-
     let extractUpdate (rootDirectory:Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package

@@ -12,8 +12,11 @@ module Configuration =
     let private section = 
         ConfigurationManager.GetSection(sectionName) :?> NameValueCollection
     
+    let private getValue (valueName :string) =
+        section.[valueName]
+    
     let private getExpandedValue (valueName :string) =
-        let value = section.[valueName]
+        let value = getValue valueName
         let expandedValue = Environment.ExpandEnvironmentVariables(value)
         expandedValue
 
@@ -50,4 +53,6 @@ module Configuration =
 
     let getAppConfigFilePath = 
         Settings.ConfigFileName
-        
+    
+    let getDriverPackageLogDirectoryPath =
+        getValue "DriverPackageLogDirectoryPath"
