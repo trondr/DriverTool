@@ -65,3 +65,4 @@ src/app/DriverTool/Libs/SecureBlackbox.HTTPCommon.dll
 src/app/DriverTool/Libs/SecureBlackbox.HTTP.dll
 src/app/DriverTool/Libs/Lenovo.QualityStats.dll
 src/app/DriverTool/Libs/Lenovo.QualityStats.Repo3.dll
+src/app/DriverTool/Libs/Core.dll
