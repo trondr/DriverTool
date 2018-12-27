@@ -1,0 +1,72 @@
+Update Package: CC2F0A00
+Realtek High-Definition Audio Driver, 6.0.1.7982, A00
+
+General Usage:
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe [/<option1>[=<value1>]] [/<option2>[=<value2>]]...
+See listing below for <option> and <value> information.
+
+NOTE:If the folder name contains space, double quotes should be given for folder name
+EXAMPLE:/s /e="c:\Folder Name"
+
+Option - Description:
+---------------------
+(none) - Display of graphical user interface for guided installation/update or extraction.
+
+/? or /h - Displays this  Update Package usage information.
+
+/s - Suppresses all graphical user interfaces of the  Update Package.
+
+/i - Does a fresh install of the Update Package.
+(NOTE: Requires /s option)
+
+/e=<path> - Extraction of update contents to a folder.
+(NOTE: Requires /s option)
+
+/drivers=<path> - Extraction of only driver components to a folder.
+(NOTE: Requires /s option)
+
+/driveronly - Installation/Update of the driver components only.
+(NOTE: Requires /s option)
+
+/passthrough ... - (Advanced) Sends all text following the /passthrough option directly to the vendor install software of the  Update Package. This mode suppresses any  provided graphical user interfaces, but not necessarily those of the vendor software.
+
+/factoryinstall /passthrough (vendor command line parameter) - (Advanced) (commnad line parameters) will be passed to vendor installer directly without parsing MUP.xml. Post installation, If the vendor installer returns REBOOT_REQUIRED or REBOOT_UPDATE_PENDING, it will be turned to SUCCESS.
+
+/capabilities - (Advanced) Returns a coded description of this  Update Package's supported features.
+(NOTE: Requires /s option)
+
+/l=<path> - Define a specific path for the  Update Package log file.
+(NOTE: This option can NOT be used in combination with /passthrough or /capabilities)
+
+/f - Override a soft dependency error returned from the  Update Package.
+(NOTE: Requires /s option, can NOT be used in combination with /passthrough or /capabilities)
+
+
+Example(s):
+---------------------
+Update the system silently
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /s
+
+Fresh install silently
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /s /i
+
+
+Extract the update contents to the folder C:\mydir\
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /s /e=C:\mydir
+
+Extract the driver components to the folder C:\mydir\
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /s /drivers=C:\mydir
+
+Only install driver components
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /s /driveronly
+
+Pass command line arguments directly to vendor installer.
+Turn the return code to success if required
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /factoryinstall /passthrough D:\Sample.xml C:\log\FI.log
+
+
+Change from the default log location to C:\my path with spaces\log.txt
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /l="C:\my path with spaces\log.txt"
+
+Force update to continue, even on "soft" qualification errors
+Audio_Driver_CC2F0_WN32_6.0.1.7982_A00.exe /s /f
