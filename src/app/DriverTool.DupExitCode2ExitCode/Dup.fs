@@ -23,17 +23,9 @@ module Dup =
         |0 -> 0
         |1 -> 1603 // Fatal error
         |2 -> 3010 // Reboot required
-        |3 -> 1638 // Another version of this product is already installed. 
-        |4 -> 1654 // Install rejected 
-        |5 -> 1633 //1633 // Platform unsupported
+        |3 -> 0 // Another version of this product is already installed. 
+        |4 -> 0 // Install rejected 
+        |5 -> 0 // Platform unsupported
         |6 -> 1641 // Reboot in progress
         |_ -> 1 //Uknown error
-
     
-    //let dupExitCodeString2ExitCodeUnsafe dupExitCodeString =
-    //    let dupExitCode = int32 dupExitCodeString        
-    //    let exitCode = dupExitCode2ExitCode dupExitCode        
-    //    exitCode
-
-    //let dupExitCodeString2ExitCode dupExitCodeString =
-    //    F.tryCatch dupExitCodeString2ExitCodeUnsafe dupExitCodeString
