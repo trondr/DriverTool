@@ -193,7 +193,7 @@ module LenovoUpdates =
     
     open DriverTool.FileOperations
     
-    let getRemoteUpdatesBase (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
+    let getRemoteUpdatesBase (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
         result{
             let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
             let! path = getModelInfoXmlFilePath modelCode operatingSystemCode
@@ -207,8 +207,8 @@ module LenovoUpdates =
             return packageInfos |> Seq.toArray
         }
 
-    let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase (modelCode, operatingSystemCode, overwrite)
+    let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
+        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase (modelCode, operatingSystemCode, overwrite, logDirectory)
     
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
         if(actualModel.Value.StartsWith(model.Value)) then
@@ -238,7 +238,7 @@ module LenovoUpdates =
                         )
         updatedPacageInfos
 
-    let getLocalUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite) =
+    let getLocalUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
         result{
             logger.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
@@ -253,7 +253,7 @@ module LenovoUpdates =
             let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid operatingSystemCode actualOperatingSystemCode
             logger.Info(String.Format("Operating system code '{0}' is valid: {1}",operatingSystemCode.Value,operatingSystemCodeIsValid))
 
-            let! remotePackageInfos = getRemoteUpdates (modelCode, operatingSystemCode, overwrite)
+            let! remotePackageInfos = getRemoteUpdates (modelCode, operatingSystemCode, overwrite,logDirectory)
             let localUpdates = 
                 packageInfos
                 |> Seq.distinct

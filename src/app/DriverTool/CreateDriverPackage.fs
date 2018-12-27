@@ -125,12 +125,13 @@ module CreateDriverPackage =
         with
         | _ as ex -> Result.Error ex
 
-    let createInstallScriptFile (installScriptPath: Path, installCommandLine:string) =
+    let createInstallScriptFile (installScriptPath: Path, installCommandLine:string,manufacturer:Manufacturer,logDirectory:string) =
         try
             use sw = new System.IO.StreamWriter(installScriptPath.Value)
             sw.WriteLine("Set ExitCode=0")
             sw.WriteLine("pushd \"%~dp0\"")
             sw.WriteLine("")
+            sw.WriteLine("IF NOT EXIST \"{0}\" md \"{0}\"", logDirectory)
             sw.WriteLine(installCommandLine)
             if (packageIsUsingDpInstDuringInstall (installScriptPath, installCommandLine)) then
                 sw.WriteLine("")
@@ -140,6 +141,10 @@ module CreateDriverPackage =
                 sw.WriteLine("")
                 sw.WriteLine("REM Set DpInstExitCode=%errorlevel%")
                 sw.WriteLine("REM %~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")
+            if(manufacturer.Value = ManufacturerName.Dell) then
+                sw.WriteLine("")
+                sw.WriteLine("Set DupExitCode=%errorlevel%")
+                sw.WriteLine("%~dp0..\\DriverTool.DupExitCode2ExitCode.exe %DupExitCode%")
             sw.WriteLine("")
             sw.WriteLine("Set ExitCode=%errorlevel%")
             sw.WriteLine("popd")
@@ -148,16 +153,31 @@ module CreateDriverPackage =
         with
         | _ as ex -> Result.Error ex
     
+    let createSccmInstallScriptFile (installScriptPath: Path, installCommandLine:string) =
+        try
+            use sw = new System.IO.StreamWriter(installScriptPath.Value)
+            sw.WriteLine("Set ExitCode=0")
+            sw.WriteLine("pushd \"%~dp0\"")
+            sw.WriteLine("")
+            sw.WriteLine(installCommandLine)            
+            sw.WriteLine("")
+            sw.WriteLine("Set ExitCode=%errorlevel%")
+            sw.WriteLine("popd")
+            sw.WriteLine("EXIT /B %ExitCode%")
+            Result.Ok installScriptPath
+        with
+        | _ as ex -> Result.Error ex
+
     let dtInstallPackageCmd = "DT-Install-Package.cmd"
     let dtUnInstallPackageCmd = "DT-UnInstall-Package.cmd"
 
-    let createInstallScript (extractedUpdate:ExtractedPackageInfo) =
+    let createInstallScript (extractedUpdate:ExtractedPackageInfo,manufacturer:Manufacturer,logDirectory:string) =
         result{
             let! installScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,dtInstallPackageCmd))
             let installCommandLine = 
                 extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")            
-            let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine))
+            let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine,manufacturer,logDirectory))
             let! unInstallScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,dtUnInstallPackageCmd))
             let unInstallScriptResult = (createUnInstallScriptFile (unInstallScriptPath))
@@ -170,13 +190,13 @@ module CreateDriverPackage =
             return! createInstallScriptResult
         }
 
-    let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>) =
+    let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer,logDirectory:string) =
         let extractedUpdatesList = 
             extractedUpdates.ToList()
         logger.InfoFormat("Creating install script for {0} packages...",extractedUpdatesList.Count)
         let installScripts = 
             extractedUpdatesList 
-            |> PSeq.map (fun u -> (createInstallScript u) )       
+            |> PSeq.map (fun u -> (createInstallScript (u, manufacturer,logDirectory)) )       
             |> PSeq.toArray
             |> Seq.ofArray
             |> toAccumulatedResult
@@ -245,7 +265,7 @@ module CreateDriverPackage =
             let! installScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-Install-Package.cmd"))
             let installCommandLine = "pnputil.exe /add-driver *.inf /install /subdirs"                      
-            let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine))
+            let installScriptResult = (createSccmInstallScriptFile (installScriptPath,installCommandLine))
             let! unInstallScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-UnInstall-Package.cmd"))
             let unInstallScriptResult = (createUnInstallScriptFile (unInstallScriptPath))            
@@ -310,7 +330,7 @@ module CreateDriverPackage =
                 
                 let getUpdates = getUpdatesFunc (manufacturer,baseOnLocallyInstalledUpdates) 
 
-                let! packageInfos = getUpdates (model, operatingSystem, true)
+                let! packageInfos = getUpdates (model, operatingSystem, true, logDirectory)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
@@ -336,7 +356,7 @@ module CreateDriverPackage =
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", driversPath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
                 let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updates)
-                let installScriptResults = createInstallScripts (extractedUpdates)
+                let installScriptResults = createInstallScripts (extractedUpdates,manufacturer,logDirectory)
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
                 let! sccmPackageDestinationPath = Path.create (System.IO.Path.Combine(existingDriversPath.Value,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))

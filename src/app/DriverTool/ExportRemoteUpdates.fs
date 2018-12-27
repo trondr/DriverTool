@@ -20,7 +20,7 @@ module ExportRemoteUpdates =
     let exportRemoteUpdates (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite =         
         result {
             let! csvFilePath = ensureFileDoesNotExist (overwrite, csvFilePath)    
-            let! r = getRemoteUpdates (model, operatingSystem, overwrite)
+            let! r = getRemoteUpdates (model, operatingSystem, overwrite,DriverTool.Configuration.getDriverPackageLogDirectoryPath)
             let u = Seq.distinct r
             let! e = exportToCsv csvFilePath u
             return e
