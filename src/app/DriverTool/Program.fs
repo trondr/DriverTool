@@ -18,8 +18,4 @@ let main argv =
     setup()
     let exitCode = runCommand argv
     teardown()
-#if DEBUG
-    Console.WriteLine("Press any key...")
-    Console.ReadLine() |> ignore
-#endif        
     exitCode // return an integer exit code
