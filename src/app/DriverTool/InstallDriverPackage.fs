@@ -75,7 +75,7 @@ module InstallDriverPackage =
                 |true ->
                     //Copy Drivers folder
                     result{
-                        let! robocopyResult = Robocopy.roboCopy (sourceDriversFolderPath,destinationDriversFolderPath,"*.* /MIR")
+                        let! robocopyResult = Robocopy.roboCopy (sourceDriversFolderPath,destinationDriversFolderPath,"*.* /MIR /NP")
                         return robocopyResult
                     }
                             
