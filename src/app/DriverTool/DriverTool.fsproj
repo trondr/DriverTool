@@ -69,6 +69,7 @@
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe.config" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe" />
+	<EmbeddedResource Include="PackageTemplate\Drivers\FSharp.Core.dll" />
     <EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
     <EmbeddedResource Include="Tools\7Zip\7za.exe" />
     <EmbeddedResource Include="Tools\7Zip\7zip.chm" />
