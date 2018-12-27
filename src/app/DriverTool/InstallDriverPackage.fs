@@ -13,7 +13,7 @@ module InstallDriverPackage =
     
     let getSystemInfo =
         result{
-            let! currentComputerModel = (WmiHelper.getWmiProperty  "Win32_ComputerSystem" "Model")
+            let! currentComputerModel = DriverTool.SystemInfo.getModelCodeForCurrentSystem()
             let currentOsShortName = OperatingSystem.getOsShortName
             return {Model=currentComputerModel;OperatingSystem=currentOsShortName}
         }
