@@ -4,6 +4,26 @@ module BitLockerOperations=
     let logger = Logging.getLoggerByName("BitLockerOperations")
     open System
     open DriverTool.Environment
+    open System.Management
+
+    let isBitLockerEnabled () =
+        let nameSpace = @"\\.\root\CIMv2\Security\MicrosoftVolumeEncryption"
+        let className = "Win32_EncryptableVolume"
+        let managementScope = new ManagementScope(nameSpace)  
+        let systemDrive = System.Environment.GetEnvironmentVariable("SystemDrive").ToUpper()
+        let queryString = (sprintf "SELECT * FROM %s WHERE DriveLetter='%s'" className systemDrive)
+        let query = new ObjectQuery(queryString)
+        use searcher = new ManagementObjectSearcher(managementScope, query)
+        use collection = searcher.Get()
+        use bitLockerVolume:ManagementObject = 
+            collection
+            |> Seq.cast
+            |> Seq.head
+        let protectionStatusObject = bitLockerVolume.GetPropertyValue("ProtectionStatus")
+        let protectionStatus = Convert.ToUInt32(protectionStatusObject)
+        match protectionStatus with
+        | 1u -> true
+        | _ -> false
 
     let schtasksExe =
         System.IO.Path.Combine(nativeSystemFolder,"schtasks.exe")
@@ -96,14 +116,16 @@ module BitLockerOperations=
         }
 
     let suspendBitLockerProtection () =
-        result{
-            logger.Info("Suspending BitLocker...")
-            let! exitCodeManagedBdeStatusBefore = ProcessOperations.startConsoleProcess (manageBdeExe,"-status",nativeSystemFolder,-1,null,null,false)
-            let! exitCodeManagedBde = ProcessOperations.startConsoleProcess (manageBdeExe,"-protectors -disable C:",nativeSystemFolder,-1,null,null,false)
-            let! exitCodeManagedBdeStatusAfter = ProcessOperations.startConsoleProcess (manageBdeExe,"-status",nativeSystemFolder,-1,null,null,false)
-            logger.Info("Installing scheduled task to resume BitLocker at next boot")
-            let! exitCodeScheduledTask = installBitLockerResumeTask ()
-            return exitCodeScheduledTask
-        }        
-
-    
+        if(isBitLockerEnabled()) then
+            result{
+                logger.Info("Suspending BitLocker...")
+                let! exitCodeManagedBdeStatusBefore = ProcessOperations.startConsoleProcess (manageBdeExe,"-status",nativeSystemFolder,-1,null,null,false)
+                let! exitCodeManagedBde = ProcessOperations.startConsoleProcess (manageBdeExe,"-protectors -disable C:",nativeSystemFolder,-1,null,null,false)
+                let! exitCodeManagedBdeStatusAfter = ProcessOperations.startConsoleProcess (manageBdeExe,"-status",nativeSystemFolder,-1,null,null,false)
+                logger.Info("Installing scheduled task to resume BitLocker at next boot.")
+                let! exitCodeScheduledTask = installBitLockerResumeTask ()
+                return exitCodeScheduledTask
+            }        
+        else
+            logger.Info("No need to suspend BitLocker as BitLocker is not enabled.")
+            Result.Ok 0
