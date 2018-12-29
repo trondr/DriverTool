@@ -157,9 +157,9 @@ module InstallDriverPackage =
             existingInstallScripts |> DriverTool.Logging.logSeqToConsoleWithFormatString "Script verified: %s"|>ignore
 
             logger.Info(String.Format("Executing '{0}' for each driver folder...", installScriptName))
-            
             let! installedDriverExitCodes = executeScripts (existingInstallScripts,installScriptName,installConfiguration,driverPackageName)
             existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqToConsoleWithFormatString "Script execution result: %s" |> ignore
+            
             let adjustedExitCode = getAdjustedExitCode installedDriverExitCodes
             return adjustedExitCode
         }

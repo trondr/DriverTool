@@ -97,6 +97,7 @@ module CreateDriverPackage =
         |> toAccumulatedResult
      
     open System.Text.RegularExpressions
+    open System.Text
         
     let directoryContainsDpInst (directoryPath:string) =
         let dpinstFilesCount = 
@@ -113,81 +114,76 @@ module CreateDriverPackage =
         | false -> 
             directoryContainsDpInst ((new System.IO.FileInfo(installScriptPath.Value)).Directory.FullName)
 
-    let createUnInstallScriptFile (installScriptPath: Path) =
-        try
-            use sw = new System.IO.StreamWriter(installScriptPath.Value)
-            sw.WriteLine("Set ExitCode=0")
-            sw.WriteLine("pushd \"%~dp0\"")
-            sw.WriteLine("@Echo Uninstall is not supported")
-            sw.WriteLine("popd")
-            sw.WriteLine("EXIT /B %ExitCode%")
-            Result.Ok installScriptPath
-        with
-        | _ as ex -> Result.Error ex
+    let createUnInstallScriptFileContent () =
+        let sw = StringBuilder()
+        sw.AppendLine("Set ExitCode=0")|>ignore
+        sw.AppendLine("pushd \"%~dp0\"")|>ignore
+        sw.AppendLine("@Echo Uninstall is not supported")|>ignore
+        sw.AppendLine("popd")|>ignore
+        sw.AppendLine("EXIT /B %ExitCode%")|>ignore
+        sw.ToString()
 
-    let createInstallScriptFile (installScriptPath: Path, installCommandLine:string,manufacturer:Manufacturer,logDirectory:string) =
-        try
-            use sw = new System.IO.StreamWriter(installScriptPath.Value)
-            sw.WriteLine("Set ExitCode=0")
-            sw.WriteLine("pushd \"%~dp0\"")
-            sw.WriteLine("")
-            sw.WriteLine("IF NOT EXIST \"{0}\" md \"{0}\"", logDirectory)
-            sw.WriteLine(installCommandLine)
-            if (packageIsUsingDpInstDuringInstall (installScriptPath, installCommandLine)) then
-                sw.WriteLine("")
-                sw.WriteLine("Set DpInstExitCode=%errorlevel%")
-                sw.WriteLine("%~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")
-            else
-                sw.WriteLine("")
-                sw.WriteLine("REM Set DpInstExitCode=%errorlevel%")
-                sw.WriteLine("REM %~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")
-            if(manufacturer.Value = ManufacturerName.Dell) then
-                sw.WriteLine("")
-                sw.WriteLine("Set DupExitCode=%errorlevel%")
-                sw.WriteLine("%~dp0..\\DriverTool.DupExitCode2ExitCode.exe %DupExitCode%")
-            sw.WriteLine("")
-            sw.WriteLine("Set ExitCode=%errorlevel%")
-            sw.WriteLine("popd")
-            sw.WriteLine("EXIT /B %ExitCode%")
-            Result.Ok installScriptPath
-        with
-        | _ as ex -> Result.Error ex
+    let writeTextToFileUnsafe (filePath:Path, text:string) =
+        use sw = new System.IO.StreamWriter(filePath.Value)
+        sw.Write(text)
+        filePath
     
-    let createSccmInstallScriptFile (installScriptPath: Path, installCommandLine:string) =
-        try
-            use sw = new System.IO.StreamWriter(installScriptPath.Value)
-            sw.WriteLine("Set ExitCode=0")
-            sw.WriteLine("pushd \"%~dp0\"")
-            sw.WriteLine("")
-            sw.WriteLine(installCommandLine)            
-            sw.WriteLine("")
-            sw.WriteLine("Set ExitCode=%errorlevel%")
-            sw.WriteLine("popd")
-            sw.WriteLine("EXIT /B %ExitCode%")
-            Result.Ok installScriptPath
-        with
-        | _ as ex -> Result.Error ex
+    let writeTextToFile (filePath:Path) (text:string) =
+        tryCatch writeTextToFileUnsafe (filePath, text)
+
+    let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer,logDirectory:string) =
+        let sb = new StringBuilder()
+        sb.AppendLine("Set ExitCode=0")|>ignore
+        sb.AppendLine("pushd \"%~dp0\"")|>ignore
+        sb.AppendLine("")|>ignore
+        sb.AppendFormat("IF NOT EXIST \"{0}\" md \"{0}\"",logDirectory).AppendLine(String.Empty)|>ignore
+        sb.AppendLine("REM " + installCommandLine)|>ignore
+        if (packageIsUsingDpInst) then
+            sb.AppendLine("")|>ignore
+            sb.AppendLine("Set DpInstExitCode=%errorlevel%")|>ignore
+            sb.AppendLine("%~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")|>ignore
+        else
+            sb.AppendLine("")|>ignore
+            sb.AppendLine("REM Set DpInstExitCode=%errorlevel%")|>ignore
+            sb.AppendLine("REM %~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")|>ignore
+        if(manufacturer.Value = ManufacturerName.Dell) then
+            sb.AppendLine("")|>ignore
+            sb.AppendLine("Set DupExitCode=%errorlevel%")|>ignore
+            sb.AppendLine("%~dp0..\\DriverTool.DupExitCode2ExitCode.exe %DupExitCode%")|>ignore
+        sb.AppendLine("")|>ignore
+        sb.AppendLine("Set ExitCode=%errorlevel%")|>ignore
+        sb.AppendLine("popd")|>ignore
+        sb.AppendLine("EXIT /B %ExitCode%")|>ignore
+        sb.ToString()
+    
+    let createSccmInstallScriptFileContent (installCommandLine:string) =
+        let sb = new StringBuilder()
+        sb.AppendLine("Set ExitCode=0")|>ignore
+        sb.AppendLine("pushd \"%~dp0\"")|>ignore
+        sb.AppendLine("")|>ignore
+        sb.AppendLine(installCommandLine)|>ignore            
+        sb.AppendLine("")|>ignore
+        sb.AppendLine("Set ExitCode=%errorlevel%")|>ignore
+        sb.AppendLine("popd")|>ignore
+        sb.AppendLine("EXIT /B %ExitCode%")|>ignore
+        sb.ToString()
 
     let dtInstallPackageCmd = "DT-Install-Package.cmd"
     let dtUnInstallPackageCmd = "DT-UnInstall-Package.cmd"
 
     let createInstallScript (extractedUpdate:ExtractedPackageInfo,manufacturer:Manufacturer,logDirectory:string) =
         result{
-            let! installScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,dtInstallPackageCmd))
-            let installCommandLine = 
-                extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")            
-            let installScriptResult = (createInstallScriptFile (installScriptPath,installCommandLine,manufacturer,logDirectory))
-            let! unInstallScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedUpdate.ExtractedDirectoryPath,dtUnInstallPackageCmd))
-            let unInstallScriptResult = (createUnInstallScriptFile (unInstallScriptPath))
-            
-            let createInstallScriptResult = 
-                match ([|installScriptResult;unInstallScriptResult|]|> toAccumulatedResult) with
-                |Error ex -> Result.Error ex
-                |Ok _ -> installScriptResult
+            let! installScriptPath = PathOperations.combine2Paths(extractedUpdate.ExtractedDirectoryPath,dtInstallPackageCmd)
+            let installCommandLine = extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")            
+            let packageIsUsingDpInst = packageIsUsingDpInstDuringInstall (installScriptPath, installCommandLine)
 
-            return! createInstallScriptResult
+            let installScriptContent = (createInstallScriptFileContent (packageIsUsingDpInst,installCommandLine,manufacturer,logDirectory))
+            let! installScript = writeTextToFile installScriptPath installScriptContent
+            
+            let! unInstallScriptPath = PathOperations.combine2Paths(extractedUpdate.ExtractedDirectoryPath,dtUnInstallPackageCmd)
+            let! unInstallScript = writeTextToFile unInstallScriptPath (createUnInstallScriptFileContent())
+            
+            return installScript
         }
 
     let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer,logDirectory:string) =
@@ -218,14 +214,6 @@ module CreateDriverPackage =
         updates
         |> Seq.map (fun p -> p.Package.ReleaseDate)
         |> Seq.max
-    
-    let writeTextToFile (text:string, filePath:Path) =
-        try
-            use sw = new System.IO.StreamWriter(filePath.Value)
-            sw.Write(text)
-            Result.Ok filePath
-        with
-        | ex -> Result.Error (new Exception(String.Format("Failed to write text to file '{0}'.", filePath.Value), ex))
 
     open PackageDefinition
     open LenovoCatalog
@@ -248,7 +236,7 @@ module CreateDriverPackage =
                     RegistryValue="";
                     RegistryValueIs64Bit="";
                 }
-            let writeTextToFileResult = writeTextToFile ((getPackageDefinitionContent packageDefinition), packageDefinitonSmsPath)                
+            let writeTextToFileResult = writeTextToFile packageDefinitonSmsPath (getPackageDefinitionContent packageDefinition)                
             return! writeTextToFileResult
         }
     
@@ -265,15 +253,13 @@ module CreateDriverPackage =
             let! installScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-Install-Package.cmd"))
             let installCommandLine = "pnputil.exe /add-driver *.inf /install /subdirs"                      
-            let installScriptResult = (createSccmInstallScriptFile (installScriptPath,installCommandLine))
+            
+            let createSccmInstallScriptFileContent = createSccmInstallScriptFileContent installCommandLine
+            let! installScript = writeTextToFile installScriptPath createSccmInstallScriptFileContent
             let! unInstallScriptPath = 
                 Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-UnInstall-Package.cmd"))
-            let unInstallScriptResult = (createUnInstallScriptFile (unInstallScriptPath))            
-            let createInstallScriptResult = 
-                match ([|installScriptResult;unInstallScriptResult|]|> toAccumulatedResult) with
-                |Error ex -> Result.Error ex
-                |Ok _ -> installScriptResult
-            return! createInstallScriptResult
+            let! unInstallScriptResult = writeTextToFile unInstallScriptPath (createUnInstallScriptFileContent())
+            return installScript
         }        
     
     open DriverTool.Requirements
