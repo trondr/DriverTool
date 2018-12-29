@@ -199,6 +199,22 @@
                     writeLog (functionCallResult)
             unbox returnValue
     
+        let logSeq (logger:ILog) records  =
+            records
+            |> Seq.map  (fun dj -> 
+                                logger.Info(valueToString dj)
+                                dj
+                            )
+            |>Seq.toArray
+
+        let logSeqWithFormatString (logger:ILog) formatStringF1 records  =
+            records
+            |> Seq.map  (fun dj -> 
+                                logger.Info(sprintf formatStringF1 (valueToString dj))
+                                dj
+                            )
+            |>Seq.toArray
+                
         let logSeqToConsoleWithFormatString formatStringF1 records  =
             records
             |> Seq.map  (fun dj -> 

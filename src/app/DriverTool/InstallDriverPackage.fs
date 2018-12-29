@@ -117,6 +117,7 @@ module InstallDriverPackage =
                                 |Ok p -> FileOperations.ensureFileExistsWithMessage (String.Format("It is required that the script '{0}' exists in each active driver folder. Not found: {1}. ",installScriptName, p.Value)) p
                                 |Error _ -> spr
                             )
+                |> Seq.toArray
                 |> toAccumulatedResult
 
     let executeScripts (existingInstallScripts:seq<Path>,installScriptName,installConfiguration,driverPackageName)  =
@@ -130,6 +131,7 @@ module InstallDriverPackage =
                         let scriptLogFile = System.IO.Path.Combine(System.Environment.ExpandEnvironmentVariables(installConfiguration.LogDirectory),String.Format("{0}-{1}-{2}.log",installScriptName,driverPackageName,parentDirectory.Name.Replace(".","_")))                        
                         ProcessOperations.startConsoleProcess (existingCmdExePath.Value,String.Format("/c \"{0}\"", script.Value),parentDirectory.FullName,-1,null,scriptLogFile,true)
                     )
+                |>Seq.toArray
                 |>toAccumulatedResult
             return installedDriverExitCodes
         }   
@@ -146,20 +148,20 @@ module InstallDriverPackage =
             
             logger.Info("Getting active drivers...")
             let! activeDriverFolders = getGetActiveDriverFolders existingLocalDriversFolderPath    
-            activeDriverFolders |> DriverTool.Logging.logSeqToConsoleWithFormatString "Will be processed: %s"|>ignore
+            activeDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger  "Will be processed: %s"|>ignore
             
             logger.Info("Getting inactive drivers...")
             let! inactiveDriverFolders = getGetInActiveDriverFolders existingLocalDriversFolderPath
-            inactiveDriverFolders |> DriverTool.Logging.logSeqToConsoleWithFormatString "Will NOT be processed: %s"|>ignore
+            inactiveDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger  "Will NOT be processed: %s"|>ignore
             
             logger.Info("Verifying that active scripts exists...")
             let! existingInstallScripts = getExistingScripts (activeDriverFolders, installScriptName)
-            existingInstallScripts |> DriverTool.Logging.logSeqToConsoleWithFormatString "Script verified: %s"|>ignore
+            existingInstallScripts |> DriverTool.Logging.logSeqWithFormatString logger "Script verified: %s"|>Seq.toArray|>ignore
 
             logger.Info(String.Format("Executing '{0}' for each driver folder...", installScriptName))
             let! installedDriverExitCodes = executeScripts (existingInstallScripts,installScriptName,installConfiguration,driverPackageName)
-            existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqToConsoleWithFormatString "Script execution result: %s" |> ignore
-            
+            existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqWithFormatString logger "Script execution result: %s" |> ignore
+            logger.Info(String.Format("Finished executing '{0}' for each driver folder!", installScriptName))
             let adjustedExitCode = getAdjustedExitCode installedDriverExitCodes
             return adjustedExitCode
         }
