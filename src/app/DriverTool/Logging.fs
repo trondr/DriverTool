@@ -199,13 +199,16 @@
                     writeLog (functionCallResult)
             unbox returnValue
     
-        let logSeqToConsole records =
+        let logSeqToConsoleWithFormatString formatStringF1 records  =
             records
             |> Seq.map  (fun dj -> 
-                                printfn "%s" (valueToString dj)
+                                printfn formatStringF1 (valueToString dj)
                                 dj
                             )
         
+        let logSeqToConsole records =
+            logSeqToConsoleWithFormatString "%s" records
+
         let logToConsole record =
             printfn "%s" (valueToString record)
             record
