@@ -66,3 +66,21 @@ module DirectoryOperations =
     
     let getParentFolderPath (folderPath:Path)=        
         Path.create (System.IO.DirectoryInfo(folderPath.Value).Parent.FullName)
+    
+    let getSubDirectoriesUnsafe directory =
+        System.IO.Directory.GetDirectories(directory)
+    
+    let getSubDirectories directory =
+        tryCatch getSubDirectoriesUnsafe directory
+
+    let getSubDirectoryPaths (directoryPath:Path) =
+        result{
+            let! existingDirectoryPath = ensureDirectoryExists (directoryPath, false)
+            let! subDirectories = getSubDirectories existingDirectoryPath.Value
+            let! subDirectoryPaths = 
+                    subDirectories
+                    |>Seq.map(fun subDirectory -> Path.create subDirectory)
+                    |>toAccumulatedResult
+            return subDirectoryPaths
+        }
+        
