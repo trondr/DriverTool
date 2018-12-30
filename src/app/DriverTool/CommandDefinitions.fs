@@ -13,12 +13,14 @@ module Commands =
                                             csvFileName: string,
                                             [<OptionalCommandParameter(Description = "Overwrite csv file if it allready exists.", ExampleValue = false,DefaultValue = false, AlternativeName = "o")>] 
                                             overWrite : bool,
+                                            [<OptionalCommandParameter(Description = "Manufacturer as specified by the Manufacturer property of the Win32_ComputerSystem wmi class instance. Powershell script to extract the manufacturer: $(Get-WmiObject Win32_ComputerSystem|Select-Object Manufacturer).Manufacturer. If manufacturer is not specified the current system manufacturer will be looked up and used.", ExampleValue = @"LENOVO", AlternativeName = "ma", DefaultValue = "")>] 
+                                            manufacturer : string,
                                             [<OptionalCommandParameter(Description = "Model code as specified by the first 4 letters of the Model property of the Win32_ComputerSystem wmi class instance. Powershell script to extract the model code for (1)LENOVO: $(Get-WmiObject Win32_ComputerSystem|Select-Object Model).Model.SubString(0,4); (2) Dell: $(Get-WmiObject Win32_ComputerSystem|Select-Object SystemSKUNumber).SystemSKUNumber .If model code is not specified the current system model code will be looked up and used.", ExampleValue = @"20EQ", AlternativeName = "m", DefaultValue = "")>] 
                                             modelCode : string,
-                                            [<OptionalCommandParameter(Description = "Operating system code Win7|Win8|Win10. If operating system code is not specified the current system model code will be looked up and used.", ExampleValue = @"Win10", AlternativeName = "op", DefaultValue = "Win10")>] 
+                                            [<OptionalCommandParameter(Description = "Operating system code. If operating system code is not specified the current system model code will be looked up and used.", ExampleValue = @"WIN10X64", AlternativeName = "op", DefaultValue = "")>] 
                                             operatingSystemCode : string        
                                             ) : NCmdLiner.Result<int> =                
-                CommandProviders.exportRemoteUdateInfo (modelCode, operatingSystemCode, csvFileName, overWrite)                
+                CommandProviders.exportRemoteUdateInfo (manufacturer,modelCode, operatingSystemCode, csvFileName, overWrite)                
         
         [<Command(Description = "Export Lenovo system update information for the current system to csv file. The current system is typically a reference machine and the exported info can be used to automate download of updates to be installed on new systems with the same specification. It is required that Lenovo System Update is installed on the system and that Lenovo System Update has been run to install all relevant updates.", Summary="Export Lenovo system update information for the current system to csv file")>]
         static member ExportLocalUdateInfo (
