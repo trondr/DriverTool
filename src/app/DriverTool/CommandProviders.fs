@@ -9,7 +9,7 @@ module CommandProviders =
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! csvFilePath = Path.create csvFilePathString
-                let result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates manufacturer modelCode operatingSystemCode csvFilePath overwrite
+                let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates manufacturer modelCode operatingSystemCode csvFilePath overwrite
                 return result
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
