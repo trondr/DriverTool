@@ -91,3 +91,7 @@ module FileOperations =
         match System.IO.Path.GetExtension(path.Value).ToLower() with
         | e when e = extension -> Result.Ok path            
         | _ -> Result.Error (new Exception(String.Format("File does not have extension '{0}': '{1}'",extension, path.Value)))
+
+    let deleteFileIfExists (filePath:Path) =
+        if(System.IO.File.Exists(filePath.Value)) then
+            System.IO.File.Delete(filePath.Value)
