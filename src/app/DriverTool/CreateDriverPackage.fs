@@ -143,6 +143,8 @@ module CreateDriverPackage =
             sb.AppendLine("%~dp0..\\DriverTool.DupExitCode2ExitCode.exe %DupExitCode%")|>ignore
         |Manufacturer2.Lenovo _ -> 
             sb.AppendLine("")|>ignore
+        |Manufacturer2.HP _ -> 
+            sb.AppendLine("")|>ignore
         sb.AppendLine("")|>ignore
         sb.AppendLine("Set ExitCode=%errorlevel%")|>ignore
         sb.AppendLine("popd")|>ignore

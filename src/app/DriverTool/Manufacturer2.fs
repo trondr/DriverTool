@@ -9,6 +9,7 @@ module ManufacturerTypes =
     type Manufacturer2 =
         |Dell of name:string
         |Lenovo of name:string
+        |HP of name:string
     
     let getValidManufacturers () = 
         FSharpType.GetUnionCases typeof<Manufacturer2>
@@ -33,6 +34,7 @@ module ManufacturerTypes =
             |Error ex -> raise ex
         |manufacturerName when Regex.Match(manufacturerName,"Dell",RegexOptions.IgnoreCase).Success -> Manufacturer2.Dell "Dell"
         |manufacturerName when Regex.Match(manufacturerName,"Lenovo",RegexOptions.IgnoreCase).Success -> Manufacturer2.Lenovo "Lenovo"
+        |manufacturerName when Regex.Match(manufacturerName,"HP",RegexOptions.IgnoreCase).Success -> Manufacturer2.HP "HP"
         |_ -> raise (new InvalidManufacturerException(sprintf "Manufacturer '%s' is not supported." manufacturer))
      
     let manufacturerStringToManufacturerBase (wmiManufacturerValueFunc:WmiManufacturerValueFunc,manufacturer:string,defaultToLocal) =
@@ -45,3 +47,7 @@ module ManufacturerTypes =
         match manufacturer with
         |Dell name -> name
         |Lenovo name -> name
+        |HP name -> name
+    
+    let getManufacturerForCurrentSystem () = 
+        manufacturerStringToManufacturer ("",true)
