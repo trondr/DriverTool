@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>ExportRemoteUdateInfo /f="c:\temp\updates.csv" /o="False"</StartArguments>
+    <StartArguments>ExportLocalUdateInfo /csvFileName="c:\temp\updates.csv" /overWrite="True"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
