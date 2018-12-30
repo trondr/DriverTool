@@ -76,6 +76,7 @@
     <Compile Include="DellUpdatesTests.fs" />
     <Compile Include="SystemInfoTests.fs" />
     <Compile Include="BitLockerOperationsTest.fs" />
+    <Compile Include="ManufacturerTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
   </ItemGroup>
