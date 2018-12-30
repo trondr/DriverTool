@@ -34,7 +34,7 @@ module CommandProviders =
 
     let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates) =
         match (result {
-                let! manufacturer = Manufacturer.create manufacturerString true
+                let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString,true)
                 let! systemFamily = SystemFamily.create systemFamilyString true
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true

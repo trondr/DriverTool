@@ -40,4 +40,8 @@ module ManufacturerTypes =
 
     let manufacturerStringToManufacturer (manufacturer:string,defaultToLocal) =
         manufacturerStringToManufacturerBase (getWmiManufacturerForCurrentSystem,manufacturer,defaultToLocal)
-        
+    
+    let manufacturerToName (manufacturer:Manufacturer2) =
+        match manufacturer with
+        |Dell name -> name
+        |Lenovo name -> name
