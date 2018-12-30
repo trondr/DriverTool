@@ -2,6 +2,7 @@
 
 open System
 open DriverTool.SystemInfo
+open DriverTool.ManufacturerTypes
 
 module Updates =
     let getUpdatesFunc (manufacturer:Manufacturer,baseOnLocallyInstalledUpdates:bool) = 
@@ -15,6 +16,17 @@ module Updates =
             |true -> LenovoUpdates.getLocalUpdates
             |false -> LenovoUpdates.getRemoteUpdates
         |_ -> raise(new Exception("Manufacturer not supported: " + manufacturer.Value.ToString()))
+
+    let getUpdates (manufacturer:Manufacturer2,baseOnLocallyInstalledUpdates:bool) =
+        match manufacturer with
+        |Manufacturer2.Dell _ -> 
+            match baseOnLocallyInstalledUpdates with
+            |true -> DellUpdates.getLocalUpdates
+            |false -> DellUpdates.getRemoteUpdates
+        |Manufacturer2.Lenovo _ ->        
+            match baseOnLocallyInstalledUpdates with
+            |true -> LenovoUpdates.getLocalUpdates
+            |false -> LenovoUpdates.getRemoteUpdates
 
     let getSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer.Value with

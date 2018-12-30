@@ -3,19 +3,20 @@ open F
 
 module CommandProviders =
 
-    let exportRemoteUdateInfoBase (modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
+    let exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite) = 
         match (result {
+                let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString, true)
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! csvFilePath = Path.create csvFilePathString
-                let result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates modelCode operatingSystemCode csvFilePath overwrite
+                let result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates manufacturer modelCode operatingSystemCode csvFilePath overwrite
                 return result
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let exportRemoteUdateInfo (modelCodeString, operatingSystemString, csvFilePathString, overwrite) =
-        Logging.genericLogger Logging.LogLevel.Debug exportRemoteUdateInfoBase (modelCodeString, operatingSystemString, csvFilePathString, overwrite)
+    let exportRemoteUdateInfo (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite) =
+        Logging.genericLogger Logging.LogLevel.Debug exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite)
     
 
     let exportLocalUdateInfoBase (csvFilePathString, overwrite) = 
