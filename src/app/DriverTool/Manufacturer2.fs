@@ -16,15 +16,28 @@ module ManufacturerTypes =
     
     let getValidManufacturersString () =
         String.Join ("|",getValidManufacturers ())
-
+    
+    let getWmiManufacturerForCurrentSystem () =
+        (WmiHelper.getWmiProperty "Win32_ComputerSystem" "Manufacturer")
+    
     type InvalidManufacturerException (msg:string) =
         inherit Exception((sprintf "%s %s" msg (sprintf "Supported manufacturers: %s." (getValidManufacturersString()) )))
 
-    let manufacturerStringToManufacturerUnsafe (manufacturer:string) =
+    type WmiManufacturerValueFunc = unit -> Result<string,Exception>
+    
+    let rec manufacturerStringToManufacturerUnsafeBase (wmiManufacturerValueFunc:WmiManufacturerValueFunc, manufacturer:string, defaultToLocal) =
         match manufacturer with
+        |manufacturerName when (String.IsNullOrWhiteSpace(manufacturerName) && defaultToLocal) -> 
+            match(wmiManufacturerValueFunc()) with
+            |Ok m -> manufacturerStringToManufacturerUnsafeBase (wmiManufacturerValueFunc,m, false)
+            |Error ex -> raise ex
         |manufacturerName when Regex.Match(manufacturerName,"Dell",RegexOptions.IgnoreCase).Success -> Manufacturer2.Dell "Dell"
         |manufacturerName when Regex.Match(manufacturerName,"Lenovo",RegexOptions.IgnoreCase).Success -> Manufacturer2.Lenovo "Lenovo"
         |_ -> raise (new InvalidManufacturerException(sprintf "Manufacturer '%s' is not supported." manufacturer))
-    
-    let manufacturerStringToManufacturer (manufacturer:string) =
-        tryCatch manufacturerStringToManufacturerUnsafe manufacturer
+     
+    let manufacturerStringToManufacturerBase (wmiManufacturerValueFunc:WmiManufacturerValueFunc,manufacturer:string,defaultToLocal) =
+        tryCatch manufacturerStringToManufacturerUnsafeBase (wmiManufacturerValueFunc,manufacturer,defaultToLocal)
+
+    let manufacturerStringToManufacturer (manufacturer:string,defaultToLocal) =
+        manufacturerStringToManufacturerBase (getWmiManufacturerForCurrentSystem,manufacturer,defaultToLocal)
+        
