@@ -69,7 +69,7 @@
     <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe.config" />
     <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe" />
-	<EmbeddedResource Include="PackageTemplate\Drivers\FSharp.Core.dll" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\FSharp.Core.dll" />
     <EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
     <EmbeddedResource Include="Tools\7Zip\7za.exe" />
     <EmbeddedResource Include="Tools\7Zip\7zip.chm" />
@@ -132,6 +132,7 @@
     <Compile Include="WebParsing.fs" />
     <Compile Include="LenovoCatalog.fs" />
     <Compile Include="LenovoUpdates.fs" />
+    <Compile Include="Updates.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="ExportLocalUpdates.fs" />
     <Compile Include="EmbeddedResouce.fs" />
