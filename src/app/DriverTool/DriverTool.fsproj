@@ -53,7 +53,7 @@
     <EmbeddedResource Include="Credits\02. Log4Net Credit.xml" />
     <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />
     <EmbeddedResource Include="Credits\04. CsvHelper Credit.xml" />
-    <EmbeddedResource Include="Credits\05.  Log4NetCMTrace Credit.xml" />
+    <EmbeddedResource Include="Credits\05. Log4NetCMTrace Credit.xml" />
     <EmbeddedResource Include="License\00. DriverTool License.xml" />
     <EmbeddedResource Include="License\01. NCmLiner License.xml" />
     <EmbeddedResource Include="License\02. Log4Net License.xml" />
