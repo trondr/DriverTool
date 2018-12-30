@@ -120,7 +120,6 @@
     <Compile Include="OperatingSystemOperations.fs" />
     <Compile Include="Manufacturer2.fs" />
     <Compile Include="SystemInfo.fs" />
-    <Compile Include="Manufacturer.fs" />
     <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
