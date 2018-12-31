@@ -9,6 +9,8 @@ module LenovoCatalogTests=
     open DriverTool.LenovoUpdates
     open DriverTool.PackageXml
     open Microsoft.FSharp.Core
+    open DriverTool
+    open DriverTool.Web
 
     [<Test>]
     let getSccmPackagesInfoTest () =        
