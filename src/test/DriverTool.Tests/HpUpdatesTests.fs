@@ -10,7 +10,7 @@ module HpUpdatesTests =
     open DriverTool
     
     [<Test>]
-    [<TestCase("WIN10X64","HP EliteBook 830 G5")>]
+    [<TestCase("WIN10X64","83B3")>]
     let downloadSccmDriverPackageTest (operatingSystemCodeString:string,modelCodeString:string) =
         match(result
                 {

@@ -19,7 +19,7 @@ module ManufacturerTypes =
         String.Join ("|",getValidManufacturers ())
     
     let getWmiManufacturerForCurrentSystem () =
-        (WmiHelper.getWmiProperty "Win32_ComputerSystem" "Manufacturer")
+        (WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Manufacturer")
     
     type InvalidManufacturerException (msg:string) =
         inherit Exception((sprintf "%s %s" msg (sprintf "Supported manufacturers: %s." (getValidManufacturersString()) )))

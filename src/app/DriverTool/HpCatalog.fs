@@ -132,8 +132,8 @@ module HpCatalog =
         let osBuild = OperatingSystem.getOsBuildFromName hpOsName
         (osCode,osBuild)
 
-    let isSupportedForModel (systemName, modelCode:ModelCode)=
-        Regex.Match(systemName,modelCode.Value,RegexOptions.IgnoreCase).Success
+    let isSupportedForModel (systemId, modelCode:ModelCode)=
+        modelCode.Value = systemId
 
     let isSupportedForOperatingSystem(hpOsName,operatingSystemCode:OperatingSystemCode) =
         let hpOsNameConverted = operatingSystemCodeToHpOsName operatingSystemCode
@@ -165,7 +165,7 @@ module HpCatalog =
             let! productOSDriverPacks = getProductOSDriverPacks existingDriverPackageCatalogXmlFilePath
             let sccmDriverPackage =
                 productOSDriverPacks
-                |>Array.filter(fun osdp -> isSupportedForModel (osdp.SystemName, modelCode) )
+                |>Array.filter(fun osdp -> isSupportedForModel (osdp.SystemId, modelCode) )
                 |>Array.filter(fun osdp -> isSupportedForOperatingSystem (osdp.OSName,operatingSystemCode))
                 |>Array.tryFind(fun osdp -> true)
             let! sccmPackageInfo =
