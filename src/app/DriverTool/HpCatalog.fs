@@ -180,3 +180,7 @@ module HpCatalog =
                 |None -> Result.Error (new Exception(sprintf "Failed to find HP sccm driver package for model '%s' and operating system '%s' " modelCode.Value operatingSystemCode.Value))
             return sccmPackageInfo
         }
+
+    
+    
+    
