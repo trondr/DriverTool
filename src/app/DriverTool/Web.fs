@@ -94,3 +94,7 @@ module Web =
             let! downloadedInfo = downloadIfDifferent (downloadInfo,false)            
             return downloadedInfo
         }
+
+    let getFileNameFromUrl (url:string) =
+        let uri = new Uri(url)        
+        uri.Segments.[uri.Segments.Length-1]

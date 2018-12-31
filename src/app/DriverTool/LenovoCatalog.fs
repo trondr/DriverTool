@@ -49,10 +49,8 @@ module LenovoCatalog =
     
     open F    
     open System
-              
-    let getFileNameFromUrl (url:string) =
-        let uri = new Uri(url)        
-        uri.Segments.[uri.Segments.Length-1]
+    open Web          
+    
 
     let getReleaseDateFromUrlBase (url:string)  =
         let fileName = (getFileNameFromUrl url)
@@ -140,10 +138,7 @@ module LenovoCatalog =
         | "Windows 7 (32-bit)" -> "WIN7X86"
         | _ -> (raise (new Exception("Unknown OS name: " + osName) ))
 
-    let getOsBuildFromName name = 
-        match name with
-        |Regex @"(\d{4})" [osBuild] -> osBuild
-        | _ -> "*"
+    open DriverTool.OperatingSystem
 
     let getDownloadLinkInfo (ulNode:HtmlNode) =
         let liElements = ulNode.Elements() |> Seq.toArray
