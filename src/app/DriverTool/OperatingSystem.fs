@@ -228,3 +228,8 @@ module OperatingSystem =
         
     let isValidOsShortName osShortName =
         getValidOsShortNames |> Seq.exists (fun o -> o = osShortName)
+    
+    let getOsBuildFromName name = 
+        match name with
+        |Regex @"(\d{4})" [osBuild] -> osBuild
+        | _ -> "*"
