@@ -245,13 +245,13 @@ module LenovoCatalog =
     
     let getOsBuild = 
         let osVersion = 
-            match (WmiHelper.getWmiProperty "Win32_OperatingSystem" "Version") with
+            match (WmiHelper.getWmiPropertyDefault "Win32_OperatingSystem" "Version") with
             |Ok osv -> osv
             |Error ex -> raise (new System.Exception("Failed to get OS Build for current system due to: " + ex.Message))        
         getOsBuildBase osVersion
     
     let getModelName = 
-        match (WmiHelper.getWmiProperty "Win32_ComputerSystemProduct" "Version") with
+        match (WmiHelper.getWmiPropertyDefault "Win32_ComputerSystemProduct" "Version") with
         |Ok n -> n
         |Error ex -> raise (new System.Exception("Failed to model name for current system due to: " + ex.Message))        
 

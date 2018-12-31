@@ -5,7 +5,7 @@ module OperatingSystem =
     
     let getOperatingSystemSku : Result<UInt32,Exception> =
         let operatingSystemSku = 
-            WmiHelper.getWmiProperty "Win32_OperatingSystem" "OperatingSystemSKU"
+            WmiHelper.getWmiPropertyDefault "Win32_OperatingSystem" "OperatingSystemSKU"
         operatingSystemSku
     
     let isServerBase (operatingSystemSku : UInt32) : bool  =
@@ -203,7 +203,7 @@ module OperatingSystem =
 
     let getOsVersion =
         let osVersion = 
-            WmiHelper.getWmiProperty "Win32_OperatingSystem" "Version"
+            WmiHelper.getWmiPropertyDefault "Win32_OperatingSystem" "Version"
         match osVersion with
         |Ok osVer -> versionToMajorMinorVersion osVer
         |Error ex -> raise (new Exception("Failed to get os version due to: " + ex.Message))

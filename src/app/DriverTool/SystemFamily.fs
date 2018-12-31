@@ -14,7 +14,7 @@ type SystemFamily private (systemFamily : string) =
     
     static member createWithContinuation success failure (systemFamily:string) (defaultToLocal:bool) : Result<SystemFamily, Exception> =
         let getSystemFamilyForLocalSystem : Result<string, Exception> = 
-            let localSystemFamilyResult = WmiHelper.getWmiProperty "Win32_ComputerSystem" "SystemFamily"
+            let localSystemFamilyResult = WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "SystemFamily"
             localSystemFamilyResult
         
         match systemFamily with
