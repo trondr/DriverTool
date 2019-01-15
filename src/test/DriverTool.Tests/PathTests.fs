@@ -3,6 +3,7 @@ open NUnit.Framework
 open DriverTool
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module PathTests  =
     [<Test>]
     [<TestCase(null,"Empty string",false)>]

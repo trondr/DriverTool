@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProductName>CsvHelper</ProductName>
+  <ProductHome>https://github.com/JoshClose/CsvHelper</ProductHome>
+  <CreditText>DriverTool uses CsvHelper for export and import of data to and from csv file.</CreditText>
+</CreditInfo>

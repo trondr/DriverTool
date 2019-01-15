@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProductName>Nunit</ProductName>
+  <ProductHome>http://nunit.org/</ProductHome>
+  <CreditText>DriverTool uses Nunit for faciliation of unit testing.</CreditText>
+</CreditInfo>

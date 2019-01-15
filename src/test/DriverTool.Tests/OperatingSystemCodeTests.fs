@@ -4,10 +4,11 @@ open DriverTool
 open System
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module OperatingSystemCodeTests  =
     [<Test>]
     let OperatingSystemCodeTest() =
-        let operatingSystemCodeResult = OperatingSystemCode.create "Win10" false
+        let operatingSystemCodeResult = OperatingSystemCode.create "WIN10X64" false
         match operatingSystemCodeResult with
         |Ok operatingSystemCode -> Assert.IsFalse((String.IsNullOrWhiteSpace(operatingSystemCode.Value)), sprintf "Operating system code: %s" operatingSystemCode.Value)
         |Error ex -> Assert.Fail(sprintf "Did not expect to fail. Error: %s" ex.Message)
@@ -33,5 +34,11 @@ module OperatingSystemCodeTests  =
         |Ok operatingSystemCode -> Assert.IsFalse((String.IsNullOrWhiteSpace(operatingSystemCode.Value)), sprintf "Operating system code: %s" operatingSystemCode.Value)
         |Error ex -> Assert.Fail(ex.Message)
 
-
+    [<Test>]
+    let OperatingSytemCode_DifferentCase_Win10X64 () =
+        let operatingSystemCodeResult = OperatingSystemCode.create "Win10X64" true
+        match operatingSystemCodeResult with
+        |Ok os -> Assert.Fail(os.Value)
+        |Error ex -> Assert.IsTrue(true,"Expected to fail with: " + ex.Message)        
+        
 

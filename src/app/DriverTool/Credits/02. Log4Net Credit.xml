@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProductName>Log4Net</ProductName>
+  <ProductHome>http://logging.apache.org/log4net/</ProductHome>
+  <CreditText>DriverTool uses log4net to provide industry standard logging.</CreditText>
+</CreditInfo>

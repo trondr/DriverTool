@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DriverTool": {
-      "commandName": "Project",
-      "commandLineArgs": "Help"
-    }
-  }
-}

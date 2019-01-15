@@ -1,67 +1,252 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>19822aea-c088-455d-b5a5-4738a3a9dba7</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>DriverTool</RootNamespace>
+    <AssemblyName>DriverTool</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <UseStandardResourceNames>true</UseStandardResourceNames>
+    <Name>DriverTool2</Name>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>NU1701</NoWarn>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
+    <Prefer32Bit>true</Prefer32Bit>
+    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /manufacturer="LENOVO" /baseOnLocallyInstalledUpdates="True"</StartArguments>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>NU1701</NoWarn>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(FSharpTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets') ">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <EmbeddedResource Include="Data\Lenovo\n1cww12w_2_.xml" />
+    <EmbeddedResource Include="Data\Lenovo\20FA_Win7.xml" />
+    <EmbeddedResource Include="Data\Lenovo\catalog.xml" />
+    <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
+    <EmbeddedResource Include="Credits\02. Log4Net Credit.xml" />
+    <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />
+    <EmbeddedResource Include="Credits\04. CsvHelper Credit.xml" />
+    <EmbeddedResource Include="Credits\05. Log4NetCMTrace Credit.xml" />
+    <EmbeddedResource Include="License\00. DriverTool License.xml" />
+    <EmbeddedResource Include="License\01. NCmLiner License.xml" />
+    <EmbeddedResource Include="License\02. Log4Net License.xml" />
+    <EmbeddedResource Include="License\03. NUnit License.xml" />
+    <EmbeddedResource Include="License\04. CsvHelper License.xml" />
+    <EmbeddedResource Include="License\05. Log4NetCMTrace License.xml" />
+    <EmbeddedResource Include="PackageTemplate\Install.xml" />
+    <EmbeddedResource Include="PackageTemplate\Install.cmd" />
+    <EmbeddedResource Include="PackageTemplate\UnInstall.cmd" />
+    <EmbeddedResource Include="PackageTemplate\_Compress.cmd" />
+    <EmbeddedResource Include="PackageTemplate\_Decompress.cmd" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe.config" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe.config" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\FSharp.Core.dll" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
+    <EmbeddedResource Include="Tools\7Zip\7za.exe" />
+    <EmbeddedResource Include="Tools\7Zip\7zip.chm" />
+    <EmbeddedResource Include="Tools\7Zip\License.txt" />
+    <EmbeddedResource Include="Tools\7Zip\readme.txt" />
+    <EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
+    <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
+    <EmbeddedResource Include="Tools\CorFlags\x86\CorFlags.exe" />
+    <EmbeddedResource Include="Tools\CorFlags\x64\CorFlags.exe" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
+    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
+    <EmbeddedResource Include="Libs\Dynamitey.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Core.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.Xsd.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
+    <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
+    <EmbeddedResource Include="Libs\log4net.dll" />
+    <EmbeddedResource Include="Libs\NCmdLiner.dll" />
+    <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Libs\SharpYaml.dll" />
+    <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
+    <Compile Include="AssemblyInfo.fs" />
+    <None Include="App.config" />
+    <Content Include="packages.config" />
+    <None Include="Script.fsx" />
+    <Compile Include="Configuration.fs" />
+    <Compile Include="F0.fs" />
+    <Compile Include="Logging.fs" />
     <Compile Include="F.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="Path.fs" />
+    <Compile Include="DirectoryOperations.fs" />
+    <Compile Include="PathOperations.fs" />
     <Compile Include="FileOperations.fs" />
+    <Compile Include="ExistingPath.fs" />
+    <Compile Include="CsvOperations.fs" />
+    <Compile Include="Environment.fs" />
+    <Compile Include="XmlToolKit.fs" />
+    <Compile Include="Cryptography.fs" />
+    <Compile Include="Checksum.fs" />
+    <Compile Include="ProcessOperations.fs" />
+    <Compile Include="RegistryOperations.fs" />
     <Compile Include="WmiHelper.fs" />
+    <Compile Include="OperatingSystem.fs" />
+    <Compile Include="OperatingSystemOperations.fs" />
+    <Compile Include="Manufacturer2.fs" />
+    <Compile Include="SystemInfo.fs" />
+    <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
-    <Compile Include="LenovoSystemUpdate.fs" />
+    <Compile Include="LenovoSystemUpdateCheck.fs" />
+    <Compile Include="Web.fs" />
+    <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
+    <Compile Include="HpCatalog.fs" />
+    <Compile Include="HpUpdates.fs" />
+    <Compile Include="DellUpdates.fs" />
+    <Compile Include="DellCommandUpdate.fs" />
+    <Compile Include="LenovoSystemUpdate.fs" />
+    <Compile Include="WebParsing.fs" />
+    <Compile Include="LenovoCatalog.fs" />
+    <Compile Include="LenovoUpdates.fs" />
+    <Compile Include="Updates.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
-    <EmbeddedResource Include="Credits\01. Castle Windsor Credit.xml" />
-    <EmbeddedResource Include="Credits\02. NCmdLiner Credit.xml" />
-    <EmbeddedResource Include="Credits\03. NCmdLiner SolutionTemplates Credit.xml" />
-    <EmbeddedResource Include="Credits\04. Common.Logging Credit.xml" />
-    <EmbeddedResource Include="Credits\05. Log4Net Credit.xml" />
-    <EmbeddedResource Include="Credits\06. ContainerInstallerFactory Credit.xml" />
-    <EmbeddedResource Include="Credits\07. AutoMapper Credit.xml" />
-    <EmbeddedResource Include="Credits\08. MvvmLightLibs Credit.xml" />
-    <EmbeddedResource Include="Credits\09. Json.NET Credit.xml" />
-    <EmbeddedResource Include="Credits\10. RhinoMocks Credit.xml" />
-    <EmbeddedResource Include="Credits\11. Nunit Credit.xml" />
-    <EmbeddedResource Include="Credits\12. CsvHelper Credit.xml" />
-    <EmbeddedResource Include="License\00. trondr.DriverUtil License.xml" />
-    <EmbeddedResource Include="License\01. Castle Project License.xml" />
-    <EmbeddedResource Include="License\02. NCmLiner License.xml" />
-    <EmbeddedResource Include="License\03. NCmLiner Solution Templates License.xml" />
-    <EmbeddedResource Include="License\04. Common.Logging License.xml" />
-    <EmbeddedResource Include="License\05. Log4Net License.xml" />
-    <EmbeddedResource Include="License\07. AutoMapper License.xml" />
-    <EmbeddedResource Include="License\08. MvvmLightLibs Licencse.xml" />
-    <EmbeddedResource Include="License\09. Json.NET License.xml" />
-    <EmbeddedResource Include="License\10. RhinoMocks License.xml" />
-    <EmbeddedResource Include="License\11. NUnit License.xml" />
-    <EmbeddedResource Include="License\12. CsvHelper License.xml" />
+    <Compile Include="ExportLocalUpdates.fs" />
+    <Compile Include="EmbeddedResouce.fs" />
+    <Compile Include="PackageDefinition.fs" />
+    <Compile Include="CorFlags.fs" />
+    <Compile Include="PackageTemplate.fs" />
+    <Compile Include="Requirements.fs" />
+    <Compile Include="CreateDriverPackage.fs" />
+    <Compile Include="BitLockerOperations.fs" />
+    <Compile Include="Robocopy.fs" />
+    <Compile Include="Compression.fs" />
+    <Compile Include="InstallDriverPackage.fs" />
+    <Compile Include="CompressDriverPackage.fs" />
     <Compile Include="CommandProviders.fs" />
     <Compile Include="CommandDefinitions.fs" />
+    <Compile Include="AssemblyResolver.fs" />
+    <Compile Include="RunCommand.fs" />
     <Compile Include="Program.fs" />
+    <Content Include="Debug.txt" />
+    <COMReference Include="Microsoft Internet Controls">
+      <Guid>{eab22ac0-30c1-11cf-a7eb-0000c05bae0b}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <Isolated>False</Isolated>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Private>True</Private>
+    </COMReference>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="7.1.1" />
-    <PackageReference Include="FSharp.Data" Version="2.4.6" />
-    <PackageReference Include="NCmdLiner" Version="2.0.18110.340" />
-    <PackageReference Include="System.Management" Version="4.5.0" />
+    <Reference Include="Client">
+      <HintPath>..\..\..\packages_manual\Lenovo\Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Common">
+      <HintPath>..\..\..\packages_manual\Lenovo\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Core">
+      <HintPath>..\..\..\packages_manual\Dell\Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\..\..\packages\CsvHelper.12.1.1\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dynamitey">
+      <HintPath>..\..\..\packages\Dynamitey.2.0.9.136\lib\net40\Dynamitey.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Collections.ParallelSeq">
+      <HintPath>..\..\..\packages\FSharp.Collections.ParallelSeq.1.1.2\lib\net45\FSharp.Collections.ParallelSeq.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Configuration">
+      <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\..\..\packages\FSharp.Core.4.5.4\lib\net45\FSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data">
+      <HintPath>..\..\..\packages\FSharp.Data.3.0.0\lib\net45\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.Xsd">
+      <HintPath>..\..\..\packages\FSharp.Data.Xsd.1.0.2\lib\net45\FSharp.Data.Xsd.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Interop.Dynamic">
+      <HintPath>..\..\..\packages\FSharp.Interop.Dynamic.4.0.3.130\lib\net40\FSharp.Interop.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="mscorlib" />
+    <Reference Include="NCmdLiner">
+      <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net452\NCmdLiner.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpYaml">
+      <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\SharpYaml.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj">
+      <Name>DriverTool.CSharpLib</Name>
+      <Project>{09a4cb06-46f7-4b78-b972-686516b67169}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.5.2" />
+  <ItemGroup Condition="'$(NCrunch)' == '1'">
+    <Reference Include="FSharp.Data.Xsd.DesignTime">
+      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data.xsd\1.0.2\lib\net45\FSharp.Data.Xsd.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.DesignTime">
+      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+    </Reference>
   </ItemGroup>
-
+  <PropertyGroup>
+    <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
+exit /b 0</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>
