@@ -13,7 +13,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyCompany("<github.com/trondr>")>]
 [<assembly: AssemblyCopyright("Copyright © <github.com/trondr> 2018-2019")>]
 [<assembly: AssemblyTrademark("")>]
-[<assembly: AssemblyDescription("DriverTool downloads software and drivers for a specific PC model and creates a driver packages that can be imported into SCCM as a package or application.")>]
+[<assembly: AssemblyDescription("Downloads drivers and software for a specific PC model and creates a driver package that can be imported into SCCM as a package or application.")>]
 #if DEBUG
 [<assembly: AssemblyConfiguration("Debug")>]
 #else
