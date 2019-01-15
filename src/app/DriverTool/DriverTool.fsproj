@@ -176,7 +176,7 @@
       <HintPath>..\..\..\packages_manual\Dell\Core.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper">
-      <HintPath>..\..\..\packages\CsvHelper.12.1.0\lib\net45\CsvHelper.dll</HintPath>
+      <HintPath>..\..\..\packages\CsvHelper.12.1.1\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="Dynamitey">
       <HintPath>..\..\..\packages\Dynamitey.2.0.9.136\lib\net40\Dynamitey.dll</HintPath>
