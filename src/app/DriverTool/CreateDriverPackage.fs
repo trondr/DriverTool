@@ -272,9 +272,10 @@ module CreateDriverPackage =
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
-                
+                                
                 let getUpdates = DriverTool.Updates.getUpdates (manufacturer,baseOnLocallyInstalledUpdates) 
 
+                logger.Info("Getting update infos...")
                 let! packageInfos = getUpdates (model, operatingSystem, true, logDirectory)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
@@ -282,11 +283,13 @@ module CreateDriverPackage =
                 logger.Info("Downloading software and drivers...")
                 let! updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
-                                
+                
+                logger.Info("Getting SCCM package info...")
                 let getSccmPackage = DriverTool.Updates.getSccmPackageFunc manufacturer
                 let! sccmPackage = getSccmPackage (model,operatingSystem)
                 sccmPackage |> Logging.logToConsole |> ignore
                 
+                logger.Info("Downloading SCCM package...")
                 let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc manufacturer
                 let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.getDownloadCacheDirectoryPath), sccmPackage)
                 
