@@ -133,7 +133,11 @@ module RegistryOperations =
         |Some regKey ->
             getRegkeyValueFunc (regKey, valueName)
         |None -> None
-    
+    /// <summary>
+    /// Get reg value.
+    /// </summary>
+    /// <param name="regKeyPath">Example: "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion"</param>
+    /// <param name="valueName">Example: "ReleaseId"</param>
     let getRegValue regKeyPath valueName =
         getRegValueBase openRegKeyOptional getRegkeyValue regKeyPath valueName
 

@@ -195,3 +195,22 @@ module OperatingSystemTests =
     let isValidOsShortName (osShortName,expexted) =
         let actual = OperatingSystem.isValidOsShortName osShortName
         Assert.AreEqual(expexted,actual,osShortName)
+
+
+    [<Test>]
+    [<TestCase("1809","1809")>]
+    [<TestCase(null,"*")>]
+    let getOsBuildForCurrentSystemBaseTests (releaseIdFromRegistry:obj,expected:string) =
+        
+        let getRegValueStub (keyPath:string) (valueName:string) : option<obj> =
+            Assert.AreEqual("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",keyPath,"keyPath not expected.")
+            Assert.AreEqual("ReleaseId",valueName,"valueName not expected.")
+            
+            if(releaseIdFromRegistry = null) then
+                None
+            else
+                Some releaseIdFromRegistry
+
+        let actual = OperatingSystem.getOsBuildForCurrentSystemBase getRegValueStub
+
+        Assert.AreEqual(expected, actual)

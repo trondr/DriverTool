@@ -233,3 +233,14 @@ module OperatingSystem =
         match name with
         |Regex @"(\d{4})" [osBuild] -> osBuild
         | _ -> "*"
+
+    let getOsBuildForCurrentSystemBase (getRegValueFunc:(string -> string -> option<obj>)) =
+        let relaseId = getRegValueFunc "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion" "ReleaseId"
+        relaseId|> Option.fold (fun _ r -> r.ToString()) "*"
+
+    /// <summary>
+    /// Get os build (relase id) for current system from registry. If release id is not found, return *. 
+    /// Release id is typically 1709, 1803, 1809, 1903 etc defining the semi anual release of Windows 10
+    /// </summary>
+    let getOsBuildForCurrentSystem =
+        getOsBuildForCurrentSystemBase RegistryOperations.getRegValue        
