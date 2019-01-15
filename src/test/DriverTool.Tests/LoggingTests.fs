@@ -5,6 +5,7 @@ open Logging
 open System
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module LoggingTests =    
     [<Test>]    
     let getDurationStringTestInMilliseconds () =

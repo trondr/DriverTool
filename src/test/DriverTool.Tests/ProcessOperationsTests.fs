@@ -4,6 +4,7 @@ open NUnit.Framework
 open DriverTool
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module ProcessOperationsTests =
     open System.Security.Principal
     

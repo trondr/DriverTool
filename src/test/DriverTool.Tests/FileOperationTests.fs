@@ -6,6 +6,7 @@ open DriverTool
 open FileOperations
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module FileOperationTests =
 
     type TemporaryFile() =

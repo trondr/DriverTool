@@ -5,6 +5,7 @@ open DriverTool.InstallDriverPackage
 open DriverTool.InstallXml
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module InstallDriverPackageTests =
     
     [<Test>]

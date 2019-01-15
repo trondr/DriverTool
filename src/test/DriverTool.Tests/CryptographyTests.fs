@@ -3,6 +3,7 @@
     open NUnit.Framework
 
     [<TestFixture>]
+    [<Category(TestCategory.UnitTests)>]
     module CryptographyTests =
         open DriverTool
         open DriverTool

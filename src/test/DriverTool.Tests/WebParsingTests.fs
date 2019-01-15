@@ -4,6 +4,7 @@ open System
 open DriverTool
 
 [<TestFixture>]
+[<Category(TestCategory.IntegrationTests)>]
 module WebParsingTests  =    
    
     open F    

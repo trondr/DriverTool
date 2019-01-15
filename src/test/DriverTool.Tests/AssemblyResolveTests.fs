@@ -3,6 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module AssemblyResolveTests =    
     open DriverTool.Tests.Init
     open DriverTool.AssemblyResolver

@@ -3,6 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.IntegrationTests)>]
 module LenovoCatalogTests=
     
     open DriverTool.LenovoCatalog
@@ -12,7 +13,7 @@ module LenovoCatalogTests=
     open DriverTool
     open DriverTool.Web
 
-    [<Test>]
+    [<Test>]    
     let getSccmPackagesInfoTest () =        
         let actual = getSccmPackageInfos
         match actual with
@@ -25,7 +26,7 @@ module LenovoCatalogTests=
     open System
     open DriverTool
 
-    [<Test>]
+    [<Test>]    
     [<Apartment(ApartmentState.STA)>]
     let getSccmPackageDownloadInfosTest () =
         let sccmPackageInfos = getSccmPackageInfos
@@ -51,7 +52,7 @@ module LenovoCatalogTests=
                 Assert.IsTrue(ex.Message.Contains("Sccm package not found"))                
         Assert.IsTrue(true)
       
-    [<Test>]
+    [<Test>]    
     let getUniqueLenovoOperatingSystemTest () =
         let result = 
             result
@@ -72,7 +73,7 @@ module LenovoCatalogTests=
         Assert.IsTrue(true)
 
     [<Test>]
-    
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase("WIN7X64","win764")>]    
     [<TestCase("WIN7X86","win732")>]
 
@@ -112,7 +113,7 @@ module LenovoCatalogTests=
                                            ))|>ignore
         Assert.IsTrue(true)
 
-    [<Test>]
+    [<Test>]    
     [<TestCase("ThinkPad P50","win10","*","P50","ThinkPad P50","win10","*")>]
     let findSccmPackageInfoByNameAndOsAndBuildTest (name,os,osbuild,expectedmodel,expectedname,expectedos,expectedosbuild) =
         result{
@@ -142,7 +143,7 @@ module LenovoCatalogTests=
             Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
            
-    [<Test>]
+    [<Test>]    
     let findSccmPackageInfoByModelCode4AndOsAndBuildTest () =
         result{
                 let! products = getSccmPackageInfos
@@ -164,12 +165,14 @@ module LenovoCatalogTests=
         } |> ignore
         
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase("https://somedomain.com/somefolder/file.txt","file.txt")>]
     let getFileNameFromUrlTest (url,expected) =     
         let actual = getFileNameFromUrl url
         Assert.AreEqual(expected, actual,"File name not expected")
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase("https://somedomain.com/somefolder/file_201806.txt","2018-06-01")>]
     [<TestCase("https://somedomain.com/somefolder/file_201806.exe","2018-06-01")>]
     [<TestCase("https://somedomain.com/somefolder/file_201806.exe2232","2018-06-01")>]
@@ -212,7 +215,7 @@ module LenovoCatalogTests=
     open DriverTool.PathOperations
 
 
-    [<Test>] 
+    [<Test>]     
     [<Apartment(ApartmentState.STA)>]
     let getDownloadLinksFromWebPageContentTest () =
 

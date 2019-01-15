@@ -4,6 +4,7 @@ open DriverTool
 open System
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module ModelCodeTests  =
     [<Test>]
     let ModuleCodeTest() =

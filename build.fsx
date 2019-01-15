@@ -3,6 +3,7 @@ nuget Fake.IO.FileSystem
 nuget Fake.DotNet.MSBuild
 nuget Fake.DotNet.Testing.Nunit
 nuget Fake.Testing.Common
+nuget Fake.IO.Zip
 nuget Fake.Core.Target //"
 #load "./.fake/build.fsx/intellisense.fsx"
 
@@ -52,29 +53,21 @@ Target.create "Test" (fun _ ->
     Trace.trace "Testing app..."    
     !! ("build/test/**/*.Tests.dll")    
     |> NUnit3.run (fun p ->
-        {p with ToolPath = nunitConsoleRunner})            
+        {p with ToolPath = nunitConsoleRunner;Where = "cat==UnitTests";TraceLevel=NUnit3.NUnit3TraceLevel.Verbose})
 )
-
-let runDotNetPublish projectFilePath outputPath = 
-    let result =
-        Process.execWithResult (fun info ->
-            { info with
-                FileName = "dotnet.exe"
-                WorkingDirectory = "."
-                Arguments = "publish --framework netcoreapp2.0 --runtime win-x64 --output " + outputPath + " " + projectFilePath
-            }) (System.TimeSpan.FromMinutes 15.)
-    result
 
 Target.create "Publish" (fun _ ->
     Trace.trace "Publishing app..."
-    let projectFilePaths = !! ("src/app/**/*.fsproj")    
-    for projectFilePath in projectFilePaths do
-        let result = runDotNetPublish projectFilePath artifactAppFolder
-        printfn "'dotnet.exe publish' exit code: %d" result.ExitCode
-        for message in result.Messages do
-            printfn "   %s" message
-        for error in result.Errors do
-            failwith (sprintf "%s" error)        
+    let files = 
+        [|
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.exe")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.pdb")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.exe.config")
+            System.IO.Path.Combine(buildAppFolder,"FSharp.Core.dll")
+        |]
+    let zipFile = System.IO.Path.Combine(artifactFolder,"DriverTool.1.0.0.0.zip")
+    files
+    |> Fake.IO.Zip.createZip buildAppFolder zipFile "DriverTool 1.0.0.0" 9 false 
 )
 
 Target.create "Default" (fun _ ->
