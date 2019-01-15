@@ -229,26 +229,7 @@ module LenovoCatalog =
     
     type ModelInfo = { Name:string; Os:string ; OsBuild: string}
     
-    let getOsBuildBase osVersion =
-        match osVersion with
-        | "10.0.14393" -> "1607"
-        | "10.0.15063" -> "1703"
-        | "10.0.16299" -> "1709"
-        | "10.0.17134" -> "1803"
-        | "10.0.17763" -> "1809"
-        | "10.0.18290" -> "1903"
-        | _ -> 
-            logger.WarnFormat("Unsupported OS Build for Windows version: {0}. Returning OsBuild=\"*\".", osVersion)
-            "*"
-        
     open DriverTool
-    
-    let getOsBuild = 
-        let osVersion = 
-            match (WmiHelper.getWmiPropertyDefault "Win32_OperatingSystem" "Version") with
-            |Ok osv -> osv
-            |Error ex -> raise (new System.Exception("Failed to get OS Build for current system due to: " + ex.Message))        
-        getOsBuildBase osVersion
     
     let getModelName = 
         match (WmiHelper.getWmiPropertyDefault "Win32_ComputerSystemProduct" "Version") with
@@ -258,7 +239,7 @@ module LenovoCatalog =
     let getModelInfo =
         let name = getModelName
         let os = osShortNameToLenovoOs (OperatingSystem.getOsShortName)
-        let osBuild = getOsBuild
+        let osBuild = getOsBuildForCurrentSystem
         {
             Name = name;
             Os = os;

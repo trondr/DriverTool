@@ -315,7 +315,7 @@ module LenovoUpdates =
         result
             {
                 let! products = getSccmPackageInfos
-                let product = findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystemCode.Value) getOsBuild products
+                let product = findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
                 let osBuild = product.Value.OsBuild.Value
                 let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
                 return sccmPackage
