@@ -199,7 +199,7 @@ module LenovoCatalog =
                         )
         infos
 
-    let getDownloadLinksFromWebPageContent (content:string)  = //:seq<SccmPackageInfo>
+    let getDownloadLinksFromWebPageContent (content:string)  = 
         use htmlContentStream = stringToStream content
         let htmlDocument = HtmlDocument.Load(htmlContentStream)
         let downloadLinks =
@@ -217,12 +217,7 @@ module LenovoCatalog =
                                 |>Seq.filter (fun ul-> 
                                                     (ul.Elements() |> Seq.exists (fun li -> li.InnerText().Contains("EXE") || li.InnerText().Contains("TXT README")))
                                                 )
-                                |> getSccmPackageInfoFromUlNodes
-                                //|> Seq.map (fun ul ->                                 
-                                //        //System.Console.WriteLine(ul.ToString())
-                                //        System.Console.WriteLine((getDownloadLinkInfo ul).ToString())
-                                //        getSccmPackageInfoFromContent (ul.ToString())
-                                //    )                                
+                                |> getSccmPackageInfoFromUlNodes                                                      
                            )        
                 |> Seq.concat
         downloadLinks
