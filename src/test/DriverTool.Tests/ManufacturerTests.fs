@@ -3,6 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module ManufacturerTests =
     open DriverTool
     open DriverTool.ManufacturerTypes

@@ -5,6 +5,7 @@ open NUnit.Framework
 open System
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module HpCatalogTests =
     open Init
     

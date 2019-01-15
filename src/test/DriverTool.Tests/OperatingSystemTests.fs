@@ -4,6 +4,7 @@ open System
 open DriverTool
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module OperatingSystemTests =
 
     [<Test>]

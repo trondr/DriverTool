@@ -3,6 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.IntegrationTests)>]
 module HpUpdatesTests =
     open DriverTool
     open System

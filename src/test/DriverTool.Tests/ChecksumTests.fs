@@ -3,6 +3,7 @@ open NUnit.Framework
 open DriverTool.Checksum
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module ChecksumTests =
     open DriverTool
     open System

@@ -3,6 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module RegistryOperationTests =
     open DriverTool
     open Microsoft.Win32

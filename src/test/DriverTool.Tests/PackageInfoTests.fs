@@ -3,6 +3,7 @@ open NUnit.Framework
 open DriverTool.PackageXml
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module PackageInfoTests  =
     open System
 

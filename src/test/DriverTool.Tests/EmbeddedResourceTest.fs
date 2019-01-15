@@ -3,6 +3,7 @@ open NUnit.Framework
 open DriverTool
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module EmbeddedResourceTest  =    
     open DriverTool.EmbeddedResouce
     open System

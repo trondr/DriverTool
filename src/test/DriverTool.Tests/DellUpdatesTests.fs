@@ -3,6 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.IntegrationTests)>]
 module DellUpdatesTests =
     open DriverTool
     
@@ -48,7 +49,8 @@ module DellUpdatesTests =
             yield {packageInfo with Name="Name2";Version="002.01.20.0"}
         }
     
-    [<Test>]    
+    [<Test>] 
+    [<Category(TestCategory.UnitTests)>]
     let getLatestPackageInfoVersionTest () =
         let packageInfos = packageInfoTestData ()
         let actual = DriverTool.DellUpdates.getLatestPackageInfoVersion (packageInfos) |> Seq.toArray
