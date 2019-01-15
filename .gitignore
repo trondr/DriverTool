@@ -46,3 +46,8 @@ artifacts/
 build.fsx.lock
 build/
 artifact/
+packages/
+src/app/DriverTool/Libs/Client.dll
+src/app/DriverTool/Libs/Common.dll
+src/app/DriverTool/Libs/Core.dll
+_NCrunch_DriverTool/
