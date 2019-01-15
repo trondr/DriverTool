@@ -2,34 +2,52 @@
 
 module LenovoSystemUpdate =
     open System
-
-    type LenovoSystemUpdateNotInstalledException(message : string) =
-        inherit Exception(
-            match String.IsNullOrWhiteSpace(message) with
-            |false  -> String.Format("Lenovo System update is not installed. {1}", message)
-            |true -> "Lenovo System update is not installed"
-            )
-        new () = LenovoSystemUpdateNotInstalledException(String.Empty)
-
-    let programFilesFolderPathString =
-        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-
-    let systemUpdateFolderPathString = 
-        System.IO.Path.Combine(programFilesFolderPathString, "Lenovo", "System Update");
-
-    let clientLibraryPathString = 
-        System.IO.Path.Combine(systemUpdateFolderPathString, "Client.dll");
+    open Tvsu.Engine
+    open Tvsu.Beans
+    open DriverTool.PackageXml
     
-    let commonLibraryPathString = 
-        System.IO.Path.Combine(systemUpdateFolderPathString, "Common.dll");
+    let logger = Logging.getLoggerByName("LenovoSystemUpdate")
 
-    let isLenovoSystemUpdateInstalled = 
-        match System.IO.File.Exists(clientLibraryPathString) with
-        |true -> 
-            System.Reflection.Assembly.LoadFile(commonLibraryPathString) |> ignore
-            System.Reflection.Assembly.LoadFile(clientLibraryPathString) |> ignore
-            true
-        |false -> false
+    let listToSequence (list:System.Collections.IList) =
+        seq{
+            for item in list do
+                yield item
+        }
+
+    let getLocalUpdatesUnsafe () =
+        logger.Info("Getting update info from Lenovo System Update database...");
+        let database = DataBase.Instance
+        database.LoadUpdateData()
+        let installedUpdates = database.GetUpdateWithStatus(UpdateStatus.INSTALL_SUCCESSFUL)
+        let packageInfosResult = 
+            installedUpdates
+            |>listToSequence
+            |>Seq.map(fun u ->
+                            result{
+                                let update =  (u :?> Update)
+                                let! updateFilePath = Path.create (System.IO.Path.Combine(update.LocalPath, update.FileName))
+                                let downloadedPackageInfo = 
+                                    {
+                                        Location="" 
+                                        Category="Unknown Category" 
+                                        FilePath=updateFilePath
+                                        BaseUrl=""
+                                        CheckSum=DriverTool.Checksum.computeFileHashSha256String updateFilePath.Value 
+                                    }                            
+                                let packageInfo = getPackageInfoUnsafe(downloadedPackageInfo)
+                                return packageInfo
+                            }                            
+                    )
+            |>toAccumulatedResult
+        let packageInfos = 
+            match packageInfosResult with
+            |Ok packageInfos-> packageInfos
+            |Error ex -> raise (new Exception("Failed to get local update info due to: " + ex.Message, ex))
+        database.ShutDownDataBase()
+        logger.Info("Finished getting update info from Lenovo System Update database!");
+        packageInfos        
+
+    let getLocalUpdates () =
+        tryCatch getLocalUpdatesUnsafe ()
         
-    
-    
+        

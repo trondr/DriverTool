@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ProductName>Json.NET</ProductName>
-  <ProductHome>http://www.newtonsoft.com/json</ProductHome>
-  <CreditText>trondr.DriverUtil uses Json.NET to serialize objects to string representation, primarly for debug logging state of an object.</CreditText>
-</CreditInfo>

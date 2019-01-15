@@ -1,0 +1,28 @@
+===== MUP Command Line Options =====
+
+/? :
+    Display command line usage help.
+    Syntax. packagename.exe /?
+/s :
+    Execute the update package silently without user intervention.
+    Syntax. packagename.exe /s
+/extract_all :
+    Extract all of the contents of the MUP package.
+    Syntax. packagename.exe /extract_all:<path>
+/v :
+    Public properties option.
+
+===== MUP Public properties options =====
+
+/FORCE=true :
+    Force a downgrade to an older version.
+    Syntax. packagename.exe /s /v"FORCE=true"
+/EXTRACTDRIVERS=<Path> :
+    Extract raw system level driver files.
+    Syntax. packagename.exe /s /v"EXTRACTDRIVERS=<Path>"
+/FORCERESTART=true :
+    Reboot the system if necessary after the update.
+    Syntax. packagename.exe /s /v"FORCERESTART=true"
+/LOGFILE=<path> :
+    Append installation log to a specified log file.
+    Syntax. packagename.exe /s /v"LOGFILE=<path>"

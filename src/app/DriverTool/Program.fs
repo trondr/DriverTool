@@ -1,39 +1,21 @@
 ﻿open System
-open DriverTool.Commands
-open NCmdLiner
-
-let runCommand args =
-    let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args)
-    let exitCode = 
-        match result.IsSuccess with
-            |true -> 0
-            |false ->                
-                result.OnFailure(new Action<exn>(fun ex -> System.Console.WriteLine(ex.Message)))|> ignore
-                1
-    exitCode
-
-open System.Reflection
+open DriverTool.RunCommand
 open DriverTool
 
-let loadAssemblyFromSearchPath assemblyName (searchPaths : seq<string>) =
-    searchPaths
-    |> Seq.map (fun p -> 
-            let assemblyPath = System.IO.Path.Combine(p,assemblyName + ".dll")
-            assemblyPath
-        )
-    |> Seq.filter (fun p -> System.IO.File.Exists(p))    
-    |> Seq.map (fun p -> Assembly.LoadFile(p))
-    |> Seq.head
+let resolveEventHandler =
+    new ResolveEventHandler(fun s e -> DriverTool.AssemblyResolver.assemblyResolveHandler(s,e)) 
 
-let resolveEventHandler (obj:System.Object) (resolveEventArgs: ResolveEventArgs) : Assembly =
-    let assemblyName = new AssemblyName(resolveEventArgs.Name)
-    let searchPaths = seq{ yield DriverTool.LenovoSystemUpdate.systemUpdateFolderPathString }
-    let assembly = loadAssemblyFromSearchPath assemblyName.Name searchPaths
-    assembly
+let setup() =       
+    AppDomain.CurrentDomain.add_AssemblyResolve(resolveEventHandler)
+    AppDomain.CurrentDomain.UnhandledException.AddHandler(fun _ x -> System.Console.WriteLine(x.ExceptionObject.ToString()))
+let teardown() =
+    AppDomain.CurrentDomain.remove_AssemblyResolve(resolveEventHandler)
+    AppDomain.CurrentDomain.UnhandledException.RemoveHandler(fun _ x -> System.Console.WriteLine(x.ExceptionObject.ToString()))
 
 [<EntryPoint>]
+[< STAThread >]
 let main argv =
+    setup()
     let exitCode = runCommand argv
-    Console.WriteLine("Press any key...")
-    Console.ReadLine() |> ignore
+    teardown()
     exitCode // return an integer exit code
