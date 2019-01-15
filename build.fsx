@@ -2,6 +2,7 @@
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.MSBuild
 nuget Fake.DotNet.Testing.Nunit
+nuget Fake.Testing.Common
 nuget Fake.Core.Target //"
 #load "./.fake/build.fsx/intellisense.fsx"
 
@@ -9,6 +10,8 @@ open Fake.IO
 open Fake.IO.Globbing.Operators //enables !! and globbing
 open Fake.DotNet
 open Fake.Core
+open Fake.Testing
+open Fake.DotNet.Testing
 
 
 //Properties
@@ -38,26 +41,18 @@ Target.create "BuildTest" (fun _ ->
         |> Trace.logItems "BuildTest-Output: "
 )
 
-let runDotNetTest projectFilePath = 
-    let result =
-        Process.execWithResult (fun info ->
-            { info with
-                FileName = "dotnet.exe"
-                WorkingDirectory = "."
-                Arguments = "test " + projectFilePath
-            }) (System.TimeSpan.FromMinutes 15.)
-    result
+let nunitConsoleRunner =
+    let consoleRunner = 
+        !! "packages/**/nunit3-console.exe"
+        |> Seq.head
+    printfn "Console runner:  %s" consoleRunner
+    consoleRunner
 
 Target.create "Test" (fun _ -> 
-    Trace.trace "Testing app..."
-    let projectFilePaths = !! ("src/test/**/*.fsproj")    
-    for projectFilePath in projectFilePaths do
-        let result = runDotNetTest projectFilePath
-        printfn "'dotnet.exe test' exit code: %d" result.ExitCode
-        for message in result.Messages do
-            printfn "   %s" message
-        for error in result.Errors do
-            failwith (sprintf "%s" error)        
+    Trace.trace "Testing app..."    
+    !! ("build/test/**/*.Tests.dll")    
+    |> NUnit3.run (fun p ->
+        {p with ToolPath = nunitConsoleRunner})            
 )
 
 let runDotNetPublish projectFilePath outputPath = 
