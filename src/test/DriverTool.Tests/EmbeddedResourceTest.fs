@@ -6,6 +6,7 @@ open DriverTool
 module EmbeddedResourceTest  =    
     open DriverTool.EmbeddedResouce
     open System
+    open System.IO
     
     [<Test>]
     [<TestCase(@"c:\temp\DpInstExitCode2ExitCode_tst.exe",true,"NotUsed",TestName="extractEmbeddedResourceToFile - Expect success")>]
@@ -67,13 +68,14 @@ module EmbeddedResourceTest  =
         let res =
             result{
                 let! destinationFolderPath = Path.create destinationFolderPathString
-                PackageTemplate.extractPackageTemplate destinationFolderPath |> ignore
+                let! extractedFiles = PackageTemplate.extractPackageTemplate destinationFolderPath
+                printf "Extracted files: %A" (extractedFiles |> Seq.toArray)
                 return destinationFolderPath
             }
         match res with
         |Ok p -> 
             Assert.IsTrue(true)
-            Assert.AreEqual(13, System.IO.Directory.GetFiles(p.Value,"*.*",System.IO.SearchOption.AllDirectories).Length, "Extracted file count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
+            Assert.AreEqual(14, System.IO.Directory.GetFiles(p.Value,"*.*",System.IO.SearchOption.AllDirectories).Length, sprintf "Extracted file count not expected in %s. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. %A" destinationFolderPathString (System.IO.Directory.GetFiles(destinationFolderPathString,"*.*",SearchOption.AllDirectories)))
         |Error ex -> Assert.IsTrue(false,ex.Message)
 
     [<Test>]
