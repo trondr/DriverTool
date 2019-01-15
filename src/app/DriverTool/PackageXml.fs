@@ -101,17 +101,27 @@ module PackageXml =
     let packageInfosToDownloadJobs destinationDirectory packageInfos =
         seq{
             for packageInfo in packageInfos do
-                let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
-                let sourceReadmeUri = new Uri(sourceReadmeUrl)
-                match (Path.create (getDestinationReadmePath destinationDirectory packageInfo)) with
-                |Ok p -> yield {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = p; }
-                |Error ex -> Result.Error ex |> ignore
+                let readmeDownloadInfo = 
+                    result{
+                        let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
+                        let! sourceReadmeUri = toUri (sourceReadmeUrl)
+                        let! destinationReadmeFilePath = Path.create (getDestinationReadmePath destinationDirectory packageInfo)
+                        return {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationReadmeFilePath; }
+                    }
+                match readmeDownloadInfo with
+                |Ok d -> yield d
+                |Error ex -> logger.Error("Failed to get download info for readme file. " + ex.Message)
 
-                let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
-                let sourceInstallerUri = new Uri(sourceInstallerUrl)
-                match Path.create (getDestinationInstallerPath destinationDirectory packageInfo) with
-                |Ok p -> yield {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.InstallerCrc; SourceFileSize = packageInfo.InstallerSize; DestinationFile = p; }
-                |Error ex -> Result.Error ex |> ignore
+                let installerDownloadInfo = 
+                    result{
+                        let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
+                        let! sourceInstallerUri = toUri (sourceInstallerUrl)
+                        let! destinationInstallerFilePath = Path.create (getDestinationInstallerPath destinationDirectory packageInfo)
+                        return {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationInstallerFilePath; }
+                    }
+                match installerDownloadInfo with
+                |Ok d -> yield d
+                |Error ex -> logger.Error("Failed to get download info for installer file. " + ex.Message)
         }        
         //Make sure destination file is unique
         |> Seq.groupBy (fun p -> p.DestinationFile) 
