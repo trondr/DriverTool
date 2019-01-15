@@ -234,7 +234,13 @@ DecompressDriverPackage         Decompress Drivers.zip to \Drivers folder.
 * Install fake
 	
 	```batch
-	choco install fake -pre
+	choco install fake
+	
+* Upgrade fake
+	
+	```batch
+	choco upgrade fake
+	
 	```
 * Install NUnit Template
 
