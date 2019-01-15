@@ -11,8 +11,9 @@ module RunCommand =
     type NotepadMessenger () =
         let tempFileName = 
             let tempFile = System.IO.Path.GetTempFileName()
-            System.IO.File.Move(tempFile, tempFile + ".txt")
-            tempFile
+            let txtTempFile = tempFile + ".txt"
+            System.IO.File.Move(tempFile, txtTempFile)
+            txtTempFile
         let streamWriter = 
             new StreamWriter(tempFileName)
         do            
