@@ -225,6 +225,18 @@ module LenovoUpdates =
     let updateFromRemote (remotePackageInfos:seq<PackageInfo>) (packageInfos:seq<PackageInfo>) =
         let updatedPacageInfos = 
             packageInfos
+            //Filter local updates that do not have corresponding remote update
+            |>Seq.filter(fun p -> 
+                            let remotePackageInfo = 
+                                remotePackageInfos
+                                |> Seq.tryFind(fun rp -> rp.InstallerName = p.InstallerName)
+                            match remotePackageInfo with
+                            |Some _ -> true
+                            |None -> 
+                                logger.Warn(sprintf "Remote update not found for local update: %A" p)
+                                false
+                        )
+            //For those local updates that have a corresponding remote update, transfer the BaseUrl and Category information from the remote update to the local update.
             |>Seq.map(fun p -> 
                         let remotePackageInfo = 
                             remotePackageInfos
@@ -259,6 +271,7 @@ module LenovoUpdates =
                 |> Seq.distinct
                 |> updateFromRemote remotePackageInfos
                 |>Seq.toArray
+            logger.Info(sprintf "Local updates: %A" localUpdates)
             return localUpdates
         }
    
