@@ -53,7 +53,7 @@ module Configuration =
     type Settings = AppSettings<"App.config">
 
     let getAppConfigFilePath = 
-        Settings.ConfigFileName
+        AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
     
     let getDriverPackageLogDirectoryPath =
         getValue "DriverPackageLogDirectoryPath"
