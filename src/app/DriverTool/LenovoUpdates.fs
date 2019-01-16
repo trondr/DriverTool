@@ -98,8 +98,8 @@ module LenovoUpdates =
             result {
                 let sourceUri = new Uri(packageXmlInfo.Location)
                 let! destinationFilePath = getTempXmlFilePathFromUri sourceUri
-                let downloadInfo = {SourceUri=sourceUri;SourceChecksum=packageXmlInfo.CheckSum;SourceFileSize=0L;DestinationFile=destinationFilePath;}
-                let! downloadInfo2 = downloadIfDifferent (downloadInfo, false)                             
+                let downloadInfo = {SourceUri=sourceUri;SourceChecksum=packageXmlInfo.CheckSum;SourceFileSize=0L;DestinationFile=destinationFilePath;}                
+                let! downloadInfo2 = downloadIfDifferent (downloadInfo, (ignoreVerificationErrors downloadInfo))
                 let dpi = packageXmlInfo2downloadedPackageXmlInfo (packageXmlInfo, downloadInfo2.DestinationFile)
                 return dpi
             }
