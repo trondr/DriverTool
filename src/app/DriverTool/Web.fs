@@ -17,6 +17,15 @@ module Web =
             DestinationFile:Path;            
         }
 
+    let (|TextFile|_|) (input:string) = if input.ToLower().EndsWith(".txt") then Some(input) else None
+    let (|XmlFile|_|) (input:string) = if input.ToLower().EndsWith(".xml") then Some(input) else None
+
+    let ignoreVerificationErrors downloadInfo =
+        match downloadInfo.DestinationFile.Value with
+        | TextFile _ -> true
+        | XmlFile _ -> true
+        | _ -> false
+
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:Path) =
         try
             use webClient = new WebClient()

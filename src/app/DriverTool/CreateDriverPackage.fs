@@ -49,13 +49,6 @@ module CreateDriverPackage =
                         }
                     )
     
-    let (|TextFile|_|) (input:string) = if input.ToLower().EndsWith(".txt") then Some(input) else None
-
-    let ignoreVerificationErrors downloadInfo =
-        match downloadInfo.DestinationFile.Value with
-        | TextFile x -> true
-        | _ -> false
-    
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos             
