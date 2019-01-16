@@ -22,6 +22,9 @@ let buildTestFolder = buildFolder + "test"
 let artifactFolder = System.IO.Path.GetFullPath("./artifact/")
 let artifactAppFolder = artifactFolder + "app"
 
+let getVersion file = 
+    System.Reflection.AssemblyName.GetAssemblyName(file).Version.ToString()
+
 //Targets
 Target.create "Clean" (fun _ ->
     Trace.trace "Clean build folder..."
@@ -58,6 +61,7 @@ Target.create "Test" (fun _ ->
 
 Target.create "Publish" (fun _ ->
     Trace.trace "Publishing app..."
+    let assemblyVersion = getVersion (System.IO.Path.Combine(buildAppFolder,"DriverTool.exe"))
     let files = 
         [|
             System.IO.Path.Combine(buildAppFolder,"DriverTool.exe")
@@ -65,9 +69,9 @@ Target.create "Publish" (fun _ ->
             System.IO.Path.Combine(buildAppFolder,"DriverTool.exe.config")
             System.IO.Path.Combine(buildAppFolder,"FSharp.Core.dll")
         |]
-    let zipFile = System.IO.Path.Combine(artifactFolder,"DriverTool.1.0.0.0.zip")
+    let zipFile = System.IO.Path.Combine(artifactFolder,sprintf "DriverTool.%s.zip" assemblyVersion)
     files
-    |> Fake.IO.Zip.createZip buildAppFolder zipFile "DriverTool 1.0.0.0" 9 false 
+    |> Fake.IO.Zip.createZip buildAppFolder zipFile (sprintf "DriverTool %s" assemblyVersion) 9 false 
 )
 
 Target.create "Default" (fun _ ->
