@@ -29,22 +29,24 @@ module LenovoCatalog =
         result{
             let! catalogXmlPath = downloadCatalog
             let productsXml = CatalogXmlProvider.Load(catalogXmlPath.Value)
-            return productsXml.Products
-            |>  Seq.map (fun p-> 
-                        let driverPack = (p.DriverPacks|> Seq.tryFind (fun dp-> dp.Id = "sccm"))
-                        {
-                            Model=p.Model.String;
-                            Os=p.Os;
-                            OsBuild=p.Build.String;
-                            Name=p.Name;
-                            SccmDriverPackUrl= 
-                                (match driverPack with
-                                |Some v -> Some v.Value
-                                |None -> None);
-                            ModelCodes = p.Queries.Types |> Seq.map (fun m-> m.String.Value) |> Seq.toArray
-                        }
-                    )
-
+            let products =  
+                productsXml.Products
+                |>  Seq.map (fun p-> 
+                            let driverPack = (p.DriverPacks|> Seq.tryFind (fun dp-> dp.Id = "sccm"))
+                            {
+                                Model=p.Model.String;
+                                Os=p.Os;
+                                OsBuild=p.Build.String;
+                                Name=p.Name;
+                                SccmDriverPackUrl= 
+                                    (match driverPack with
+                                    |Some v -> Some v.Value
+                                    |None -> None);
+                                ModelCodes = p.Queries.Types |> Seq.map (fun m-> m.String.Value) |> Seq.toArray
+                            }
+                        )
+                |> Seq.toArray
+            return products
         }
     
     open F    
@@ -241,6 +243,12 @@ module LenovoCatalog =
             OsBuild = osBuild
         }
 
+    let getHighestOsBuildProduct (products:seq<Product>) =
+        let maxOsbUildProduct =
+            products
+            |> Seq.maxBy (fun p -> p.OsBuild)
+        maxOsbUildProduct
+
     let findSccmPackageInfoByModelCode4AndOsAndBuild modelCode4 os osBuild products =
         let matchedProducts = 
             products
@@ -249,18 +257,23 @@ module LenovoCatalog =
                                     p.ModelCodes
                                     |>Array.filter (fun m-> (m = modelCode4))
                                 foundModelCodes.Length > 0
-                           )                        
+                           )
+            |> Seq.filter (fun p -> (p.Os = os))
             |> Seq.toArray
-        let matchedOs = matchedProducts |> Seq.filter (fun p -> (p.Os = os) && (p.OsBuild.Value = osBuild)) |> Seq.toArray
-        match (matchedOs.Length > 0) with
-        | true -> Some matchedProducts.[0]
-        | false -> 
-            match osBuild <> "*" with
-            |true -> 
-                let matchedOsBuild = matchedProducts |> Seq.filter (fun p -> (p.Os = os) && (p.OsBuild.Value = "*"))|>Seq.toArray
-                match matchedOsBuild.Length > 0 with
-                |true -> Some matchedOsBuild.[0]
-                |false->None
-            |false -> None            
+        match matchedProducts.Length > 0 with
+        |true -> 
+            let matchedOs = matchedProducts |> Seq.filter (fun p -> (p.OsBuild.Value = osBuild)) |> Seq.toArray
+            match (matchedOs.Length > 0) with
+            | true -> Some matchedProducts.[0]
+            | false ->    
+                match osBuild with
+                | "*" -> 
+                    let matchedOsBuild = matchedProducts |> Seq.filter (fun p -> (p.Os = os) && (p.OsBuild.Value = osBuild))|>Seq.toArray
+                    match matchedOsBuild.Length > 0 with
+                    |true -> Some matchedOsBuild.[0]
+                    |false -> Some (getHighestOsBuildProduct matchedProducts)
+                |_ -> Some (getHighestOsBuildProduct matchedProducts)
+        |false -> None
+                        
                   
        
