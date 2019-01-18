@@ -192,3 +192,8 @@ module F=
             |>Seq.map(fun v -> v.ToString())
             |>Seq.toArray
         "[" + String.Join("|",enumValues) + "]"
+
+    let optionToBoolean option = 
+        match option with
+        |None -> false
+        |Some _ -> true
