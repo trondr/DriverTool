@@ -9,7 +9,7 @@ module DellUpdates =
     let downloadsBaseUrl = "http://downloads.dell.com"
 
 
-
+    open F
     open FSharp.Data
     open System
     open DriverTool.Configuration
@@ -41,11 +41,6 @@ module DellUpdates =
             let! existingSoftwareCatalogXmlPath = FileOperations.ensureFileExists softwareCatalogXmlPath            
             return existingSoftwareCatalogXmlPath
         }
-
-    let optionToBoolean option = 
-        match option with
-        |None -> false
-        |Some _ -> true
 
     open DriverTool.PackageXml
     open System.Linq
