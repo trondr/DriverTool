@@ -295,7 +295,7 @@ module CreateDriverPackage =
                 logger.Info("Getting SCCM package info...")
                 let getSccmPackage = DriverTool.Updates.getSccmPackageFunc manufacturer
                 let! sccmPackage = getSccmPackage (model,operatingSystem)
-                sccmPackage |> Logging.logToConsole |> ignore
+                logger.Info(sprintf "Sccm packge: %A" sccmPackage)
                 
                 logger.Info("Downloading SCCM package...")
                 let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc manufacturer
