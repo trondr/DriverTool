@@ -38,8 +38,20 @@ module CreateDriverPackage =
     let downloadUpdate (downloadJob, ignoreVerificationErrors) =
         Logging.genericLoggerResult Logging.LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
 
-    let packageInfosToDownloadedPackageInfos destinationDirectory packageInfos =
+    let toFileName (filePath:Path) =
+        System.IO.Path.GetFileName(filePath.Value)
+
+    let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
         packageInfos
+        //Remove packages with no download jobs (download job for the package failed typically)
+        |> Seq.filter(fun p ->
+                        let downloadJob = downloadJobs|>Seq.tryFind(fun dj -> 
+                                                let djFileName = toFileName dj.DestinationFile
+                                                p.InstallerName = djFileName
+                                            )
+                        optionToBoolean downloadJob
+                    )
+        //Create downloaded package info
         |> Seq.map (fun p -> 
                         {
                             InstallerPath = getDestinationInstallerPath destinationDirectory p;
@@ -49,19 +61,22 @@ module CreateDriverPackage =
                         }
                     )
     
+    let resultToOption (result : Result<_,Exception>) =
+        match result with
+        |Ok s -> Some s
+        |Error ex -> 
+            logger.Error(ex.Message)
+            None
+
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos             
             |> packageInfosToDownloadJobs destinationDirectory            
-            |> PSeq.map (fun dj -> downloadUpdate (dj,ignoreVerificationErrors dj))
+            |> PSeq.map (fun dj -> resultToOption (downloadUpdate (dj,ignoreVerificationErrors dj)))
             |> PSeq.toArray
-            |> Seq.ofArray
-            |> toAccumulatedResult
-        match downloadJobs with
-        |Ok _ -> 
-            Result.Ok (packageInfosToDownloadedPackageInfos destinationDirectory packageInfos)
-        |Error ex -> 
-            Result.Error ex
+            |> Seq.choose id //Remove all failed downloads            
+            |> Seq.toArray            
+        packageInfosToDownloadedPackageInfos destinationDirectory packageInfos downloadJobs
 
     open System.Linq
                
@@ -274,7 +289,7 @@ module CreateDriverPackage =
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
                 logger.Info("Downloading software and drivers...")
-                let! updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
+                let updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
                 
                 logger.Info("Getting SCCM package info...")
