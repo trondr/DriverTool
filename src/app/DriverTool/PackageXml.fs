@@ -199,45 +199,14 @@ module PackageXml =
             ReleaseDate = releaseDate;
             PackageXmlName = ((new System.IO.FileInfo(downloadedPackageInfo.FilePath.Value)).Name)
         }        
-    
-    let toTitlePostFix (title:string) (version:string) (releaseDate:string) = 
-        nullOrWhiteSpaceGuard title "title"
-        let parts = title.Split('-');
-        let titlePostfix = 
-            match parts.Length with
-            | 0 -> String.Empty
-            | _ -> parts.[parts.Length - 1]
-        toValidDirectoryName (String.Format("{0}_{1}_{2}",titlePostfix,version,releaseDate))
-    
+        
     open System.Linq
     open System.Text.RegularExpressions
+    open NCmdLiner.Exceptions
     
-    let toTitlePrefix (title:string) (category:string) (postFixLength: int) = 
-        nullOrWhiteSpaceGuard title "title"
-        nullGuard category "category"
-        let parts = title.Split('-');
-        let partsString =
-            (parts.[0]).AsEnumerable().Take(57 - postFixLength - category.Length).ToArray()
-        let titlePrefix = 
-            category + "_" + new String(partsString);
-        toValidDirectoryName titlePrefix    
-
-    let removeVowels (text:string) =
-        System.Text.RegularExpressions.Regex.Replace(text,"[aeiouy]","",RegexOptions.IgnoreCase)
-    
-    let reducePackageTitle  (title:string) =
-        if((String.length title) > 60) then
-            removeVowels title
-        else
-            title
-
-    let getPackageFolderName (packageInfo:PackageInfo) =                
-        let validDirectoryName = 
-            toValidDirectoryName (reducePackageTitle packageInfo.Title)
-        let postfix = 
-            toTitlePostFix validDirectoryName packageInfo.Version packageInfo.ReleaseDate
-        let prefix = 
-            toTitlePrefix validDirectoryName (packageInfo.Category |? String.Empty) postfix.Length
+    let getPackageFolderName (packageInfo:PackageInfo) =         
+        let postfix = packageInfo.ReleaseDate
+        let prefix = (packageInfo.Category |? "Unknown_Category")
         let packageFolderName = 
             String.Format("{0}_{1}",prefix,postfix).Replace("__", "_").Replace("__", "_");
         packageFolderName
