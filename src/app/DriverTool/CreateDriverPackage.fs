@@ -302,7 +302,9 @@ module CreateDriverPackage =
                 let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.getDownloadCacheDirectoryPath), sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
-                let! versionedPackagePath = combine2Paths (destinationFolderPath.Value, releaseDate)
+                let packageName = String.Format("{0} {1} {2} {3} {4} Drivers {5}", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value, releaseDate)
+                let packageFolderName = String.Format("{0} {1} {2} {3} {4} Drivers", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value)
+                let! versionedPackagePath = combine3Paths (destinationFolderPath.Value, packageFolderName, releaseDate)
 
                 logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath.Value)
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
@@ -326,7 +328,7 @@ module CreateDriverPackage =
                 let! installXmlPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"Install.xml"))
                 let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
                 let! installConfiguration = DriverTool.InstallXml.loadInstallXml existingInstallXmlPath
-                let packageName = String.Format("{0} {1} {2} {3} {4} Drivers And Software {5}", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value, releaseDate)
+                
                 let updatedInstallConfiguration = 
                     { installConfiguration with 
                         LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables logDirectory);
