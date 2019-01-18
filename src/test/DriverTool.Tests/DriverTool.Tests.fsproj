@@ -78,6 +78,7 @@
     <Compile Include="ManufacturerTests.fs" />
     <Compile Include="HpCatalogTests.fs" />
     <Compile Include="HpUpdatesTests.fs" />
+    <Compile Include="CreateDriverPackageTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />

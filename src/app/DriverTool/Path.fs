@@ -24,6 +24,11 @@ type Path private (path : string) =
         let failure ex = Result.Error ex
         Path.createWithContinuation success failure path
     
+    static member createUnsafe (path:string) =
+        match (Path.create path) with
+        |Ok p -> p
+        |Error ex -> raise ex
+
     override x.GetHashCode() =
         hash (path)
     

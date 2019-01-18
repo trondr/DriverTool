@@ -106,7 +106,7 @@ module PackageXml =
                         let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
                         let! sourceReadmeUri = toUri (sourceReadmeUrl)
                         let! destinationReadmeFilePath = Path.create (getDestinationReadmePath destinationDirectory packageInfo)
-                        return {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationReadmeFilePath; }
+                        return {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationReadmeFilePath;}
                     }
                 match readmeDownloadInfo with
                 |Ok d -> yield d
