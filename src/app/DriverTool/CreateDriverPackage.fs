@@ -303,7 +303,7 @@ module CreateDriverPackage =
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let packageName = String.Format("{0} {1} {2} {3} {4} Drivers {5}", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value, releaseDate)
-                let packageFolderName = String.Format("{0} {1} {2} {3} {4} Drivers", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value)
+                let packageFolderName = String.Format("{0} {1} {2} Drivers", systemFamily.Value, model.Value, operatingSystem.Value)
                 let! versionedPackagePath = combine3Paths (destinationFolderPath.Value, packageFolderName, releaseDate)
 
                 logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath.Value)
