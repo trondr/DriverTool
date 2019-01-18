@@ -154,7 +154,7 @@ module DellUpdates =
                 |>Seq.map(fun sc -> toPackageInfo (sc,logDirectory))
                 |>getLatestPackageInfoVersion
                 |>Seq.toArray
-            System.Console.WriteLine("Updates: " + updates.Length.ToString())            
+            logger.Info("Updates: " + updates.Length.ToString())            
             return updates
         }
 
