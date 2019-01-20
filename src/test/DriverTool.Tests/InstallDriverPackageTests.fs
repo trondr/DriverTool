@@ -7,6 +7,8 @@ open DriverTool.InstallXml
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module InstallDriverPackageTests =
+    open DriverTool
+    open DriverTool
     
     [<Test>]
     [<TestCase("20EQXXXX","WIN10X64","20EQ","WIN10X64","")>]
@@ -34,4 +36,19 @@ module InstallDriverPackageTests =
         |Error ex -> Assert.AreEqual(expectedErrorMessage, ex.Message)        
         ()
 
-
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let copyDriversTest () =
+        let result = 
+            F.result{
+                let! driverPackagePath = Path.create @"C:\Temp\Drivers\SomeModel\2018-12-29"
+                let! destinationDriversFolderPath = Path.create @"C:\Windows\Drivers\_tst_"
+                let! copyResult = copyDrivers (driverPackagePath, destinationDriversFolderPath)
+                return copyResult
+            }
+        match result with
+        |Error ex -> Assert.Fail(ex.ToString())
+        |Ok _ -> Assert.IsTrue(true)
+        ()
+        
+        

@@ -67,19 +67,20 @@ module InstallDriverPackage =
         result{
             let! sourceDriversFolderPath = PathOperations.combine2Paths(driverPackagePath.Value,"Drivers")            
             let! sourceDriversZipFilePath = PathOperations.combine2Paths(driverPackagePath.Value,"Drivers.zip")            
-            let copyResult =   
+            let! copyResult =   
                 match (System.IO.Directory.Exists(sourceDriversFolderPath.Value)) with
                 |true ->
-                    //Copy Drivers folder
+                    logger.Info("Copy Drivers folder: " + sourceDriversFolderPath.Value)
                     result{
                         let! robocopyResult = Robocopy.roboCopy (sourceDriversFolderPath,destinationDriversFolderPath,"*.* /MIR /NP")
                         return robocopyResult
                     }
                             
                 |false ->
-                    result{
-                        //Unzip Drivers.zip
+                    result{                        
                         let! existingSourceDriversZipFilePath = FileOperations.ensureFileExists sourceDriversZipFilePath
+                        logger.Info("Unzip Drivers.zip: " + existingSourceDriversZipFilePath.Value)
+                        let! nonExistingDestinationDriversFolderPath = DirectoryOperations.deleteDirectory true destinationDriversFolderPath
                         let! unzipResult = Compression.unzipFile (existingSourceDriversZipFilePath, destinationDriversFolderPath)
                         return unzipResult                    
                     }
@@ -211,18 +212,15 @@ module InstallDriverPackage =
             let localDriversFolder = getLocalDriversPackageFolder driverPackageName
             let! localDriversFolderPath = Path.create localDriversFolder
             let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
-            let installDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtInstallPackageCmd installConfiguration driverPackageName 
-            let! resetConfigFlagsResult = resetConfigFlags ()
-            let! res = 
+            let! installDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtInstallPackageCmd installConfiguration driverPackageName 
+            let registerApplication =
                 match installDriversExitCode with
-                |Ok ec -> 
-                    match ec with
-                    |0|3010 -> 
-                        registerSccmApplication installConfiguration
-                        Result.Ok ec
-                    |_ -> Result.Ok ec
-                |Error ex -> Result.Error ex
-            return res
+                |0|3010 -> 
+                    registerSccmApplication installConfiguration
+                    ()
+                |_ -> ()
+            let! resetConfigFlagsResult = resetConfigFlags ()            
+            return installDriversExitCode
         }
         
     let unInstallDriverPackage (driverPackagePath:Path) =
@@ -236,16 +234,13 @@ module InstallDriverPackage =
             let localDriversFolder = getLocalDriversPackageFolder driverPackageName
             let! localDriversFolderPath = Path.create localDriversFolder
             let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
-            let uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd installConfiguration driverPackageName
+            let! uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd installConfiguration driverPackageName
             let! deleteDirectoryResult = DirectoryOperations.deleteDirectory true localDriversFolderPath
-            let! res = 
+            let registerApplication =
                 match uninstallDriversExitCode with
-                |Ok ec -> 
-                    match ec with
-                    |0|3010 -> 
-                        unRegisterSccmApplication installConfiguration
-                        Result.Ok ec
-                    |_ -> Result.Ok ec
-                |Error ex -> Result.Error ex
-            return res
+                |0|3010 -> 
+                    unRegisterSccmApplication installConfiguration
+                    ()
+                |_ -> ()                        
+            return uninstallDriversExitCode
         }
