@@ -135,7 +135,7 @@ module CreateDriverPackage =
         sb.AppendLine("pushd \"%~dp0\"")|>ignore
         sb.AppendLine("")|>ignore
         sb.AppendFormat("IF NOT EXIST \"{0}\" md \"{0}\"",logDirectory).AppendLine(String.Empty)|>ignore
-        sb.AppendLine("REM " + installCommandLine)|>ignore
+        sb.AppendLine(installCommandLine)|>ignore
         if (packageIsUsingDpInst) then
             sb.AppendLine("")|>ignore
             sb.AppendLine("Set DpInstExitCode=%errorlevel%")|>ignore
