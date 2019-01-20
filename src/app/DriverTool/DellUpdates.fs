@@ -2,7 +2,7 @@
 
 module DellUpdates =
     type DellUpdates = class end
-    let logger = Logging.getLoggerByName(typeof<DellUpdates>.Name)
+    let loggerd = Logging.getLoggerByName(typeof<DellUpdates>.Name)
 
     let softwareCatalogCab = "http://downloads.dell.com/catalog/CatalogPC.cab"
     let driverPackageCatalogCab = "http://downloads.dell.com/catalog/DriverPackCatalog.cab"
@@ -154,7 +154,7 @@ module DellUpdates =
                 |>Seq.map(fun sc -> toPackageInfo (sc,logDirectory))
                 |>getLatestPackageInfoVersion
                 |>Seq.toArray
-            logger.Info("Updates: " + updates.Length.ToString())            
+            loggerd.Info("Updates: " + updates.Length.ToString())            
             return updates
         }
 
@@ -275,7 +275,7 @@ module DellUpdates =
         }         
 
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
-        logger.Info("Extract Sccm Driver Package CAB...")
+        loggerd.Info("Extract Sccm Driver Package CAB...")
         match(result{
             let! installerPath = Path.create downloadedSccmPackage.InstallerPath
             let! cabFilepath = FileOperations.ensureFileExtension (installerPath, ".cab")
