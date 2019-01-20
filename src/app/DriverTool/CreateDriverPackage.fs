@@ -139,16 +139,16 @@ module CreateDriverPackage =
         if (packageIsUsingDpInst) then
             sb.AppendLine("")|>ignore
             sb.AppendLine("Set DpInstExitCode=%errorlevel%")|>ignore
-            sb.AppendLine("%~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")|>ignore
+            sb.AppendLine("\"%~dp0..\\DpInstExitCode2ExitCode.exe\" %DpInstExitCode%")|>ignore
         else
             sb.AppendLine("")|>ignore
             sb.AppendLine("REM Set DpInstExitCode=%errorlevel%")|>ignore
-            sb.AppendLine("REM %~dp0..\\DpInstExitCode2ExitCode.exe %DpInstExitCode%")|>ignore
+            sb.AppendLine("REM \"%~dp0..\\DpInstExitCode2ExitCode.exe\" %DpInstExitCode%")|>ignore
         match manufacturer with
         |Manufacturer2.Dell _ ->
             sb.AppendLine("")|>ignore
             sb.AppendLine("Set DupExitCode=%errorlevel%")|>ignore
-            sb.AppendLine("%~dp0..\\DriverTool.DupExitCode2ExitCode.exe %DupExitCode%")|>ignore
+            sb.AppendLine("\"%~dp0..\\DriverTool.DupExitCode2ExitCode.exe\" %DupExitCode%")|>ignore
         |Manufacturer2.Lenovo _ -> 
             sb.AppendLine("")|>ignore
         |Manufacturer2.HP _ -> 
