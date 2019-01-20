@@ -139,8 +139,8 @@ module InstallDriverPackage =
     let getAdjustedExitCode installedDriverExitCodes =
         let exitCodeSum = installedDriverExitCodes |>Seq.sum
         match exitCodeSum with
-        | ec when ec > 3010 -> 3010
-        | ec -> ec
+        | ec when ec > 0 -> 3010
+        | _ -> 0
 
     let installDrivers (localDriversFolderPath:Path) installScriptName installConfiguration driverPackageName =
         result{            
