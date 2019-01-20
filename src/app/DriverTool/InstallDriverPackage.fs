@@ -137,7 +137,7 @@ module InstallDriverPackage =
         }   
         
     let getAdjustedExitCode installedDriverExitCodes =
-        let exitCodeSum = installedDriverExitCodes |>Seq.sum
+        let exitCodeSum = installedDriverExitCodes |> Seq.sum
         match exitCodeSum with
         | ec when ec > 0 -> 3010
         | _ -> 0
@@ -163,6 +163,7 @@ module InstallDriverPackage =
             existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqWithFormatString logger "Script execution result: %s" |> ignore
             logger.Info(String.Format("Finished executing '{0}' for each driver folder!", installScriptName))
             let adjustedExitCode = getAdjustedExitCode installedDriverExitCodes
+            logger.Info(String.Format("Adjusted exit code: {0}", adjustedExitCode))
             return adjustedExitCode
         }
     
