@@ -55,7 +55,7 @@ module CommandProviders =
                     let! installDriverPackageResult = InstallDriverPackage.installDriverPackage driverPackagePath
                     return installDriverPackageResult
         }) with        
-        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Ok exitCode -> NCmdLiner.Result.Ok(exitCode)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let installDriverPackage(driverPackagePath) =
@@ -67,7 +67,7 @@ module CommandProviders =
                     let! unInstallDriverPackageResult = InstallDriverPackage.unInstallDriverPackage driverPackagePath
                     return unInstallDriverPackageResult
         }) with        
-        | Ok _ -> NCmdLiner.Result.Ok(0)
+        | Ok exitCode -> NCmdLiner.Result.Ok(exitCode)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let unInstallDriverPackage(driverPackagePath) =

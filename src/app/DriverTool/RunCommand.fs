@@ -47,7 +47,9 @@ module RunCommand =
     let runCommandBase args =        
         configureLogging ()
         let logger = getLoggerByName "DriverTool"
-        logger.Info("Start: DriverTool. Command Line: " + System.Environment.CommandLine)
+        let version = 
+            typeof<F0.ThisAssembly>.Assembly.GetName().Version.ToString()
+        logger.Info(sprintf "Start: DriverTool.%s. Command Line: %s" version System.Environment.CommandLine)
         logger.Info("ComputerName: " + System.Environment.MachineName)
         logger.Info("UserName: " + System.Environment.UserName)
         logger.Info("UserDomain: " + System.Environment.UserDomainName)
@@ -60,11 +62,11 @@ module RunCommand =
         let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args,notepadMessenger)
         let exitCode = 
             match result.IsSuccess with
-                |true -> 0
+                |true -> result.Value
                 |false ->                
                     result.OnFailure(new System.Action<exn>(fun ex -> logger.Error(ex.ToString())))|> ignore
                     1    
-        logger.Info("Stop: DriverTool. Exit code: " + exitCode.ToString())
+        logger.Info(sprintf "Stop: DriverTool.%s Exit code: %s" version  (exitCode.ToString()))
         exitCode
     
     let runCommand (args)=
