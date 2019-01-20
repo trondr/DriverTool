@@ -2,7 +2,7 @@
 
 module LenovoUpdates =
     type LenovoUpdates = class end
-    let logger = Logging.getLoggerByName(typeof<LenovoUpdates>.Name)
+    let loggerl = Logging.getLoggerByName(typeof<LenovoUpdates>.Name)
     
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
         operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")
@@ -233,7 +233,7 @@ module LenovoUpdates =
                             match remotePackageInfo with
                             |Some _ -> true
                             |None -> 
-                                logger.Warn(sprintf "Remote update not found for local update: %A" p)
+                                loggerl.Warn(sprintf "Remote update not found for local update: %A" p)
                                 false
                         )
             //For those local updates that have a corresponding remote update, transfer the BaseUrl and Category information from the remote update to the local update.
@@ -252,18 +252,18 @@ module LenovoUpdates =
 
     let getLocalUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
         result{
-            logger.Info("Checking if Lenovo System Update is installed...")
+            loggerl.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
-            logger.Info("Lenovo System Update is installed: " + lenovoSystemUpdateIsInstalled.ToString())
-            logger.Info("Getting locally installed updates...")
+            loggerl.Info("Lenovo System Update is installed: " + lenovoSystemUpdateIsInstalled.ToString())
+            loggerl.Info("Getting locally installed updates...")
             let! packageInfos = DriverTool.LenovoSystemUpdate.getLocalUpdates()
             
             let! actualModelCode = ModelCode.create String.Empty true
             let! modelCodeIsValid = assertThatModelCodeIsValid modelCode actualModelCode
-            logger.Info(String.Format("Model code '{0}' is valid: {1}",modelCode.Value,modelCodeIsValid))
+            loggerl.Info(String.Format("Model code '{0}' is valid: {1}",modelCode.Value,modelCodeIsValid))
             let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
             let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid operatingSystemCode actualOperatingSystemCode
-            logger.Info(String.Format("Operating system code '{0}' is valid: {1}",operatingSystemCode.Value,operatingSystemCodeIsValid))
+            loggerl.Info(String.Format("Operating system code '{0}' is valid: {1}",operatingSystemCode.Value,operatingSystemCodeIsValid))
 
             let! remotePackageInfos = getRemoteUpdates (modelCode, operatingSystemCode, overwrite,logDirectory)
             let localUpdates = 
@@ -271,7 +271,7 @@ module LenovoUpdates =
                 |> Seq.distinct
                 |> updateFromRemote remotePackageInfos
                 |>Seq.toArray
-            logger.Info(sprintf "Local updates: %A" localUpdates)
+            loggerl.Info(sprintf "Local updates: %A" localUpdates)
             return localUpdates
         }
    
@@ -356,7 +356,7 @@ module LenovoUpdates =
         }         
     
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
-        logger.Info("Extract SccmPackage installer...")        
+        loggerl.Info("Extract SccmPackage installer...")        
         let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath.Value)
         match (ExistingFilePath.create downloadedSccmPackage.InstallerPath) with
         |Ok fp -> 

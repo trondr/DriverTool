@@ -3,7 +3,7 @@ open Microsoft.FSharp.Collections
 open F
 
 module CreateDriverPackage =
-    let logger = Logging.getLoggerByName("CreateDriverPackage")
+    let loggerc = Logging.getLoggerByName("CreateDriverPackage")
     
     open System
     open DriverTool
@@ -26,7 +26,7 @@ module CreateDriverPackage =
             let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadJob.DestinationFile,downloadJob.SourceUri.OriginalString)
             match verificationWarningOnly with
             |true ->
-                logger.Warn(msg)
+                loggerc.Warn(msg)
                 Result.Ok downloadJob
             |false->Result.Error (new Exception(msg))
  
@@ -65,7 +65,7 @@ module CreateDriverPackage =
         match result with
         |Ok s -> Some s
         |Error ex -> 
-            logger.Error(ex.Message)
+            loggerc.Error(ex.Message)
             None
 
     let downloadUpdates destinationDirectory packageInfos = 
@@ -192,7 +192,7 @@ module CreateDriverPackage =
     let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer2,logDirectory:string) =
         let extractedUpdatesList = 
             extractedUpdates.ToList()
-        logger.InfoFormat("Creating install script for {0} packages...",extractedUpdatesList.Count)
+        loggerc.InfoFormat("Creating install script for {0} packages...",extractedUpdatesList.Count)
         let installScripts = 
             extractedUpdatesList 
             |> PSeq.map (fun u -> (createInstallScript (u, manufacturer,logDirectory)) )       
@@ -270,7 +270,7 @@ module CreateDriverPackage =
     let assertDriverPackageCreateRequirements =
         result{
                 let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package create from an elevated command prompt."
-                logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())                
+                loggerc.Info("Installation is running with admin privileges: " + isAdministrator.ToString())                
                 return isAdministrator
         }
 
@@ -279,25 +279,25 @@ module CreateDriverPackage =
     let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, baseOnLocallyInstalledUpdates, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
-                logger.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
+                loggerc.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
                                 
                 let getUpdates = DriverTool.Updates.getUpdates (manufacturer,baseOnLocallyInstalledUpdates) 
 
-                logger.Info("Getting update infos...")
+                loggerc.Info("Getting update infos...")
                 let! packageInfos = getUpdates (model, operatingSystem, true, logDirectory)
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
-                logger.Info("Downloading software and drivers...")
+                loggerc.Info("Downloading software and drivers...")
                 let updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
                 
-                logger.Info("Getting SCCM package info...")
+                loggerc.Info("Getting SCCM package info...")
                 let getSccmPackage = DriverTool.Updates.getSccmPackageFunc manufacturer
                 let! sccmPackage = getSccmPackage (model,operatingSystem)
                 logger.Info(sprintf "Sccm packge: %A" sccmPackage)
                 
-                logger.Info("Downloading SCCM package...")
+                loggerc.Info("Downloading SCCM package...")
                 let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc manufacturer
                 let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.getDownloadCacheDirectoryPath), sccmPackage)
                 
@@ -305,12 +305,12 @@ module CreateDriverPackage =
                 let packageName = String.Format("{0} {1} {2} {3} {4} Drivers {5}", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value, releaseDate)                
                 let! versionedPackagePath = combine3Paths (destinationFolderPath.Value, model.Value, releaseDate)
 
-                logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath.Value)
+                loggerc.InfoFormat("Extracting package template to '{0}'",versionedPackagePath.Value)
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
-                logger.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
+                loggerc.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
 
                 let! driversPath = combine2Paths (versionedPackagePath.Value, "Drivers")
-                logger.InfoFormat("Extracting drivers to folder '{0}'...", driversPath.Value)
+                loggerc.InfoFormat("Extracting drivers to folder '{0}'...", driversPath.Value)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
                 let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updates)
                 let installScriptResults = createInstallScripts (extractedUpdates,manufacturer,logDirectory)
@@ -318,7 +318,7 @@ module CreateDriverPackage =
 
                 let! sccmPackageDestinationPath = Path.create (System.IO.Path.Combine(existingDriversPath.Value,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
                 let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists (sccmPackageDestinationPath, true)
-                logger.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath.Value)
+                loggerc.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath.Value)
                 
                 let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (manufacturer)                
                 let! extractedSccmPackagePath = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
@@ -342,13 +342,13 @@ module CreateDriverPackage =
                         Publisher = packagePublisher
                     }
                 let savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
-                logger.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath.Value, (Logging.valueToString savedInstallConfiguration))
-                logger.Info("Create PackageDefinition.sms")
+                loggerc.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath.Value, (Logging.valueToString savedInstallConfiguration))
+                loggerc.Info("Create PackageDefinition.sms")
                 let! packageDefinitionSmsPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"PackageDefinition.sms"))                
                 let! packageDefintionWriteResult = 
                     getPackageDefinitionFromInstallConfiguration updatedInstallConfiguration
                     |> writePackageDefinitionToFile packageDefinitionSmsPath
-                logger.Info("Created PackageDefinition.sms")
+                loggerc.Info("Created PackageDefinition.sms")
                 let res = 
                     match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with
                     |Ok _ -> Result.Ok ()

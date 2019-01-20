@@ -3,6 +3,7 @@
 open System.Xml.Linq
 
 module PackageXml = 
+    let logger = Logging.getLoggerByName("PackageXml")
     open System
     
     type PackageXmlInfo = 
@@ -62,10 +63,9 @@ module PackageXml =
             ExtractedDirectoryPath:string;
             DownloadedPackage:DownloadedPackageInfo;
         }    
-
-    open DriverTool.Web
+    
     type SccmPackageInfo = {        
-        ReadmeFile:WebFile
+        ReadmeFile:DriverTool.Web.WebFile
         InstallerUrl:string;
         InstallerChecksum:string;
         InstallerFileName:string;
@@ -90,9 +90,8 @@ module PackageXml =
 
     let getDestinationPackageXmlPath destinationDirectory packageInfo =
         System.IO.Path.Combine(destinationDirectory, packageInfo.PackageXmlName)
-
+    
     open DriverTool.Web
-
     /// <summary>
     /// Get files to download. As it is possible for two packages to share a readme file this function will return DownloadJobs with uniqe destination files.
     /// </summary>
@@ -104,7 +103,7 @@ module PackageXml =
                 let readmeDownloadInfo = 
                     result{
                         let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
-                        let! sourceReadmeUri = toUri (sourceReadmeUrl)
+                        let! sourceReadmeUri = DriverTool.Web.toUri (sourceReadmeUrl)
                         let! destinationReadmeFilePath = Path.create (getDestinationReadmePath destinationDirectory packageInfo)
                         return {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationReadmeFilePath;}
                     }
