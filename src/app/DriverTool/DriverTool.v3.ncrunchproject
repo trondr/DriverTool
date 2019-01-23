@@ -1,0 +1,6 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <ConsiderInconclusiveTestsAsPassing>True</ConsiderInconclusiveTestsAsPassing>
+    <CopyReferencedAssembliesToWorkspace>True</CopyReferencedAssembliesToWorkspace>
+  </Settings>
+</ProjectConfiguration>
