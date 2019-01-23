@@ -9,4 +9,4 @@ module TestCategory=
     [<Literal>]
     let IntegrationTests = "IntegrationTests"
     [<Literal>]
-    let ManualTests = "IntegrationTests"
+    let ManualTests = "ManualTests"

@@ -6,13 +6,12 @@ module DellUpdates =
 
     let softwareCatalogCab = "http://downloads.dell.com/catalog/CatalogPC.cab"
     let driverPackageCatalogCab = "http://downloads.dell.com/catalog/DriverPackCatalog.cab"
-    let downloadsBaseUrl = "http://downloads.dell.com"
-
 
     open F
     open FSharp.Data
     open System
     open DriverTool.Configuration
+    open DellSettings
 
     let getLocalDellSoftwareCatalogCabFilePath =
         Path.create (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"CatalogPC.cab"))
@@ -159,8 +158,13 @@ module DellUpdates =
         }
 
     let getLocalUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool,logDirectory:string) : Result<PackageInfo[],Exception> =
-        Result.Error (new Exception("Not implemented"))
-
+        result
+            {
+                let! remoteUpdates = getRemoteUpdates (modelCode, operatingSystemCode,overwrite,logDirectory)
+                let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode,operatingSystemCode,remoteUpdates)
+                return localUpdates
+            }
+        
     let getLocalDriverPackageCatalogCabFilePath =
         Path.create (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"DriverPackCatalog.cab"))
 

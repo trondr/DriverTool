@@ -5,7 +5,7 @@ open DriverTool.InstallDriverPackage
 open DriverTool.InstallXml
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
+[<Category(TestCategory.ManualTests)>]
 module InstallDriverPackageTests =
     open DriverTool
     open DriverTool
@@ -16,6 +16,7 @@ module InstallDriverPackageTests =
     [<TestCase("20EQXXXX","WIN10X64","20EQY","WIN10X64","Computer model '20EQXXXX' is not supported by this driver package. Supported model: '20EQY'.")>]
     [<TestCase("20EQXXXX","WIN10X64","20EQX","WIN7X64","Operating system 'WIN10X64' is not supported by this driver package. Supported operating system: 'WIN7X64'.")>]
     [<TestCase("20EQXXXX","WIN10X64","20EQY","WIN7X64","Computer model '20EQXXXX' is not supported by this driver package. Supported model: '20EQY'. Operating system 'WIN10X64' is not supported by this driver package. Supported operating system: 'WIN7X64'.")>]
+    [<Category(TestCategory.UnitTests)>]
     let assertIsSupportedTest (currentModel,currentOs,packagedModel,packagesOs,expectedErrorMessage) =
         let systemInfo = {Model=currentModel;OperatingSystem=currentOs}
         let installConfigurationData = {            

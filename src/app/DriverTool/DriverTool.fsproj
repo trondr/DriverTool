@@ -129,8 +129,9 @@
     <Compile Include="PackageXml.fs" />
     <Compile Include="HpCatalog.fs" />
     <Compile Include="HpUpdates.fs" />
-    <Compile Include="DellUpdates.fs" />
+    <Compile Include="DellSettings.fs" />
     <Compile Include="DellCommandUpdate.fs" />
+    <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="WebParsing.fs" />
     <Compile Include="LenovoCatalog.fs" />
