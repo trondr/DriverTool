@@ -1,8 +1,18 @@
 ﻿<ProjectConfiguration>
   <Settings>
+    <HiddenComponentWarnings>
+      <Value>CopyReferencedAssembliesToWorkspaceIsOn</Value>
+      <Value>NUnitTestsWithSameName</Value>
+    </HiddenComponentWarnings>
     <IgnoredTests>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.InstallDriverPackageTests.copyDriversTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.DellCommandUpdatesIntegrationTests.getLocalUpdatesBaseTest("07A7","WIN10X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpUpdatesTests.downloadSccmDriverPackageTest("WIN10X64","83B3")</TestName>
       </NamedTestSelector>
     </IgnoredTests>
   </Settings>
