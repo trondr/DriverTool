@@ -6,7 +6,7 @@ module ExportLocalUpdates =
 
     open System
 
-    let exportLocalUpdates (csvFilePath:Path) =
+    let exportLocalUpdates (csvFilePath:FileSystem.Path) =
         result{       
             let! localManufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer ("",true) 
             let! localModelCode = ModelCode.create String.Empty true
@@ -14,7 +14,7 @@ module ExportLocalUpdates =
             let getUpdates = DriverTool.Updates.getUpdates (localManufacturer, true)
             let! localUpdates = getUpdates (localModelCode, localOperatingSystemCode, true, DriverTool.Configuration.getDriverPackageLogDirectoryPath)
             let! exportResult = DriverTool.CsvOperations.exportToCsv (csvFilePath, localUpdates)
-            logger.Info("Locally installed updates have been exported to file: " + csvFilePath.Value)
+            logger.Info("Locally installed updates have been exported to file: " + FileSystem.pathValue csvFilePath)
             return exportResult            
         }
 

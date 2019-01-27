@@ -12,20 +12,21 @@ module HpCatalog =
     let expandExe =
         System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
 
-    let expandCabFile (cabFilePath:Path, destinationFolderPath:Path, destinationFilePath:Path) =
+    let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path, destinationFilePath:FileSystem.Path) =
         result{
-            let! expandResult = ProcessOperations.startConsoleProcess (expandExe, String.Format("\"{0}\" -F:* \"{1}\"", cabFilePath.Value, destinationFilePath.Value), destinationFolderPath.Value,-1,null,null,false)            
+            let! expandExePath = FileSystem.path expandExe
+            let! expandResult = ProcessOperations.startConsoleProcess (expandExePath, String.Format("\"{0}\" -F:* \"{1}\"", cabFilePath, destinationFilePath), FileSystem.pathValue destinationFolderPath,-1,null,null,false)            
             return expandResult
         }
 
     let downloadDriverPackCatalog () =
         result{
-            let! destinationFolderPath = Path.create getDownloadCacheDirectoryPath
-            let! destinationCabFile = PathOperations.combine2Paths (destinationFolderPath.Value,"HPClientDriverPackCatalog.cab")
+            let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath
+            let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HPClientDriverPackCatalog.cab")
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist (true, destinationCabFile)
             let! downloadResult = Web.downloadFile (new Uri(soruceDriverPackCatalogCab), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
-            let! destinationFilePath = PathOperations.combine2Paths (destinationFolderPath.Value,"HPClientDriverPackCatalog.xml")
+            let! destinationFilePath = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HPClientDriverPackCatalog.xml")
             let! expandResult = expandCabFile (existingDestinationCabFile, destinationFolderPath,destinationFilePath)
             let! existingDriverPackageCatalogXmlPath = FileOperations.ensureFileExists destinationFilePath            
             return existingDriverPackageCatalogXmlPath
@@ -81,11 +82,11 @@ module HpCatalog =
             CvaTitle=getElementValue (softPaqNode,"CvaTitle");
         }
 
-    let getSoftPaqs (driverPackCatalogXmlFilePath:Path) =
+    let getSoftPaqs (driverPackCatalogXmlFilePath:FileSystem.Path) =
         result
             {
                 let! existingDriverPackageCatalogXmlFilePath = FileOperations.ensureFileExists(driverPackCatalogXmlFilePath)
-                let xDocument = XDocument.Load(existingDriverPackageCatalogXmlFilePath.Value)
+                let xDocument = XDocument.Load(FileSystem.pathValue existingDriverPackageCatalogXmlFilePath)
                 let softPaqs =
                     xDocument.Descendants(XName.Get("SoftPaq"))
                     |>Seq.map (fun sn -> toSoftPaq sn)
@@ -102,11 +103,11 @@ module HpCatalog =
             SoftPaqId=getElementValue (productOSDriverPackNode,"SoftPaqId");
         }
     
-    let getProductOSDriverPacks (driverPackCatalogXmlFilePath:Path) =
+    let getProductOSDriverPacks (driverPackCatalogXmlFilePath:FileSystem.Path) =
         result
             {
                 let! existingDriverPackageCatalogXmlFilePath = FileOperations.ensureFileExists(driverPackCatalogXmlFilePath)
-                let xDocument = XDocument.Load(existingDriverPackageCatalogXmlFilePath.Value)
+                let xDocument = XDocument.Load(FileSystem.pathValue existingDriverPackageCatalogXmlFilePath)
                 let productOSDriverPacks =
                     xDocument.Descendants(XName.Get("ProductOSDriverPack"))
                     |>Seq.map (fun pn -> toProductOSDriverPack pn)
@@ -158,7 +159,7 @@ module HpCatalog =
             OsBuild=osBuild;
         }
 
-    let getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath:Path, modelCode: ModelCode, operatingSystemCode:OperatingSystemCode) =
+    let getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath:FileSystem.Path, modelCode: ModelCode, operatingSystemCode:OperatingSystemCode) =
         result{
             let! existingDriverPackageCatalogXmlFilePath = FileOperations.ensureFileExists(driverPackCatalogXmlFilePath)
             let! softPaqs = getSoftPaqs existingDriverPackageCatalogXmlFilePath

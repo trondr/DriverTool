@@ -27,11 +27,11 @@ module PackageTemplateTests =
     
     [<Test>]    
     let extractPackageTemplateTest () =
-        let getFileCount (destintionFolderPath:Path) =
-            System.IO.Directory.GetFiles(destintionFolderPath.Value,"*.*",System.IO.SearchOption.AllDirectories).Length
+        let getFileCount (destintionFolderPath:FileSystem.Path) =
+            System.IO.Directory.GetFiles(FileSystem.pathValue destintionFolderPath,"*.*",System.IO.SearchOption.AllDirectories).Length
         
         result{
-            let! destinationFolderPath = Path.create (System.IO.Path.Combine(System.IO.Path.GetTempPath(),"extractPackageTemplateTest"))
+            let! destinationFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),"extractPackageTemplateTest"))
             DriverTool.DirectoryOperations.deleteDirectory true destinationFolderPath|>ignore
             let! existingDestinationFolderPath = DirectoryOperations.ensureDirectoryExists (destinationFolderPath, true)
             let! extractedFiles = DriverTool.PackageTemplate.extractPackageTemplate existingDestinationFolderPath
@@ -40,7 +40,7 @@ module PackageTemplateTests =
             
             expectedPackageTemplateFiles
             |>Seq.map (fun f -> 
-                         let file = System.IO.Path.Combine(existingDestinationFolderPath.Value,f)
+                         let file = System.IO.Path.Combine(FileSystem.pathValue existingDestinationFolderPath,f)
                          Assert.IsTrue(System.IO.File.Exists(file),"Extracted file does not exist:" + file)
                          
                         )

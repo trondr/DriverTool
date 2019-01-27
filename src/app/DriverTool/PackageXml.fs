@@ -17,7 +17,7 @@ module PackageXml =
         {
             Location:string; 
             Category:string;
-            FilePath:Path;
+            FilePath:FileSystem.Path;
             BaseUrl:string
             CheckSum:string;
         }
@@ -44,7 +44,7 @@ module PackageXml =
     type DownloadJob = 
         {
             SourceUri:Uri;
-            DestinationFile:string;
+            DestinationFile:FileSystem.Path;
             Checksum:string;
             Size:Int64;
             Package:PackageInfo;
@@ -104,7 +104,7 @@ module PackageXml =
                     result{
                         let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
                         let! sourceReadmeUri = DriverTool.Web.toUri (sourceReadmeUrl)
-                        let! destinationReadmeFilePath = Path.create (getDestinationReadmePath destinationDirectory packageInfo)
+                        let! destinationReadmeFilePath = FileSystem.path (getDestinationReadmePath destinationDirectory packageInfo)
                         return {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationReadmeFilePath;}
                     }
                 match readmeDownloadInfo with
@@ -115,7 +115,7 @@ module PackageXml =
                     result{
                         let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
                         let! sourceInstallerUri = toUri (sourceInstallerUrl)
-                        let! destinationInstallerFilePath = Path.create (getDestinationInstallerPath destinationDirectory packageInfo)
+                        let! destinationInstallerFilePath = FileSystem.path (getDestinationInstallerPath destinationDirectory packageInfo)
                         return {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationInstallerFilePath; }
                     }
                 match installerDownloadInfo with
@@ -127,7 +127,7 @@ module PackageXml =
         |> Seq.map (fun (k,v) -> v |>Seq.head)
 
     let getPackageInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
-        let packageXDocument = XDocument.Load(downloadedPackageInfo.FilePath.Value)
+        let packageXDocument = XDocument.Load(FileSystem.pathValue downloadedPackageInfo.FilePath)
         let packageXElement = packageXDocument.Root
         let name = packageXElement.Attribute(XName.Get("name")).Value
         let version = packageXElement.Attribute(XName.Get("version")).Value
@@ -196,7 +196,7 @@ module PackageXml =
             InstallCommandLine = installCommandLine;                
             Category = category;
             ReleaseDate = releaseDate;
-            PackageXmlName = ((new System.IO.FileInfo(downloadedPackageInfo.FilePath.Value)).Name)
+            PackageXmlName = ((new System.IO.FileInfo(FileSystem.pathValue downloadedPackageInfo.FilePath)).Name)
         }        
         
     open System.Linq
@@ -210,9 +210,9 @@ module PackageXml =
             String.Format("{0}_{1}",prefix,postfix).Replace("__", "_").Replace("__", "_");
         packageFolderName
     
-    let downloadedPackageInfoToExtractedPackageInfo (packageFolderPath:Path,downloadedPackageInfo) =
+    let downloadedPackageInfoToExtractedPackageInfo (packageFolderPath:FileSystem.Path,downloadedPackageInfo) =
         {
-            ExtractedDirectoryPath = packageFolderPath.Value;
+            ExtractedDirectoryPath = FileSystem.pathValue packageFolderPath;
             DownloadedPackage = downloadedPackageInfo;
         }
 
@@ -223,23 +223,21 @@ module PackageXml =
         with
         | ex -> Result.Error (new Exception(String.Format("Failed to copy file '{0}'->'{1}'.", sourceFilePath, destinationFilePath), ex))
     
-    open DriverTool.ExistingPath
-
-    let extractPackageXml (downloadedPackageInfo, packageFolderPath:Path)  =
-        let destinationFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.PackageXmlName)
-        match ExistingFilePath.create downloadedPackageInfo.PackageXmlPath with
+    let extractPackageXml (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
+        let destinationFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.PackageXmlName)
+        match FileSystem.existingFilePath downloadedPackageInfo.PackageXmlPath with
         |Ok filePath -> 
-            match (copyFile (filePath.Value, destinationFilePath)) with
+            match (copyFile (FileSystem.existingFilePathValue filePath, destinationFilePath)) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
         |Error ex -> Result.Error ex
 
-    let extractReadme (downloadedPackageInfo, packageFolderPath:Path)  =
-        let destinationReadmeFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.ReadmeName)
-        match ExistingFilePath.create downloadedPackageInfo.ReadmePath with
+    let extractReadme (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
+        let destinationReadmeFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.ReadmeName)
+        match FileSystem.existingFilePath downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
-            match (copyFile (readmeFilePath.Value, destinationReadmeFilePath)) with
+            match (copyFile (FileSystem.existingFilePathValue readmeFilePath, destinationReadmeFilePath)) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
@@ -249,13 +247,13 @@ module PackageXml =
         let fileName = commandLine.Split(' ').[0];
         fileName;
 
-    let extractInstaller (downloadedPackageInfo, packageFolderPath:Path) =
+    let extractInstaller (downloadedPackageInfo, packageFolderPath:FileSystem.Path) =
         if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine)) then
            logger.Info("Installer does not support extraction, copy the installer directly to package folder...")
-           let destinationInstallerFilePath = System.IO.Path.Combine(packageFolderPath.Value,downloadedPackageInfo.Package.InstallerName)
-           match ExistingFilePath.create downloadedPackageInfo.InstallerPath with
+           let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.InstallerName)
+           match FileSystem.existingFilePath downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
-                match copyFile (installerPath.Value, destinationInstallerFilePath) with
+                match copyFile (FileSystem.existingFilePathValue installerPath, destinationInstallerFilePath) with
                 |Ok _ -> 
                     Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
@@ -263,12 +261,12 @@ module PackageXml =
                 Result.Error ex
         else
             logger.Info("Installer supports extraction, extract installer...")
-            let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",String.Format("\"{0}\"",packageFolderPath.Value))
+            let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",String.Format("\"{0}\"",packageFolderPath))
             let fileName = getFileNameFromCommandLine extractCommandLine
             let arguments = extractCommandLine.Replace(fileName,"")
-            match (ExistingFilePath.create downloadedPackageInfo.InstallerPath) with
+            match (FileSystem.existingFilePath downloadedPackageInfo.InstallerPath) with
             |Ok fp -> 
-                match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments,packageFolderPath.Value,-1,null,null,false) with
+                match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments,FileSystem.pathValue packageFolderPath,-1,null,null,false) with
                 |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex

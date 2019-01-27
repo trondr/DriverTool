@@ -19,7 +19,7 @@ module HpCatalogTests =
                 }
         match actual with
         |Ok p -> 
-            printf "%s" (p.Value)
+            printf "%s" (FileSystem.pathValue p)
             Assert.IsTrue(true)
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
     
@@ -27,7 +27,7 @@ module HpCatalogTests =
     let getSoftPaqsTest () =
         match(result
                 {
-                    let! destinationFolderPath = Path.create (System.IO.Path.GetTempPath())
+                    let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                     let assembly = typeof<ThisTestAssembly>.Assembly
                     let! extractedFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
                     let! actual = HpCatalog.getSoftPaqs extractedFilePath
@@ -52,7 +52,7 @@ module HpCatalogTests =
     let getProductOSDriverPacksTest () =  
          match(result
                 {
-                    let! destinationFolderPath = Path.create (System.IO.Path.GetTempPath())
+                    let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                     let assembly = typeof<ThisTestAssembly>.Assembly
                     let! extractedFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
                     let! actual = HpCatalog.getProductOSDriverPacks extractedFilePath
@@ -74,7 +74,7 @@ module HpCatalogTests =
                 {
                     let! operatingSystemCode = (OperatingSystemCode.create operatingSystemCodeString false)
                     let! modelCode = (ModelCode.create modelCodeString false)
-                    let! destinationFolderPath = Path.create (System.IO.Path.GetTempPath())
+                    let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                     let assembly = typeof<ThisTestAssembly>.Assembly
                     let! extractedFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
                     let! actual = HpCatalog.getSccmDriverPackageInfoBase (extractedFilePath,modelCode,operatingSystemCode)

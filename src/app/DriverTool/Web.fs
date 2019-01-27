@@ -14,19 +14,19 @@ module Web =
             SourceUri:Uri;
             SourceChecksum:string;
             SourceFileSize:Int64;            
-            DestinationFile:Path;            
+            DestinationFile:FileSystem.Path;            
         }
 
     let (|TextFile|_|) (input:string) = if input.ToLower().EndsWith(".txt") then Some(input) else None
     let (|XmlFile|_|) (input:string) = if input.ToLower().EndsWith(".xml") then Some(input) else None
 
     let ignoreVerificationErrors downloadInfo =
-        match downloadInfo.DestinationFile.Value with
+        match FileSystem.pathValue downloadInfo.DestinationFile with
         | TextFile _ -> true
         | XmlFile _ -> true
         | _ -> false
 
-    let downloadFileBase (sourceUri:Uri, force, destinationFilePath:Path) =
+    let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
             webClient.Proxy <- null;
@@ -35,10 +35,10 @@ module Web =
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist (force, destinationFilePath)) with
             |Ok path -> 
-                logger.InfoFormat("Downloading '{0}' -> {1}...", sourceUri.OriginalString, path.Value)
-                webClient.DownloadFile(sourceUri.OriginalString,path.Value)
+                logger.InfoFormat("Downloading '{0}' -> {1}...", sourceUri.OriginalString, FileSystem.pathValue path)
+                webClient.DownloadFile(sourceUri.OriginalString,FileSystem.pathValue path)
                 Result.Ok path      
-            |Error ex -> Result.Error (new Exception(String.Format("Destination file '{0}' allready exists", destinationFilePath.Value), ex))            
+            |Error ex -> Result.Error (new Exception(String.Format("Destination file '{0}' allready exists", destinationFilePath), ex))            
         with
         | ex -> Result.Error (new Exception( String.Format("Failed to download '{0}' due to '{1}'", sourceUri.OriginalString, ex.Message),ex))
     
@@ -46,19 +46,19 @@ module Web =
         Logging.genericLoggerResult Logging.LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
 
     let hasSameFileHash downloadInfo =
-        (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile.Value, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
+        (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
 
     let downloadIsRequired downloadInfo =
         not (hasSameFileHash downloadInfo)        
     
     type HasSameFileHashFunc = (DownloadInfo) -> bool
-    type IsTrustedFunc = Path -> bool
+    type IsTrustedFunc = FileSystem.Path -> bool
 
     let verifyDownloadBase (hasSameFileHashFunc: HasSameFileHashFunc, isTrustedFunc: IsTrustedFunc, logger: ILog , downloadInfo, ignoreVerificationErrors) = 
         match (hasSameFileHashFunc downloadInfo) with
         |true  -> Result.Ok downloadInfo
         |false ->
-            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash. ", downloadInfo.DestinationFile.Value,downloadInfo.SourceUri.OriginalString)
+            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash. ", FileSystem.pathValue downloadInfo.DestinationFile,downloadInfo.SourceUri.OriginalString)
             match ignoreVerificationErrors with
             |true ->
                 logger.Warn(msg)
@@ -84,7 +84,7 @@ module Web =
                 verifyDownload downloadInfo ignoreVerificationErrors
             |Result.Error ex -> Result.Error (new Exception(String.Format("Failed to download '{0}' due to: {1} ",downloadInfo.SourceUri.ToString(),ex.Message), ex))
         |false -> 
-            logger.Info(String.Format("Destination file '{0}' allready exists.", downloadInfo.DestinationFile.Value))
+            logger.Info(String.Format("Destination file '{0}' allready exists.", FileSystem.pathValue downloadInfo.DestinationFile))
             Result.Ok downloadInfo
 
     type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
@@ -95,9 +95,9 @@ module Web =
     let toUri url =
         tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
 
-    let downloadWebFile (destinationFolderPath:Path, webFile:WebFile) =
+    let downloadWebFile (destinationFolderPath:FileSystem.Path, webFile:WebFile) =
         result{
-            let! destinationFilePath = Path.create (System.IO.Path.Combine(destinationFolderPath.Value,webFile.FileName))
+            let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,webFile.FileName))
             let! sourceUri = toUri webFile.Url
             let downloadInfo = { SourceUri = sourceUri;SourceChecksum = webFile.Checksum;SourceFileSize = webFile.Size;DestinationFile = destinationFilePath}
             let! downloadedInfo = downloadIfDifferent (downloadInfo,false)            

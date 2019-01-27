@@ -20,7 +20,7 @@ module WebParsingTests  =
         let testResult = 
             result{
                 let! content = getContentFromWebPage webPageUrl
-                let filePath = getTempFile "ds112090.html"
+                let! filePath = FileSystem.path (getTempFile "ds112090.html")
                 content |> (writeContentToFile filePath)|> ignore
                 Assert.IsFalse(String.IsNullOrWhiteSpace(content))
                 return content

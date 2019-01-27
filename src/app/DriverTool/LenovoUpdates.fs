@@ -23,20 +23,20 @@ module LenovoUpdates =
     
     open DriverTool.Configuration
 
-    let getPackagesInfo (modelInfoXmlFilePath:Path) : Result<seq<PackageXmlInfo>,Exception>= 
+    let getPackagesInfo (modelInfoXmlFilePath:FileSystem.Path) : Result<seq<PackageXmlInfo>,Exception>= 
         try
-            let x = PackagesXmlProvider.Load(modelInfoXmlFilePath.Value)
+            let x = PackagesXmlProvider.Load(FileSystem.pathValue modelInfoXmlFilePath)
             x.Packages
             |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
             |> Result.Ok            
         with
         |ex -> Result.Error ex
 
-    let getPackagesInfoR (modelInfoXmlFilePath:Result<Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
+    let getPackagesInfoR (modelInfoXmlFilePath:Result<FileSystem.Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
         try
             match modelInfoXmlFilePath with
             |Ok p -> 
-                let x = PackagesXmlProvider.Load(p.Value)
+                let x = PackagesXmlProvider.Load(FileSystem.pathValue p)
                 x.Packages
                 |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
                 |> Result.Ok
@@ -56,13 +56,13 @@ module LenovoUpdates =
         with
         | ex -> Result.Error ex
 
-    let getTempXmlFilePathFromUri uri : Result<Path,Exception> = 
+    let getTempXmlFilePathFromUri uri : Result<FileSystem.Path,Exception> = 
         let xmlFileName = getXmlFileNameFromUri uri
         match xmlFileName with
         |Result.Ok f -> 
             let tempXmlFilePathString = 
                 getDownloadCacheFilePath f
-            Path.create tempXmlFilePathString
+            FileSystem.path tempXmlFilePathString
         |Result.Error ex -> Result.Error ex
 
     open System.Linq
@@ -157,13 +157,13 @@ module LenovoUpdates =
     let getModelInfoXmlFilePath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         let fileName = String.Format("{0}_{1}.xml",modelCode.Value,operatingSystemCode.Value)
         let filePathString = getDownloadCacheFilePath fileName        
-        Path.create filePathString
+        FileSystem.path filePathString
 
     let getPackageInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         try
             Result.Ok (getPackageInfoUnsafe downloadedPackageInfo)
         with
-        |ex -> Result.Error (new Exception(String.Format("Failed to get update info from '{0}'.",downloadedPackageInfo.FilePath.Value),ex))
+        |ex -> Result.Error (new Exception(String.Format("Failed to get update info from '{0}'.",downloadedPackageInfo.FilePath),ex))
 
     let parsePackageXmls (downloadedPackageXmls : seq<DownloadedPackageXmlInfo>) : seq<Result<PackageInfo,Exception>> = 
         downloadedPackageXmls
@@ -276,7 +276,7 @@ module LenovoUpdates =
         }
    
     open DriverTool.PackageXml
-    open DriverTool.ExistingPath
+    
     open DriverTool.LenovoCatalog
 
     let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
@@ -336,17 +336,17 @@ module LenovoUpdates =
 
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{
-            let! installerdestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let! installerdestinationFilePath = FileSystem.path (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
             let! installerUri = toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
-            let installerPath = installerInfo.DestinationFile.Value
+            let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
-            let! readmeDestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFile.FileName))
+            let! readmeDestinationFilePath = FileSystem.path (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFile.FileName))
             let! readmeUri = toUri sccmPackage.ReadmeFile.Url
             let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeFile.Checksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
             let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)
-            let readmePath = readmeInfo.DestinationFile.Value
+            let readmePath = FileSystem.pathValue readmeInfo.DestinationFile
 
             return {
                 InstallerPath = installerPath
@@ -355,20 +355,20 @@ module LenovoUpdates =
             }            
         }         
     
-    let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
+    let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         loggerl.Info("Extract SccmPackage installer...")        
-        let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath.Value)
-        match (ExistingFilePath.create downloadedSccmPackage.InstallerPath) with
+        let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath)
+        match (FileSystem.existingFilePath downloadedSccmPackage.InstallerPath) with
         |Ok fp -> 
-            match DriverTool.ProcessOperations.startConsoleProcess (fp.Value, arguments, destinationPath.Value, -1, null, null, false) with
+            match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
             |Ok _ -> Result.Ok destinationPath
             |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
         |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
     
-    let extractUpdate (rootDirectory:Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
+    let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, prefix + "_" + packageFolderName)
+            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)
             let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
             let extractPackageXmlResult = extractPackageXml (downloadedPackageInfo, existingPackageFolderPath)

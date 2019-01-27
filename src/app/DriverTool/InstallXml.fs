@@ -38,11 +38,11 @@ module InstallXml =
         OsShortName:string;
     }
 
-    let loadInstallXml (installXmlPath:Path) = 
+    let loadInstallXml (installXmlPath:FileSystem.Path) = 
        
         try
             let installXml = 
-                InstallConfiguration.Load(installXmlPath.Value)
+                InstallConfiguration.Load(FileSystem.pathValue installXmlPath)
             Result.Ok {
                 LogDirectory = installXml.LogDirectory;
                 LogFileName = installXml.LogFileName;
@@ -60,7 +60,7 @@ module InstallXml =
         
     open DriverTool.XmlToolKit
     
-    let saveInstallXml (installXmlPath:Path, installConfigurationData:InstallConfigurationData) =
+    let saveInstallXml (installXmlPath:FileSystem.Path, installConfigurationData:InstallConfigurationData) =
         try
 
             let doc =
@@ -79,7 +79,7 @@ module InstallXml =
                         XElement "OsShortName" [installConfigurationData.OsShortName]
                     ]
                 ]
-            doc.Save(installXmlPath.Value) |> ignore
+            doc.Save(FileSystem.pathValue installXmlPath) |> ignore
             loadInstallXml installXmlPath //Verify by loading xml back from file
         with
         | _ as ex -> Result.Error ex

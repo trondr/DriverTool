@@ -275,9 +275,9 @@ module LenovoCatalogTests=
         let url = "https://support.lenovo.com/no/en/downloads/ds112090"
         let testResult =
             result{
-                let contentFile = getTempFile "ds112090.html"        
+                let! contentFile = FileSystem.path (getTempFile "ds112090.html")        
                 let! file = (downloadWebContent url contentFile false)
-                let! content = (file |> readContentFromFile)                
+                let! content = (file|> readContentFromFile)                
                 let actual = (getDownloadLinksFromWebPageContent content)|>Seq.toArray
                 System.Console.Write(actual.ToString())
                 let expectedArray = (expectedSccmPacakages |> Seq.toArray)

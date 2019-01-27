@@ -12,10 +12,10 @@ module PackageTemplate =
                 |> Seq.filter (fun x -> (isDriverPackageEmbeddedResourceName x))
         embeddedResourceNames
     
-    let resourceNameToDirectoryDictionary (destinationFolderPath:Path) = 
+    let resourceNameToDirectoryDictionary (destinationFolderPath:FileSystem.Path) = 
         dict[
-        "DriverTool.PackageTemplate", destinationFolderPath.Value;        
-        "DriverTool.PackageTemplate.Drivers", System.IO.Path.Combine(destinationFolderPath.Value,"Drivers");        
+        "DriverTool.PackageTemplate", FileSystem.pathValue destinationFolderPath;        
+        "DriverTool.PackageTemplate.Drivers", (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,"Drivers"));        
         ]
 
     let getDriverToolFiles =
@@ -33,10 +33,10 @@ module PackageTemplate =
         |Error ex -> Result.Error ex
         
 
-    let copyDriverToolToDriverPackage (destinationFolderPath:Path) =
+    let copyDriverToolToDriverPackage (destinationFolderPath:FileSystem.Path) =
         result{
             logger.Info("Copy DriverTool.exe to driver package so that it can handle install and uninstall of the driver package.")
-            let! driverToolFolderPath = Path.create (System.IO.Path.Combine(destinationFolderPath.Value,"DriverTool"))
+            let! driverToolFolderPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,"DriverTool"))
             let! existingDriverToolDirectoryPath = DriverTool.DirectoryOperations.ensureDirectoryExists (driverToolFolderPath, true)
             let! driverToolFiles = 
                 getDriverToolFiles
@@ -44,7 +44,7 @@ module PackageTemplate =
             logger.Info("Adjust corflags on the copied DriverTool.exe so that the version of DriverTool.exe in the driver package will prefer to run in 64 bit process on a 64 bit operating system. This is required when installing and uninstalling the driver package.")
             let! adjustCorFlagResult =
                 driverToolFiles
-                |>Seq.filter(fun p -> p.Value.EndsWith(".exe"))
+                |>Seq.filter(fun p -> (FileSystem.pathValue p).EndsWith(".exe"))
                 |>Seq.map(fun p -> 
                             (CorFlags.prefer32BitClear p)
                             |>toResult p                    
@@ -53,7 +53,7 @@ module PackageTemplate =
             return adjustCorFlagResult
         }
 
-    let extractPackageTemplate (destinationFolderPath:Path) =
+    let extractPackageTemplate (destinationFolderPath:FileSystem.Path) =
         result {
             let! emptyDestinationFolderPath = DriverTool.DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath, true)
             let resourceNamesVsDestinationFilesMap = mapResourceNamesToFileNames (emptyDestinationFolderPath,getPackageTemplateEmbeddedResourceNames,resourceNameToDirectoryDictionary)

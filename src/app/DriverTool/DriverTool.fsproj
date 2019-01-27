@@ -107,7 +107,6 @@
     <Compile Include="DirectoryOperations.fs" />
     <Compile Include="PathOperations.fs" />
     <Compile Include="FileOperations.fs" />
-    <Compile Include="ExistingPath.fs" />
     <Compile Include="CsvOperations.fs" />
     <Compile Include="Environment.fs" />
     <Compile Include="XmlToolKit.fs" />

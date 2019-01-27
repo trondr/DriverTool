@@ -34,7 +34,7 @@ module CreateDriverPackageTests =
             SourceUri=new Uri("http://some.test.server.com/test.txt");
             SourceChecksum="";
             SourceFileSize=0L;            
-            DestinationFile=Path.createUnsafe @"c:\temp\test.txt";
+            DestinationFile=FileSystem.pathUnSafe @"c:\temp\test.txt";
         }
 
     [<Test>]
@@ -56,10 +56,10 @@ module CreateDriverPackageTests =
 
         let downloadInfos = 
             [|
-                {defaultDownloadInfo with DestinationFile = Path.createUnsafe (@"c:\temp\" + installerName1)}
-                {defaultDownloadInfo with DestinationFile = Path.createUnsafe (@"c:\temp\" + installerName2)}
-                {defaultDownloadInfo with DestinationFile = Path.createUnsafe (@"c:\temp\" + installerName3)}
-                {defaultDownloadInfo with DestinationFile = Path.createUnsafe (@"c:\temp\" + installerName4)}
+                {defaultDownloadInfo with DestinationFile = FileSystem.pathUnSafe (@"c:\temp\" + installerName1)}
+                {defaultDownloadInfo with DestinationFile = FileSystem.pathUnSafe (@"c:\temp\" + installerName2)}
+                {defaultDownloadInfo with DestinationFile = FileSystem.pathUnSafe (@"c:\temp\" + installerName3)}
+                {defaultDownloadInfo with DestinationFile = FileSystem.pathUnSafe (@"c:\temp\" + installerName4)}
             |]
         ()
         let expectedCount = 4

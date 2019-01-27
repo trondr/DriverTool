@@ -38,8 +38,8 @@ module CreateDriverPackage =
     let downloadUpdate (downloadJob, ignoreVerificationErrors) =
         Logging.genericLoggerResult Logging.LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
 
-    let toFileName (filePath:Path) =
-        System.IO.Path.GetFileName(filePath.Value)
+    let toFileName (filePath:FileSystem.Path) =
+        System.IO.Path.GetFileName(FileSystem.pathValue filePath)
 
     let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
         packageInfos
@@ -105,12 +105,12 @@ module CreateDriverPackage =
             |> Seq.length            
         (dpinstFilesCount > 0)
 
-    let packageIsUsingDpInstDuringInstall (installScriptPath:Path, installCommandLine:string) = 
+    let packageIsUsingDpInstDuringInstall (installScriptPath:FileSystem.Path, installCommandLine:string) = 
         match (installCommandLine.StartsWith("dpinst.exe", true, System.Globalization.CultureInfo.InvariantCulture)) with
         | true -> 
             true
         | false -> 
-            directoryContainsDpInst ((new System.IO.FileInfo(installScriptPath.Value)).Directory.FullName)
+            directoryContainsDpInst ((new System.IO.FileInfo(FileSystem.pathValue installScriptPath)).Directory.FullName)
 
     let createUnInstallScriptFileContent () =
         let sw = StringBuilder()
@@ -121,12 +121,12 @@ module CreateDriverPackage =
         sw.AppendLine("EXIT /B %ExitCode%")|>ignore
         sw.ToString()
 
-    let writeTextToFileUnsafe (filePath:Path, text:string) =
-        use sw = new System.IO.StreamWriter(filePath.Value)
+    let writeTextToFileUnsafe (filePath:FileSystem.Path, text:string) =
+        use sw = new System.IO.StreamWriter(FileSystem.pathValue filePath)
         sw.Write(text)
         filePath
     
-    let writeTextToFile (filePath:Path) (text:string) =
+    let writeTextToFile (filePath:FileSystem.Path) (text:string) =
         tryCatch writeTextToFileUnsafe (filePath, text)
 
     let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer2,logDirectory:string) =
@@ -203,7 +203,7 @@ module CreateDriverPackage =
     
     open EmbeddedResouce
 
-    let extractDpInstExitCodeToExitCodeExe (toolsPath:Path) =
+    let extractDpInstExitCodeToExitCodeExe (toolsPath:FileSystem.Path) =
         let exeResult = 
             extractEmbeddedResource ("DriverTool.Tools.DpInstExitCode2ExitCode.exe", toolsPath,"DpInstExitCode2ExitCode.exe")
         let configResult =
@@ -251,16 +251,16 @@ module CreateDriverPackage =
         |> toAccumulatedResult
     
     
-    let createSccmPackageInstallScript (extractedSccmPackagePath:Path) =
+    let createSccmPackageInstallScript (extractedSccmPackagePath:FileSystem.Path) =
         result{
             let! installScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-Install-Package.cmd"))
+                FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue extractedSccmPackagePath,"DT-Install-Package.cmd"))
             let installCommandLine = "pnputil.exe /add-driver *.inf /install /subdirs"                      
             
             let createSccmInstallScriptFileContent = createSccmInstallScriptFileContent installCommandLine
             let! installScript = writeTextToFile installScriptPath createSccmInstallScriptFileContent
             let! unInstallScriptPath = 
-                Path.create (System.IO.Path.Combine(extractedSccmPackagePath.Value,"DT-UnInstall-Package.cmd"))
+                FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue extractedSccmPackagePath,"DT-UnInstall-Package.cmd"))
             let! unInstallScriptResult = writeTextToFile unInstallScriptPath (createUnInstallScriptFileContent())
             return installScript
         }        
@@ -276,7 +276,7 @@ module CreateDriverPackage =
 
     open DriverTool.PackageTemplate
         
-    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path, baseOnLocallyInstalledUpdates, logDirectory) =             
+    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 loggerc.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
@@ -303,28 +303,28 @@ module CreateDriverPackage =
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let packageName = String.Format("{0} {1} {2} {3} {4} Drivers {5}", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value, releaseDate)                
-                let! versionedPackagePath = combine3Paths (destinationFolderPath.Value, model.Value, releaseDate)
+                let! versionedPackagePath = combine3Paths (FileSystem.pathValue destinationFolderPath, model.Value, releaseDate)
 
-                loggerc.InfoFormat("Extracting package template to '{0}'",versionedPackagePath.Value)
+                loggerc.InfoFormat("Extracting package template to '{0}'",versionedPackagePath)
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
                 loggerc.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
 
-                let! driversPath = combine2Paths (versionedPackagePath.Value, "Drivers")
-                loggerc.InfoFormat("Extracting drivers to folder '{0}'...", driversPath.Value)
+                let! driversPath = combine2Paths (FileSystem.pathValue versionedPackagePath, "Drivers")
+                loggerc.InfoFormat("Extracting drivers to folder '{0}'...", driversPath)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
                 let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updates)
                 let installScriptResults = createInstallScripts (extractedUpdates,manufacturer,logDirectory)
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
-                let! sccmPackageDestinationPath = Path.create (System.IO.Path.Combine(existingDriversPath.Value,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
+                let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
                 let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists (sccmPackageDestinationPath, true)
-                loggerc.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath.Value)
+                loggerc.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath)
                 
                 let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (manufacturer)                
                 let! extractedSccmPackagePath = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
                 let! sccmPackageInstallScriptResult = createSccmPackageInstallScript extractedSccmPackagePath
 
-                let! installXmlPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"Install.xml"))
+                let! installXmlPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"Install.xml"))
                 let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
                 let! installConfiguration = DriverTool.InstallXml.loadInstallXml existingInstallXmlPath
                 
@@ -342,9 +342,9 @@ module CreateDriverPackage =
                         Publisher = packagePublisher
                     }
                 let savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
-                loggerc.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath.Value, (Logging.valueToString savedInstallConfiguration))
+                loggerc.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath, (Logging.valueToString savedInstallConfiguration))
                 loggerc.Info("Create PackageDefinition.sms")
-                let! packageDefinitionSmsPath = Path.create (System.IO.Path.Combine(versionedPackagePath.Value,"PackageDefinition.sms"))                
+                let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"PackageDefinition.sms"))                
                 let! packageDefintionWriteResult = 
                     getPackageDefinitionFromInstallConfiguration updatedInstallConfiguration
                     |> writePackageDefinitionToFile packageDefinitionSmsPath
@@ -356,7 +356,7 @@ module CreateDriverPackage =
                 return! res
             }
     
-    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath: Path,baseOnLocallyInstalledUpdates:bool, logDirectory) =
+    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path,baseOnLocallyInstalledUpdates:bool, logDirectory) =
         Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory)
 
         

@@ -79,8 +79,8 @@ RegistryValueIs64Bit={7}
             packageDefinition.RegistryValueIs64Bit
             )
     
-    let writePackageDefinitionToFile (filePath:Path) (packageDefinition:PackageDefinition) =
-        match FileOperations.writeContentToFile filePath.Value (getPackageDefinitionContent packageDefinition) with
+    let writePackageDefinitionToFile (filePath:FileSystem.Path) (packageDefinition:PackageDefinition) =
+        match FileOperations.writeContentToFile (filePath) (getPackageDefinitionContent packageDefinition) with
         |Ok p -> Result.Ok ()
         |Error ex -> Result.Error ex
     

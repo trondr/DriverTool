@@ -14,7 +14,7 @@ module LenovoCatalog =
         DriverTool.Configuration.getDownloadCacheDirectoryPath
 
     let getLocalLenvoCatalogXmlFilePath =
-        Path.create (System.IO.Path.Combine(getCacheDirectory,"LenovoCatalog.xml"))
+        FileSystem.path (System.IO.Path.Combine(getCacheDirectory,"LenovoCatalog.xml"))
 
     let downloadCatalog =
         result {
@@ -28,7 +28,7 @@ module LenovoCatalog =
     let getSccmPackageInfos =
         result{
             let! catalogXmlPath = downloadCatalog
-            let productsXml = CatalogXmlProvider.Load(catalogXmlPath.Value)
+            let productsXml = CatalogXmlProvider.Load(FileSystem.pathValue catalogXmlPath)
             let products =  
                 productsXml.Products
                 |>  Seq.map (fun p-> 

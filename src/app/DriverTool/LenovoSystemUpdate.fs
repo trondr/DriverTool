@@ -25,14 +25,14 @@ module LenovoSystemUpdate =
             |>Seq.map(fun u ->
                             result{
                                 let update =  (u :?> Update)
-                                let! updateFilePath = Path.create (System.IO.Path.Combine(update.LocalPath, update.FileName))
+                                let! updateFilePath = FileSystem.path (System.IO.Path.Combine(update.LocalPath, update.FileName))
                                 let downloadedPackageInfo = 
                                     {
                                         Location="" 
                                         Category="Unknown Category" 
                                         FilePath=updateFilePath
                                         BaseUrl=""
-                                        CheckSum=DriverTool.Checksum.computeFileHashSha256String updateFilePath.Value 
+                                        CheckSum=DriverTool.Checksum.computeFileHashSha256String updateFilePath
                                     }                            
                                 let packageInfo = getPackageInfoUnsafe(downloadedPackageInfo)
                                 return packageInfo

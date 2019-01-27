@@ -42,8 +42,8 @@ module InstallDriverPackageTests =
     let copyDriversTest () =
         let result = 
             F.result{
-                let! driverPackagePath = Path.create @"C:\Temp\Drivers\SomeModel\2018-12-29"
-                let! destinationDriversFolderPath = Path.create @"C:\Windows\Drivers\_tst_"
+                let! driverPackagePath = FileSystem.path @"C:\Temp\Drivers\SomeModel\2018-12-29"
+                let! destinationDriversFolderPath = FileSystem.path @"C:\Windows\Drivers\_tst_"
                 let! copyResult = copyDrivers (driverPackagePath, destinationDriversFolderPath)
                 return copyResult
             }

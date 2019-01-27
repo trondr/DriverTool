@@ -21,10 +21,10 @@ module DellCommandUpdate =
         |null -> None
         |v -> Some v.Value
 
-    let getDownloadedFilesBase (activityLogPath:Path) =
+    let getDownloadedFilesBase (activityLogPath:FileSystem.Path) =
         result{
-            let! existingActivityLogPath = FileOperations.ensureFileExistsWithMessage (sprintf "Dell Activity log '%s' not found. Please install and run Dell Command|Update." activityLogPath.Value) activityLogPath
-            let actitivyLogXDocument = XDocument.Load(existingActivityLogPath.Value)                        
+            let! existingActivityLogPath = FileOperations.ensureFileExistsWithMessage (sprintf "Dell Activity log '%s' not found. Please install and run Dell Command|Update." (FileSystem.pathValue activityLogPath)) activityLogPath
+            let actitivyLogXDocument = XDocument.Load(FileSystem.pathValue existingActivityLogPath)                        
             let logEntries = actitivyLogXDocument.Descendants(XName.Get("LogEntry"))
             let downloadedFiles = 
                 logEntries
@@ -54,7 +54,7 @@ module DellCommandUpdate =
         
     let getDownloadedFiles () =
         result{
-            let! activityLogPath = Path.create dellCommandUpdateActityLogFile            
+            let! activityLogPath = FileSystem.path dellCommandUpdateActityLogFile            
             let! downloadedFiles = getDownloadedFilesBase activityLogPath
             return downloadedFiles
         }

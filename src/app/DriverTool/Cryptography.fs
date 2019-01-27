@@ -2,5 +2,5 @@
 
 module Cryptography =
     
-    let isTrusted (filePath:Path) =
-        DriverTool.CSharpLib.Wintrust.IsTrusted(filePath.Value)
+    let isTrusted (filePath:FileSystem.Path) =
+        DriverTool.CSharpLib.Wintrust.IsTrusted(FileSystem.pathValue filePath)
