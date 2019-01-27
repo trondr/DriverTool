@@ -61,18 +61,12 @@ module CreateDriverPackage =
                         }
                     )
     
-    let resultToOption (result : Result<_,Exception>) =
-        match result with
-        |Ok s -> Some s
-        |Error ex -> 
-            loggerc.Error(ex.Message)
-            None
-
+    
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos             
             |> packageInfosToDownloadJobs destinationDirectory            
-            |> PSeq.map (fun dj -> resultToOption (downloadUpdate (dj,ignoreVerificationErrors dj)))
+            |> PSeq.map (fun dj -> resultToOption loggerc (downloadUpdate (dj,ignoreVerificationErrors dj)))
             |> PSeq.toArray
             |> Seq.choose id //Remove all failed downloads            
             |> Seq.toArray            
@@ -311,13 +305,13 @@ module CreateDriverPackage =
 
                 let! driversPath = combine2Paths (FileSystem.pathValue versionedPackagePath, "Drivers")
                 loggerc.InfoFormat("Extracting drivers to folder '{0}'...", driversPath)
-                let! existingDriversPath = DirectoryOperations.ensureDirectoryExists (driversPath, true)
+                let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
                 let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updates)
                 let installScriptResults = createInstallScripts (extractedUpdates,manufacturer,logDirectory)
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
                 let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
-                let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists (sccmPackageDestinationPath, true)
+                let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists true sccmPackageDestinationPath
                 loggerc.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath)
                 
                 let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (manufacturer)                

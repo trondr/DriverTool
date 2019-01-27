@@ -71,7 +71,7 @@ module Robocopy=
         result{
             let! roboCopyExeFilePath = FileSystem.path roboCopyExe
             let! existingRobocopyExeFilePath = FileOperations.ensureFileExists roboCopyExeFilePath
-            let! existingSourceFolderPath = DirectoryOperations.ensureDirectoryExists (sourceFolderPath, false)
+            let! existingSourceFolderPath = DirectoryOperations.ensureDirectoryExists false sourceFolderPath
             let! roboCopyExitCode = ProcessOperations.startConsoleProcess (existingRobocopyExeFilePath,String.Format("\"{0}\" \"{1}\" {2}",existingSourceFolderPath,destinationFolderPath,robocopyOptions),FileSystem.pathValue existingSourceFolderPath,-1,null,null,false)
             let! exitCode = roboCopyExitCode2ExitCode roboCopyExitCode
             let! copyResult = 

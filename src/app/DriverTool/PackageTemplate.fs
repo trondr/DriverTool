@@ -37,7 +37,7 @@ module PackageTemplate =
         result{
             logger.Info("Copy DriverTool.exe to driver package so that it can handle install and uninstall of the driver package.")
             let! driverToolFolderPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,"DriverTool"))
-            let! existingDriverToolDirectoryPath = DriverTool.DirectoryOperations.ensureDirectoryExists (driverToolFolderPath, true)
+            let! existingDriverToolDirectoryPath = DriverTool.DirectoryOperations.ensureDirectoryExists true driverToolFolderPath
             let! driverToolFiles = 
                 getDriverToolFiles
                 |> (DriverTool.FileOperations.copyFiles existingDriverToolDirectoryPath)

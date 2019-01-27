@@ -17,8 +17,11 @@ module DirectoryOperations =
     
     let deleteDirectoryUnsafe (force ,folderPath:FileSystem.Path) =
             match (System.IO.Directory.Exists(FileSystem.pathValue folderPath)) with
-            |true -> System.IO.Directory.Delete(FileSystem.pathValue folderPath, force)
-            |false -> ()
+            |true -> 
+                System.IO.Directory.Delete(FileSystem.pathValue folderPath, force)
+                folderPath
+            |false -> 
+                folderPath
      
     let deleteDirectory force (folderPath:FileSystem.Path) =
         tryCatch deleteDirectoryUnsafe (force, folderPath)
@@ -26,22 +29,22 @@ module DirectoryOperations =
     let directoryPathExists (directoryPath:FileSystem.Path) =
         System.IO.Directory.Exists(FileSystem.pathValue directoryPath)
 
-    let ensureDirectoryExistsWithMessage (message,directoryPath:FileSystem.Path, createIfNotExists) =
+    let ensureDirectoryExistsWithMessage createIfNotExists message directoryPath =
         let directoryExists = 
             directoryPathExists directoryPath
         match (not directoryExists && createIfNotExists) with
         |true->
-            logger.InfoFormat("Creating directory: '{0}'...",directoryPath)
+            logger.Info(sprintf "Creating directory: '%s'..." (FileSystem.pathValue directoryPath))
             createDirectory directoryPath
         |false->
            match directoryExists with
            | true -> Result.Ok directoryPath
-           | false -> Result.Error (new Exception(String.Format("Directory not found: '{0}'. {1}", directoryPath, message)))
+           | false -> Result.Error (new Exception(sprintf "Directory not found: '%s'. %s" (FileSystem.pathValue directoryPath) message))
 
-    let ensureDirectoryExists (directoryPath:FileSystem.Path, createIfNotExists) =
-        ensureDirectoryExistsWithMessage (String.Empty,directoryPath,createIfNotExists)
+    let ensureDirectoryExists createIfNotExists directoryPath =
+        ensureDirectoryExistsWithMessage createIfNotExists String.Empty directoryPath
     
-    let directoryIsEmpty (directoryPath:FileSystem.Path) =
+    let directoryIsEmpty directoryPath =
          match (directoryPathExists directoryPath) with
          |true ->
              let isEmpty = not (System.IO.Directory.GetDirectories(FileSystem.pathValue directoryPath).Length > 0 || System.IO.Directory.GetFiles(FileSystem.pathValue directoryPath).Length > 0)
@@ -49,7 +52,7 @@ module DirectoryOperations =
          |false -> true
     
     let ensureDirectoryExistsAndIsEmptyWithMessage  message (directoryPath:FileSystem.Path) createIfNotExists =
-        match (ensureDirectoryExists (directoryPath, createIfNotExists)) with
+        match (ensureDirectoryExists createIfNotExists directoryPath) with
         |Ok dp -> 
             match (directoryIsEmpty dp) with
             |true -> Result.Ok dp
@@ -73,9 +76,9 @@ module DirectoryOperations =
     let getSubDirectories directory =
         tryCatch getSubDirectoriesUnsafe directory
 
-    let getSubDirectoryPaths (directoryPath:FileSystem.Path) =
+    let getSubDirectoryPaths directoryPath =
         result{
-            let! existingDirectoryPath = ensureDirectoryExists (directoryPath, false)
+            let! existingDirectoryPath = ensureDirectoryExists false directoryPath
             let! subDirectories = getSubDirectories (FileSystem.pathValue existingDirectoryPath)
             let! subDirectoryPaths = 
                     subDirectories
@@ -83,4 +86,13 @@ module DirectoryOperations =
                     |>toAccumulatedResult
             return subDirectoryPaths
         }
-        
+    
+    let getFilesUnsafe recurse directoryPath =
+        let searchOptions =
+            match recurse with
+            |false -> System.IO.SearchOption.TopDirectoryOnly
+            |true -> System.IO.SearchOption.AllDirectories
+        System.IO.Directory.GetFiles(FileSystem.pathValue directoryPath,"*.*",searchOptions)
+    
+    let getFiles recurse directoryPath =
+        tryCatch2 getFilesUnsafe recurse directoryPath
