@@ -142,7 +142,7 @@ module InstallDriverPackage =
 
     let installDrivers (localDriversFolderPath:FileSystem.Path) installScriptName installConfiguration driverPackageName =
         result{            
-            let! existingLocalDriversFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage (String.Format("Can not run install scripts '{0}' due to the local driver folder '{1}', where the scripts should be located, does not exist. ",installScriptName,localDriversFolderPath),localDriversFolderPath,false)
+            let! existingLocalDriversFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage false (String.Format("Can not run install scripts '{0}' due to the local driver folder '{1}', where the scripts should be located, does not exist. ",installScriptName,localDriversFolderPath)) localDriversFolderPath
             
             logger.Info("Getting active drivers...")
             let! activeDriverFolders = getGetActiveDriverFolders existingLocalDriversFolderPath    
@@ -235,7 +235,7 @@ module InstallDriverPackage =
             let! localDriversFolderPath = FileSystem.path localDriversFolder
             let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
             let! uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd installConfiguration driverPackageName
-            let! deleteDirectoryResult = DirectoryOperations.deleteDirectory true localDriversFolderPath
+            let! nonExistingLocalDriversFolderPath = DirectoryOperations.deleteDirectory true localDriversFolderPath
             let registerApplication =
                 match uninstallDriversExitCode with
                 |0|3010 -> 

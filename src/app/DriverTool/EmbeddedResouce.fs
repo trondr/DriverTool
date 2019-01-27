@@ -105,7 +105,7 @@ module EmbeddedResouce =
                 let! destinationFilePath = 
                     FileSystem.path destinationFileName
                 let! parentDirectoryPath = (FileSystem.path (System.IO.Path.GetDirectoryName(FileSystem.pathValue destinationFilePath)))
-                let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists (parentDirectoryPath, true)
+                let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists true parentDirectoryPath
                 logger.Info("Verified that directory exists:" + FileSystem.pathValue existingParentDirectoryPath)
                 let assembly = destinationFilePath.GetType().Assembly
                 logger.Info(String.Format("Extracting resource '{0}' -> '{1}'",resourceName, destinationFilePath))

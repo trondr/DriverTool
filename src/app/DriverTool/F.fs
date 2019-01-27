@@ -166,6 +166,7 @@ module F=
         else None
     
     open System.Security.Cryptography
+    open log4net
 
     //Source: https://stackoverflow.com/questions/33312260/how-can-i-select-a-random-value-from-a-list-using-f
     let shuffleCrypto xs =
@@ -197,3 +198,41 @@ module F=
         match option with
         |None -> false
         |Some _ -> true
+    
+    let resultToOption (logger:ILog) (result : Result<_,Exception>) =
+        match result with
+        |Ok s -> Some s
+        |Error ex -> 
+            logger.Error(ex.Message)
+            None
+
+    open System.Collections.Generic
+
+    //Source: http://tomasp.net/blog/imperative-i-return.aspx/
+    type Imperative<'T> = unit -> option<'T>
+
+    type ImperativeBuilder() = 
+        member x.Combine(a, b) = (fun () ->
+            match a() with 
+            | Some(v) -> Some(v) 
+            | _ -> b() )
+        member x.Delay(f:unit -> Imperative<_>) : Imperative<_> = (fun () -> f()())
+        member x.Return(v) : Imperative<_> = (fun () -> Some(v))
+        member x.Zero() = (fun () -> None)
+        member x.Run(imp) = 
+            match imp() with
+            | Some(v) -> v
+            | _ -> failwith "Nothing returned!"
+
+        member x.For(inp:seq<_>, f) =
+            let rec loop(en:IEnumerator<_>) = 
+              if not(en.MoveNext()) then x.Zero() else
+                x.Combine(f(en.Current), x.Delay(fun () -> loop(en)))
+            loop(inp.GetEnumerator())
+        
+        member x.While(gd, body) = 
+            let rec loop() =
+                if not(gd()) then x.Zero() else
+                x.Combine(body, x.Delay(fun () -> loop()))
+            loop()
+    let imperative = new ImperativeBuilder()  

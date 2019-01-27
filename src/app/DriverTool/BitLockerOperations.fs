@@ -94,7 +94,7 @@ module BitLockerOperations=
     </Actions>
 </Task>    
             """
-            let! existingDestinationFolderPath = DirectoryOperations.ensureDirectoryExists (destinationFolderPath,true)            
+            let! existingDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true destinationFolderPath
             let! resumeBitLockerTaskXmlFilePath = 
                 FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDestinationFolderPath,resumeBitLockerTaskXmlFileName))
             let! writeResult =             
@@ -106,7 +106,7 @@ module BitLockerOperations=
     let installBitLockerResumeTask () =
         result{            
             let! driverToolProgramDataFolderPath = FileSystem.path driverToolProgramDataFolder
-            let! existingDriverToolProgramDataFolderPath = DirectoryOperations.ensureDirectoryExists (driverToolProgramDataFolderPath, true)
+            let! existingDriverToolProgramDataFolderPath = DirectoryOperations.ensureDirectoryExists true driverToolProgramDataFolderPath
             let! resumeBitLockerCmdFilePath = EmbeddedResouce.extractEmbeddedResouceByFileName (resumeBitLockerCmdFileName,existingDriverToolProgramDataFolderPath, resumeBitLockerCmdFileName)
             let! schtasksExePath = FileSystem.path schtasksExe
             let! exitCode = ProcessOperations.startConsoleProcess (schtasksExePath, String.Format("/Delete /tn \"{0}\" /F", resumeBitLockerTaskName), nativeSystemFolder,-1,null, null, false)
