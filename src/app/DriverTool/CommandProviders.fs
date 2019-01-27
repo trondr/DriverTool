@@ -8,7 +8,7 @@ module CommandProviders =
                 let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString, true)
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
-                let! csvFilePath = Path.create csvFilePathString
+                let! csvFilePath = FileSystem.path csvFilePathString
                 let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates manufacturer modelCode operatingSystemCode csvFilePath overwrite
                 return result
             }) with
@@ -21,7 +21,7 @@ module CommandProviders =
 
     let exportLocalUdateInfoBase (csvFilePathString, overwrite) = 
         match (result{
-                let! csvFilePath = Path.create csvFilePathString
+                let! csvFilePath = FileSystem.path csvFilePathString
                 let! nonExistingCsvFilePath = FileOperations.ensureFileDoesNotExist (overwrite, csvFilePath)
                 let! exportResult = DriverTool.ExportLocalUpdates.exportLocalUpdates nonExistingCsvFilePath
                 return exportResult        
@@ -38,7 +38,7 @@ module CommandProviders =
                 let! systemFamily = SystemFamily.create systemFamilyString true
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
-                let! destinationFolderPath = Path.create destinationFolder
+                let! destinationFolderPath = FileSystem.path destinationFolder
                 let logDirectory = DriverTool.Configuration.getDriverPackageLogDirectoryPath
                 let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystemCode, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory)
                 return createDriverPackageResult
@@ -51,8 +51,8 @@ module CommandProviders =
     
     let installDriverPackageBase (driverPackagePathString) =
         match( result {
-                    let! driverPackagePath = Path.create driverPackagePathString            
-                    let! installDriverPackageResult = InstallDriverPackage.installDriverPackage driverPackagePath
+                    let! driverPackagePath = FileSystem.path driverPackagePathString            
+                    let! installDriverPackageResult = InstallDriverPackage.installDriverPackage (driverPackagePath)
                     return installDriverPackageResult
         }) with        
         | Ok exitCode -> NCmdLiner.Result.Ok(exitCode)
@@ -63,8 +63,8 @@ module CommandProviders =
     
     let unInstallDriverPackageBase (driverPackagePathString) =
         match( result {
-                    let! driverPackagePath = Path.create driverPackagePathString            
-                    let! unInstallDriverPackageResult = InstallDriverPackage.unInstallDriverPackage driverPackagePath
+                    let! driverPackagePath = FileSystem.path driverPackagePathString            
+                    let! unInstallDriverPackageResult = InstallDriverPackage.unInstallDriverPackage (driverPackagePath)
                     return unInstallDriverPackageResult
         }) with        
         | Ok exitCode -> NCmdLiner.Result.Ok(exitCode)
@@ -75,7 +75,7 @@ module CommandProviders =
     
     let compressDriverPackageBase  (driverPackagePathString) =
         match( result {
-                    let! driverPackagePath = Path.create driverPackagePathString            
+                    let! driverPackagePath = FileSystem.path driverPackagePathString            
                     let! compressDriverPackageResult = CompressDriverPackage.compressDriverPackage driverPackagePath
                     return compressDriverPackageResult
         }) with        
@@ -87,7 +87,7 @@ module CommandProviders =
 
     let decompressDriverPackageBase  (driverPackagePathString) =
         match( result {
-                    let! driverPackagePath = Path.create driverPackagePathString            
+                    let! driverPackagePath = FileSystem.path driverPackagePathString            
                     let! decompressDriverPackageResult = CompressDriverPackage.decompressDriverPackage driverPackagePath
                     return decompressDriverPackageResult
         }) with        

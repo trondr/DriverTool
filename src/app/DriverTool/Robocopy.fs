@@ -67,17 +67,17 @@ module Robocopy=
     let roboCopyExe =
         System.IO.Path.Combine(nativeSystemFolder,"Robocopy.exe")
         
-    let roboCopy (sourceFolderPath:Path, destinationFolderPath:Path, robocopyOptions:string) =
+    let roboCopy (sourceFolderPath:FileSystem.Path, destinationFolderPath:FileSystem.Path, robocopyOptions:string) =
         result{
-            let! roboCopyExeFilePath = Path.create roboCopyExe
+            let! roboCopyExeFilePath = FileSystem.path roboCopyExe
             let! existingRobocopyExeFilePath = FileOperations.ensureFileExists roboCopyExeFilePath
             let! existingSourceFolderPath = DirectoryOperations.ensureDirectoryExists (sourceFolderPath, false)
-            let! roboCopyExitCode = ProcessOperations.startConsoleProcess (existingRobocopyExeFilePath.Value,String.Format("\"{0}\" \"{1}\" {2}",existingSourceFolderPath.Value,destinationFolderPath.Value,robocopyOptions),existingSourceFolderPath.Value,-1,null,null,false)
+            let! roboCopyExitCode = ProcessOperations.startConsoleProcess (existingRobocopyExeFilePath,String.Format("\"{0}\" \"{1}\" {2}",existingSourceFolderPath,destinationFolderPath,robocopyOptions),FileSystem.pathValue existingSourceFolderPath,-1,null,null,false)
             let! exitCode = roboCopyExitCode2ExitCode roboCopyExitCode
             let! copyResult = 
                 match exitCode with
                 |0 -> Result.Ok 0
-                |_ -> Result.Error (new Exception(String.Format("Failed to copy '{0}' -> {1}. Robocopy returned: {2}",existingSourceFolderPath.Value,destinationFolderPath.Value,roboCopyExitCode)))
+                |_ -> Result.Error (new Exception(String.Format("Failed to copy '{0}' -> {1}. Robocopy returned: {2}",existingSourceFolderPath,destinationFolderPath,roboCopyExitCode)))
             return copyResult
         }
         

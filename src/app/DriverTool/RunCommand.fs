@@ -22,7 +22,7 @@ module RunCommand =
         interface IDisposable with
             member this.Dispose() =                
                 streamWriter.Dispose()                
-                match (Path.create tempFileName) with
+                match (FileSystem.path tempFileName) with
                 |Ok fp ->  (FileOperations.deleteFileIfExists fp)
                 |Result.Error ex -> ()
 

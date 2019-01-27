@@ -15,7 +15,7 @@ module DellCommandUpdatesTests =
     let getDownloadedFilesBaseTest () =
         let downloadedFiles =
             result{
-                let! destinationFolderPath = Path.create (System.IO.Path.GetTempPath())
+                let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                 let! extractedActivityLogPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("ActivityLog.xml",destinationFolderPath,"ActivityLog.xml",typeof<TestAssebly>.Assembly)
                 let! downloadedFiles = DellCommandUpdate.getDownloadedFilesBase extractedActivityLogPath
                 let! fileDeleted = FileOperations.deleteFile extractedActivityLogPath
@@ -35,6 +35,10 @@ module DellCommandUpdatesTests =
         Assert.AreEqual(expectedBaseUrl,actualBaseurl,"BaseUrl")
         Assert.AreEqual(expectedFileName,actualFileName,"FileName")
 
+[<TestFixture>]
+[<Category(TestCategory.IntegrationTests)>]
+module DellCommandUpdatesIntegrationTests =
+    
     [<Test>]
     [<TestCase("07A7","WIN10X64")>]
     [<Category(TestCategory.IntegrationTests)>]

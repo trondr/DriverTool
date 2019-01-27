@@ -9,7 +9,7 @@ module ProcessOperations =
     open System.Text    
     open System    
     
-    type ProcessExitData = {FileName:string;Arguments:string;ExitCode:int;StdOutput:string;StdError:string}
+    type ProcessExitData = {FileName:FileSystem.Path;Arguments:string;ExitCode:int;StdOutput:string;StdError:string}
 
     let writeProcessExitDataToLog processExitData logFileName appendToLogFile =
         let writeToFileBase logFileName appendToLogFile (text:string) =
@@ -47,13 +47,13 @@ module ProcessOperations =
         if (not (String.IsNullOrWhiteSpace(processExitData.StdError))) then
             writeToLog logger.Error processExitData.StdError
 
-    let startConsoleProcessUnsafe (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
+    let startConsoleProcessUnsafe (fileName, arguments, workingDirectory, timeout:int, inputData, logFileName, appendToLogFile) =
         let startInfo = new ProcessStartInfo()
         startInfo.CreateNoWindow <- true
         startInfo.UseShellExecute <- false
         startInfo.RedirectStandardOutput <- true
         startInfo.RedirectStandardError <- true
-        startInfo.FileName <- fileName
+        startInfo.FileName <- FileSystem.pathValue fileName
         if(not (System.String.IsNullOrWhiteSpace(arguments))) then
             startInfo.Arguments <- arguments
         if(not (System.String.IsNullOrWhiteSpace(workingDirectory))) then
@@ -87,7 +87,7 @@ module ProcessOperations =
         |true -> ignore
         |false ->            
             consoleProcess.Close()
-            raise (new Exception(String.Format("Process execution timed out: \"{0}\" {1}",fileName,arguments)))
+            raise (new Exception(sprintf "Process execution timed out: \"%A\" %s" fileName arguments))
         |>ignore
             
         consoleProcess.CancelErrorRead()

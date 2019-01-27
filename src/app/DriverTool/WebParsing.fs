@@ -23,7 +23,7 @@ module WebParsing =
         |false -> 
             result{
                 let! content = getContentFromWebPage url
-                let filePath = getTempFile "ds112090.html"
+                let! filePath = FileSystem.path (getTempFile "ds112090.html")
                 let! writeResult = 
                     content |> (writeContentToFile filePath)
                 return destinationFilePath

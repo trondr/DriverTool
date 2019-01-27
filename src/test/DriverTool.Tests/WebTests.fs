@@ -26,10 +26,10 @@ module WebTests =
                     let hasSameFileHasStub (downloadInfo:DownloadInfo) =
                         hasSameFileHash 
         
-                    let isTrustedStub (filePath:Path) =
+                    let isTrustedStub (filePath:FileSystem.Path) =
                         isTrusted
 
-                    let! destinationFilePath = Path.create @"c:\temp\test2312123.exe"
+                    let! destinationFilePath = FileSystem.path @"c:\temp\test2312123.exe"
 
                     let downloadInfo = 
                         {

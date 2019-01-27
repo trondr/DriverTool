@@ -14,17 +14,18 @@ module DellUpdates =
     open DellSettings
 
     let getLocalDellSoftwareCatalogCabFilePath =
-        Path.create (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"CatalogPC.cab"))
+        FileSystem.path (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"CatalogPC.cab"))
 
     let getLocalDellSoftwareCatalogXmlFilePath =
-        Path.create (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"CatalogPC.xml"))
+        FileSystem.path (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"CatalogPC.xml"))
     
     let expandExe =
         System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
 
-    let expandCabFile (cabFilePath:Path, destinationFolderPath:Path) =
+    let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path) =
         result{
-            let! expandResult = ProcessOperations.startConsoleProcess (expandExe,String.Format("\"{0}\" -F:* -R \"{1}\"",cabFilePath.Value,destinationFolderPath.Value), destinationFolderPath.Value,-1,null,null,false)            
+            let! expandExePath = FileSystem.path expandExe
+            let! expandResult = ProcessOperations.startConsoleProcess (expandExePath,String.Format("\"{0}\" -F:* -R \"{1}\"",cabFilePath,destinationFolderPath), FileSystem.pathValue destinationFolderPath,-1,null,null,false)            
             return expandResult
         }
 
@@ -34,7 +35,7 @@ module DellUpdates =
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist (true, destinationCabFile)
             let! downloadResult = Web.downloadFile (new Uri(softwareCatalogCab), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
-            let! destinationFolderPath = Path.create getDownloadCacheDirectoryPath
+            let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath
             let! expandResult = expandCabFile (existingDestinationCabFile, destinationFolderPath)
             let! softwareCatalogXmlPath = getLocalDellSoftwareCatalogXmlFilePath
             let! existingSoftwareCatalogXmlPath = FileOperations.ensureFileExists softwareCatalogXmlPath            
@@ -143,7 +144,7 @@ module DellUpdates =
         result{
             let! softwareCatalogXmlFile = downloadSoftwareComponentsCatalog()            
             let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode            
-            let softwareComponentsXDocument = XDocument.Load(softwareCatalogXmlFile.Value)
+            let softwareComponentsXDocument = XDocument.Load(FileSystem.pathValue softwareCatalogXmlFile)
             let manifestRoot = softwareComponentsXDocument.Root            
             let softwareComponents = manifestRoot.Descendants(XName.Get("SoftwareComponent"))
             let updates =
@@ -166,10 +167,10 @@ module DellUpdates =
             }
         
     let getLocalDriverPackageCatalogCabFilePath =
-        Path.create (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"DriverPackCatalog.cab"))
+        FileSystem.path (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"DriverPackCatalog.cab"))
 
     let getLocalDriverPackageXmlFilePath =
-        Path.create (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"DriverPackCatalog.xml"))
+        FileSystem.path (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"DriverPackCatalog.xml"))
 
     let downloadDriverPackageCatalog () =
         result {
@@ -177,7 +178,7 @@ module DellUpdates =
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist (true, destinationCabFile)
             let! downloadResult = Web.downloadFile (new Uri(driverPackageCatalogCab), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
-            let! destinationFolderPath = Path.create getDownloadCacheDirectoryPath
+            let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath
             let! expandResult = expandCabFile (existingDestinationCabFile, destinationFolderPath)
             let! driverPackageCatalogXmlPath = getLocalDriverPackageXmlFilePath
             let! existingDriverPackageCatalogXmlPath = FileOperations.ensureFileExists driverPackageCatalogXmlPath            
@@ -245,7 +246,7 @@ module DellUpdates =
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode)  : Result<SccmPackageInfo,Exception> =
         result{
             let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog ()
-            let xDocument = XDocument.Load(driverPackageCatalogXmlPath.Value)            
+            let xDocument = XDocument.Load(FileSystem.pathValue driverPackageCatalogXmlPath)            
             let! (dellOsCode, dellOsArchitecture) = osCodeToDellOsCodeAndArchitecture operatingSystemCode            
             let driverPackage = 
                 xDocument.Descendants(XName.Get("DriverPackage",driverPackageXNamespace.NamespaceName))
@@ -265,11 +266,11 @@ module DellUpdates =
 
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        
-            let! installerdestinationFilePath = Path.create (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let! installerdestinationFilePath = FileSystem.path (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
             let! installerUri = toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
-            let installerPath = installerInfo.DestinationFile.Value
+            let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             return {
                 InstallerPath = installerPath
@@ -278,10 +279,10 @@ module DellUpdates =
             }
         }         
 
-    let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:Path) =
+    let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         loggerd.Info("Extract Sccm Driver Package CAB...")
         match(result{
-            let! installerPath = Path.create downloadedSccmPackage.InstallerPath
+            let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
             let! cabFilepath = FileOperations.ensureFileExtension (installerPath, ".cab")
             let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath            
             let! expandResult = expandCabFile (existingCabFilePath,destinationPath)
@@ -290,10 +291,10 @@ module DellUpdates =
         |Ok _ -> Result.Ok destinationPath
         |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))        
     
-    let extractUpdate (rootDirectory:Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
+    let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (rootDirectory.Value, prefix + "_" + packageFolderName)
+            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
             let result = 

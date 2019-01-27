@@ -17,7 +17,7 @@ module Checksum=
             | _  -> SHA512.Create() :> HashAlgorithm
 
     let computeFileHash filePath (hashAlgorithm:HashAlgorithm)  =
-        use fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read)
+        use fileStream = new FileStream(FileSystem.pathValue filePath, FileMode.Open, FileAccess.Read)
         hashAlgorithm.ComputeHash(fileStream)
 
     let fileHashToString fileHash =
@@ -36,7 +36,7 @@ module Checksum=
         |> computeFileHash filePath
         |> fileHashToString
  
-    let hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (destinationFilePath:string, sourceFileHash:string, sourceFileSize:Int64) =
+    let hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (destinationFilePath:FileSystem.Path, sourceFileHash:string, sourceFileSize:Int64) =
             match(fileExists destinationFilePath) with
             | true ->   
                 let destinationFileSize = getFileSize destinationFilePath
@@ -49,8 +49,8 @@ module Checksum=
                 | false  -> false
             |false -> false
 
-    let hasSameFileHashBase (filePath:string, sourceFileHash:string, fileSize:Int64) =
+    let hasSameFileHashBase (filePath:FileSystem.Path, sourceFileHash:string, fileSize:Int64) =
         hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (filePath, sourceFileHash, fileSize)
 
-    let hasSameFileHash (filePath:string, crc:string, fileSize:Int64) =
+    let hasSameFileHash (filePath:FileSystem.Path, crc:string, fileSize:Int64) =
         Logging.genericLogger Logging.LogLevel.Debug hasSameFileHashBase (filePath, crc, fileSize)

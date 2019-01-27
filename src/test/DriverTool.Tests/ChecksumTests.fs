@@ -33,7 +33,7 @@ module ChecksumTests =
         //Execute
         let target =
             hasSameFileHashPartial fileExistsStub getFileSizeStub computeFileHashFromHashLengthStub
-        let actual = target (destinationFilePath, sourceFileHash, sourceFileSize)
+        let actual = target (FileSystem.pathUnSafe destinationFilePath, sourceFileHash, sourceFileSize)
         
         //Assert
         Assert.AreEqual(expected,actual,testDescription)

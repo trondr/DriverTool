@@ -19,18 +19,18 @@ module CorFlags=
             
     open System
 
-    let prefer32BitSet (assemblyFilePath:Path) =
+    let prefer32BitSet (assemblyFilePath:FileSystem.Path) =
         result{
             let! corFlagsExe = extractCorFlagsExe ()
-            let! exitCodeResult = ProcessOperations.startConsoleProcess (corFlagsExe.Value,String.Format("\"{0}\" /32BITPREF+", assemblyFilePath.Value),null,-1,null,null,false)
+            let! exitCodeResult = ProcessOperations.startConsoleProcess (corFlagsExe,String.Format("\"{0}\" /32BITPREF+", assemblyFilePath),null,-1,null,null,false)
             cleanupCorFlagsExe()
             return exitCodeResult
         }  
         
-    let prefer32BitClear (assemblyFilePath:Path) =
+    let prefer32BitClear (assemblyFilePath:FileSystem.Path) =
         result{
             let! corFlagsExe = extractCorFlagsExe ()
-            let! exitCodeResult = ProcessOperations.startConsoleProcess (corFlagsExe.Value,String.Format("\"{0}\" /32BITPREF-", assemblyFilePath.Value),null,-1,null,null,false)
+            let! exitCodeResult = ProcessOperations.startConsoleProcess (corFlagsExe,String.Format("\"{0}\" /32BITPREF-", assemblyFilePath),null,-1,null,null,false)
             cleanupCorFlagsExe()
             return exitCodeResult
         }        
