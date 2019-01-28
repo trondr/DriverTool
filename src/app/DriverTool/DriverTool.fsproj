@@ -172,9 +172,6 @@
     <Reference Include="Common">
       <HintPath>..\..\..\packages_manual\Lenovo\Common.dll</HintPath>
     </Reference>
-    <Reference Include="Core">
-      <HintPath>..\..\..\packages_manual\Dell\Core.dll</HintPath>
-    </Reference>
     <Reference Include="CsvHelper">
       <HintPath>..\..\..\packages\CsvHelper.12.1.1\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
