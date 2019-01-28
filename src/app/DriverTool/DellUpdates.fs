@@ -32,7 +32,7 @@ module DellUpdates =
     let downloadSoftwareComponentsCatalog () =
         result {
             let! destinationCabFile = getLocalDellSoftwareCatalogCabFilePath
-            let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist (true, destinationCabFile)
+            let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(softwareCatalogCab), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
             let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath
@@ -175,7 +175,7 @@ module DellUpdates =
     let downloadDriverPackageCatalog () =
         result {
             let! destinationCabFile = getLocalDriverPackageCatalogCabFilePath
-            let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist (true, destinationCabFile)
+            let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(driverPackageCatalogCab), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
             let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath

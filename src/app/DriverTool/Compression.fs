@@ -20,7 +20,7 @@ module Compression =
         
     let zipFolder (sourceFolderPath, zipFile) =
         result{
-            let! nonExistingZipFilePath = FileOperations.ensureFileDoesNotExistWithMessage (sprintf "Zip file allready exists: '%s'" (FileSystem.pathValue zipFile), false, zipFile)
+            let! nonExistingZipFilePath = FileOperations.ensureFileDoesNotExistWithMessage (sprintf "Zip file allready exists: '%s'" (FileSystem.pathValue zipFile)) false zipFile
             let! existingSourceFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage false (sprintf "Cannot zip down a non existing directory '%A'." sourceFolderPath) sourceFolderPath
             let! parentSourceFolderPath = (DirectoryOperations.getParentFolderPath sourceFolderPath)
             let! sevenZipExeFilePath = extract7ZipExeFromEmbededResource parentSourceFolderPath

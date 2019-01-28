@@ -22,7 +22,7 @@ module CommandProviders =
     let exportLocalUdateInfoBase (csvFilePathString, overwrite) = 
         match (result{
                 let! csvFilePath = FileSystem.path csvFilePathString
-                let! nonExistingCsvFilePath = FileOperations.ensureFileDoesNotExist (overwrite, csvFilePath)
+                let! nonExistingCsvFilePath = FileOperations.ensureFileDoesNotExist overwrite csvFilePath
                 let! exportResult = DriverTool.ExportLocalUpdates.exportLocalUpdates nonExistingCsvFilePath
                 return exportResult        
         }) with

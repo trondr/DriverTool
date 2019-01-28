@@ -27,7 +27,7 @@ module FileOperationTests =
     let ensureFileDoesNotExistTest_FileExists() =
         use temporaryFile = new TemporaryFile()
         let path = temporaryFile.Path
-        let actualResult = ensureFileDoesNotExist (false, path)
+        let actualResult = ensureFileDoesNotExist false path
         match actualResult with
         |Ok p -> Assert.Fail((sprintf "The test should have failed. File %s exists" (FileSystem.pathValue p)))
         |Error ex -> Assert.AreEqual(String.Format("File allready exists: '{0}'. ", FileSystem.pathValue path),ex.Message)
@@ -36,7 +36,7 @@ module FileOperationTests =
     let ensureFileDoesNotExistTest_FileExists_Overwrite() =
         use temporaryFile = new TemporaryFile()
         let path = temporaryFile.Path
-        let actualResult = ensureFileDoesNotExist (true, path)
+        let actualResult = ensureFileDoesNotExist true path
         match actualResult with
         |Ok p -> Assert.AreEqual(FileSystem.pathValue path, FileSystem.pathValue p)
         |Error ex -> Assert.Fail("Test failed")
@@ -46,7 +46,7 @@ module FileOperationTests =
         use temporaryFile = new TemporaryFile()
         let path = temporaryFile.Path
         System.IO.File.Delete(FileSystem.pathValue path)
-        let actualResult = ensureFileDoesNotExist (false, path)
+        let actualResult = ensureFileDoesNotExist false path
         match actualResult with
         |Ok p -> Assert.AreEqual(path, p)
         |Error ex -> Assert.Fail("Test failed")

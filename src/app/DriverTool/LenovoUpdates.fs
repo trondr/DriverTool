@@ -197,7 +197,7 @@ module LenovoUpdates =
         result{
             let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
             let! path = getModelInfoXmlFilePath modelCode operatingSystemCode
-            let! modelInfoXmlFilePath = ensureFileDoesNotExist (overwrite, path)
+            let! modelInfoXmlFilePath = ensureFileDoesNotExist overwrite path
             let! downloadedFile = downloadFile (modelInfoUri, overwrite, modelInfoXmlFilePath)            
             let! packageXmlInfos = getPackagesInfo downloadedFile
             let! downloadedPackageXmls = downloadPackageXmls packageXmlInfos

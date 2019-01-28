@@ -33,7 +33,7 @@ module Web =
             let webHeaderCollection = new WebHeaderCollection()
             webHeaderCollection.Add("User-Agent", "LenovoUtil/1.0") 
             webClient.Headers <- webHeaderCollection                          
-            match (FileOperations.ensureFileDoesNotExist (force, destinationFilePath)) with
+            match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
             |Ok path -> 
                 logger.InfoFormat("Downloading '{0}' -> {1}...", sourceUri.OriginalString, FileSystem.pathValue path)
                 webClient.DownloadFile(sourceUri.OriginalString,FileSystem.pathValue path)
