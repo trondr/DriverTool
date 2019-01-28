@@ -15,7 +15,7 @@ module DirectoryOperations =
         with
         | ex -> Result.Error (new Exception(String.Format("Failed to create directory '{0}'",directoryPath),ex))
     
-    let deleteDirectoryUnsafe (force ,folderPath:FileSystem.Path) =
+    let deleteDirectoryUnsafe force (folderPath:FileSystem.Path) =
             match (System.IO.Directory.Exists(FileSystem.pathValue folderPath)) with
             |true -> 
                 System.IO.Directory.Delete(FileSystem.pathValue folderPath, force)
@@ -24,7 +24,7 @@ module DirectoryOperations =
                 folderPath
      
     let deleteDirectory force (folderPath:FileSystem.Path) =
-        tryCatch deleteDirectoryUnsafe (force, folderPath)
+        tryCatch2 deleteDirectoryUnsafe force folderPath
 
     let directoryPathExists (directoryPath:FileSystem.Path) =
         System.IO.Directory.Exists(FileSystem.pathValue directoryPath)

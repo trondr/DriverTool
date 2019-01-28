@@ -15,7 +15,10 @@ module F=
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    let (|?) lhs rhs = (if lhs = null then rhs else lhs) 
+    let (|?) lhs rhs = (if lhs = null then rhs else lhs)
+    
+    let sourceException ex = 
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).SourceException
 
     let tryCatch<'T, 'R> f  (t:'T) : Result<'R, Exception> =
         try
@@ -27,13 +30,32 @@ module F=
         try
             Result.Ok (f t)
         with
-            | ex -> Result.Error (new Exception(message, ex))
+            | ex -> Result.Error (new Exception(message, sourceException ex))
 
     let tryCatch2<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) : Result<'R, Exception> =
         try
             Result.Ok (f t1 t2)
         with
             | ex -> Result.Error ex
+
+    let tryCatch2WithMessage<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) message : Result<'R, Exception> =
+        try
+            Result.Ok (f t1 t2)
+        with
+            | ex -> Result.Error (new Exception(message, sourceException ex))
+
+    let tryCatch3<'T1,'T2, 'T3, 'R> f  (t1:'T1) (t2:'T2) (t3:'T3) : Result<'R, Exception> =
+        try
+            Result.Ok (f t1 t2 t3)
+        with
+            | ex -> Result.Error ex
+
+    let tryCatch3WithMessage<'T1,'T2, 'T3, 'R> f  (t1:'T1) (t2:'T2) (t3:'T3) message : Result<'R, Exception> =
+        try
+            Result.Ok (f t1 t2 t3)
+        with
+            | ex ->                
+                Result.Error (new Exception(message, sourceException ex))
 
     //Source: http://www.fssnip.net/7UJ/title/ResultBuilder-Computational-Expression
     let ofOption error = function Some s -> Ok s | None -> Error error

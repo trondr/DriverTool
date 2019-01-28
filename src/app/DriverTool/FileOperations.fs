@@ -17,7 +17,7 @@ module FileOperations =
     type FileExistsException(message : string) =
         inherit Exception(message)    
     
-    let ensureFileDoesNotExistWithMessage (message,overwrite,filePath) =
+    let ensureFileDoesNotExistWithMessage message overwrite filePath =
         match System.IO.File.Exists(FileSystem.pathValue filePath) with
         | true -> 
             match overwrite with
@@ -25,8 +25,8 @@ module FileOperations =
             | false -> Result.Error (new FileExistsException(String.Format("File allready exists: '{0}'. {1}", FileSystem.pathValue filePath, message)) :> Exception)
         | false -> Result.Ok filePath
     
-    let ensureFileDoesNotExist (overwrite, filePath) = 
-        ensureFileDoesNotExistWithMessage (String.Empty, overwrite, filePath)
+    let ensureFileDoesNotExist overwrite filePath = 
+        ensureFileDoesNotExistWithMessage String.Empty overwrite filePath
     
     let ensureFileExists path = 
         match System.IO.File.Exists(FileSystem.pathValue  path) with
@@ -59,12 +59,12 @@ module FileOperations =
         with
         |ex -> Result.Error ex
     
-    let copyFileUnsafe (sourceFilePath, destinationFilePath, force) =
+    let copyFileUnsafe force sourceFilePath destinationFilePath =
         System.IO.File.Copy(FileSystem.pathValue sourceFilePath, FileSystem.pathValue destinationFilePath, force)
         destinationFilePath
     
-    let copyFile (sourceFilePath, destinationFilePath, force) =
-        tryCatchWithMessage copyFileUnsafe (sourceFilePath, destinationFilePath, force) (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)
+    let copyFile force sourceFilePath destinationFilePath =
+        tryCatch3WithMessage copyFileUnsafe force sourceFilePath destinationFilePath (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)
 
     let copyFiles (destinationFolderPath) (files:seq<string>) =
         files
@@ -73,7 +73,7 @@ module FileOperations =
                         let sourceFile = (new System.IO.FileInfo(fp))
                         let! sourceFilePath = FileSystem.path sourceFile.FullName
                         let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath, sourceFile.Name))
-                        let! copyResult = copyFile (sourceFilePath,destinationFilePath,true)
+                        let! copyResult = copyFile true sourceFilePath destinationFilePath
                         return copyResult
                     }
                  )
