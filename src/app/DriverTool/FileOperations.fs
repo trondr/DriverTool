@@ -80,12 +80,28 @@ module FileOperations =
         |>Seq.toArray
         |>toAccumulatedResult
     
-    let ensureFileExtension (path, extension:string) : Result<FileSystem.Path, Exception> = 
-        match System.IO.Path.GetExtension(FileSystem.pathValue path).ToLower() with
-        | e when e = extension -> Result.Ok path            
+    /// <summary>
+    /// Prepend a period to a file extension if necessary
+    /// </summary>
+    /// <param name="extension"></param>
+    let toExtension (extension:string) =
+        if(extension.StartsWith(".")) then
+            extension
+        else
+            "." + extension
+    /// <summary>
+    /// Ensure that path have specified file extension
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="extension"></param>
+    let ensureFileExtension extension path = 
+        let expectedExtension = toExtension extension
+        let actualExtension = System.IO.Path.GetExtension(FileSystem.pathValue path).ToLower()
+        match actualExtension with
+        | e when e = expectedExtension -> Result.Ok path            
         | _ -> Result.Error (new Exception(sprintf "File does not have extension '%s': '%A'" extension path))
 
-    let deleteFileIfExists (filePath:FileSystem.Path) =
+    let deleteFileIfExists filePath =
         if(System.IO.File.Exists(FileSystem.pathValue filePath)) then
             System.IO.File.Delete(FileSystem.pathValue filePath)
 

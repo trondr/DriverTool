@@ -283,7 +283,7 @@ module DellUpdates =
         loggerd.Info("Extract Sccm Driver Package CAB...")
         match(result{
             let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
-            let! cabFilepath = FileOperations.ensureFileExtension (installerPath, ".cab")
+            let! cabFilepath = FileOperations.ensureFileExtension ".cab" installerPath
             let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath            
             let! expandResult = expandCabFile (existingCabFilePath,destinationPath)
             return destinationPath
