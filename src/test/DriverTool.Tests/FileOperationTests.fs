@@ -50,3 +50,22 @@ module FileOperationTests =
         match actualResult with
         |Ok p -> Assert.AreEqual(path, p)
         |Error ex -> Assert.Fail("Test failed")
+
+    [<Test>]
+    [<TestCase(@"c:\temp\text.txt","txt",true,"N/A")>]
+    [<TestCase(@"c:\temp\text.txt",".txt",true,"N/A")>]
+    [<TestCase(@"c:\temp\text.txt",".tst",false,"File does not have extension '.tst'")>]
+    let ensureFileExtensionTest (pathString,extension,isSuccess:bool,expectedErrorMessage:string) =
+        match(result{
+            let! pathToCheck = FileSystem.path pathString
+            let! path = ensureFileExtension extension pathToCheck
+            return path                         
+        }) with
+        |Ok p -> 
+            Assert.IsTrue(isSuccess, "Did not expect success" )
+        |Error ex -> 
+            Assert.IsFalse(isSuccess, "Did not expect error:" + ex.Message )
+            Assert.IsTrue(ex.Message.StartsWith(expectedErrorMessage),"Error message did not start with: " + expectedErrorMessage)
+
+        
+        
