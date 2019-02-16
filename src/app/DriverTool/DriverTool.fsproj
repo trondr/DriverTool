@@ -84,6 +84,7 @@
     <EmbeddedResource Include="Libs\Dynamitey.dll" />
     <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
     <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />
     <EmbeddedResource Include="Libs\FSharp.Core.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.Xsd.dll" />
@@ -93,6 +94,9 @@
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
+	<EmbeddedResource Include="Libs\System.Reactive.dll" />
+	<EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
+	<EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
     <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
@@ -173,7 +177,7 @@
       <HintPath>..\..\..\packages_manual\Lenovo\Common.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper">
-      <HintPath>..\..\..\packages\CsvHelper.12.1.1\lib\net45\CsvHelper.dll</HintPath>
+      <HintPath>..\..\..\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="Dynamitey">
       <HintPath>..\..\..\packages\Dynamitey.2.0.9.136\lib\net40\Dynamitey.dll</HintPath>
@@ -184,8 +188,11 @@
     <Reference Include="FSharp.Configuration">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Control.Reactive">
+      <HintPath>..\..\..\packages\FSharp.Control.Reactive.4.1.0\lib\net46\FSharp.Control.Reactive.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\..\packages\FSharp.Core.4.5.4\lib\net45\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Core.4.6.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
       <HintPath>..\..\..\packages\FSharp.Data.3.0.0\lib\net45\FSharp.Data.dll</HintPath>
@@ -215,10 +222,21 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Reactive">
+      <HintPath>..\..\..\packages\System.Reactive.4.1.2\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions">
+      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj">
@@ -226,6 +244,7 @@
       <Project>{09a4cb06-46f7-4b78-b972-686516b67169}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(NCrunch)' == '1'">
     <Reference Include="FSharp.Data.Xsd.DesignTime">
