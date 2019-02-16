@@ -15,8 +15,8 @@ module PathTests  =
     let PathCreateTest (pathString:string) (description:string) (expectedSuccess:bool) =
         let path = FileSystem.path pathString
         match path with
-        | Ok p -> Assert.IsTrue(expectedSuccess,System.String.Format("Success was not expected for path '{0}' ('{1}')",p, description))
-        | Error e -> Assert.IsTrue(not expectedSuccess,System.String.Format("Error was not expected for path '{0}' ('{1}') Exception: {2}",pathString, description, e.Message))
+        | Ok p -> Assert.IsTrue(expectedSuccess,sprintf "Success was not expected for path '%s' ('%s')" (FileSystem.pathValue p) description)
+        | Error e -> Assert.IsTrue(not expectedSuccess,sprintf "Error was not expected for path '%s' ('%s') Exception: %s" pathString description e.Message)
     
     [<Test>]
     [<TestCase(null,"Empty string",false)>]
@@ -30,10 +30,10 @@ module PathTests  =
         match path with
         | Ok p -> 
             printf "Path: %A" p
-            Assert.IsTrue(expectedSuccess,System.String.Format("Success was not expected for path '{0}' ('{1}')",p, description))
+            Assert.IsTrue(expectedSuccess,sprintf "Success was not expected for path '%s' ('%s')" (FileSystem.pathValue p) description)
         | Error e -> 
             printf "Expected error: %s" e.Message
-            Assert.IsTrue(not expectedSuccess,System.String.Format("Error was not expected for path '{0}' ('{1}') Exception: {2}",pathString, description, e.Message))
+            Assert.IsTrue(not expectedSuccess,sprintf "Error was not expected for path '%s' ('%s') Exception: %s" pathString description e.Message)
 
     [<Test>]
     let PathCompareTest() =

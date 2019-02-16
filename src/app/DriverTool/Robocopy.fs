@@ -72,12 +72,13 @@ module Robocopy=
             let! roboCopyExeFilePath = FileSystem.path roboCopyExe
             let! existingRobocopyExeFilePath = FileOperations.ensureFileExists roboCopyExeFilePath
             let! existingSourceFolderPath = DirectoryOperations.ensureDirectoryExists false sourceFolderPath
-            let! roboCopyExitCode = ProcessOperations.startConsoleProcess (existingRobocopyExeFilePath,String.Format("\"{0}\" \"{1}\" {2}",existingSourceFolderPath,destinationFolderPath,robocopyOptions),FileSystem.pathValue existingSourceFolderPath,-1,null,null,false)
+            let arguments = sprintf "\"%s\" \"%s\" %s" (FileSystem.pathValue existingSourceFolderPath) (FileSystem.pathValue destinationFolderPath) robocopyOptions
+            let! roboCopyExitCode = ProcessOperations.startConsoleProcess (existingRobocopyExeFilePath,arguments,FileSystem.pathValue existingSourceFolderPath,-1,null,null,false)
             let! exitCode = roboCopyExitCode2ExitCode roboCopyExitCode
             let! copyResult = 
                 match exitCode with
                 |0 -> Result.Ok 0
-                |_ -> Result.Error (new Exception(String.Format("Failed to copy '{0}' -> {1}. Robocopy returned: {2}",existingSourceFolderPath,destinationFolderPath,roboCopyExitCode)))
+                |_ -> Result.Error (new Exception(sprintf "Failed to copy '%s' -> '%s'. Robocopy returned: %i" (FileSystem.pathValue existingSourceFolderPath) (FileSystem.pathValue destinationFolderPath) roboCopyExitCode))
             return copyResult
         }
         

@@ -37,7 +37,7 @@ module ProcessOperations =
             |>ignore
 
         logger.Debug("writeToLog command line")        
-        writeToLog logger.Info (String.Format("'{0}' {1}",processExitData.FileName,processExitData.Arguments))
+        writeToLog logger.Info (sprintf "'%s' %s" (FileSystem.pathValue processExitData.FileName) processExitData.Arguments)
         
         logger.Debug("writeToLog StdOutput")
         if (not (String.IsNullOrWhiteSpace(processExitData.StdOutput))) then
@@ -107,8 +107,8 @@ module ProcessOperations =
         
         processExitData.ExitCode
     
-    let startConsoleProcessBase (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
-        tryCatchWithMessage startConsoleProcessUnsafe (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) (String.Format("Start of console process ('{0}' {1}) failed.",fileName,arguments))
+    let startConsoleProcessBase (filePath, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
+        tryCatchWithMessage startConsoleProcessUnsafe (filePath, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments)
     
     let startConsoleProcess (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) = 
         Logging.genericLoggerResult Logging.LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile)

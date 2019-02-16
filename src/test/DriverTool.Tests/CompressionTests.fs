@@ -7,6 +7,7 @@ open NUnit.Framework
 module CompressionTests=
     open DriverTool
     open log4net
+    open DriverTool
         
     let logger = LogManager.GetLogger("CompressionTests")
     
@@ -82,22 +83,22 @@ module CompressionTests=
         
         
     [<Test>]
-    [<TestCase(true,false,true,"<No Error>",false,true,false)>]
-    [<TestCase(true,true,false,"Zip file allready exists",false,true,false)>]
-    [<TestCase(false,false,false,"Cannot zip down a non existing directory",false,true,false)>]
-    [<TestCase(false,true,false,"Zip file allready exists",false,true,false)>]    
-    [<TestCase(true,false,true,"<No Error>",false,false,false)>]
-    [<TestCase(true,false,true,"<No Error>",false,false,true)>]    
-    let zipFolderTest (sourceFolderExists:bool, zipFileExists:bool, expectedSuccess:bool, expectedErrorMessage, destinationFolderExists:bool, sourceAndDestiationAreEqual:bool, changeContentOfAFile:bool) =
+    [<TestCase(true,false,true,"<No Error>",false,true,false,"Test1")>]
+    [<TestCase(true,true,false,"Zip file allready exists",false,true,false,"Test2")>]
+    [<TestCase(false,false,false,"Cannot zip down a non existing directory",false,true,false,"Test3")>]
+    [<TestCase(false,true,false,"Zip file allready exists",false,true,false,"Test4")>]    
+    [<TestCase(true,false,true,"<No Error>",false,false,false,"Test5")>]
+    [<TestCase(true,false,true,"<No Error>",false,false,true,"Test6")>]    
+    let zipFolderTest (sourceFolderExists:bool, zipFileExists:bool, expectedSuccess:bool, expectedErrorMessage, destinationFolderExists:bool, sourceAndDestiationAreEqual:bool, changeContentOfAFile:bool, testName) =
         let res =
             result{
-                    let! testSourceFolderPath = createTestFolder sourceFolderExists "CompressionTests_SourceFolder"
+                    let! testSourceFolderPath = createTestFolder sourceFolderExists ("CompressionTests_SourceFolder" + testName)
                     Assert.AreEqual(sourceFolderExists, DirectoryOperations.directoryPathExists testSourceFolderPath,"Expected source folder existance zipFolder: " + sourceFolderExists.ToString())
                     let! testZipFile = getTestZipFilePath zipFileExists                    
                     Assert.AreEqual(zipFileExists, FileOperations.fileExists testZipFile,"Expected zip file existance before zipFolder: " + zipFileExists.ToString())
                     let! actual = Compression.zipFolder (testSourceFolderPath, testZipFile)
                     Assert.AreEqual(true, FileOperations.fileExists testZipFile,"Zip file does not exist after zipFolder: " + FileSystem.pathValue testZipFile)
-                    let! testDestinationFolderPath = createTestFolder destinationFolderExists "CompressionTests_DestinationFolder"
+                    let! testDestinationFolderPath = createTestFolder destinationFolderExists ("CompressionTests_DestinationFolder" + testName)
                     let! unzipResult = Compression.unzipFile (testZipFile, testDestinationFolderPath)
                     let! existingSourceFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue testSourceFolderPath)
                     let! existingDestinationFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue testDestinationFolderPath)

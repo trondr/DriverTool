@@ -24,8 +24,8 @@ module InstallDriverPackage =
             let isSupportedOperatingSystem = systemInfo.OperatingSystem.ToUpper().Equals(installConfiguration.OsShortName.ToUpper())
             let supportedCheckArray = 
                 [|
-                    (isSupportedComputerModel, String.Format("Computer model '{0}' is not supported by this driver package. Supported model: '{1}'.", systemInfo.Model, installConfiguration.ComputerModel));
-                    (isSupportedOperatingSystem,String.Format("Operating system '{0}' is not supported by this driver package. Supported operating system: '{1}'.", systemInfo.OperatingSystem, installConfiguration.OsShortName));
+                    (isSupportedComputerModel, sprintf "Computer model '%s' is not supported by this driver package. Supported model: '%s'." systemInfo.Model  installConfiguration.ComputerModel);
+                    (isSupportedOperatingSystem,sprintf "Operating system '%s' is not supported by this driver package. Supported operating system: '%s'." systemInfo.OperatingSystem installConfiguration.OsShortName);
                 |]
             let notSupportedMessageArray =
                 supportedCheckArray
@@ -55,7 +55,7 @@ module InstallDriverPackage =
         regKey.SetValue(applicationRegistryValue.ValueName,applicationRegistryValue.Value)
     
     let getDriverPackageName (installConfiguration:InstallConfigurationData) =
-        String.Format("{0}_{1}_{2}",installConfiguration.ComputerVendor,installConfiguration.ComputerModel,installConfiguration.OsShortName)
+        sprintf "%s_%s_%s" installConfiguration.ComputerVendor installConfiguration.ComputerModel installConfiguration.OsShortName
     
     let windowsFolder =
         System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows)
@@ -112,7 +112,7 @@ module InstallDriverPackage =
                 |> Seq.map (fun p -> PathOperations.combine2Paths(FileSystem.pathValue p,installScriptName))
                 |> Seq.map (fun spr -> 
                                 match spr with
-                                |Ok p -> FileOperations.ensureFileExistsWithMessage (String.Format("It is required that the script '{0}' exists in each active driver folder. Not found: {1}. ",installScriptName, FileSystem.pathValue p)) p
+                                |Ok p -> FileOperations.ensureFileExistsWithMessage (sprintf "It is required that the script '%s' exists in each active driver folder. Not found: %s. " installScriptName (FileSystem.pathValue p)) p
                                 |Error _ -> spr
                             )
                 |> Seq.toArray
@@ -126,8 +126,8 @@ module InstallDriverPackage =
                 existingInstallScripts
                 |>Seq.map(fun script ->
                         let parentDirectory = (new System.IO.FileInfo(script.ToString())).Directory
-                        let scriptLogFile = System.IO.Path.Combine(System.Environment.ExpandEnvironmentVariables(installConfiguration.LogDirectory),String.Format("{0}-{1}-{2}.log",installScriptName,driverPackageName,parentDirectory.Name.Replace(".","_")))                        
-                        ProcessOperations.startConsoleProcess (existingCmdExePath,String.Format("/c \"{0}\"", FileSystem.pathValue script),parentDirectory.FullName,-1,null,scriptLogFile,true)
+                        let scriptLogFile = System.IO.Path.Combine(System.Environment.ExpandEnvironmentVariables(installConfiguration.LogDirectory),sprintf "%s-%s-%s.log" installScriptName driverPackageName (parentDirectory.Name.Replace(".","_")))                        
+                        ProcessOperations.startConsoleProcess (existingCmdExePath,sprintf "/c \"%s\"" (FileSystem.pathValue script),parentDirectory.FullName,-1,null,scriptLogFile,true)
                     )
                 |>Seq.toArray
                 |>toAccumulatedResult
@@ -142,7 +142,7 @@ module InstallDriverPackage =
 
     let installDrivers (localDriversFolderPath:FileSystem.Path) installScriptName installConfiguration driverPackageName =
         result{            
-            let! existingLocalDriversFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage false (String.Format("Can not run install scripts '{0}' due to the local driver folder '{1}', where the scripts should be located, does not exist. ",installScriptName,localDriversFolderPath)) localDriversFolderPath
+            let! existingLocalDriversFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage false (sprintf "Can not run install scripts '%s' due to the local driver folder '%s', where the scripts should be located, does not exist. " installScriptName (FileSystem.pathValue localDriversFolderPath)) localDriversFolderPath
             
             logger.Info("Getting active drivers...")
             let! activeDriverFolders = getGetActiveDriverFolders existingLocalDriversFolderPath    
@@ -156,12 +156,12 @@ module InstallDriverPackage =
             let! existingInstallScripts = getExistingScripts (activeDriverFolders, installScriptName)
             existingInstallScripts |> DriverTool.Logging.logSeqWithFormatString logger "Script verified: %s"|>Seq.toArray|>ignore
 
-            logger.Info(String.Format("Executing '{0}' for each driver folder...", installScriptName))
+            logger.Info(sprintf "Executing '%s' for each driver folder..." installScriptName)
             let! installedDriverExitCodes = executeScripts (existingInstallScripts,installScriptName,installConfiguration,driverPackageName)
             existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqWithFormatString logger "Script execution result: %s" |> ignore
-            logger.Info(String.Format("Finished executing '{0}' for each driver folder!", installScriptName))
+            logger.Info(sprintf "Finished executing '%s' for each driver folder!" installScriptName)
             let adjustedExitCode = getAdjustedExitCode installedDriverExitCodes
-            logger.Info(String.Format("Adjusted exit code: {0}", adjustedExitCode))
+            logger.Info(sprintf "Adjusted exit code: %i" adjustedExitCode)
             return adjustedExitCode
         }
     
@@ -174,8 +174,8 @@ module InstallDriverPackage =
                 logger.Info("Driver package is supported: " + isSupported.ToString())
                 let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
                 logger.Info("Installation is running with admin privileges: " + isAdministrator.ToString())
-                let! isRunningNativeProcess = assertIsRunningNativeProcess (String.Format("Driver install must be run in native process (64-bit on a x64 operating system, 32-bit on a x86 operating system). The current process is {0}. Contact the developer or use CoreFlags.exe (in the .NET SDK) to change the prefered execution bit on the current assembly.", Environment.processBit))
-                logger.Info(String.Format("Installation is running in native process: {0} ({1})",isRunningNativeProcess.ToString(), Environment.processBit))
+                let! isRunningNativeProcess = assertIsRunningNativeProcess (sprintf "Driver install must be run in native process (64-bit on a x64 operating system, 32-bit on a x86 operating system). The current process is %s. Contact the developer or use CoreFlags.exe (in the .NET SDK) to change the prefered execution bit on the current assembly." Environment.processBit)
+                logger.Info(sprintf "Installation is running in native process: {%b} (%s)" isRunningNativeProcess Environment.processBit)
                 return (isSupported && isAdministrator && isRunningNativeProcess)
         }
     
@@ -190,7 +190,7 @@ module InstallDriverPackage =
                         //which we do not want for a standard user user at logon, so set 
                         //ConfigFlags to 0                        
                         (DriverTool.RegistryOperations.setRegValue p "ConfigFlags" 0) |> ignore
-                        logger.Info(String.Format("ConfigFlag value in '[{0}]' was reset to 0.",p))
+                        logger.Info(sprintf "ConfigFlag value in '[%s]' was reset to 0." p)
                     )
         |>Seq.toArray
         |>ignore

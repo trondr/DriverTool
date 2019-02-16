@@ -6,7 +6,7 @@ module LenovoSystemUpdateCheck =
     type LenovoSystemUpdateNotInstalledException(message : string) =
         inherit Exception(
             match String.IsNullOrWhiteSpace(message) with
-            |false  -> String.Format("Lenovo System update is not installed. {1}", message)
+            |false  -> sprintf "Lenovo System update is not installed. %s" message
             |true -> "Lenovo System update is not installed"
             )
         new () = LenovoSystemUpdateNotInstalledException(String.Empty)

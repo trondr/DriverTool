@@ -96,7 +96,7 @@ module PackageXml =
     let toReadmeDownloadInfo destinationDirectory (packageInfo:PackageInfo) =
         let readmeDownloadInfo = 
                 result{
-                    let sourceReadmeUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.ReadmeName)
+                    let sourceReadmeUrl = sprintf "%s/%s" packageInfo.BaseUrl packageInfo.ReadmeName
                     let! sourceReadmeUri = DriverTool.Web.toUri (sourceReadmeUrl)
                     let! destinationReadmeFilePath = FileSystem.path (getDestinationReadmePath destinationDirectory packageInfo)
                     return {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationReadmeFilePath;}
@@ -110,7 +110,7 @@ module PackageXml =
     let toInstallerDownloadInfo destinationDirectory (packageInfo:PackageInfo) =
         let installerDownloadInfo = 
                     result{
-                        let sourceInstallerUrl = String.Format("{0}/{1}", packageInfo.BaseUrl, packageInfo.InstallerName)
+                        let sourceInstallerUrl = sprintf "%s/%s" packageInfo.BaseUrl packageInfo.InstallerName
                         let! sourceInstallerUri = toUri (sourceInstallerUrl)
                         let! destinationInstallerFilePath = FileSystem.path (getDestinationInstallerPath destinationDirectory packageInfo)
                         return {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationInstallerFilePath; }
@@ -220,7 +220,7 @@ module PackageXml =
         let postfix = packageInfo.ReleaseDate
         let prefix = (packageInfo.Category |? "Unknown_Category")
         let packageFolderName = 
-            String.Format("{0}_{1}",prefix,postfix).Replace("__", "_").Replace("__", "_");
+            (sprintf "%s_%s" prefix postfix).Replace("__", "_").Replace("__", "_");
         packageFolderName
     
     let downloadedPackageInfoToExtractedPackageInfo (packageFolderPath:FileSystem.Path,downloadedPackageInfo) =
@@ -234,7 +234,7 @@ module PackageXml =
             System.IO.File.Copy(sourceFilePath, destinationFilePath, true)
             Result.Ok destinationFilePath
         with
-        | ex -> Result.Error (new Exception(String.Format("Failed to copy file '{0}'->'{1}'.", sourceFilePath, destinationFilePath), ex))
+        | ex -> Result.Error (new Exception(sprintf "Failed to copy file '%s'->'%s'." sourceFilePath destinationFilePath, ex))
     
     let extractPackageXml (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
         let destinationFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.PackageXmlName)
@@ -274,7 +274,7 @@ module PackageXml =
                 Result.Error ex
         else
             logger.Info("Installer supports extraction, extract installer...")
-            let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",String.Format("\"{0}\"",packageFolderPath))
+            let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",sprintf "\"%s\"" (FileSystem.pathValue packageFolderPath))
             let fileName = getFileNameFromCommandLine extractCommandLine
             let arguments = extractCommandLine.Replace(fileName,"")
             match (FileSystem.existingFilePath downloadedPackageInfo.InstallerPath) with

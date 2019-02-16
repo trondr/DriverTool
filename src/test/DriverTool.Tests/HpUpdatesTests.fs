@@ -27,4 +27,4 @@ module HpUpdatesTests =
                     return actual
                 }) with
          |Ok _ -> Assert.IsTrue(true)
-         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+         |Error e -> Assert.Fail(e.Message)

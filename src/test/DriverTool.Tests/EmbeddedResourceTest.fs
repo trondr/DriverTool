@@ -22,9 +22,9 @@ module EmbeddedResourceTest  =
             }
         match res with
         | Ok p -> 
-            Assert.IsTrue(expectSuccess,System.String.Format("Target call succeded when failure was expected"))
+            Assert.IsTrue(expectSuccess,sprintf "Target call succeded when failure was expected")
         | Error e -> 
-            Assert.IsFalse(expectSuccess,System.String.Format("Target call failed when it was expected to succeded. Error: {0}",e.Message))
+            Assert.IsFalse(expectSuccess,sprintf "Target call failed when it was expected to succeded. Error: %s" e.Message)
             Assert.IsTrue(e.Message.StartsWith(expectedErrorMessage),"Error message was not expected. Actual: " + e.Message)
  
     let toStringArray (d:string) =

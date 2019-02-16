@@ -5,8 +5,8 @@ open DriverTool
 type InvalidOperatingSystemCodeException(operatingSytemCode:string, message : string) =
         inherit Exception(
             match String.IsNullOrWhiteSpace(message) with
-            |false  -> String.Format("The operating system code '{0}' is not valid. Valid values are: {1}. {2}", operatingSytemCode,String.Join<string>("|",OperatingSystem.getValidOsShortNames), message)
-            |true -> String.Format("The operating system code '{0}' is not valid. Valid values are: {1}.", operatingSytemCode, String.Join<string>("|",OperatingSystem.getValidOsShortNames))
+            |false  -> sprintf "The operating system code '%s' is not valid. Valid values are: %s. %s" operatingSytemCode (String.Join<string>("|",OperatingSystem.getValidOsShortNames))  message
+            |true -> sprintf "The operating system code '%s' is not valid. Valid values are: %s." operatingSytemCode (String.Join<string>("|",OperatingSystem.getValidOsShortNames))
             )
 
 type OperatingSystemCode private (operatingSystemCode : string) = 
@@ -18,7 +18,7 @@ type OperatingSystemCode private (operatingSystemCode : string) =
             try
                 Result.Ok OperatingSystem.getOsShortName
             with
-            | ex -> Result.Error ((new InvalidOperatingSystemCodeException(String.Empty,String.Format("Failed to get operating system due to: {0}", ex.Message))) :> Exception)
+            | ex -> Result.Error ((new InvalidOperatingSystemCodeException(String.Empty,sprintf "Failed to get operating system due to: %s" ex.Message)) :> Exception)
                     
         let validateOperatingSystemCode (operatingSystemCode:string) =
             match operatingSystemCode with

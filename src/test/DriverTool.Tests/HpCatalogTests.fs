@@ -21,7 +21,7 @@ module HpCatalogTests =
         |Ok p -> 
             printf "%s" (FileSystem.pathValue p)
             Assert.IsTrue(true)
-        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        |Error e -> Assert.Fail(e.Message)
     
     [<Test>]
     let getSoftPaqsTest () =
@@ -46,7 +46,7 @@ module HpCatalogTests =
                     return actual
                 }) with
         |Ok _ -> Assert.IsTrue(true)
-        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        |Error e -> Assert.Fail(e.Message)
        
     [<Test>]
     let getProductOSDriverPacksTest () =  
@@ -65,7 +65,7 @@ module HpCatalogTests =
                     return actual
                 }) with
          |Ok _ -> Assert.IsTrue(true)
-         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+         |Error e -> Assert.Fail(e.Message)
         
     [<Test>]    
     [<TestCase("WIN10X64","83B3")>]
@@ -83,5 +83,5 @@ module HpCatalogTests =
                     return actual
                 }) with
          |Ok _ -> Assert.IsTrue(true)
-         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+         |Error e -> Assert.Fail(e.Message)
         

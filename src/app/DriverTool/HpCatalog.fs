@@ -15,7 +15,9 @@ module HpCatalog =
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path, destinationFilePath:FileSystem.Path) =
         result{
             let! expandExePath = FileSystem.path expandExe
-            let! expandResult = ProcessOperations.startConsoleProcess (expandExePath, String.Format("\"{0}\" -F:* \"{1}\"", cabFilePath, destinationFilePath), FileSystem.pathValue destinationFolderPath,-1,null,null,false)            
+            let arguments = sprintf "\"%s\" -F:* \"%s\"" (FileSystem.pathValue cabFilePath) (FileSystem.pathValue destinationFilePath)
+            let workingDirectory =  FileSystem.pathValue destinationFolderPath
+            let! expandResult = ProcessOperations.startConsoleProcess (expandExePath, arguments, workingDirectory,-1,null,null,false)            
             return expandResult
         }
 
@@ -122,14 +124,14 @@ module HpCatalog =
         match operatingSystemCode.Value with
         |"WIN10X64" -> "Windows 10 64-bit"
         |"WIN10X86" -> "Windows 10 32-bit"
-        |_ -> raise (new Exception(String.Format("Failed to convert os short name '{0}' to Hp os name. Only WIN10X64 and WIN10X86 are supported os shortnames.",operatingSystemCode.Value)))
+        |_ -> raise (new Exception(sprintf "Failed to convert os short name '%s' to Hp os name. Only WIN10X64 and WIN10X86 are supported os shortnames." operatingSystemCode.Value))
     
     let hpOsNameToOsCodeAndOsBuild (hpOsName:string) =
         let osCode = 
             match hpOsName with
             |hpoOsN when hpOsName.StartsWith("Windows 10 64-bit") -> "WIN10X64"
             |hpoOsN when hpOsName.StartsWith("Windows 10 32-bit") -> "WIN10X86"
-            |_ -> raise (new Exception(String.Format("Failed to convert HP os name '{0}' to Hp os name to supported osshort names. Only WIN10X64 and WIN10X86 are supported os shortnames.", hpOsName)))
+            |_ -> raise (new Exception(sprintf "Failed to convert HP os name '%s' to Hp os name to supported osshort names. Only WIN10X64 and WIN10X86 are supported os shortnames." hpOsName))
         let osBuild = OperatingSystem.getOsBuildFromName hpOsName
         (osCode,osBuild)
 

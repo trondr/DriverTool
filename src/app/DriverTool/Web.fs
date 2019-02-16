@@ -38,9 +38,9 @@ module Web =
                 logger.InfoFormat("Downloading '{0}' -> {1}...", sourceUri.OriginalString, FileSystem.pathValue path)
                 webClient.DownloadFile(sourceUri.OriginalString,FileSystem.pathValue path)
                 Result.Ok path      
-            |Error ex -> Result.Error (new Exception(String.Format("Destination file '{0}' allready exists", destinationFilePath), ex))            
+            |Error ex -> Result.Error (new Exception((sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)), ex))
         with
-        | ex -> Result.Error (new Exception( String.Format("Failed to download '{0}' due to '{1}'", sourceUri.OriginalString, ex.Message),ex))
+        | ex -> Result.Error (new Exception(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString ex.Message, ex))
     
     let downloadFile (sourceUri:Uri, force, destinationFilePath) =
         Logging.genericLoggerResult Logging.LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
@@ -58,7 +58,7 @@ module Web =
         match (hasSameFileHashFunc downloadInfo) with
         |true  -> Result.Ok downloadInfo
         |false ->
-            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash. ", FileSystem.pathValue downloadInfo.DestinationFile,downloadInfo.SourceUri.OriginalString)
+            let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue downloadInfo.DestinationFile) downloadInfo.SourceUri.OriginalString
             match ignoreVerificationErrors with
             |true ->
                 logger.Warn(msg)
@@ -82,9 +82,9 @@ module Web =
             match (downloadFile (downloadInfo.SourceUri, true, downloadInfo.DestinationFile)) with
             |Ok s -> 
                 verifyDownload downloadInfo ignoreVerificationErrors
-            |Result.Error ex -> Result.Error (new Exception(String.Format("Failed to download '{0}' due to: {1} ",downloadInfo.SourceUri.ToString(),ex.Message), ex))
+            |Result.Error ex -> Result.Error (new Exception(sprintf "Failed to download '%A' due to: %s " downloadInfo.SourceUri ex.Message, ex))
         |false -> 
-            logger.Info(String.Format("Destination file '{0}' allready exists.", FileSystem.pathValue downloadInfo.DestinationFile))
+            logger.Info(sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile))
             Result.Ok downloadInfo
 
     type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}

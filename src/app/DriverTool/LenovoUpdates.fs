@@ -15,7 +15,7 @@ module LenovoUpdates =
     open DriverTool.PackageXml
 
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
-        new Uri(String.Format("https://download.lenovo.com/catalog/{0}_{1}.xml", (modelCode2DownloadableCode modelCode), (operatingSystemCode2DownloadableCode operatingSystemCode)))
+        new Uri(sprintf "https://download.lenovo.com/catalog/%s_%s.xml" (modelCode2DownloadableCode modelCode) (operatingSystemCode2DownloadableCode operatingSystemCode))
 
 
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
@@ -52,7 +52,7 @@ module LenovoUpdates =
                 Regex.Match(uri.OriginalString, @".+/(.+\.xml)$")
             match regExMatch.Success with
             | true -> Result.Ok (regExMatch.Groups.[1].Value)                                        
-            | false -> Result.Error (new ArgumentException(String.Format("Uri '{0}' does not represent a xml file.", uri.OriginalString)):> Exception)
+            | false -> Result.Error (new ArgumentException(sprintf "Uri '%s' does not represent a xml file." uri.OriginalString):> Exception)
         with
         | ex -> Result.Error ex
 
@@ -87,7 +87,7 @@ module LenovoUpdates =
         match (hasSameFileHash (destinationFile, checksum, fileSize)) with
         |true  -> Result.Ok destinationFile
         |false -> 
-            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",destinationFile,sourceUri.OriginalString)
+            let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash." (FileSystem.pathValue destinationFile) sourceUri.OriginalString
             match verificationWarningOnly with
             |true ->
                 Logging.getLoggerByName("verifyDownload").Warn(msg)
@@ -146,7 +146,7 @@ module LenovoUpdates =
                     |> Seq.cast<DownloadedPackageXmlInfo>                 
                 Result.Ok allSuccesses
         | _ -> 
-            let msg = String.Format("Failed to download all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
+            let msg = sprintf "Failed to download all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
      
     let downloadPackageXmlsR (packageXmlInfos: Result<seq<PackageXmlInfo>,Exception>) = 
@@ -155,7 +155,7 @@ module LenovoUpdates =
         |Error ex -> Result.Error ex     
 
     let getModelInfoXmlFilePath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
-        let fileName = String.Format("{0}_{1}.xml",modelCode.Value,operatingSystemCode.Value)
+        let fileName = sprintf "%s_%s.xml" modelCode.Value operatingSystemCode.Value
         let filePathString = getDownloadCacheFilePath fileName        
         FileSystem.path filePathString
 
@@ -163,7 +163,7 @@ module LenovoUpdates =
         try
             Result.Ok (getPackageInfoUnsafe downloadedPackageInfo)
         with
-        |ex -> Result.Error (new Exception(String.Format("Failed to get update info from '{0}'.",downloadedPackageInfo.FilePath),ex))
+        |ex -> Result.Error (new Exception(sprintf "Failed to get update info from '%s'." (FileSystem.pathValue downloadedPackageInfo.FilePath),ex))
 
     let parsePackageXmls (downloadedPackageXmls : seq<DownloadedPackageXmlInfo>) : seq<Result<PackageInfo,Exception>> = 
         downloadedPackageXmls
@@ -188,7 +188,7 @@ module LenovoUpdates =
                     |> Seq.cast<PackageInfo>                 
                 Result.Ok allSuccesses
         | _ -> 
-            let msg = String.Format("Failed to parse all package infos due to the following {0} error messages:{1}{2}",allErrorMessages.Count(),Environment.NewLine,String.Join(Environment.NewLine,allErrorMessages))
+            let msg = sprintf "Failed to parse all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
     
     open DriverTool.FileOperations
@@ -214,13 +214,13 @@ module LenovoUpdates =
         if(actualModel.Value.StartsWith(model.Value)) then
             Result.Ok true
         else
-            Result.Error (new Exception(String.Format("Given model '{0}' and actual model '{1}' are not equal.",model.Value,actualModel.Value)))
+            Result.Error (new Exception(sprintf "Given model '%s' and actual model '%s' is not equal." model.Value actualModel.Value))
     
     let asserThatOperatingSystemCodeIsValid (operatingSystemCode:OperatingSystemCode) (actualOperatingSystemCode:OperatingSystemCode) =
         if(operatingSystemCode.Value = actualOperatingSystemCode.Value) then
             Result.Ok true
         else
-            Result.Error (new Exception(String.Format("Given operating system code '{0}' and actual operating system code '{1}' are not equal.",operatingSystemCode.Value,actualOperatingSystemCode.Value)))
+            Result.Error (new Exception(sprintf "Given operating system code '%s' and actual operating system code '%s' are not equal." operatingSystemCode.Value actualOperatingSystemCode.Value))
 
     let updateFromRemote (remotePackageInfos:seq<PackageInfo>) (packageInfos:seq<PackageInfo>) =
         let updatedPacageInfos = 
@@ -260,10 +260,10 @@ module LenovoUpdates =
             
             let! actualModelCode = ModelCode.create String.Empty true
             let! modelCodeIsValid = assertThatModelCodeIsValid modelCode actualModelCode
-            loggerl.Info(String.Format("Model code '{0}' is valid: {1}",modelCode.Value,modelCodeIsValid))
+            loggerl.Info(sprintf "Model code '%s' is valid: %b" modelCode.Value modelCodeIsValid)
             let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
             let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid operatingSystemCode actualOperatingSystemCode
-            loggerl.Info(String.Format("Operating system code '{0}' is valid: {1}",operatingSystemCode.Value,operatingSystemCodeIsValid))
+            loggerl.Info(sprintf "Operating system code '%s' is valid: %b" operatingSystemCode.Value operatingSystemCodeIsValid)
 
             let! remotePackageInfos = getRemoteUpdates (modelCode, operatingSystemCode, overwrite,logDirectory)
             let localUpdates = 
@@ -306,9 +306,9 @@ module LenovoUpdates =
                     match (sccmPackages.Length > 0) with
                     |true -> Result.Ok sccmPackages.[0]
                     | false ->
-                        Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
+                        Result.Error (new Exception(sprintf "Sccm package not found for url '%s', OS=%s, OsBuild=%s." uri os osbuild))
                 |_ ->
-                    Result.Error (new Exception(String.Format("Sccm package not found for url '{0}', OS={1}, OsBuild={2}.",uri,os,osbuild)))
+                    Result.Error (new Exception(sprintf "Sccm package not found for url '%s', OS=%s, OsBuild=%s." uri os osbuild))
         |Error ex -> Result.Error ex
 
     let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<Product>) =
@@ -357,7 +357,7 @@ module LenovoUpdates =
     
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         loggerl.Info("Extract SccmPackage installer...")        
-        let arguments = String.Format("/VERYSILENT /DIR=\"{0}\" /EXTRACT=\"YES\"",destinationPath)
+        let arguments = sprintf "/VERYSILENT /DIR=\"%s\" /EXTRACT=\"YES\"" (FileSystem.pathValue destinationPath)
         match (FileSystem.existingFilePath downloadedSccmPackage.InstallerPath) with
         |Ok fp -> 
             match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
