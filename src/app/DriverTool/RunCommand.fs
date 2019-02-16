@@ -40,7 +40,7 @@ module RunCommand =
                     System.Threading.Thread.Sleep(2000)
                 else
                     use sr = new StreamReader(tempFileName)
-                    System.Console.WriteLine(sr.ReadToEnd())
+                    printfn "%s" (sr.ReadToEnd())
                 ()
                 
 

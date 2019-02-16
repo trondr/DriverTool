@@ -61,7 +61,7 @@ module AssemblyResolver=
             |>Seq.toArray
         if(existingAssemblyFilePaths.Length > 0) then
             let assemblyFilePath = existingAssemblyFilePaths.[0]
-            System.Console.WriteLine("Loading assembly '{0}' from search path. Path: {1}", assemblyName.Name, assemblyFilePath)
+            printfn "Loading assembly '%s' from search path. Path: %s" assemblyName.Name assemblyFilePath
             assemblyLoadFunc(assemblyFilePath)
         else
             printf "Failed to load assembly '%s' from search paths due to assembly file (.dll or .exe) not found."  assemblyName.Name
