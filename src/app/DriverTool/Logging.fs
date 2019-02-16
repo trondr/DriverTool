@@ -207,11 +207,12 @@
                             )
             |>Seq.toArray
 
-        let logSeqWithFormatString (logger:ILog) formatStringF1 records  =
+        let logSeqWithFormatString (logger:ILog) formatedSprintfF1 records  =
             records
-            |> Seq.map  (fun dj -> 
-                                logger.Info(sprintf formatStringF1 (valueToString dj))
-                                dj
+            |> Seq.map  (fun r -> 
+                                let valueString = sprintf "%A" r
+                                logger.Info(formatedSprintfF1 valueString)
+                                r
                             )
             |>Seq.toArray
                 

@@ -17,12 +17,12 @@ let main argv =
             match (string2Int dupExitCodeString) with        
             |Ok dupExitCode ->                                 
                 let dupExitCodeMessage = dupExitCode2Message dupExitCode
-                printfn "Dup exit code: %s (%s)" (dupExitCode.ToString()) dupExitCodeMessage
+                printfn "Dup exit code: %i (%s)" dupExitCode dupExitCodeMessage
                 let exitCode = dupExitCode2ExitCode dupExitCode
                 exitCode
             |Error ex -> 
                     printfn "ERROR: Failed to convert dup exit code '%s' due to: %s" dupExitCodeString ex.Message
                     13 //Invalid data            
         let exitCodeMessage = win32ErrorCode2Message exitCode
-        printfn "Win32 exit code: %s (%s)" (exitCode.ToString()) exitCodeMessage
+        printfn "Win32 exit code: %i (%s)" exitCode exitCodeMessage
         exitCode

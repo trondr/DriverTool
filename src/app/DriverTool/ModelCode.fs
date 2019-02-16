@@ -16,7 +16,7 @@ type ModelCode private (modelCode : string) =
         match modelCode with
         | modelCode when System.String.IsNullOrWhiteSpace(modelCode) && defaultToLocal -> 
             match getModelCodeForCurrentSystem() with
-            | Ok mc -> success (ModelCode (mc.ToString()) )
+            | Ok mc -> success (ModelCode mc)
             | Error ex -> failure ((new InvalidModelCodeException(String.Empty,sprintf "Failed to get model code for current system. %s" ex.Message)):> Exception)            
         | modelCode when System.String.IsNullOrWhiteSpace(modelCode) -> failure ((new InvalidModelCodeException(modelCode,"ModelCode cannot be null or empty.")) :> Exception)
         | _ -> success (ModelCode modelCode)

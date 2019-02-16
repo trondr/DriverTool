@@ -254,7 +254,7 @@ module LenovoUpdates =
         result{
             loggerl.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
-            loggerl.Info("Lenovo System Update is installed: " + lenovoSystemUpdateIsInstalled.ToString())
+            loggerl.Info(sprintf "Lenovo System Update is installed: %b" lenovoSystemUpdateIsInstalled)
             loggerl.Info("Getting locally installed updates...")
             let! packageInfos = DriverTool.LenovoSystemUpdate.getLocalUpdates()
             
