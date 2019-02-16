@@ -170,7 +170,7 @@ module OperatingSystemTests =
     [<TestCase("WIN2016X64")>]
     let getValidOsShortNamesTest (osShortName) =
         let actual = OperatingSystem.getValidOsShortNames
-        actual |> Seq.map (fun v -> printf "%s" v) |> ignore
+        actual |> Seq.map (fun v -> printfn "%s" v) |> ignore
         Assert.AreEqual(osShortName, actual|>Seq.find (fun v -> v = osShortName) )
 
     [<Test>]

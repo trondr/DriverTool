@@ -70,7 +70,7 @@ module EmbeddedResourceTest  =
             result{
                 let! destinationFolderPath = FileSystem.path destinationFolderPathString
                 let! extractedFiles = PackageTemplate.extractPackageTemplate destinationFolderPath
-                printf "Extracted files: %A" (extractedFiles |> Seq.toArray)
+                printfn "Extracted files: %A" (extractedFiles |> Seq.toArray)
                 return destinationFolderPath
             }
         match res with

@@ -19,7 +19,7 @@ module HpCatalogTests =
                 }
         match actual with
         |Ok p -> 
-            printf "%s" (FileSystem.pathValue p)
+            printfn "%s" (FileSystem.pathValue p)
             Assert.IsTrue(true)
         |Error e -> Assert.Fail(e.Message)
     
