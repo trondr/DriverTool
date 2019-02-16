@@ -44,7 +44,7 @@ module Configuration =
             getDownloadCacheDirectoryPathUnsafe
         with
         | _ as ex -> 
-            System.Console.WriteLine("Failed to get download cache directory due to " + ex.Message + "Using %TEMP% path instead.")
+            printfn "Failed to get download cache directory due to: %s. Using TEMP path instead." ex.Message
             System.IO.Path.GetTempPath()
 
     let getDownloadCacheFilePath fileName = 
