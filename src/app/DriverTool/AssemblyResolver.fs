@@ -31,23 +31,23 @@ module AssemblyResolver=
         let resourceName = ResourceName.create resourceNameString
         match resourceName with
         |Error ex -> 
-            printf "Failed to load assembly '%s' from embedded resource due to: %s" ex.Message assemblyName.Name
+            printfn "Failed to load assembly '%s' from embedded resource due to: %s" ex.Message assemblyName.Name
             null
         |Ok rn ->
             let assemblyDataResult = getAssemblyDataFromEmbeddedResource (rn,resourceAssembly)
             match assemblyDataResult with
             |Ok assemblyData -> 
-                printf "Assembly loaded from embedded resource: %s" assemblyName.Name
+                printfn "Assembly loaded from embedded resource: %s" assemblyName.Name
                 Assembly.Load(assemblyData)
             |Error ex ->
-                printf "Failed to load assembly '%s' from embedded resource due to: %s" ex.Message assemblyName.Name
+                printfn "Failed to load assembly '%s' from embedded resource due to: %s" ex.Message assemblyName.Name
                 null
     
     type AssemblyLoadFunc = string -> Assembly
     type FileExistsFunc = string -> bool
     
     let loadAssemblyFromSearchPathBase (assemblyLoadFunc:AssemblyLoadFunc,fileExistsFunc:FileExistsFunc,assemblySearchPaths:string[], assemblyName:AssemblyName) =
-        printf "Attempting to load assembly '%s' from search path..." assemblyName.Name
+        printfn "Attempting to load assembly '%s' from search path..." assemblyName.Name
         let existingAssemblyFilePaths = 
             assemblySearchPaths            
             |>Seq.map(fun searchPath ->                     
@@ -64,7 +64,7 @@ module AssemblyResolver=
             printfn "Loading assembly '%s' from search path. Path: %s" assemblyName.Name assemblyFilePath
             assemblyLoadFunc(assemblyFilePath)
         else
-            printf "Failed to load assembly '%s' from search paths due to assembly file (.dll or .exe) not found."  assemblyName.Name
+            printfn "Failed to load assembly '%s' from search paths due to assembly file (.dll or .exe) not found."  assemblyName.Name
             null
     
     let loadAssemblyFromSearchPath (assemblySearchPaths:string[], assemblyName:AssemblyName) =

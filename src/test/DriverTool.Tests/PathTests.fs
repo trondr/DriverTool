@@ -29,10 +29,10 @@ module PathTests  =
         let path = FileSystem.path pathString
         match path with
         | Ok p -> 
-            printf "Path: %A" p
+            printfn "Path: %A" p
             Assert.IsTrue(expectedSuccess,sprintf "Success was not expected for path '%s' ('%s')" (FileSystem.pathValue p) description)
         | Error e -> 
-            printf "Expected error: %s" e.Message
+            printfn "Expected error: %s" e.Message
             Assert.IsTrue(not expectedSuccess,sprintf "Error was not expected for path '%s' ('%s') Exception: %s" pathString description e.Message)
 
     [<Test>]
