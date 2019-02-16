@@ -54,4 +54,24 @@ module WebTests =
         |Error ex -> Assert.Fail(ex.Message)
 
         
-
+[<TestFixture>]
+[<Category(TestCategory.ManualTests)>]
+module ManualWebTest =
+    open DriverTool
+    open DriverTool
+    
+    [<Test>]
+    [<TestCase("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB",@"c:\temp\7480-win10-A10-2CHK6.CAB")>]
+    let downloadFileTest (sourceUrl,destinationFile) =
+        let res = 
+            result
+                {
+                    let! uri = Web.toUri sourceUrl
+                    let! destinationFilePath = FileSystem.path destinationFile
+                    let! downloadedDestinationFilePath = Web.downloadFile (uri,true,destinationFilePath)
+                    return downloadedDestinationFilePath
+                }
+        match res with
+        |Ok _ -> Assert.IsTrue(true)
+        |Error ex -> Assert.Fail(ex.Message)
+        ()

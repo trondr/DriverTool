@@ -25,18 +25,40 @@ module Web =
         | TextFile _ -> true
         | XmlFile _ -> true
         | _ -> false
+    
+    open FSharp.Control.Reactive
+
+
+    /// <summary>
+    /// progressActor makes sure progress info is output to the console nicely and orderly from multiple threads.
+    /// </summary>
+    let progressActor = 
+        MailboxProcessor.Start(fun inbox -> 
+            let rec messageLoop() = async{
+                let! msg = inbox.Receive()
+                printf "%s" msg
+                return! messageLoop()
+                }        
+            messageLoop()
+            )
+
+    let printProgress sourceUri (progress:DownloadProgressChangedEventArgs) = 
+        progressActor.Post (sprintf "%A: %i%% (%i of %i)\r" sourceUri progress.ProgressPercentage progress.BytesReceived progress.TotalBytesToReceive)
 
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
-            webClient.Proxy <- null;
+            webClient.Proxy <- null;            
+            use disposable = 
+                webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri progress)
             let webHeaderCollection = new WebHeaderCollection()
-            webHeaderCollection.Add("User-Agent", "LenovoUtil/1.0") 
+            webHeaderCollection.Add("User-Agent", "DriverTool/1.0") 
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
             |Ok path -> 
-                logger.InfoFormat("Downloading '{0}' -> {1}...", sourceUri.OriginalString, FileSystem.pathValue path)
-                webClient.DownloadFile(sourceUri.OriginalString,FileSystem.pathValue path)
+                logger.Info(sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path))
+                let downloadTask = webClient.DownloadFileTaskAsync(sourceUri.OriginalString,FileSystem.pathValue path)                
+                Async.AwaitTask downloadTask |> Async.RunSynchronously                
                 Result.Ok path      
             |Error ex -> Result.Error (new Exception((sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)), ex))
         with
