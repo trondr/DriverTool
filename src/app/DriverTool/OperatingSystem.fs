@@ -106,7 +106,7 @@ module OperatingSystem =
         |146u -> true //Server Standard, Semi-Annual Channel (core installation)
         |161u -> false //Windows 10 Pro for Workstations
         |162u -> false //Windows 10 Pro for Workstations N
-        |_ -> raise (new Exception(String.Format("OperatingSystemSKU '{0}' is unknown. ", operatingSystemSku)))
+        |_ -> raise (new Exception(sprintf "OperatingSystemSKU '%i' is unknown. " operatingSystemSku))
     
     let isServer =
         match(getOperatingSystemSku) with
@@ -187,12 +187,12 @@ module OperatingSystem =
             | 1 -> getOsShortNamev61 (isX64, isServer)
             | 2 -> getOsShortNamev62 (isX64, isServer)
             | 3 -> getOsShortNamev63 (isX64, isServer)
-            |_ -> raise (new Exception(String.Format("Unsupported Operating System versjon '{0}.{1}'. ", osMajorVersion, osMinorVersion)))
+            |_ -> raise (new Exception(sprintf "Unsupported Operating System versjon '%i.%i'. " osMajorVersion osMinorVersion))
         | 10 -> 
             match osMinorVersion with
             | 0 -> getOsShortNamev100 (isX64, isServer)
-            |_ -> raise (new Exception(String.Format("Unsupported Operating System versjon '{0}.{1}'. ", osMajorVersion, osMinorVersion)))
-        |_ -> raise (new Exception(String.Format("Unsupported Operating System major versjon '{0}'. ",osMajorVersion)))
+            |_ -> raise (new Exception(sprintf "Unsupported Operating System versjon '%i.%i'. " osMajorVersion osMinorVersion))
+        |_ -> raise (new Exception(sprintf "Unsupported Operating System major versjon '%i'. " osMajorVersion))
     
     open F    
 

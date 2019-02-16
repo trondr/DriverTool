@@ -6,8 +6,8 @@ open Paths
 type InvalidPathException(path:string, message : string) =
         inherit Exception(
             match String.IsNullOrWhiteSpace(message) with
-            |false  -> String.Format("The path '{0}' is not valid. {1}", path, message)
-            |true -> String.Format("The path '{0}' is not valid.", path)
+            |false  -> sprintf "The path '%s' is not valid. %s" path message
+            |true -> sprintf "The path '%s' is not valid." path
             )
 
 module FileSystem = 

@@ -10,7 +10,7 @@ module WmiHelper =
             use managementClass = new ManagementClass(className)
             use managementObjectCollection = managementClass.GetInstances()
             if(managementObjectCollection.Count = 0) then                
-                Result.Error (new System.Exception(String.Format("No instances of wmi class '{0}' was found.", className)))
+                Result.Error (new System.Exception(sprintf "No instances of wmi class '%s' was found." className))
             else
                 let value = 
                     managementObjectCollection
@@ -30,7 +30,7 @@ module WmiHelper =
             use searcher = new ManagementObjectSearcher(scope,query)
             use managementObjectCollection = searcher.Get()
             if(managementObjectCollection.Count = 0) then                
-                Result.Error (new System.Exception(String.Format("No instances of wmi class '{0}' was found.", className)))
+                Result.Error (new System.Exception(sprintf "No instances of wmi class '%s' was found." className))
             else
                 let value = 
                     managementObjectCollection

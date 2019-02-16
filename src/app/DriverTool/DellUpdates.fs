@@ -25,7 +25,8 @@ module DellUpdates =
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path) =
         result{
             let! expandExePath = FileSystem.path expandExe
-            let! expandResult = ProcessOperations.startConsoleProcess (expandExePath,String.Format("\"{0}\" -F:* -R \"{1}\"",cabFilePath,destinationFolderPath), FileSystem.pathValue destinationFolderPath,-1,null,null,false)            
+            let arguments = sprintf "\"%s\" -F:* -R \"%s\"" (FileSystem.pathValue cabFilePath) (FileSystem.pathValue destinationFolderPath)
+            let! expandResult = ProcessOperations.startConsoleProcess (expandExePath, arguments, FileSystem.pathValue destinationFolderPath,-1,null,null,false)            
             return expandResult
         }
 
@@ -55,7 +56,7 @@ module DellUpdates =
         match operatingSystemCode.Value with
         |"WIN10X64" -> "W10P4" //Microsoft Windows 10 Pro X64
         |"WIN10X86" -> "W10P2" //Microsoft Windows 10 Pro X64
-        |_ -> raise (new Exception(String.Format("Failed to convert os short name '{0}' to Dell oscode. Only WIN10X64 and WIN10X86 are supported os shortnames.",operatingSystemCode.Value)))
+        |_ -> raise (new Exception(sprintf "Failed to convert os short name '%s' to Dell oscode. Only WIN10X64 and WIN10X86 are supported os shortnames." operatingSystemCode.Value))
     
     let operatingSystemCodeToDellOsCode (operatingSystemCode:OperatingSystemCode) =
         tryCatch operatingSystemCodeToDellOsCodeUnsafe operatingSystemCode
@@ -131,7 +132,7 @@ module DellUpdates =
             InstallerCrc = getAttribute (sc,"hashMD5")
             InstallerSize = int64 (getAttribute (sc,"size"))
             ExtractCommandLine = ""
-            InstallCommandLine = String.Format("\"{0}\" /s /l=\"{1}\\DUP_{0}.log\"",installerName,logDirectory)
+            InstallCommandLine = (sprintf "\"%s\" /s /l=\"%s\\DUP_%s.log\"" installerName logDirectory installerName)
             Category = getElementValue (sc,"Category")
             ReadmeName = "";
             ReadmeCrc = "";
@@ -210,7 +211,7 @@ module DellUpdates =
         match operatingSystemCode.Value with
         |"WIN10X64" -> ("Windows10","x64") //Microsoft Windows 10 Pro X64
         |"WIN10X86" -> ("Windows10","x86") //Microsoft Windows 10 Pro X64
-        |_ -> raise (new Exception(String.Format("Failed to convert os short name '{0}' to Dell oscode. Only WIN10X64 and WIN10X86 are supported os shortnames.",operatingSystemCode.Value)))
+        |_ -> raise (new Exception(sprintf "Failed to convert os short name '%s' to Dell oscode. Only WIN10X64 and WIN10X86 are supported os shortnames." operatingSystemCode.Value))
 
     let osCodeToDellOsCodeAndArchitecture (operatingSystemCode:OperatingSystemCode) =
         tryCatch osCodeToDellOsCodeAndArchitectureUnsafe operatingSystemCode

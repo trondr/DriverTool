@@ -12,7 +12,7 @@ module WebParsing =
             Result.Ok html
         with
         | ex -> 
-            let msg = String.Format("Failed to get web content for web page '{0}' due to {1}", uri, ex.Message)
+            let msg = sprintf "Failed to get web content for web page '%s' due to %s" uri ex.Message
             Result.Error (new System.Exception(msg,ex))
     
     open DriverTool.PathOperations

@@ -7,7 +7,7 @@ module PackageDefinition =
 
     let getApplicationRegistryValueBase companyName applicationName installRevision =
         {
-            Path=String.Format("HKLM\SOFTWARE\{0}\Applications\{1}", companyName, applicationName)
+            Path=sprintf "HKLM\\SOFTWARE\\%s\\Applications\\%s" companyName applicationName
             ValueName="InstallRevision"
             Value=installRevision
         }
@@ -91,8 +91,8 @@ RegistryValueIs64Bit={7}
             Version=installConfiguration.PackageVersion;
             Publisher=installConfiguration.Publisher;
             Language="EN";
-            InstallCommandLine = String.Format("Install.cmd > \"{0}\\{1}_{2}_Install.cmd.log\"",installConfiguration.LogDirectory,installConfiguration.PackageName, installConfiguration.PackageVersion)
-            UnInstallCommandLine = String.Format("UnInstall.cmd > \"{0}\\{1}_{2}_UnInstall.cmd.log\"",installConfiguration.LogDirectory,installConfiguration.PackageName, installConfiguration.PackageVersion)
-            RegistryValue=String.Format("[{0}]{1}={2}",applicationRegistryValue.Path, applicationRegistryValue.ValueName, applicationRegistryValue.Value)
+            InstallCommandLine = sprintf "Install.cmd > \"%s\\%s_%s_Install.cmd.log\"" installConfiguration.LogDirectory installConfiguration.PackageName installConfiguration.PackageVersion;
+            UnInstallCommandLine = sprintf "UnInstall.cmd > \"%s\\%s_%s_UnInstall.cmd.log\"" installConfiguration.LogDirectory installConfiguration.PackageName  installConfiguration.PackageVersion
+            RegistryValue=sprintf "[%s]%s=%s" applicationRegistryValue.Path applicationRegistryValue.ValueName applicationRegistryValue.Value
             RegistryValueIs64Bit="true"
         }

@@ -25,7 +25,7 @@ module EmbeddedResouce =
         nullGuard assembly "assembly" |> ignore
         if(logger.IsDebugEnabled) then
             let resourceNames = assembly.GetManifestResourceNames()
-            logger.DebugFormat("Assembly {0} has {1} embedded resources.", assembly.GetName(),resourceNames.Length)
+            logger.Debug(sprintf "Assembly '%s' has %i embedded resources." assembly.FullName resourceNames.Length)
             resourceNames
                 |> Array.toSeq
                 |> Seq.map (fun rn -> logger.Debug("Embeded resource: " + rn))
@@ -39,7 +39,7 @@ module EmbeddedResouce =
         match resourceStream with
         |Null -> 
             debugPrintResourceNames assembly
-            Result.Error (new Exception(String.Format("Failed to extract embedded resource '{0}' from assembly '{1}'.", resourceName.Value, assembly.FullName)))
+            Result.Error (new Exception(sprintf "Failed to extract embedded resource '%s' from assembly '%s'." resourceName.Value assembly.FullName))
         |NotNull rs -> Result.Ok rs
 
     let extractEmbeddedResourceInAssemblyToFile (resourceName:ResourceName, assembly:Assembly, filePath:FileSystem.Path) =
@@ -108,7 +108,7 @@ module EmbeddedResouce =
                 let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists true parentDirectoryPath
                 logger.Info("Verified that directory exists:" + FileSystem.pathValue existingParentDirectoryPath)
                 let assembly = destinationFilePath.GetType().Assembly
-                logger.Info(String.Format("Extracting resource '{0}' -> '{1}'",resourceName, destinationFilePath))
+                logger.Info(sprintf "Extracting resource '%s' -> '%s'" resourceName (FileSystem.pathValue destinationFilePath))
                 let! fileResult = 
                     extractEmbeddedResourceInAssemblyToFile (resourceNameObject,assembly, destinationFilePath)
                 return fileResult

@@ -21,7 +21,7 @@ module RegistryOperations =
 
     let openRegKeyUnsafe (regKeyPath:string, writeable:bool) =
         nullGuard regKeyPath "regKeyPath"
-        if (logger.IsDebugEnabled) then logger.Debug(String.Format("Opening registry key: [{0}] (writeable: {1})", regKeyPath, writeable.ToString()))
+        if (logger.IsDebugEnabled) then logger.Debug(sprintf "Opening registry key: [%s] (writeable: %s)" regKeyPath (writeable.ToString()))
         let (regHive,subPath) = parseRegKeyPath regKeyPath
         regHive.OpenSubKey(subPath,writeable)
     
@@ -36,7 +36,7 @@ module RegistryOperations =
             |null -> None
             |_ -> Some regKey
         |Error ex ->
-            if(loggerIsEnabled) then logWrite(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            if(loggerIsEnabled) then logWrite(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message)
             None
     
     let openRegKeyOptional (regKeyPath:string, writeable:bool) =
@@ -53,7 +53,7 @@ module RegistryOperations =
             |null -> false
             |_ -> true
         |Error ex ->
-            if (loggerIsEnabled) then logWrite(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            if (loggerIsEnabled) then logWrite(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message)
             false
 
     let regKeyExists (regKeyPath:string) =
@@ -81,7 +81,7 @@ module RegistryOperations =
                 |Some _ -> true
                 |None -> false
         |Error ex ->
-            if (loggerIsEnabled) then logWrite(String.Format("Failed to open registry key [{0}] due to: {1}", regKeyPath, ex.Message))
+            if (loggerIsEnabled) then logWrite(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message)
             false
 
     let regValueExists (regKeyPath:string) valueName =

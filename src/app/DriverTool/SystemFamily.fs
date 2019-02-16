@@ -5,8 +5,8 @@ open DriverTool
 type InvalidSystemFamilyException(systemFamily:string, message : string) =
         inherit Exception(
             match String.IsNullOrWhiteSpace(message) with
-            |false  -> String.Format("The system family '{0}' is not valid. {1}", systemFamily, message)
-            |true -> String.Format("The system family '{0}' is not valid.", systemFamily)
+            |false  -> sprintf "The system family '%s' is not valid. %s" systemFamily message
+            |true -> sprintf "The system family '%s' is not valid." systemFamily
             )
 
 type SystemFamily private (systemFamily : string) = 
@@ -21,7 +21,7 @@ type SystemFamily private (systemFamily : string) =
         | systemFamily when System.String.IsNullOrWhiteSpace(systemFamily) && defaultToLocal -> 
             match getSystemFamilyForLocalSystem with
             | Ok mc -> success (SystemFamily (mc.ToString()) )
-            | Error ex -> failure ((new InvalidSystemFamilyException(String.Empty,String.Format("Failed to get system family from WMI. {0}", ex.Message))):> Exception)
+            | Error ex -> failure ((new InvalidSystemFamilyException(String.Empty,sprintf "Failed to get system family from WMI. %s" ex.Message)):> Exception)
             
         | systemFamily when System.String.IsNullOrWhiteSpace(systemFamily) -> failure ((new InvalidSystemFamilyException(systemFamily,"SystemFamily cannot be null or empty.")) :> Exception)
         | _ -> success (SystemFamily systemFamily)

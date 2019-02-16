@@ -5,8 +5,8 @@ open DriverTool.SystemInfo
 type InvalidModelCodeException(modelCode:string, message : string) =
         inherit Exception(
             match String.IsNullOrWhiteSpace(message) with
-            |false  -> String.Format("The model code '{0}' is not valid. {1}", modelCode, message)
-            |true -> String.Format("The model code '{0}' is not valid.", modelCode)
+            |false  -> sprintf "The model code '%s' is not valid. %s" modelCode message
+            |true -> sprintf "The model code '%s' is not valid." modelCode
             )
 
 type ModelCode private (modelCode : string) = 
@@ -17,7 +17,7 @@ type ModelCode private (modelCode : string) =
         | modelCode when System.String.IsNullOrWhiteSpace(modelCode) && defaultToLocal -> 
             match getModelCodeForCurrentSystem() with
             | Ok mc -> success (ModelCode (mc.ToString()) )
-            | Error ex -> failure ((new InvalidModelCodeException(String.Empty,String.Format("Failed to get model code for current system. {0}", ex.Message))):> Exception)            
+            | Error ex -> failure ((new InvalidModelCodeException(String.Empty,sprintf "Failed to get model code for current system. %s" ex.Message)):> Exception)            
         | modelCode when System.String.IsNullOrWhiteSpace(modelCode) -> failure ((new InvalidModelCodeException(modelCode,"ModelCode cannot be null or empty.")) :> Exception)
         | _ -> success (ModelCode modelCode)
 

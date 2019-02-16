@@ -22,7 +22,7 @@ module FileOperations =
         | true -> 
             match overwrite with
             | true -> deleteFile filePath        
-            | false -> Result.Error (new FileExistsException(String.Format("File allready exists: '{0}'. {1}", FileSystem.pathValue filePath, message)) :> Exception)
+            | false -> Result.Error (new FileExistsException(sprintf "File allready exists: '%s'. %s" (FileSystem.pathValue filePath) message) :> Exception)
         | false -> Result.Ok filePath
     
     let ensureFileDoesNotExist overwrite filePath = 
@@ -31,7 +31,7 @@ module FileOperations =
     let ensureFileExists path = 
         match System.IO.File.Exists(FileSystem.pathValue  path) with
         | true -> Result.Ok path            
-        | false -> Result.Error (new System.IO.FileNotFoundException(String.Format("File does not exist: '{0}'", FileSystem.pathValue path)) :> Exception)
+        | false -> Result.Error (new System.IO.FileNotFoundException(sprintf "File does not exist: '%s'" (FileSystem.pathValue path)) :> Exception)
     
     let ensureFileExistsWithMessage message path = 
         match System.IO.File.Exists(FileSystem.pathValue path) with

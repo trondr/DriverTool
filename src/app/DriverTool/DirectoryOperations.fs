@@ -13,7 +13,7 @@ module DirectoryOperations =
         try
             Result.Ok (createDirectoryUnsafe directoryPath)
         with
-        | ex -> Result.Error (new Exception(String.Format("Failed to create directory '{0}'",directoryPath),ex))
+        | ex -> Result.Error (new Exception(sprintf "Failed to create directory '%s'" (FileSystem.pathValue directoryPath),ex))
     
     let deleteDirectoryUnsafe force (folderPath:FileSystem.Path) =
             match (System.IO.Directory.Exists(FileSystem.pathValue folderPath)) with
@@ -56,7 +56,7 @@ module DirectoryOperations =
         |Ok dp -> 
             match (directoryIsEmpty dp) with
             |true -> Result.Ok dp
-            |false -> Result.Error (new Exception(String.Format("Directory '{0}' is not empty. " + message, FileSystem.pathValue dp)))
+            |false -> Result.Error (new Exception(sprintf "Directory '%s' is not empty. %s" (FileSystem.pathValue dp) message))
         |Error ex -> Result.Error ex
 
     let ensureDirectoryExistsAndIsEmpty (directoryPath:FileSystem.Path, createIfNotExists) =
@@ -64,7 +64,7 @@ module DirectoryOperations =
 
     let ensureDirectoryNotExistsWithMessage message (directoryPath:FileSystem.Path) =
         match directoryPathExists(directoryPath) with
-        |true -> Result.Error (new Exception(String.Format("Directory '{0}' allready exists. " + message, FileSystem.pathValue directoryPath)))
+        |true -> Result.Error (new Exception(sprintf "Directory '%s' allready exists. %s" (FileSystem.pathValue directoryPath) message))
         |false -> Result.Ok directoryPath
     
     let getParentFolderPath (folderPath:FileSystem.Path)=        

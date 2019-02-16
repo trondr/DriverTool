@@ -23,7 +23,7 @@ module CreateDriverPackage =
         match (hasSameFileHash (downloadJob.DestinationFile, downloadJob.Checksum, downloadJob.Size)) with
         |true  -> Result.Ok downloadJob
         |false -> 
-            let msg = String.Format("Destination file ('{0}') hash does not match source file ('{1}') hash.",downloadJob.DestinationFile,downloadJob.SourceUri.OriginalString)
+            let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash." (FileSystem.pathValue downloadJob.DestinationFile) downloadJob.SourceUri.OriginalString
             match verificationWarningOnly with
             |true ->
                 loggerc.Warn(msg)
@@ -228,8 +228,8 @@ module CreateDriverPackage =
                     Version = extractedUpdate.DownloadedPackage.Package.Version;
                     Language = "EN";
                     Publisher = "LENOVO";
-                    InstallCommandLine = String.Format(dtInstallPackageCmd + " > \"{0}\"",installLogFile);
-                    UnInstallCommandLine = String.Format(dtUnInstallPackageCmd + " > \"{0}\"",unInstallLogFile);
+                    InstallCommandLine = dtInstallPackageCmd + sprintf " > \"%s\"" installLogFile;
+                    UnInstallCommandLine = dtUnInstallPackageCmd + sprintf " > \"%s\"" unInstallLogFile;
                     RegistryValue="";
                     RegistryValueIs64Bit="";
                 }
@@ -296,7 +296,7 @@ module CreateDriverPackage =
                 let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.getDownloadCacheDirectoryPath), sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
-                let packageName = String.Format("{0} {1} {2} {3} {4} Drivers {5}", packagePublisher, (manufacturerToName manufacturer), systemFamily.Value, model.Value, operatingSystem.Value, releaseDate)                
+                let packageName = sprintf "%s %s %s %s %s Drivers %s" packagePublisher (manufacturerToName manufacturer) systemFamily.Value model.Value operatingSystem.Value releaseDate
                 let! versionedPackagePath = combine3Paths (FileSystem.pathValue destinationFolderPath, model.Value, releaseDate)
 
                 loggerc.InfoFormat("Extracting package template to '{0}'",versionedPackagePath)
@@ -325,7 +325,7 @@ module CreateDriverPackage =
                 let updatedInstallConfiguration = 
                     { installConfiguration with 
                         LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables logDirectory);
-                        LogFileName = toValidDirectoryName (String.Format("{0}.log", packageName));
+                        LogFileName = toValidDirectoryName (sprintf "%s.log" packageName);
                         PackageName = packageName;
                         PackageVersion = "1.0"
                         PackageRevision = "000"
@@ -336,7 +336,7 @@ module CreateDriverPackage =
                         Publisher = packagePublisher
                     }
                 let savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
-                loggerc.InfoFormat("Saved install configuration to '{0}'. Value:", existingInstallXmlPath, (Logging.valueToString savedInstallConfiguration))
+                loggerc.InfoFormat("Saved install configuration to '%s'. Value:", existingInstallXmlPath, (Logging.valueToString savedInstallConfiguration))
                 loggerc.Info("Create PackageDefinition.sms")
                 let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"PackageDefinition.sms"))                
                 let! packageDefintionWriteResult = 

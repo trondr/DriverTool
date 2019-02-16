@@ -109,10 +109,11 @@ module BitLockerOperations=
             let! existingDriverToolProgramDataFolderPath = DirectoryOperations.ensureDirectoryExists true driverToolProgramDataFolderPath
             let! resumeBitLockerCmdFilePath = EmbeddedResouce.extractEmbeddedResouceByFileName (resumeBitLockerCmdFileName,existingDriverToolProgramDataFolderPath, resumeBitLockerCmdFileName)
             let! schtasksExePath = FileSystem.path schtasksExe
-            let! exitCode = ProcessOperations.startConsoleProcess (schtasksExePath, String.Format("/Delete /tn \"{0}\" /F", resumeBitLockerTaskName), nativeSystemFolder,-1,null, null, false)
+            let! exitCode = ProcessOperations.startConsoleProcess (schtasksExePath, sprintf "/Delete /tn \"%s\" /F" resumeBitLockerTaskName, nativeSystemFolder,-1,null, null, false)
             let! destinationFolderPath = FileSystem.path driverToolProgramDataFolder
             let! resumeBitLockerTaskXmlFilePath = installResumeBitLockerTaskXmlFile (destinationFolderPath,resumeBitLockerCmdFilePath,resumeBitLockerTaskName)
-            let! exitCode = ProcessOperations.startConsoleProcess (schtasksExePath, String.Format("/Create /tn \"{0}\" /XML \"{1}\"",resumeBitLockerTaskName, resumeBitLockerTaskXmlFilePath), nativeSystemFolder,-1,null, null, false)
+            let arguments = sprintf "/Create /tn \"%s\" /XML \"%s\"" resumeBitLockerTaskName (FileSystem.pathValue resumeBitLockerTaskXmlFilePath)
+            let! exitCode = ProcessOperations.startConsoleProcess (schtasksExePath, arguments, nativeSystemFolder,-1,null, null, false)
             return exitCode
         }
 

@@ -60,10 +60,10 @@
         
         let getDurationString (duration:TimeSpan) =
             match duration.TotalMilliseconds with
-            | t when t < 1000.0 -> String.Format("{0}ms",duration.TotalMilliseconds)
-            | t when t < 60000.0 -> String.Format("{0}s {1}ms",duration.Seconds, duration.Milliseconds)
-            | t when t < 1000.0 * 60.0 * 60.0 -> String.Format("{0}m {1}s {2}ms",duration.Minutes, duration.Seconds, duration.Milliseconds)
-            | _ -> String.Format("{0}h {1}m {2}s",duration.Hours,duration.Minutes, duration.Seconds)
+            | t when t < 1000.0 -> sprintf "%.0fms" duration.TotalMilliseconds
+            | t when t < 60000.0 -> sprintf "%is %ims" duration.Seconds duration.Milliseconds
+            | t when t < 1000.0 * 60.0 * 60.0 -> sprintf "%im %is %ims" duration.Minutes duration.Seconds duration.Milliseconds
+            | _ -> sprintf "%ih %im %is" duration.Hours duration.Minutes duration.Seconds
 
         let valueToString value =   
             match box value with
@@ -86,7 +86,7 @@
         let exceptionToString (ex:Exception) =
             let exceptionType = ex.GetType().FullName
             let exceptionMessage = ex.Message
-            String.Format("Exception : {0} : {1}",exceptionType, exceptionMessage)
+            sprintf "Exception : %s : %s" exceptionType exceptionMessage
         
         let (|As|_|) (p:'T) : 'U option =
             let p = p :> obj
@@ -145,7 +145,7 @@
             if(doLog) then
                 let functionName = getFunctionName func
                 let parametersString = (getParametersString input)
-                functionCall <- String.Format("{0}({1})",functionName, parametersString)
+                functionCall <- sprintf "%s(%s)" functionName parametersString
                 writeLog ("Call: " + functionCall)
             
             let startTime = DateTime.Now
@@ -159,7 +159,7 @@
                     match result with
                     |Ok v -> "OK: " + valueToString v
                     |Result.Error ex -> "ERROR: " + getAccumulatedExceptionMessages ex
-                let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , resultString, (getDurationString duration))
+                let functionCallResult = sprintf "Return: %s -> %s (Duration: %s)" functionCall resultString (getDurationString duration)
                 match result with
                 |Ok _ -> writeLog (functionCallResult)
                 |Result.Error _ -> writeErrorLog (functionCallResult)
@@ -176,7 +176,7 @@
             if(doLog) then
                 let functionName = getFunctionName func
                 let parametersString = (getParametersString input)
-                functionCall <- String.Format("{0}({1})",functionName, parametersString)
+                functionCall <- sprintf "%s(%s)" functionName  parametersString
                 writeLog ("Call: " + functionCall)
             
             let startTime = DateTime.Now
@@ -188,14 +188,14 @@
                 |ex -> 
                     let functionName = getFunctionName func
                     let parametersString = (getParametersString input)
-                    functionCall <- String.Format("{0}({1})",functionName, parametersString)
-                    writeErrorLog (String.Format("'{0}' failed due to: {1}",functionCall, ex.Message))
+                    functionCall <- sprintf "%s(%s)" functionName parametersString
+                    writeErrorLog (sprintf "'%s' failed due to: %s" functionCall ex.Message)
                     raise ex
             finally
                 let stopTime = DateTime.Now
                 let duration = stopTime - startTime
                 if(doLog) then                
-                    let functionCallResult = String.Format("Return: {0} -> {1} (Duration: {2})", functionCall , (resultToString returnValue), (getDurationString duration))
+                    let functionCallResult = sprintf "Return: %s -> %s (Duration: %s)" functionCall (resultToString returnValue) (getDurationString duration)
                     writeLog (functionCallResult)
             unbox returnValue
     

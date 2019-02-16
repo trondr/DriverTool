@@ -64,7 +64,7 @@ module RegistryOperationTests =
             | _ -> raise(new System.Exception("Invalid test input. Only one of the values [True|False|Error] are supported"))
         
         let logWriteStub message = 
-            Assert.AreEqual(String.Format("Failed to open registry key [{0}] due to: {1}",regKeyPath,errorMessage),message)
+            Assert.AreEqual(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath errorMessage, message)
 
         let actual = regKeyExistsBase regKeyOpenStub (regKeyPath) true logWriteStub
         Assert.AreEqual(expected,actual)
@@ -97,7 +97,7 @@ module RegistryOperationTests =
             | _ -> raise(new System.Exception("Invalid test input. Only one of the values [True|False] are supported"))
 
         let logWriteStub message = 
-            Assert.AreEqual(String.Format("Failed to open registry key [{0}] due to: {1}",regKeyPath,errorMessage),message)
+            Assert.AreEqual(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath errorMessage,message)
 
         let actual = regValueExistsBase regKeyOpenStub getRegKeyValueStub (regKeyPath) valueName true logWriteStub
         Assert.AreEqual(expected,actual)
