@@ -53,11 +53,11 @@ module RunCommand =
         logger.Info("ComputerName: " + System.Environment.MachineName)
         logger.Info("UserName: " + System.Environment.UserName)
         logger.Info("UserDomain: " + System.Environment.UserDomainName)
-        logger.Info("UserInteractive: " + System.Environment.UserInteractive.ToString())
-        logger.Info("Is Administrator: " + Requirements.isAdministrator().ToString())
-        logger.Info("Is X64 bit Operating System: " + System.Environment.Is64BitOperatingSystem.ToString())
+        logger.Info(sprintf "UserInteractive: %b" System.Environment.UserInteractive)
+        logger.Info(sprintf "Is Administrator: %b" (Requirements.isAdministrator()))
+        logger.Info(sprintf "Is X64 bit Operating System: %b" System.Environment.Is64BitOperatingSystem)
         logger.Info("Process Bit: " + Environment.processBit)
-        logger.Info("Is native process bit: " + Environment.isNativeProcessBit.ToString() + "(64 bit process on a 64 bit operating system, 32 bit process on a 32 bit operatings system)")
+        logger.Info(sprintf "Is native process bit: %b (64 bit process on a 64 bit operating system, 32 bit process on a 32 bit operatings system)" Environment.isNativeProcessBit)
         use notepadMessenger = new NotepadMessenger()
         let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args,notepadMessenger)
         let exitCode = 
@@ -66,7 +66,7 @@ module RunCommand =
                 |false ->                
                     result.OnFailure(new System.Action<exn>(fun ex -> logger.Error(ex.ToString())))|> ignore
                     1    
-        logger.Info(sprintf "Stop: DriverTool.%s Exit code: %s" version  (exitCode.ToString()))
+        logger.Info(sprintf "Stop: DriverTool.%s Exit code: %i" version exitCode)
         exitCode
     
     let runCommand (args)=

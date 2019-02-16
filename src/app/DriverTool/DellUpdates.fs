@@ -155,7 +155,7 @@ module DellUpdates =
                 |>Seq.map(fun sc -> toPackageInfo (sc,logDirectory))
                 |>getLatestPackageInfoVersion
                 |>Seq.toArray
-            loggerd.Info("Updates: " + updates.Length.ToString())            
+            loggerd.Info(sprintf "Updates: %i" updates.Length)
             return updates
         }
 

@@ -264,7 +264,7 @@ module CreateDriverPackage =
     let assertDriverPackageCreateRequirements =
         result{
                 let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package create from an elevated command prompt."
-                loggerc.Info("Installation is running with admin privileges: " + isAdministrator.ToString())                
+                loggerc.Info(sprintf "Installation is running with admin privileges: %b" isAdministrator)                
                 return isAdministrator
         }
 
@@ -273,7 +273,7 @@ module CreateDriverPackage =
     let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
-                loggerc.Info("All create package requirements are fullfilled: " + requirementsAreFullfilled.ToString())
+                loggerc.Info(sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled)
                                 
                 let getUpdates = DriverTool.Updates.getUpdates (manufacturer,baseOnLocallyInstalledUpdates) 
 

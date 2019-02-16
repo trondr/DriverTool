@@ -58,7 +58,7 @@ module Robocopy=
         | 0 ->
             logger.Info("Robocopy result 0: No Change")
             Result.Ok 0
-        | _ -> Result.Error (new Exception("Unknown Robocopy exit code:" + roboCopyExitCode.ToString()))
+        | _ -> Result.Error (new Exception(sprintf "Unknown Robocopy exit code: %i" roboCopyExitCode))
     
     open System
     open DriverTool.Environment

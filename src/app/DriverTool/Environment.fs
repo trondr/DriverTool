@@ -60,6 +60,6 @@ module Environment=
         match (System.IntPtr.Size) with
         |8 -> "64-Bit"
         |4 -> "32-Bit"
-        |_ -> (raise (new System.Exception("Failed to calculate process bit due to unknown IntPtr size: " + System.IntPtr.Size.ToString() )))
+        |_ -> (raise (new System.Exception(sprintf "Failed to calculate process bit due to unknown IntPtr size: %i" System.IntPtr.Size )))
     
     

@@ -20,7 +20,7 @@ type SystemFamily private (systemFamily : string) =
         match systemFamily with
         | systemFamily when System.String.IsNullOrWhiteSpace(systemFamily) && defaultToLocal -> 
             match getSystemFamilyForLocalSystem with
-            | Ok mc -> success (SystemFamily (mc.ToString()) )
+            | Ok sf -> success (SystemFamily sf)
             | Error ex -> failure ((new InvalidSystemFamilyException(String.Empty,sprintf "Failed to get system family from WMI. %s" ex.Message)):> Exception)
             
         | systemFamily when System.String.IsNullOrWhiteSpace(systemFamily) -> failure ((new InvalidSystemFamilyException(systemFamily,"SystemFamily cannot be null or empty.")) :> Exception)
