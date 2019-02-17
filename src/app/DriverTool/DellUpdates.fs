@@ -22,11 +22,14 @@ module DellUpdates =
     let expandExe =
         System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
 
+    open DriverTool.Cab
+    
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path) =
         result{
             let! expandExePath = FileSystem.path expandExe
             let arguments = sprintf "\"%s\" -F:* -R \"%s\"" (FileSystem.pathValue cabFilePath) (FileSystem.pathValue destinationFolderPath)
-            let! expandResult = ProcessOperations.startConsoleProcess (expandExePath, arguments, FileSystem.pathValue destinationFolderPath,-1,null,null,false)            
+            let! expandExitCode = ProcessOperations.startConsoleProcess (expandExePath, arguments, FileSystem.pathValue destinationFolderPath,-1,null,null,false)
+            let! expandResult = expandExeExitCodeToResult cabFilePath expandExitCode
             return expandResult
         }
 
