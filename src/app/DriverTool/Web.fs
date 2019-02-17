@@ -42,15 +42,18 @@ module Web =
             messageLoop()
             )
 
+    let progressMessage percentage count totalCount msg =
+        sprintf "%3i%% (%10i of %10i): %-47s\r" percentage count totalCount msg
+        
     let printProgress sourceUri (progress:DownloadProgressChangedEventArgs) = 
-        progressActor.Post (sprintf "%A: %i%% (%i of %i)\r" sourceUri progress.ProgressPercentage progress.BytesReceived progress.TotalBytesToReceive)
+        progressActor.Post (progressMessage progress.ProgressPercentage progress.BytesReceived progress.TotalBytesToReceive sourceUri)
 
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
             webClient.Proxy <- null;            
             use disposable = 
-                webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri progress)
+                webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri.OriginalString progress)
             let webHeaderCollection = new WebHeaderCollection()
             webHeaderCollection.Add("User-Agent", "DriverTool/1.0") 
             webClient.Headers <- webHeaderCollection                          

@@ -53,7 +53,13 @@ module WebTests =
         |Ok _ -> Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
 
+    [<Test>]
+    [<TestCase(30,30,100,"Test message"," 30% (        30 of        100): Test message                                   \r")>]
+    let progressMessageTest (percentage,count,totalCount,message,expectedProgressMessage)=
+        let actual = progressMessage percentage count totalCount message
+        Assert.AreEqual(expectedProgressMessage,actual)
         
+
 [<TestFixture>]
 [<Category(TestCategory.ManualTests)>]
 module ManualWebTest =
