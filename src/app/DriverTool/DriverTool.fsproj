@@ -94,9 +94,9 @@
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
-	<EmbeddedResource Include="Libs\System.Reactive.dll" />
-	<EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
-	<EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
+    <EmbeddedResource Include="Libs\System.Reactive.dll" />
+    <EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
+    <EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
     <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
@@ -130,6 +130,7 @@
     <Compile Include="Web.fs" />
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
+    <Compile Include="Cab.fs" />
     <Compile Include="HpCatalog.fs" />
     <Compile Include="HpUpdates.fs" />
     <Compile Include="DellSettings.fs" />
