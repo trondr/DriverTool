@@ -297,7 +297,7 @@ module DellUpdates =
     
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
-            let packageFolderName = getPackageFolderName downloadedPackageInfo.Package
+            let packageFolderName = getPackageFolderName downloadedPackageInfo.Package.Category downloadedPackageInfo.Package.ReleaseDate
             let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
