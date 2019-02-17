@@ -216,11 +216,15 @@ module PackageXml =
     open System.Text.RegularExpressions
     open NCmdLiner.Exceptions
     
-    let getPackageFolderName (packageInfo:PackageInfo) =         
-        let postfix = packageInfo.ReleaseDate
-        let prefix = (packageInfo.Category |? "Unknown_Category")
+    let getPackageFolderName category releaseDate =         
+        let postfix = releaseDate
+        let prefix = (category |? "Unknown_Category")
         let packageFolderName = 
-            (sprintf "%s_%s" prefix postfix).Replace("__", "_").Replace("__", "_");
+            (sprintf "%s_%s" prefix postfix)
+                .Replace("__", "_")
+                .Replace("__", "_")
+                .Replace(System.IO.Path.DirectorySeparatorChar.ToString(),"_")
+                .Replace(System.IO.Path.AltDirectorySeparatorChar.ToString(),"_");                
         packageFolderName
     
     let downloadedPackageInfoToExtractedPackageInfo (packageFolderPath:FileSystem.Path,downloadedPackageInfo) =
