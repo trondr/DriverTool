@@ -48,7 +48,7 @@ module LoggingTests =
 
     [<Test>]
     let getParametersTuple () =
-        let expected = "(\"arg1\":System.String,\"arg2\":System.String)"
+        let expected = "(\"arg1\",\"arg2\")"
         let input = ("arg1","arg2")
         let actual = getParametersString input
         Assert.AreEqual(expected,actual,"Unexpected value") 

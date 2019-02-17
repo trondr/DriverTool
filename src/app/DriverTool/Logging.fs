@@ -78,7 +78,7 @@
                     match input.GetType() with
                     | t when Microsoft.FSharp.Reflection.FSharpType.IsTuple(t) -> 
                         let inputValues = Microsoft.FSharp.Reflection.FSharpValue.GetTupleFields input
-                        let stringValues = inputValues |> Array.map (fun x -> valueToString x)
+                        let stringValues = inputValues |> Array.map (fun x -> sprintf "%A" x)
                         "(" + (stringValues |> String.concat ",") + ")"                    
                     | _ -> valueToString input
             parametersString
