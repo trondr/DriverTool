@@ -2,6 +2,7 @@
 module DirectoryOperations =
     type DirectoryOperations = class end
     open System
+    open System.IO
     
     let logger = Logging.getLoggerByName("DirectoryOperations")
 
@@ -94,5 +95,15 @@ module DirectoryOperations =
             |true -> System.IO.SearchOption.AllDirectories
         System.IO.Directory.GetFiles(FileSystem.pathValue directoryPath,"*.*",searchOptions)
     
+    let findFilesUnsafe recurse searchPattern folder =
+        let searchOptions =
+            match recurse with
+            |true -> SearchOption.AllDirectories
+            |false -> SearchOption.TopDirectoryOnly        
+        System.IO.Directory.GetFiles(folder, searchPattern,searchOptions)
+
+    let findFiles recurse searchPattern folder =
+        tryCatch3 findFilesUnsafe recurse searchPattern (FileSystem.pathValue folder)
+
     let getFiles recurse directoryPath =
         tryCatch2 getFilesUnsafe recurse directoryPath

@@ -9,6 +9,8 @@ module Web =
     type Web = class end
     let logger = Logging.getLoggerByName(typeof<Web>.Name)
 
+    type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
+
     type DownloadInfo =
         {
             SourceUri:Uri;
@@ -81,7 +83,9 @@ module Web =
 
     let verifyDownloadBase (hasSameFileHashFunc: HasSameFileHashFunc, isTrustedFunc: IsTrustedFunc, logger: ILog , downloadInfo, ignoreVerificationErrors) = 
         match (hasSameFileHashFunc downloadInfo) with
-        |true  -> Result.Ok downloadInfo
+        |true  -> 
+            logger.Info(sprintf "Destination file ('%s') hash match source file ('%s') hash." )
+            Result.Ok downloadInfo
         |false ->
             let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue downloadInfo.DestinationFile) downloadInfo.SourceUri.OriginalString
             match ignoreVerificationErrors with
@@ -112,15 +116,13 @@ module Web =
             logger.Info(sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile))
             Result.Ok downloadInfo
 
-    type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
-
     let toUriUnsafe url =
         new Uri(url)
     
     let toUri url =
         tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
 
-    let downloadWebFile (destinationFolderPath:FileSystem.Path, webFile:WebFile) =
+    let downloadWebFile (destinationFolderPath:FileSystem.Path) (webFile:WebFile) =
         result{
             let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,webFile.FileName))
             let! sourceUri = toUri webFile.Url

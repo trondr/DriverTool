@@ -13,7 +13,7 @@ module Updates =
             |false -> DellUpdates.getRemoteUpdates
         |Manufacturer2.HP _ -> 
             match baseOnLocallyInstalledUpdates with
-            |true -> raise (new NotImplementedException("Getting locally installed HP updates is not implemented"))
+            |true -> HpUpdates.getLocalUpdates
             |false -> HpUpdates.getRemoteUpdates
         |Manufacturer2.Lenovo _ ->        
             match baseOnLocallyInstalledUpdates with

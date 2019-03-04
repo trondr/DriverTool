@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /manufacturer="LENOVO" /modelCode="10FL"  /operatingSystemCode="WIN10X64" /baseOnLocallyInstalledUpdates="False"</StartArguments>
+    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -79,10 +79,10 @@
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
     <EmbeddedResource Include="Tools\CorFlags\x86\CorFlags.exe" />
     <EmbeddedResource Include="Tools\CorFlags\x64\CorFlags.exe" />
-	<EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
-	<EmbeddedResource Include="Libs\Common.Logging.dll" />
-	<EmbeddedResource Include="Libs\CsvHelper.dll" />
-	<EmbeddedResource Include="Libs\CsvHelper.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.dll" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
     <EmbeddedResource Include="Libs\Dynamitey.dll" />
     <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
@@ -94,10 +94,10 @@
     <EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
     <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
     <EmbeddedResource Include="Libs\log4net.dll" />
-	<EmbeddedResource Include="Libs\Microsoft.UpdateServices.Administration.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.UpdateServices.Administration.dll" />
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
-	<EmbeddedResource Include="Libs\sdpeval.dll" />
+    <EmbeddedResource Include="Libs\sdpeval.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
     <EmbeddedResource Include="Libs\System.Reactive.dll" />
     <EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
