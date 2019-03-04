@@ -41,6 +41,9 @@ module FileOperations =
     let fileExists filePath =
         System.IO.File.Exists(FileSystem.pathValue filePath)
 
+    let directoryExists directoryPath = 
+        System.IO.Directory.Exists(FileSystem.pathValue directoryPath)
+
     let getFileSize filePath =
         (new System.IO.FileInfo(FileSystem.pathValue filePath)).Length
  
