@@ -52,3 +52,39 @@ module HpUpdatesTests =
                 }) with
          |Ok _ -> Assert.IsTrue(true)
          |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    //[<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000065111.sdp")>]
+    //[<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000094780.sdp")>]
+    [<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000081886.sdp")>]    
+    let toPackageInfoTests (sdpXmlFile) =
+        let actual = HpUpdates.toPackageInfo (sdpXmlFile,"%public%\Logs")        
+        Assert.IsTrue(actual.Length > 0)
+
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let getLocalUpdatesTests () =
+        match(result
+                {
+                    let! currentModelCode = ModelCode.create "" true
+                    let! currentOperatingSystem = OperatingSystemCode.create "" true            
+                    let! actual = HpUpdates.getLocalUpdates (currentModelCode, currentOperatingSystem,true, @"%public%\Logs")
+                    return actual
+                }) with
+        |Ok _ -> Assert.IsTrue(true)
+        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let getRemoteUpdatesTests () =
+        match(result
+                {
+                    let! currentModelCode = ModelCode.create "" true
+                    let! currentOperatingSystem = OperatingSystemCode.create "" true            
+                    let! actual = HpUpdates.getRemoteUpdates (currentModelCode, currentOperatingSystem,true, @"%public%\Logs")
+                    return actual
+                }) with
+        |Ok _ -> Assert.IsTrue(true)
+        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        

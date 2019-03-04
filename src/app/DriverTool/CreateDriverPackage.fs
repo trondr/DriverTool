@@ -61,7 +61,6 @@ module CreateDriverPackage =
                         }
                     )
     
-    
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos             
@@ -243,7 +242,6 @@ module CreateDriverPackage =
         |> PSeq.toArray
         |> Seq.ofArray
         |> toAccumulatedResult
-    
     
     let createSccmPackageInstallScript (extractedSccmPackagePath:FileSystem.Path) =
         result{

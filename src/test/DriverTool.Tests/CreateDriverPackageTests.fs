@@ -7,7 +7,6 @@ open DriverTool.CreateDriverPackage
 open DriverTool
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
 module CreateDriverPackageTests =
     open System
     
@@ -38,6 +37,7 @@ module CreateDriverPackageTests =
         }
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     let packageInfosToDownloadedPackageInfosTests ()=
         
         let installerName1="x12345.exe" 
@@ -72,3 +72,18 @@ module CreateDriverPackageTests =
             |>Array.length
         Assert.AreEqual(expectedCount, actualCount, "Count of downloaded package infos")
 
+
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let downloadUpdateTest () =
+        let downloadInfo = 
+            {
+                SourceUri=new Uri("http://ftp.hp.com/pub/softpaq/sp81501-82000/sp81886.exe");
+                SourceFileSize=4092824L;
+                SourceChecksum="ec6c692772662540c3d4bc6156ae33a37dd2ed06";
+                DestinationFile=FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe"
+            }
+        let actual = CreateDriverPackage.downloadUpdate (downloadInfo,false)
+        match actual with
+        |Ok p -> Assert.IsTrue(true)
+        |Error ex -> Assert.Fail(ex.Message)

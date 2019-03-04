@@ -7,6 +7,9 @@ module Checksum=
     open DriverTool
     open DriverTool.FileOperations
 
+    type Checksum = class end
+    let logger = Logging.getLoggerByName(typeof<Checksum>.Name)
+
     let getHashAlgorithmFromHashStringLength hashStringLength = 
         match hashStringLength with
             | 32 -> MD5.Create() :> HashAlgorithm
@@ -31,10 +34,17 @@ module Checksum=
         (computeFileHash filePath (SHA256.Create()))
         |>fileHashToString
 
-    let computeFileHashFromHashLength filePath hashLength =
+    let toLower (text:string) =
+        text.ToLower()
+
+    let computeFileHashFromHashLengthBase filePath hashLength =
         (getHashAlgorithmFromHashStringLength hashLength)                
         |> computeFileHash filePath
         |> fileHashToString
+        |> toLower
+
+    let computeFileHashFromHashLength filePath hashLength =
+        Logging.genericLogger Logging.LogLevel.Debug computeFileHashFromHashLengthBase filePath hashLength
  
     let hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (destinationFilePath:FileSystem.Path, sourceFileHash:string, sourceFileSize:Int64) =
             match(fileExists destinationFilePath) with
@@ -44,8 +54,10 @@ module Checksum=
                     (sourceFileSize = destinationFileSize) || (sourceFileSize = 0L)
                 match isSameFileSize with        
                 |true ->              
-                    let destinationFileHash = computeFileHashFromHashLength destinationFilePath sourceFileHash.Length                
-                    (sourceFileHash.ToLower() = destinationFileHash.ToString().ToLower())                
+                    let destinationHash = computeFileHashFromHashLength destinationFilePath sourceFileHash.Length
+                    let sourceHash = sourceFileHash|>toLower
+                    if(logger.IsDebugEnabled) then logger.Debug(sprintf "Comparing destination file (%s) hash [%s] and source file hash [%s]..." (FileSystem.pathValue destinationFilePath) destinationHash sourceHash)
+                    (sourceHash = destinationHash)                
                 | false  -> false
             |false -> false
 
@@ -54,3 +66,11 @@ module Checksum=
 
     let hasSameFileHash (filePath:FileSystem.Path, crc:string, fileSize:Int64) =
         Logging.genericLogger Logging.LogLevel.Debug hasSameFileHashBase (filePath, crc, fileSize)
+
+    let fileHashToBase64String fileHash = 
+        Convert.ToBase64String(fileHash)
+
+    let base64StringToFileHash fileHashBase64String = 
+        Convert.FromBase64String(fileHashBase64String)
+
+        
