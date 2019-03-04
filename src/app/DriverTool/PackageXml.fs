@@ -113,7 +113,7 @@ module PackageXml =
                         let sourceInstallerUrl = sprintf "%s/%s" packageInfo.BaseUrl packageInfo.InstallerName
                         let! sourceInstallerUri = toUri (sourceInstallerUrl)
                         let! destinationInstallerFilePath = FileSystem.path (getDestinationInstallerPath destinationDirectory packageInfo)
-                        return {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationInstallerFilePath; }
+                        return {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.InstallerCrc; SourceFileSize = packageInfo.InstallerSize; DestinationFile = destinationInstallerFilePath; }
                     }
         installerDownloadInfo
 
