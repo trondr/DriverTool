@@ -42,11 +42,11 @@ module HpUpdatesTests =
                     let cacheDirectory =   Configuration.getDownloadCacheDirectoryPath             
                     let! downloadedSccmPackageInfo = HpUpdates.downloadSccmPackage (cacheDirectory,sccmDriverPackageInfo)
                     let! destinationFolderPath = PathOperations.combine2Paths (PathOperations.getTempPath,"005 Sccm Package Test")
-                    Assert.IsTrue(destinationFolderPath.Value.EndsWith("\\005 Sccm Package Test"))
-                    let deletedDestinationDirectory = DirectoryOperations.deleteDirectory true, destinationFolderPath.Value
+                    Assert.IsTrue((FileSystem.pathValue destinationFolderPath).EndsWith("\\005 Sccm Package Test"))
+                    let deletedDestinationDirectory = DirectoryOperations.deleteDirectory true, FileSystem.pathValue  destinationFolderPath
                     let! existingDestinationPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath,true)
                     let! actual = HpUpdates.extractSccmPackage (downloadedSccmPackageInfo, existingDestinationPath)
-                    Assert.IsFalse(String.IsNullOrWhiteSpace(actual.Value), "Destination path is empty")
+                    Assert.IsFalse(String.IsNullOrWhiteSpace(FileSystem.pathValue  actual), "Destination path is empty")
                     
                     return actual
                 }) with
