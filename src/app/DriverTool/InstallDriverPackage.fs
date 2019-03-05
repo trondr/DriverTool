@@ -1,10 +1,13 @@
 ﻿namespace DriverTool
 
 module InstallDriverPackage =
-    let logger = Logging.getLoggerByName("InstallDriverPackage")
-    
     open System
     open InstallXml
+    open DriverTool.PackageDefinition
+    open DriverTool.Requirements
+    open Microsoft.FSharp.Core.Operators
+
+    let logger = Logging.getLoggerByName("InstallDriverPackage")
         
     let getInstallXmlPath (driverPackagePath:FileSystem.Path) =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Install.xml"))
@@ -38,8 +41,6 @@ module InstallDriverPackage =
                 |_ -> Result.Error (new Exception(String.Join(" ",notSupportedMessageArray)))
             return! isSupportedResult
        }
-    
-    open DriverTool.PackageDefinition
     
     let unRegisterSccmApplication (installConfiguration:InstallConfigurationData) =        
         let applicationRegistryValue = (getApplicationRegistryValue installConfiguration)
@@ -135,7 +136,7 @@ module InstallDriverPackage =
         }   
         
     let getAdjustedExitCode installedDriverExitCodes =
-        let exitCodeSum = installedDriverExitCodes |> Seq.sum
+        let exitCodeSum = installedDriverExitCodes |> Seq.map abs |> Seq.sum
         match exitCodeSum with
         | ec when ec > 0 -> 3010
         | _ -> 0
@@ -165,8 +166,6 @@ module InstallDriverPackage =
             return adjustedExitCode
         }
     
-    open DriverTool.Requirements
-
     let assertDriverInstallRequirements installConfiguration systemInfo =
         result{
                 logger.Info("Checking if driver package is supported...")
