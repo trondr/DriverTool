@@ -53,7 +53,7 @@ module Checksum=
                     (sourceFileSize = destinationFileSize) || (sourceFileSize = 0L)
                 match isSameFileSize with        
                 |true ->              
-                    let destinationHash = computeFileHashFromHashLength destinationFilePath sourceFileHash.Length
+                    let destinationHash = (computeFileHashFromHashLength destinationFilePath sourceFileHash.Length) |> toLower
                     let sourceHash = sourceFileHash|>toLower
                     if(logger.IsDebugEnabled) then logger.Debug(sprintf "Comparing destination file (%s) hash [%s] and source file hash [%s]..." (FileSystem.pathValue destinationFilePath) destinationHash sourceHash)
                     (sourceHash = destinationHash)                
