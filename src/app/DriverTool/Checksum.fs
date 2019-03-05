@@ -6,9 +6,8 @@ module Checksum=
     open System.Security.Cryptography
     open DriverTool
     open DriverTool.FileOperations
-
-    type Checksum = class end
-    let logger = Logging.getLoggerByName(typeof<Checksum>.Name)
+    
+    let logger = Logging.getLoggerByName("Checksum")
 
     let getHashAlgorithmFromHashStringLength hashStringLength = 
         match hashStringLength with
