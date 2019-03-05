@@ -1,0 +1,8 @@
+Issues
+------
+There is an issue with an currently unknown HP driver or software creating and installing files into folder: C:\Windows\sysnative
+	MSVCP140.dll
+	VCRUNTIME140.dll
+This might trip an cmd installations checking for this folder in the following manner: "If sysnative folder exists then assume 32 bit process and set "C:\Windows\sysnative" as location of the 64 bits cmd.exe to launch 64 bits process cmd."
+
+This needs to be investigated further.
