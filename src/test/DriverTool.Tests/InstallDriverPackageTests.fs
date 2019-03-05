@@ -7,7 +7,6 @@ open DriverTool.InstallXml
 [<TestFixture>]
 module InstallDriverPackageTests =
     open DriverTool
-    open DriverTool
     
     [<Test>]
     [<TestCase("20EQXXXX","WIN10X64","20EQ","WIN10X64","")>]
