@@ -55,8 +55,8 @@ module HpUpdatesTests =
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
-    //[<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000065111.sdp")>]
-    //[<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000094780.sdp")>]
+    [<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000065111.sdp")>]
+    [<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000094780.sdp")>]
     [<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000081886.sdp")>]    
     let toPackageInfoTests (sdpXmlFile) =
         let actual = HpUpdates.toPackageInfo (sdpXmlFile,"%public%\Logs")        
