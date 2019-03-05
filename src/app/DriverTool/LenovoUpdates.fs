@@ -1,27 +1,32 @@
 ﻿namespace DriverTool
 
-module LenovoUpdates =
-    type LenovoUpdates = class end
-    let loggerl = Logging.getLoggerByName(typeof<LenovoUpdates>.Name)
-    
+module LenovoUpdates =    
+    open System
+    open FSharp.Data
+    open DriverTool.PackageXml
+    open DriverTool.Configuration
+    open System.Text.RegularExpressions
+    open System.Linq
+    open F
+    open DriverTool.Web
+    open DriverTool.Checksum
+    open DriverTool.FileOperations
+    open DriverTool.PackageXml    
+    //open DriverTool.LenovoCatalog
+
+    let loggerl = Logging.getLoggerByName("LenovoUpdates")
+               
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
         operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")
     
     let modelCode2DownloadableCode (modelCode: ModelCode) =
         modelCode.Value.Substring(0,4)
      
-    open System
-    open FSharp.Data
-    open DriverTool.PackageXml
-
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         new Uri(sprintf "https://download.lenovo.com/catalog/%s_%s.xml" (modelCode2DownloadableCode modelCode) (operatingSystemCode2DownloadableCode operatingSystemCode))
 
-
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
     type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
-    
-    open DriverTool.Configuration
 
     let getPackagesInfo (modelInfoXmlFilePath:FileSystem.Path) : Result<seq<PackageXmlInfo>,Exception>= 
         try
@@ -44,8 +49,6 @@ module LenovoUpdates =
         with
         |ex -> Result.Error ex
     
-    open System.Text.RegularExpressions
-    
     let getXmlFileNameFromUri (uri: Uri) : Result<string,Exception>= 
         try
             let regExMatch = 
@@ -65,9 +68,6 @@ module LenovoUpdates =
             FileSystem.path tempXmlFilePathString
         |Result.Error ex -> Result.Error ex
 
-    open System.Linq
-    open F
-    open DriverTool.Web
 
     let getBaseUrl locationUrl =
         let uri = new Uri(locationUrl)
@@ -81,7 +81,7 @@ module LenovoUpdates =
             BaseUrl = getBaseUrl packageXmlInfo.Location;
             CheckSum = packageXmlInfo.CheckSum;
         }
-    open DriverTool.Checksum
+    
 
     let verifyDownload (sourceUri:Uri, destinationFile, checksum, fileSize, verificationWarningOnly) =
         match (hasSameFileHash (destinationFile, checksum, fileSize)) with
@@ -191,8 +191,6 @@ module LenovoUpdates =
             let msg = sprintf "Failed to parse all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
     
-    open DriverTool.FileOperations
-    
     let getRemoteUpdatesBase (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
         result{
             let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
@@ -275,21 +273,17 @@ module LenovoUpdates =
             return localUpdates
         }
    
-    open DriverTool.PackageXml
-    
-    open DriverTool.LenovoCatalog
-
     let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
         match content with
         |Ok downloadPageContent -> 
             let downloadLinks =             
                 downloadPageContent
-                |> getDownloadLinksFromWebPageContent                
+                |> DriverTool.LenovoCatalog.getDownloadLinksFromWebPageContent                
                 |> Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
                 |> Seq.toArray
                 |> Array.rev
-            let lenovoOs = (osShortNameToLenovoOs os)
+            let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
             let sccmPackages =
                 downloadLinks
                 |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
@@ -311,7 +305,7 @@ module LenovoUpdates =
                     Result.Error (new Exception(sprintf "Sccm package not found for url '%s', OS=%s, OsBuild=%s." uri os osbuild))
         |Error ex -> Result.Error ex
 
-    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<Product>) =
+    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<DriverTool.LenovoCatalog.Product>) =
         let sccmPackageInfos = 
             products
             |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = osbuild))
@@ -327,8 +321,8 @@ module LenovoUpdates =
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode)  : Result<SccmPackageInfo,Exception> =
         result
             {
-                let! products = getSccmPackageInfos
-                let product = findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
+                let! products = DriverTool.LenovoCatalog.getSccmPackageInfos
+                let product = DriverTool.LenovoCatalog.findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
                 let osBuild = product.Value.OsBuild.Value
                 let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
                 return sccmPackage
