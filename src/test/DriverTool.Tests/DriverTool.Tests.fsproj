@@ -83,10 +83,14 @@
     <Compile Include="CompressionTests.fs" />
     <Compile Include="XmlToolKitTests.fs" />
     <Compile Include="PackageXmlTests.fs" />
+    <Compile Include="SdpCatalogTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
+    <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC.zip" />
+    <EmbeddedResource Include="TestData\SdpCatalog\0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp" />
+    <EmbeddedResource Include="TestData\SdpCatalog\dc718411-a5f1-4b15-966a-63a77cbb156e.sdp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

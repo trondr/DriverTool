@@ -15,3 +15,14 @@ the updates leave a folder with all the installation files C:\SWSetup. Approx 5 
 
 
 
+Dell Update Catalog
+-------------------
+ftp://ftp.dell.com/catalog/DellSDPCatalogPC.cab
+
+
+
+Lenovo Update Catalog?
+----------------------
+
+
+
