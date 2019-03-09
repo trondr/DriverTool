@@ -6,6 +6,7 @@ module HpUpdates =
     open DriverTool.Web
     open DriverTool.HpCatalog
     open System.Xml.Linq
+    open DriverTool.SdpCatalog
         
     let toDateString (dateTime:DateTime) =
         dateTime.ToString("yyyy-MM-dd")
@@ -15,23 +16,6 @@ module HpUpdates =
     let cmdNs =
         XNamespace.Get("http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/Installers/CommandLineInstallation.xsd")
     
-    type InstallationResult = Failed|Succeeded|Cancelled
-
-    type CommandLineReturnCode={
-        Code:int;
-        Result:InstallationResult;
-        Reboot:bool
-    }
-
-    type CommandLineInstallerData =
-        {
-            Program:string;
-            Arguments:string;
-            DefaultResult:InstallationResult
-            RebootByDefault:bool
-            ReturnCodes:CommandLineReturnCode[]
-        }
-
     let getAttribute (xElement:XElement) (attributeName:string) =        
         match xElement with
         | null -> None

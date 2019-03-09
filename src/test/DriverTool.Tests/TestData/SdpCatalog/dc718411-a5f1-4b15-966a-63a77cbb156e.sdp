@@ -1,0 +1,36 @@
+<sdp:SoftwareDistributionPackage SchemaVersion="1.0" xmlns:smc="http://schemas.microsoft.com/sms/2005/04/CorporatePublishing/SystemsManagementCatalog.xsd" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:bar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/BaseApplicabilityRules.xsd" xmlns:bt="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/BaseTypes.xsd" xmlns:cmd="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/Installers/CommandLineInstallation.xsd" xmlns:lar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/LogicalApplicabilityRules.xsd" xmlns:msi="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/Installers/MsiInstallation.xsd" xmlns:msiar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/MsiApplicabilityRules.xsd" xmlns:msp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/Installers/MspInstallation.xsd" xmlns:sdp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/SoftwareDistributionPackage.xsd" xmlns:uei="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/Installers/UpdateExeInstallation.xsd" xmlns:usp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/UpdateServicesPackage.xsd" xmlns:drv="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/Installers/WindowsDriver.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <sdp:Properties CanSourceBeRequired="false" CreationDate="2019-01-24T07:52:15Z" PackageID="dc718411-a5f1-4b15-966a-63a77cbb156e" PublicationState="Published" VendorName="Dell" xmlns:sdp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/SoftwareDistributionPackage.xsd">
+    <sdp:MoreInfoUrl>http://downloads.dell.com/cmsdk/DSIA_Readme.doc</sdp:MoreInfoUrl>
+    <sdp:SupportUrl>http://www.dell.com</sdp:SupportUrl>
+    <sdp:ProductName>Drivers and Applications</sdp:ProductName>
+  </sdp:Properties>
+  <sdp:LocalizedProperties xmlns:sdp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/SoftwareDistributionPackage.xsd">
+    <sdp:Language>en</sdp:Language>
+    <sdp:Title>Dell OpenManage Inventory Agent (for Dell Business Client Systems)</sdp:Title>
+    <sdp:Description>Dell OpenManage Inventory Agent is a data provider for Microsoft WMI to inventory information for Dell supported devices on Dell Precision workstations, OptiPlex desktops, and Latitude laptops. This service is run at boot time and then stopped automatically.</sdp:Description>
+  </sdp:LocalizedProperties>
+  <sdp:UpdateSpecificData MsrcSeverity="Important" UpdateClassification="Updates" xmlns:sdp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/SoftwareDistributionPackage.xsd">
+    <sdp:SecurityBulletinID>45YPT</sdp:SecurityBulletinID>
+    <sdp:KBArticleID>45YPT</sdp:KBArticleID>
+  </sdp:UpdateSpecificData>
+  <sdp:IsInstallable xmlns:sdp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/SoftwareDistributionPackage.xsd">
+    <lar:And xmlns:lar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/LogicalApplicabilityRules.xsd">
+      <bar:WindowsVersion Comparison="GreaterThanOrEqualTo" MajorVersion="5" MinorVersion="0" ServicePackMajor="4" ServicePackMinor="0" xmlns:bar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/BaseApplicabilityRules.xsd" />
+      <bar:WmiQuery Namespace="Root\CIMv2" WqlQuery="SELECT * FROM Win32_ComputerSystem WHERE (Manufacturer &gt;= 'Dell' AND Manufacturer &lt; 'Dell~' ) AND ((Model &gt;= 'Latitude' AND Model &lt; 'Latitude~') OR (Model &gt;= 'Optiplex' AND Model &lt; 'Optiplex~') OR (Model &gt;= 'Precision' AND Model &lt; 'Precision~') OR (Model &gt;= 'Venue' AND Model &lt; 'Venue~') OR (Model &gt;= 'XPS' AND Model &lt; 'XPS~'))" xmlns:bar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/BaseApplicabilityRules.xsd" />
+    </lar:And>
+  </sdp:IsInstallable>
+  <sdp:InstallableItem ID="5968b32a-dc30-4186-8652-ecc4a7cdc684" xmlns:sdp="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/SoftwareDistributionPackage.xsd">
+    <sdp:ApplicabilityRules>
+      <sdp:IsInstalled>
+        <msiar:MsiProductInstalled ProductCode="{FB2B7CC0-8307-47e6-A065-11015CC96B99}" VersionMin="1.6.6.5" xmlns:msiar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/MsiApplicabilityRules.xsd" />
+      </sdp:IsInstalled>
+      <sdp:IsInstallable>
+        <bar:WindowsVersion Comparison="GreaterThanOrEqualTo" MajorVersion="5" MinorVersion="0" ServicePackMajor="4" ServicePackMinor="0" xmlns:bar="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/BaseApplicabilityRules.xsd" />
+      </sdp:IsInstallable>
+    </sdp:ApplicabilityRules>
+    <sdp:InstallProperties CanRequestUserInput="false" Impact="Normal" RebootBehavior="NeverReboots" RequiresNetworkConnectivity="false" />
+    <msi:MsiInstallerData CommandLine="Reboot=ReallySuppress" MsiFile="DSIAPC_1.6.6.5.msi" ProductCode="{FB2B7CC0-8307-47e6-A065-11015CC96B99}" xmlns:msi="http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/Installers/MsiInstallation.xsd" />
+    <sdp:OriginFile Digest="7sJyfjiOzAzMVjZ7FqJLS0hQsG0=" FileName="DSIAPC_1.6.6.5.msi" Modified="2019-01-24T07:52:15Z" OriginUri="http://downloads.dell.com/FOLDER05427436M/1/DSIAPC_1.6.6.5.msi" Size="26825728" />
+    <sdp:Language>en</sdp:Language>
+  </sdp:InstallableItem>
+</sdp:SoftwareDistributionPackage>
