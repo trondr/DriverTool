@@ -157,19 +157,23 @@ module SdpCatalog =
     type UpdateClassification =
         |Updates
         |SecurityUpdates
+        |CriticalUpdates
         |FeaturePacks
         |UpdateRollups
         |ServicePacks
+        |Tools
         |Hotfixes
         |Drivers
 
     let toUpdateClassification updateClassification =
         match updateClassification with
         |"Updates" -> Result.Ok Updates
-        |"SecurityUpdates" -> Result.Ok SecurityUpdates
-        |"FeaturePacks" -> Result.Ok FeaturePacks
-        |"UpdateRollups" -> Result.Ok UpdateRollups
-        |"ServicePacks" -> Result.Ok ServicePacks
+        |"Security Updates" -> Result.Ok SecurityUpdates
+        |"Critical Updates" -> Result.Ok CriticalUpdates
+        |"Feature Packs" -> Result.Ok FeaturePacks
+        |"Update Rollups" -> Result.Ok UpdateRollups
+        |"Service Packs" -> Result.Ok ServicePacks
+        |"Tools" -> Result.Ok Tools
         |"Hotfixes" -> Result.Ok Hotfixes
         |"Drivers" -> Result.Ok Drivers
         |_ -> Result.Error (new Exception(sprintf "Invalid UpdateClassification '%s'. Valid values: [Updates|SecurityUpdates|FeaturePacks|UpdateRollups|ServicePacks|Hotfixes|Drivers]" updateClassification))
@@ -196,22 +200,11 @@ module SdpCatalog =
 
     type SystemManagementCatalog =
         {
-            SoftwareDistributionPackage:array<SoftwareDistributionPackage>
+            SoftwareDistributionPackages:SoftwareDistributionPackage[]
         }
-
-    let loadSdpXDocument (sdpFilePath:Path) : Result<XDocument,Exception> =
-        result{
-            let! existingSdpFilePath = FileOperations.ensureFileExists sdpFilePath
-            let sdpXDocument = XDocument.Load(FileSystem.pathValue existingSdpFilePath)
-            return sdpXDocument
-        }
-        
-    let loadSdpXElement (sdpXDocument:XDocument) : Result<XElement,Exception> =
-        try            
-            Result.Ok sdpXDocument.Root
-        with
-        |ex -> Result.Error ex
     
+    let smcNs =
+        XNamespace.Get("http://schemas.microsoft.com/sms/2005/04/CorporatePublishing/SystemsManagementCatalog.xsd")
     let sdpNs =
         XNamespace.Get("http://schemas.microsoft.com/wsus/2005/04/CorporatePublishing/SoftwareDistributionPackage.xsd")
     let cmdNs =
@@ -242,8 +235,17 @@ module SdpCatalog =
         | null -> Result.Error (new Exception(errorMessage))
         | _ -> Result.Ok value
 
+    let getSmcElement (parentXElement:XElement) (elementName:string) =
+        toResult (parentXElement.Element(XName.Get(elementName,smcNs.NamespaceName))) (sprintf "Element '%s' not found on parent element: '%A'" elementName parentXElement)
+
+    let getSmcElements (parentXElement:XElement) (elementName:string) =
+        toResult (parentXElement.Elements(XName.Get(elementName,smcNs.NamespaceName))) (sprintf "Element '%s' not found on parent element: '%s'" elementName parentXElement.Name.LocalName)
+
     let getSdpElement (parentXElement:XElement) (elementName:string) =
         toResult (parentXElement.Element(XName.Get(elementName,sdpNs.NamespaceName))) (sprintf "Element '%s' not found on parent element: '%A'" elementName parentXElement)
+
+    let getSdpElements (parentXElement:XElement) (elementName:string) =
+        toResult (parentXElement.Elements(XName.Get(elementName,sdpNs.NamespaceName))) (sprintf "Element '%s' not found on parent element: '%s'" elementName parentXElement.Name.LocalName)
 
     let getCmdElement (parentXElement:XElement) (elementName:string) =
         toResult (parentXElement.Element(XName.Get(elementName,cmdNs.NamespaceName))) (sprintf "Element '%s' not found on parent element: '%A'" elementName parentXElement)
@@ -429,7 +431,6 @@ module SdpCatalog =
                         ProductCode=productCode                          
                     }
             }
-    
 
     let toInstallerData (sdpInstallableItemElement:XElement) =
         result
@@ -493,6 +494,20 @@ module SdpCatalog =
         |>Seq.map(fun ii -> (toInstallableItem ii))
         |>toAccumulatedResult
 
+    let loadSdpXDocument (sdpFilePath:Path) : Result<XDocument,Exception> =
+        result{
+            let! existingSdpFilePath = FileOperations.ensureFileExists sdpFilePath
+            let sdpXDocument = XDocument.Load(FileSystem.pathValue existingSdpFilePath)
+            return sdpXDocument
+        }
+        
+    let loadSdpXElement (sdpXDocument:XDocument) : Result<XElement,Exception> =
+        try            
+            Result.Ok sdpXDocument.Root
+        with
+        |ex -> Result.Error ex
+
+
     let loadSdp (sdpXElement:XElement): Result<SoftwareDistributionPackage, Exception> =
         result{
             let! localizedPropertiesSdpElement = (getSdpElement sdpXElement "LocalizedProperties")
@@ -528,3 +543,19 @@ module SdpCatalog =
                     InstallableItems=installableItems|>Seq.toArray
                 }            
         }        
+
+    let loadSystemManagementCatalog (catlogXmlPath:Path) =
+        result{
+            let! existingCatlogXmlPath = FileOperations.ensureFileExists catlogXmlPath
+            let! xDocument = loadSdpXDocument existingCatlogXmlPath
+            let! smcElement = loadSdpXElement xDocument
+            let! sdpElements = getSmcElements smcElement "SoftwareDistributionPackage"
+            let! sdps =
+                sdpElements
+                |>Seq.map(fun sdpElement -> loadSdp sdpElement)
+                |>toAccumulatedResult                
+            return
+                {
+                    SoftwareDistributionPackages = sdps |> Seq.toArray
+                }
+        }
