@@ -134,7 +134,7 @@ module SdpCatalog =
             InstallProperties:InstallProperties
             UninstallProperties:InstallProperties option
             InstallerData:InstallerData
-            //OriginFile:OriginFile
+            OriginFile:OriginFile
         }
    
     type MsrcSeverity=
@@ -340,7 +340,19 @@ module SdpCatalog =
         try
             Result.Ok (Convert.ToInt32(number))
         with
-        |ex -> Result.Error ex
+        |ex -> Result.Error (new Exception(sprintf "Failed to convert '%s' to Int32 due to: %s" number ex.Message,ex))
+
+    let toInt64 (number:string) = 
+        try
+            Result.Ok (Convert.ToInt64(number))
+        with
+        |ex -> Result.Error (new Exception(sprintf "Failed to convert '%s' to UInt64 due to: %s" number ex.Message,ex))
+   
+    let toDateTime (dateTime:string) = 
+        try
+            Result.Ok (Convert.ToDateTime(dateTime))
+        with
+        |ex -> Result.Error (new Exception(sprintf "Failed to convert '%s' to DateTime due to: %s" dateTime ex.Message,ex))
 
     let toReturnCode (returnCodeElement:XElement) =
         result
@@ -401,6 +413,28 @@ module SdpCatalog =
                 return commandLineInstallerData
             }
 
+    let toOriginFile (sdpInstallableItemElement:XElement) =
+        result
+            {
+                let! originFileElement = getSdpElement sdpInstallableItemElement "OriginFile"
+                let! digest = getRequiredAttribute originFileElement "Digest"
+                let! fileName = getRequiredAttribute originFileElement "FileName"
+                let! sizeR = getRequiredAttribute originFileElement "Size"
+                let! size = toInt64 sizeR
+                let! modifiedR = getRequiredAttribute originFileElement "Modified"
+                let! modified = toDateTime modifiedR
+                let! originUri = getRequiredAttribute originFileElement "OriginUri"
+                return 
+                    {
+                        Digest=digest
+                        FileName=fileName
+                        Size=size
+                        Modified=modified
+                        OriginUri=originUri
+                    }
+            }
+
+
     let toInstallableItem (sdpInstallableItemXElement:XElement) =
         result
             {
@@ -409,6 +443,7 @@ module SdpCatalog =
                 let! installProperties = toInstallProperties sdpInstallableItemXElement InstallableItemProperties.InstallProperties
                 let uninstallProperties = resultToOption (toInstallProperties sdpInstallableItemXElement InstallableItemProperties.UninstallProperties)
                 let! installerData = toInstallerData sdpInstallableItemXElement
+                let! originFile = toOriginFile sdpInstallableItemXElement
                 return 
                     {
                         Id = id
@@ -416,6 +451,7 @@ module SdpCatalog =
                         InstallProperties=installProperties
                         UninstallProperties=uninstallProperties
                         InstallerData=installerData
+                        OriginFile=originFile
                     } 
             }
 
