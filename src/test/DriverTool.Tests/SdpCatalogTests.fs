@@ -33,7 +33,7 @@ module SdpCatalogTests =
 
     let internal sdpTestData =
         [
-            yield {SdpTestFile="0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";IsSuccess=true;Expected={Title="Realtek High Definition Audio Driver,6.0.1.8454,A02";Description="This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";ProductName="Drivers and Applications";PackageId="0e6cf4ac-2853-48aa-825b-8fe28206575f";UpdateSpecificData={MsrcSeverity= MsrcSeverity.Important;UpdateClassification=UpdateClassification.Updates;SecurityBulletinID=Some "99DDD";KBArticleID=Some "99DDD"}};ExpectedErrorMessage="N/A"}
+            yield {SdpTestFile="0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";IsSuccess=true;Expected={Title="Realtek High Definition Audio Driver,6.0.1.8454,A02";Description="This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";ProductName="Drivers and Applications";PackageId="0e6cf4ac-2853-48aa-825b-8fe28206575f";UpdateSpecificData={MsrcSeverity= MsrcSeverity.Important;UpdateClassification=UpdateClassification.Updates;SecurityBulletinID=Some "99DDD";KBArticleID=Some "99DDD"};IsInstallable="";IsInstalled=None;InstallableItems=[|{Id="3787be40-ec14-47c7-a24d-23210ef448e9";ApplicabilityRules={IsInstallable=Some "N/A";IsInstalled=Some "N/A";IsSuperseded=Some "N/A"}}|]};ExpectedErrorMessage="N/A"}
         ]
 
     [<Test>]
@@ -59,6 +59,11 @@ module SdpCatalogTests =
             Assert.AreEqual(sdpTestDataR.Expected.UpdateSpecificData.SecurityBulletinID, v.UpdateSpecificData.SecurityBulletinID,"SecurityBulletinID")
             Assert.AreEqual(sdpTestDataR.Expected.UpdateSpecificData.UpdateClassification, v.UpdateSpecificData.UpdateClassification,"UpdateClassification")
             Assert.AreEqual(sdpTestDataR.Expected.UpdateSpecificData.MsrcSeverity, v.UpdateSpecificData.MsrcSeverity,"MsrcSeverity")
+            Assert.IsNotEmpty(v.IsInstallable,"IsInstallable")
+            Assert.AreEqual(sdpTestDataR.Expected.IsInstalled, v.IsInstalled,"IsInstalled")
+            Assert.IsFalse((v.InstallableItems.[0].ApplicabilityRules.IsInstallable) = None,"InstallableItems..IsInstallable")
+            Assert.IsFalse((v.InstallableItems.[0].ApplicabilityRules.IsInstalled) = None,"InstallableItems..IsInstalled")
+            Assert.IsTrue((v.InstallableItems.[0].ApplicabilityRules.IsSuperseded) = None,"InstallableItems..IsSuperseded")
         |Error ex -> 
             Assert.False(sdpTestDataR.IsSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
             Assert.IsTrue(ex.Message.Contains(sdpTestDataR.ExpectedErrorMessage),"Error message not as expected: " + ex.Message)

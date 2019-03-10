@@ -13,9 +13,9 @@ module SdpCatalog =
 
     type ApplicabilityRules = 
         {
-            IsInstallable:ApplicabilityRule
-            IsInstalled:ApplicabilityRule
-            IsSuperseded:ApplicabilityRule
+            IsInstallable:ApplicabilityRule option
+            IsInstalled:ApplicabilityRule option
+            IsSuperseded:ApplicabilityRule option
         }
 
     type InstallationResult = Failed|Succeeded|Cancelled
@@ -109,10 +109,10 @@ module SdpCatalog =
         {
             Id:string
             ApplicabilityRules:ApplicabilityRules
-            InstallProperties:InstallProperties
-            UninstallProperties:InstallProperties option
-            InstallerData:InstallerData
-            OriginFile:OriginFile
+            //InstallProperties:InstallProperties
+            //UninstallProperties:InstallProperties option
+            //InstallerData:InstallerData
+            //OriginFile:OriginFile
         }
    
     type MsrcSeverity=
@@ -164,9 +164,9 @@ module SdpCatalog =
             Description:string
             ProductName:string
             UpdateSpecificData:UpdateSpecificData            
-            //IsInstallable:ApplicabilityRule //An applicability expression that evaluates to true if the package is even relevalant to this machine (e.g., SQL server on XP home). This rule allows the author to specify what prerequisite conditions are necessary for this package to be applicable. If not specified, assummed to be true.
-            //IsInstalled:ApplicabilityRule //An applicability expression that evaluates to true if the package is actually installed. This expression is supposed to check for the exact package, not for something that supersedes it.
-            //InstallableItem:array<InstallableItem>
+            IsInstallable:ApplicabilityRule //An applicability expression that evaluates to true if the package is even relevalant to this machine (e.g., SQL server on XP home). This rule allows the author to specify what prerequisite conditions are necessary for this package to be applicable. If not specified, assummed to be true.
+            IsInstalled:ApplicabilityRule option //An applicability expression that evaluates to true if the package is actually installed. This expression is supposed to check for the exact package, not for something that supersedes it.
+            InstallableItems:InstallableItem[]
         }
 
     type SystemManagementCatalog =
@@ -226,10 +226,63 @@ module SdpCatalog =
             return element.Value
         }
 
+    let innerXml (xElement:XElement) = 
+        xElement.Nodes()
+        |>Seq.filter(fun n -> (n.NodeType = System.Xml.XmlNodeType.Element)||(n.NodeType = System.Xml.XmlNodeType.Text))
+        |>Seq.map(fun n -> n.ToString())
+        |>Seq.toArray
+        |>String.concat ""
+
+    let toOptionalInnerXml (xElement:XElement option) =
+        match xElement with
+        |Some v -> Some (innerXml v)
+        |None -> None
+
     let getOptionalSdpElementValue (parentXElement:XElement) (elementName:string) =
         match((getSdpElement parentXElement elementName)) with
         |Ok v -> Some v.Value
         |Error _ -> None
+
+    let getOptionalSdpElement (parentXElement:XElement) (elementName:string) =
+        match((getSdpElement parentXElement elementName)) with
+        |Ok v -> Some v
+        |Error _ -> None
+
+    let toApplicabilityRules (sdpInstallableItemElement:XElement) =
+        result
+            {
+                let! applicabilityRulesSdpElement = (getSdpElement sdpInstallableItemElement "ApplicabilityRules")
+                let isInstalledSdpElement = (getOptionalSdpElement applicabilityRulesSdpElement "IsInstalled")
+                let isInstalled = toOptionalInnerXml isInstalledSdpElement
+                let isInstallableSdpElement = (getOptionalSdpElement applicabilityRulesSdpElement "IsInstallable")
+                let isInstallable = toOptionalInnerXml isInstallableSdpElement
+                let isSupersededSdpElement = (getOptionalSdpElement applicabilityRulesSdpElement "IsSuperseded")
+                let isSuperseded = toOptionalInnerXml isSupersededSdpElement
+
+                return                 
+                    {
+                        IsInstalled=isInstalled
+                        IsInstallable=isInstallable
+                        IsSuperseded=isSuperseded
+                    }
+            }
+
+    let toInstallableItem (sdpInstallableItemXElement:XElement) =
+        result
+            {
+                let! id = getRequiredAttribute sdpInstallableItemXElement "ID"
+                let! applicabilityRules = toApplicabilityRules sdpInstallableItemXElement
+                return 
+                    {
+                        Id = id
+                        ApplicabilityRules=applicabilityRules
+                    } 
+            }
+
+    let toInstallableItems (sdpXElement:XElement) = 
+        sdpXElement.Elements(XName.Get("InstallableItem",sdpNs.NamespaceName))        
+        |>Seq.map(fun ii -> (toInstallableItem ii))
+        |>toAccumulatedResult
 
     let loadSdp (sdpXElement:XElement): Result<SoftwareDistributionPackage, Exception> =
         result{
@@ -247,11 +300,22 @@ module SdpCatalog =
             let! updateClassification = toUpdateClassification updateClassificationString
             let securityBulitinId = getOptionalSdpElementValue updateSpecificDataSdpElement "SecurityBulletinID"
             let kBArticleID = getOptionalSdpElementValue updateSpecificDataSdpElement "KBArticleID"
+
+            let! isInstallableSdpElement = getSdpElement sdpXElement "IsInstallable"
+            let isInstallable = innerXml isInstallableSdpElement
+            let isInstalledSdpElement = getOptionalSdpElement sdpXElement "IsInstalled"
+            let isInstalled = toOptionalInnerXml isInstalledSdpElement
+            
+            let! installableItems = toInstallableItems sdpXElement
+            
             return {
                     Title = title
                     Description= description
                     ProductName = productName
                     PackageId = packageId
                     UpdateSpecificData={MsrcSeverity= msrcSeverity;UpdateClassification=updateClassification;SecurityBulletinID=securityBulitinId;KBArticleID=kBArticleID}
+                    IsInstallable=isInstallable
+                    IsInstalled=isInstalled
+                    InstallableItems=installableItems|>Seq.toArray
                 }            
         }        
