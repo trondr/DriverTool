@@ -56,6 +56,9 @@ module SdpCatalog =
         |NotValidGuid -> Result.Error (new Exception(sprintf "Invalid product code: '%s'" productCode))
         |g -> Result.Ok (ProductCode g)
 
+    let internal productCodeUnsafe productCode =
+        ProductCode productCode
+
     let productCodeValue (ProductCode productCode) = productCode
     //#endregion ProductCode
 
@@ -248,6 +251,9 @@ module SdpCatalog =
     let getCmdElements (parentXElement:XElement) (elementName:string) =
         toResult (parentXElement.Elements(XName.Get(elementName,cmdNs.NamespaceName))) (sprintf "Element '%s' not found on parent element: '%A'" elementName parentXElement)
 
+    let getMsiElement (parentXElement:XElement) (elementName:string) =
+        toResult (parentXElement.Element(XName.Get(elementName,msiNs.NamespaceName))) (sprintf "Element '%s' not found on parent element: '%A'" elementName parentXElement)
+
     let getSdpElementValue (parentXElement:XElement) (elementName:string) =
         result{
             let! element = (getSdpElement parentXElement elementName)
@@ -405,12 +411,40 @@ module SdpCatalog =
                         ReturnCodes=returnCodes
                     }
             }
+    
+    let toMsiInstallerData (sdpInstallableItemElement:XElement) =
+        result
+            {
+                let! commandLineInstallerDataElement = getMsiElement sdpInstallableItemElement "MsiInstallerData"
+                let! msiFile = getRequiredAttribute commandLineInstallerDataElement "MsiFile"
+                let! commandLine = getRequiredAttribute commandLineInstallerDataElement "CommandLine"
+                let uninstallCommandLine = resultToOption (getRequiredAttribute commandLineInstallerDataElement "UninstallCommandLine")
+                let! productCodeR = getRequiredAttribute commandLineInstallerDataElement "ProductCode"
+                let! productCode = productCode productCodeR                
+                return 
+                    InstallerData.MsiInstallerData {
+                        MsiFile=msiFile
+                        CommandLine=commandLine
+                        UninstallCommandLine=uninstallCommandLine
+                        ProductCode=productCode                          
+                    }
+            }
+    
 
     let toInstallerData (sdpInstallableItemElement:XElement) =
         result
             {
-                let! commandLineInstallerData = (toCommanLineInstallerData sdpInstallableItemElement)
-                return commandLineInstallerData
+                let commandLineInstallerData = resultToOption (toCommanLineInstallerData sdpInstallableItemElement)
+                let msiInstallerData = resultToOption (toMsiInstallerData sdpInstallableItemElement)
+                let installerData =
+                    [|commandLineInstallerData;msiInstallerData|]
+                    |>Seq.choose(fun i -> i)
+                    |>Seq.toArray
+                return! 
+                    match (Array.length installerData) with
+                    | 1 -> Result.Ok (Array.head installerData)
+                    | 0 -> Result.Error (new Exception(sprintf "No installer data type was found. %A" installerData))
+                    | _ -> Result.Error (new Exception(sprintf "More than one installer data type was found. %A" installerData))
             }
 
     let toOriginFile (sdpInstallableItemElement:XElement) =
@@ -433,7 +467,6 @@ module SdpCatalog =
                         OriginUri=originUri
                     }
             }
-
 
     let toInstallableItem (sdpInstallableItemXElement:XElement) =
         result
