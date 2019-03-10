@@ -108,7 +108,7 @@ module CompressionTests=
                                 existingDestinationFolderPath
                                 |> FileSystem.existingDirectoryPathValueToPath
                                 |> DirectoryOperations.getFilesUnsafe true
-                                |> Array.head
+                                |> Seq.head
                             if(changeContentOfAFile) then
                                 //Change the first file in the destination, to force an inequality
                                 FileOperations.writeContentToFile (FileSystem.pathUnSafe filePath) "Some change"|>ignore
