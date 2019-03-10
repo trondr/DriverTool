@@ -87,23 +87,33 @@ module DirectoryOperations =
                     |>toAccumulatedResult
             return subDirectoryPaths
         }
+
+    let toSearchOptions recurse =
+        match recurse with
+        |false -> System.IO.SearchOption.TopDirectoryOnly
+        |true -> System.IO.SearchOption.AllDirectories
     
     let getFilesUnsafe recurse directoryPath =
-        let searchOptions =
-            match recurse with
-            |false -> System.IO.SearchOption.TopDirectoryOnly
-            |true -> System.IO.SearchOption.AllDirectories
+        let searchOptions = toSearchOptions recurse                
         System.IO.Directory.GetFiles(FileSystem.pathValue directoryPath,"*.*",searchOptions)
-    
+
+    let getFiles recurse directoryPath =
+        try
+            (getFilesUnsafe recurse directoryPath)
+            |>Seq.map(fun fn -> FileSystem.path fn)
+            |>toAccumulatedResult
+        with
+        |ex -> Result.Error (new Exception(sprintf "Failed to get files in folder '%s' due to: %s" (FileSystem.pathValue directoryPath) ex.Message,ex))
+
     let findFilesUnsafe recurse searchPattern folder =
-        let searchOptions =
-            match recurse with
-            |true -> SearchOption.AllDirectories
-            |false -> SearchOption.TopDirectoryOnly        
+        let searchOptions = toSearchOptions recurse
         System.IO.Directory.GetFiles(folder, searchPattern,searchOptions)
 
     let findFiles recurse searchPattern folder =
-        tryCatch3 findFilesUnsafe recurse searchPattern (FileSystem.pathValue folder)
-
-    let getFiles recurse directoryPath =
-        tryCatch2 getFilesUnsafe recurse directoryPath
+        try
+            (findFilesUnsafe recurse searchPattern (FileSystem.pathValue folder))
+            |>Seq.map(fun fn -> FileSystem.path fn)
+            |>toAccumulatedResult
+        with
+        |ex -> Result.Error (new Exception(sprintf "Failed to find files in folder '%s' due to: %s" (FileSystem.pathValue folder) ex.Message,ex))
+    

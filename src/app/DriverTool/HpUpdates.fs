@@ -181,8 +181,9 @@ module HpUpdates =
             let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2
             let relevantSdpFiles = 
                 sdpFiles
+                |>Seq.toArray
                 |>Array.filter(fun sf-> 
-                        let sdp = sdpeval.Sdp.LoadSdp sf
+                        let sdp = sdpeval.Sdp.LoadSdp (FileSystem.pathValue sf)
                         sdp.InstallableItems
                         |>Seq.tryFind(fun ii -> 
                                 let isInstallable = sdpeval.Sdp.EvaluateApplicabilityXml(ii.IsInstallableApplicabilityRule)
@@ -193,7 +194,7 @@ module HpUpdates =
                     )
             let packageInfos =
                 relevantSdpFiles
-                |>Array.map(fun sf -> toPackageInfo (sf,logDirectory))
+                |>Array.map(fun sf -> toPackageInfo ((FileSystem.pathValue sf),logDirectory))
                 |>Array.concat
             return packageInfos
         }        
@@ -204,11 +205,12 @@ module HpUpdates =
             let! hpCatalogForSmsLatest = HpCatalog.downloadSmsSdpCatalog()
             let! hpCatalogForSmsLatestV2 = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue hpCatalogForSmsLatest,"V2"))
             let! existingHpCatalogForSmsLatestV2 = DirectoryOperations.ensureDirectoryExists false hpCatalogForSmsLatestV2
-            let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2
+            let! sdpFiles = (DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2)
             let relevantSdpFiles = 
                 sdpFiles
+                |>Seq.toArray
                 |>Array.filter(fun sf-> 
-                        let sdp = sdpeval.Sdp.LoadSdp sf
+                        let sdp = sdpeval.Sdp.LoadSdp (FileSystem.pathValue sf)
                         sdp.InstallableItems
                         |>Seq.tryFind(fun ii -> 
                                 let isInstallable = sdpeval.Sdp.EvaluateApplicabilityXml(ii.IsInstallableApplicabilityRule)                                
@@ -218,7 +220,7 @@ module HpUpdates =
                     )
             let packageInfos =
                 relevantSdpFiles
-                |>Array.map(fun sf -> toPackageInfo (sf,logDirectory))
+                |>Array.map(fun sf -> toPackageInfo ((FileSystem.pathValue sf),logDirectory))
                 |>Array.concat
             return packageInfos
         }
