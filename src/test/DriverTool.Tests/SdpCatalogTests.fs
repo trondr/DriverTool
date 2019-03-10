@@ -33,12 +33,14 @@ module SdpCatalogTests =
 
     let internal sdpTestData =
         [
-            yield {SdpTestFile="0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";IsSuccess=true;Expected={Title="Realtek High Definition Audio Driver,6.0.1.8454,A02";Description="This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";ProductName="Drivers and Applications";PackageId="0e6cf4ac-2853-48aa-825b-8fe28206575f";UpdateSpecificData={MsrcSeverity= MsrcSeverity.Important;UpdateClassification=UpdateClassification.Updates;SecurityBulletinID=Some "99DDD";KBArticleID=Some "99DDD"};IsInstallable="";IsInstalled=None;InstallableItems=[|{Id="3787be40-ec14-47c7-a24d-23210ef448e9";ApplicabilityRules={IsInstallable=Some "N/A";IsInstalled=Some "N/A";IsSuperseded=Some "N/A"}}|]};ExpectedErrorMessage="N/A"}
+            let installerData = InstallerData.CommandLineInstallerData{Program="Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";Arguments="/s";RebootByDefault=false;DefaultResult=InstallationResult.Failed;ReturnCodes=[|{Code=0;Result=InstallationResult.Succeeded;Reboot=false};{Code=2;Result=InstallationResult.Succeeded;Reboot=true}|]}
+            let installProperties = {CanRequestUserInput=false;Impact=InstallImpact.Normal;RequiresNetworkConnectivity=false;RebootBehavior=InstallationRebootBehavior.AlwaysRequiresReboot}
+            let installableItems = [|{Id="3787be40-ec14-47c7-a24d-23210ef448e9";ApplicabilityRules={IsInstallable=Some "N/A";IsInstalled=Some "N/A";IsSuperseded=Some "N/A"};InstallProperties=installProperties;UninstallProperties=None;InstallerData=installerData}|]            
+            yield {SdpTestFile="0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";IsSuccess=true;Expected={Title="Realtek High Definition Audio Driver,6.0.1.8454,A02";Description="This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";ProductName="Drivers and Applications";PackageId="0e6cf4ac-2853-48aa-825b-8fe28206575f";UpdateSpecificData={MsrcSeverity= MsrcSeverity.Important;UpdateClassification=UpdateClassification.Updates;SecurityBulletinID=Some "99DDD";KBArticleID=Some "99DDD"};IsInstallable="";IsInstalled=None;InstallableItems=installableItems};ExpectedErrorMessage="N/A"}
         ]
 
     [<Test>]
-    [<TestCaseSource("sdpTestData")>]
-    //[<TestCase("0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp","Realtek High Definition Audio Driver,6.0.1.8454,A02",true,"N/A")>]
+    [<TestCaseSource("sdpTestData")>]    
     let loadSdpTests(sdpTestData:obj) =
         let sdpTestDataR = (sdpTestData:?>SdpTestData)
         match(result {            
@@ -64,6 +66,8 @@ module SdpCatalogTests =
             Assert.IsFalse((v.InstallableItems.[0].ApplicabilityRules.IsInstallable) = None,"InstallableItems..IsInstallable")
             Assert.IsFalse((v.InstallableItems.[0].ApplicabilityRules.IsInstalled) = None,"InstallableItems..IsInstalled")
             Assert.IsTrue((v.InstallableItems.[0].ApplicabilityRules.IsSuperseded) = None,"InstallableItems..IsSuperseded")
+            Assert.AreEqual(sdpTestDataR.Expected.InstallableItems.[0].InstallerData, v.InstallableItems.[0].InstallerData,"InstallerData")
+
         |Error ex -> 
             Assert.False(sdpTestDataR.IsSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
             Assert.IsTrue(ex.Message.Contains(sdpTestDataR.ExpectedErrorMessage),"Error message not as expected: " + ex.Message)
