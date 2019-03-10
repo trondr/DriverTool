@@ -508,7 +508,7 @@ module SdpCatalog =
         |ex -> Result.Error ex
 
 
-    let loadSdp (sdpXElement:XElement): Result<SoftwareDistributionPackage, Exception> =
+    let loadSdpFromXElement (sdpXElement:XElement): Result<SoftwareDistributionPackage, Exception> =
         result{
             let! localizedPropertiesSdpElement = (getSdpElement sdpXElement "LocalizedProperties")
             let! title = getSdpElementValue localizedPropertiesSdpElement "Title"                        
@@ -552,10 +552,30 @@ module SdpCatalog =
             let! sdpElements = getSmcElements smcElement "SoftwareDistributionPackage"
             let! sdps =
                 sdpElements
-                |>Seq.map(fun sdpElement -> loadSdp sdpElement)
+                |>Seq.map(fun sdpElement -> loadSdpFromXElement sdpElement)
                 |>toAccumulatedResult                
             return
                 {
                     SoftwareDistributionPackages = sdps |> Seq.toArray
                 }
         }
+    
+    let loadSdpFromFile (sdpFilePath:Path) =
+        result{
+            let! sdpXDocument = loadSdpXDocument sdpFilePath
+            let! sdpXElement = loadSdpXElement sdpXDocument
+            let! sdp = loadSdpFromXElement sdpXElement
+            return sdp
+        }
+
+    let loadSdps (sdpFolderPath:Path) =
+        result
+            {
+                let! existingSdpFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage false (sprintf "Folder '%s' with sdp files does not exist." (FileSystem.pathValue sdpFolderPath)) sdpFolderPath
+                let! sdpFilePaths = DirectoryOperations.findFiles false "*.sdp" existingSdpFolderPath
+                let! sdps = 
+                    sdpFilePaths
+                    |>Seq.map(fun fp -> loadSdpFromFile fp)
+                    |>toAccumulatedResult
+                return sdps |> Seq.toArray
+            }
