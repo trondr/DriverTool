@@ -91,6 +91,9 @@
     <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC.zip" />
     <EmbeddedResource Include="TestData\SdpCatalog\0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp" />
     <EmbeddedResource Include="TestData\SdpCatalog\dc718411-a5f1-4b15-966a-63a77cbb156e.sdp" />
+    <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.zip" />
+    <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.latest_V2.zip" />
+    <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC_V2.zip" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

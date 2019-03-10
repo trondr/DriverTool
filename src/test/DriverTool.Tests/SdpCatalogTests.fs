@@ -8,6 +8,11 @@ module SdpCatalogTests =
     open DriverTool
     open System
     open DriverTool.SdpCatalog
+    open DriverTool
+    open DriverTool
+    open DriverTool
+    open DriverTool
+    open DriverTool
 
     type ThisAssembly = { Empty:string;}
     
@@ -82,3 +87,27 @@ module SdpCatalogTests =
         |Error ex -> 
             Assert.False(sdpTestDataR.IsSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
             Assert.IsTrue(ex.Message.Contains(sdpTestDataR.ExpectedErrorMessage),"Error message not as expected: " + ex.Message)
+    
+    [<Test>]
+    [<TestCase("DellSDPCatalogPC.zip","DellSDPCatalogPC.xml",true,4450,"N/A")>]
+    [<TestCase("HpCatalogForSms.zip","HpCatalogForSms.xml",true,1829,"N/A")>]
+    [<Timeout(220000)>]
+    let loadSystemManagementCatalogTests(sdpZipFileName:string,sdpFileName:string, isSuccess:bool,expectedNumberOfPackages:int,expectedErrorMessage:string) =        
+        match(result {            
+            
+            let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
+            let! sdpZipFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)
+            
+            let! tempCatalogDestinationFolderPath = PathOperations.combine2Paths ((PathOperations.getTempPath),"DellSDPCatalogPCTest")            
+            let! nonExistingTempCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true tempCatalogDestinationFolderPath
+            let! existingTempCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempCatalogDestinationFolderPath
+            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,existingTempCatalogDestinationFolderPath)
+            let! sdpCatalogFilePath = PathOperations.combine2Paths ((FileSystem.pathValue existingTempCatalogDestinationFolderPath),sdpFileName)            
+            let! actual = SdpCatalog.loadSystemManagementCatalog sdpCatalogFilePath
+            return actual
+        }) with        
+        |Ok v -> 
+            Assert.AreEqual(expectedNumberOfPackages,(Array.length v.SoftwareDistributionPackages),sprintf "Number of SoftwareDistributionPackages in sdp xml '%s'" sdpFileName)
+        |Error ex -> 
+            Assert.False(isSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
+            Assert.IsTrue(ex.Message.Contains(expectedErrorMessage),"Error message not as expected: " + ex.Message)
