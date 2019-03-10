@@ -8,12 +8,6 @@ module SdpCatalogTests =
     open DriverTool
     open System
     open DriverTool.SdpCatalog
-    open DriverTool
-    open DriverTool
-    open DriverTool
-    open DriverTool
-    open DriverTool
-
     type ThisAssembly = { Empty:string;}
     
 
@@ -60,7 +54,7 @@ module SdpCatalogTests =
             let! sdpFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (sdpTestDataR.SdpTestFile,tempDestinationFolderPath,sdpTestDataR.SdpTestFile,typeof<ThisAssembly>.Assembly)
             let! sdpXDocument = SdpCatalog.loadSdpXDocument sdpFilePath
             let! sdpXElement = SdpCatalog.loadSdpXElement sdpXDocument
-            let! actual = SdpCatalog.loadSdp sdpXElement
+            let! actual = SdpCatalog.loadSdpFromXElement sdpXElement
             return actual
         }) with        
         |Ok v -> 
@@ -98,7 +92,7 @@ module SdpCatalogTests =
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
             let! sdpZipFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)
             
-            let! tempCatalogDestinationFolderPath = PathOperations.combine2Paths ((PathOperations.getTempPath),"DellSDPCatalogPCTest")            
+            let! tempCatalogDestinationFolderPath = PathOperations.combine2Paths ((PathOperations.getTempPath),"SDPCatalogTests")            
             let! nonExistingTempCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true tempCatalogDestinationFolderPath
             let! existingTempCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempCatalogDestinationFolderPath
             let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,existingTempCatalogDestinationFolderPath)
@@ -108,6 +102,30 @@ module SdpCatalogTests =
         }) with        
         |Ok v -> 
             Assert.AreEqual(expectedNumberOfPackages,(Array.length v.SoftwareDistributionPackages),sprintf "Number of SoftwareDistributionPackages in sdp xml '%s'" sdpFileName)
+        |Error ex -> 
+            Assert.False(isSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
+            Assert.IsTrue(ex.Message.Contains(expectedErrorMessage),"Error message not as expected: " + ex.Message)
+
+
+
+    [<Test>]
+    [<TestCase("HpCatalogForSms.latest_V2.zip","HpCatalogForSms.latest_V2",true,1829,"N/A")>]
+    [<TestCase("DellSDPCatalogPC_V2.zip","DellSDPCatalogPC_V2",true,4450,"N/A")>]
+    [<Timeout(220000)>]
+    let loadSdpsTests(sdpZipFileName:string,testFolder:string,isSuccess:bool,expectedNumberOfPackages:int,expectedErrorMessage:string) =        
+        match(result {            
+            
+            let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
+            let! sdpZipFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)            
+            let! tempCatalogDestinationFolderPath = PathOperations.combine2Paths ((PathOperations.getTempPath),testFolder)
+            let! nonExistingTempCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true tempCatalogDestinationFolderPath
+            let! existingTempCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempCatalogDestinationFolderPath
+            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,existingTempCatalogDestinationFolderPath)            
+            let! actual = SdpCatalog.loadSdps existingTempCatalogDestinationFolderPath
+            return actual
+        }) with        
+        |Ok v -> 
+            Assert.AreEqual(expectedNumberOfPackages,(Array.length v),sprintf "Number of SoftwareDistributionPackages in sdp xmls in folder '%s'" testFolder)
         |Error ex -> 
             Assert.False(isSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
             Assert.IsTrue(ex.Message.Contains(expectedErrorMessage),"Error message not as expected: " + ex.Message)
