@@ -107,9 +107,6 @@
     <Reference Include="FSharp.Data">
       <HintPath>..\..\..\packages\FSharp.Data.3.0.1\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
-    <Reference Include="FSharp.Data.Xsd">
-      <HintPath>..\..\..\packages\FSharp.Data.Xsd.1.0.2\lib\net45\FSharp.Data.Xsd.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
