@@ -25,6 +25,7 @@ module HpCatalogTests =
         |Error e -> Assert.Fail(e.Message)
     
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     let getSoftPaqsTest () =
         match(result
                 {

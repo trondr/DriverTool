@@ -12,6 +12,7 @@ module SdpCatalogTests =
     
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase(null,"N/A",false,"ProductCode cannot be null.")>]
     [<TestCase("","N/A",false,"ProductCode cannot be empty.")>]
     [<TestCase("abc-bcd","N/A",false,"Invalid product code: 'abc-bcd'")>]
@@ -46,6 +47,7 @@ module SdpCatalogTests =
         ]
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCaseSource("sdpTestData")>]    
     let loadSdpTests(sdpTestData:obj) =
         let sdpTestDataR = (sdpTestData:?>SdpTestData)
@@ -83,6 +85,7 @@ module SdpCatalogTests =
             Assert.IsTrue(ex.Message.Contains(sdpTestDataR.ExpectedErrorMessage),"Error message not as expected: " + ex.Message)
     
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase("DellSDPCatalogPC.zip","DellSDPCatalogPC.xml",true,4450,"N/A")>]
     [<TestCase("HpCatalogForSms.zip","HpCatalogForSms.xml",true,1829,"N/A")>]
     [<Timeout(220000)>]
@@ -109,6 +112,7 @@ module SdpCatalogTests =
 
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase("HpCatalogForSms.latest_V2.zip","HpCatalogForSms.latest_V2",true,1829,"N/A")>]
     [<TestCase("DellSDPCatalogPC_V2.zip","DellSDPCatalogPC_V2",true,4450,"N/A")>]
     [<Timeout(220000)>]

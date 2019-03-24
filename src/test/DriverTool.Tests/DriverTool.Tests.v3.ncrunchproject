@@ -6,51 +6,6 @@
     </HiddenComponentWarnings>
     <IgnoredTests>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.InstallDriverPackageTests.copyDriversTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellCommandUpdatesIntegrationTests.getLocalUpdatesBaseTest("07A7","WIN10X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.downloadSccmDriverPackageTest("WIN10X64","83B3")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellUpdatesTests.getSccmDriverPackageInfoTest("07A0","WIN10X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WebParsingTests.getContentFromWebPagetest("https://support.lenovo.com/no/en/downloads/ds112090")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2016X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2012X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2012R2X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2008R2X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN8X86")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN8X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN2008X86")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN2008X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("VISTAX86")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("VISTAX64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
         <TestName>DriverTool.Tests.LenovoCatalogTests.getUniqueLenovoOperatingSystemTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
@@ -75,21 +30,6 @@
         <TestName>DriverTool.Tests.LenovoCatalogTests.findSccmPackageInfoByModelCode4AndOsAndBuildTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.exportRemoteUpdatesTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellUpdatesTests.pathToDirectoryAndFileTests&lt;String,String&gt;("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellUpdatesTests.pathToDirectoryAndFileTests&lt;String,String&gt;("FOLDER01766254M/1/9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE","FOLDER01766254M/1","9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellUpdatesTests.getUpdates2Test("07A7","WIN10X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.BitLockerOperationsTest.isBitLockerEnabledTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
         <TestName>DriverTool.Tests.LenovoCatalogTests.findSccmPackageInfoByModelCode4AndOsAndBuildTest2("20FA","win10","1709")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
@@ -108,19 +48,13 @@
         <TestName>DriverTool.Tests.LenovoCatalogTests.findSccmPackageInfoByModelCode4AndOsAndBuildTest2("20L8","win10","1809")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpCatalogTests.getSoftPaqsTest</TestName>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.copyDriversTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.extractSccmDriverPackageTest("WIN10X64","83B3")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ManualWebTest.downloadFileTest("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB","c:\\temp\\7480-win10-A10-2CHK6.CAB")</TestName>
+        <TestName>DriverTool.Tests.CreateDriverPackageTests.downloadUpdateTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.HpCatalogTests.downloadSmsSdpCatalogTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000081886.sdp")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.HpUpdatesTests.getLocalUpdatesTests</TestName>
@@ -129,68 +63,50 @@
         <TestName>DriverTool.Tests.HpUpdatesTests.getRemoteUpdatesTests</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.CreateDriverPackageTests.downloadUpdateTest</TestName>
+        <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000065111.sdp")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000065111.sdp")</TestName>
+        <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000081886.sdp")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000094780.sdp")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("20QE","WIN10X64","",False,"The path '' is not valid. Path cannot be empty.")</TestName>
+        <TestName>DriverTool.Tests.ManualWebTest.downloadFileTest("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB","c:\\temp\\7480-win10-A10-2CHK6.CAB")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN81X86","win81")</TestName>
+        <TestName>DriverTool.Tests.DellCommandUpdatesIntegrationTests.getLocalUpdatesBaseTest("07A7","WIN10X64")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN81X64","win81")</TestName>
+        <TestName>DriverTool.Tests.BitLockerOperationsTest.isBitLockerEnabledTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN7X86","win732")</TestName>
+        <TestName>DriverTool.Tests.WebParsingTests.getContentFromWebPagetest("https://support.lenovo.com/no/en/downloads/ds112090")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN7X64","win764")</TestName>
+        <TestName>DriverTool.Tests.HpUpdatesTests.downloadSccmDriverPackageTest("WIN10X64","83B3")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN10X86","win10")</TestName>
+        <TestName>DriverTool.Tests.HpUpdatesTests.extractSccmDriverPackageTest("WIN10X64","83B3")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN10X64","win10")</TestName>
+        <TestName>DriverTool.Tests.DellUpdatesTests.getSccmDriverPackageInfoTest("07A0","WIN10X64")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/ts_p520p520c_w1064_20180613.exe","2018-06-13")</TestName>
+        <TestName>DriverTool.Tests.DellUpdatesTests.getUpdates2Test("07A7","WIN10X64")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.txt","2018-06-01")</TestName>
+        <TestName>DriverTool.Tests.DellUpdatesTests.pathToDirectoryAndFileTests&lt;String,String&gt;("FOLDER01766254M/1/9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE","FOLDER01766254M/1","9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.exe2232.txt","2018-06-01")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.exe2232","2018-06-01")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.exe","2018-06-01")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getFileNameFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file.txt","file.txt")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("LX123","WIN10X64","c:\\temp\\test.csv",True,"")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("","WIN1","",False,"The model code '' is not valid. ModelCode cannot be null or empty.")</TestName>
+        <TestName>DriverTool.Tests.DellUpdatesTests.pathToDirectoryAndFileTests&lt;String,String&gt;("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.DellUpdatesTests.getLatestPackageInfoVersionTest</TestName>
       </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("20QE","WIN1","",False,"The operating system code 'WIN1' is not valid. Valid values are: WIN2016X64|WIN2008X64|WIN2008R2X64|WIN2012X64|WIN2012R2X64|WIN10X64|VISTAX64|WIN7X64|WIN8X64|WIN81X64|WIN2016X64|WIN2008X86|WIN2008R2X64|WIN2012X64|WIN2012R2X64|WIN10X86|VISTAX86|WIN7X86|WIN8X86|WIN81X86.")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("LX123","WIN10X64","c:\temp\test.csv",False,"The path 'c:\temp\test.csv' is not valid. Path contains invalid characters.")</TestName>
-      </NamedTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.SdpCatalogTests</FixtureName>
+      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
