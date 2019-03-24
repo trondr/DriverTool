@@ -37,17 +37,17 @@ module LenovoUpdates =
         with
         |ex -> Result.Error ex
 
-    let getPackagesInfoR (modelInfoXmlFilePath:Result<FileSystem.Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
-        try
-            match modelInfoXmlFilePath with
-            |Ok p -> 
-                let x = PackagesXmlProvider.Load(FileSystem.pathValue p)
-                x.Packages
-                |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
-                |> Result.Ok
-            |Error ex -> Result.Error ex
-        with
-        |ex -> Result.Error ex
+    //let getPackagesInfoR (modelInfoXmlFilePath:Result<FileSystem.Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
+    //    try
+    //        match modelInfoXmlFilePath with
+    //        |Ok p -> 
+    //            let x = PackagesXmlProvider.Load(FileSystem.pathValue p)
+    //            x.Packages
+    //            |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
+    //            |> Result.Ok
+    //        |Error ex -> Result.Error ex
+    //    with
+    //    |ex -> Result.Error ex
     
     let getXmlFileNameFromUri (uri: Uri) : Result<string,Exception>= 
         try
