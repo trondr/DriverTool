@@ -81,7 +81,7 @@ module EmbeddedResourceTest  =
 
     [<Test>]
     let getPackageTemplateEmbeddedResourceNamesTest () =
-        let actual = PackageTemplate.getPackageTemplateEmbeddedResourceNames
+        let actual = PackageTemplate.getPackageTemplateEmbeddedResourceNames()
         let actualResourceNameCount = (actual |> Seq.toList).Length
         Assert.AreEqual(11,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
 
@@ -92,7 +92,7 @@ module EmbeddedResourceTest  =
         let destinationFolderPathResult = FileSystem.path @"c:\temp\testpackage2"
         match destinationFolderPathResult with
         |Ok destinationFolderPath ->
-            let actual = EmbeddedResouce.mapResourceNamesToFileNames (destinationFolderPath,PackageTemplate.getPackageTemplateEmbeddedResourceNames,PackageTemplate.resourceNameToDirectoryDictionary)
+            let actual = EmbeddedResouce.mapResourceNamesToFileNames (destinationFolderPath,PackageTemplate.getPackageTemplateEmbeddedResourceNames(),PackageTemplate.resourceNameToDirectoryDictionary)
             let actualResourceNameToFileMapCount = (actual |> Seq.toList).Length
             Assert.AreEqual(11, actualResourceNameToFileMapCount,"Resource name vs file name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. If a folder is added to the package templated folder structure, the resourceNameToDirectoryDictionary function must be updated also.")
         |Error ex -> Assert.Fail(ex.Message)
