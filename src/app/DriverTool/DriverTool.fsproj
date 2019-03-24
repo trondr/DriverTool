@@ -204,16 +204,13 @@
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Control.Reactive">
-      <HintPath>..\..\..\packages\FSharp.Control.Reactive.4.1.0\lib\net46\FSharp.Control.Reactive.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Control.Reactive.4.2.0\lib\net46\FSharp.Control.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\..\..\packages\FSharp.Core.4.6.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
       <HintPath>..\..\..\packages\FSharp.Data.3.0.0\lib\net45\FSharp.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Data.Xsd">
-      <HintPath>..\..\..\packages\FSharp.Data.Xsd.1.0.2\lib\net45\FSharp.Data.Xsd.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Interop.Dynamic">
       <HintPath>..\..\..\packages\FSharp.Interop.Dynamic.4.0.3.130\lib\net40\FSharp.Interop.Dynamic.dll</HintPath>
