@@ -43,8 +43,8 @@ module EmbeddedResourceTest  =
         Assert.AreEqual(expectedDirectoriesArray, actual, "Potential directories were no expected.")   
         
     [<Test>]
-    [<TestCase("DriverTool.PackageTemplate.Install.xml",@"c:\temp\testpackage",@"c:\temp\testpackage\Install.xml")>]
-    [<TestCase("DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe",@"c:\temp\testpackage",@"c:\temp\testpackage\Drivers\DpInstExitCode2ExitCode.exe")>]
+    [<TestCase("DriverTool.PackageTemplate.Install.xml",@"c:\temp\testpackage_1",@"c:\temp\testpackage_1\Install.xml")>]
+    [<TestCase("DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe",@"c:\temp\testpackage_2",@"c:\temp\testpackage_2\Drivers\DpInstExitCode2ExitCode.exe")>]
     let resourceNameToFileNameTest (resourceName:string, destinationFolderPathString:string,expectedFileName:string) =
          let fileNameResult =
              result{
@@ -62,7 +62,7 @@ module EmbeddedResourceTest  =
 
     [<Test>]
     let extractPackageTemplateTest () = 
-        let destinationFolderPathString = @"c:\temp\testpackage" 
+        let destinationFolderPathString = @"c:\temp\testpackage_test" 
         if (System.IO.Directory.Exists(destinationFolderPathString)) then
                     System.IO.Directory.Delete(destinationFolderPathString,true)
                     |>ignore

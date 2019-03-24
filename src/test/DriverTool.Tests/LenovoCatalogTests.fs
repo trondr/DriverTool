@@ -110,7 +110,7 @@ module LenovoCatalogTests=
 
     [<TestCase("WIN2016X64")>]    
     [<TestCase("WIN2016X64")>]
-    
+    [<Category(TestCategory.UnitTests)>]
     let osShortNameToLenovoOsTest_UnSupported (osShortName) =
         Assert.Throws<System.Exception>(fun () -> (
                                                                 osShortNameToLenovoOs osShortName|> ignore                        
