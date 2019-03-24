@@ -96,6 +96,7 @@
     <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.latest_V2.zip" />
     <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC_V2.zip" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
+	<EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
     <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,8 @@ module LenovoUpdates =
     open DriverTool.Checksum
     open DriverTool.FileOperations
     open DriverTool.PackageXml    
+    open System.Xml.Linq
+
     //open DriverTool.LenovoCatalog
 
     let loggerl = Logging.getLoggerByName("LenovoUpdates")
@@ -25,30 +27,41 @@ module LenovoUpdates =
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         new Uri(sprintf "https://download.lenovo.com/catalog/%s_%s.xml" (modelCode2DownloadableCode modelCode) (operatingSystemCode2DownloadableCode operatingSystemCode))
 
+    
     type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
+
+    let toPackages (packagesXElement:XElement) =
+        result
+            {
+                let! packages = 
+                    packagesXElement.Elements(XName.Get("package"))
+                    |>Seq.map(fun p -> 
+                            result{
+                                let! location = XmlHelper.getElementValue p "location"
+                                let! category = XmlHelper.getElementValue p "category"
+                                let! checksumValue = XmlHelper.getElementValue p "checksum"
+                                let! checksumType = XmlHelper.getRequiredAttribute (p.Element(XName.Get("checksum"))) "type"
+                                return {
+                                    Location = location
+                                    Category = category
+                                    CheckSum = checksumValue
+                                }                            
+                            }                            
+                        )
+                    |>toAccumulatedResult
+                return packages                
+            }
+
+    let loadPackagesXml (xmlPath:FileSystem.Path) = 
+        result{
+            let! existingXmlPath = FileOperations.ensureFileExistsWithMessage (sprintf "Packages xml file '%A' not found." xmlPath) xmlPath
+            let! xDocument = XmlHelper.loadXDocument existingXmlPath
+            let! packages = toPackages xDocument.Root
+            return packages
+        }
+
     type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
 
-    let getPackagesInfo (modelInfoXmlFilePath:FileSystem.Path) : Result<seq<PackageXmlInfo>,Exception>= 
-        try
-            let x = PackagesXmlProvider.Load(FileSystem.pathValue modelInfoXmlFilePath)
-            x.Packages
-            |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
-            |> Result.Ok            
-        with
-        |ex -> Result.Error ex
-
-    //let getPackagesInfoR (modelInfoXmlFilePath:Result<FileSystem.Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
-    //    try
-    //        match modelInfoXmlFilePath with
-    //        |Ok p -> 
-    //            let x = PackagesXmlProvider.Load(FileSystem.pathValue p)
-    //            x.Packages
-    //            |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
-    //            |> Result.Ok
-    //        |Error ex -> Result.Error ex
-    //    with
-    //    |ex -> Result.Error ex
-    
     let getXmlFileNameFromUri (uri: Uri) : Result<string,Exception>= 
         try
             let regExMatch = 
@@ -197,7 +210,7 @@ module LenovoUpdates =
             let! path = getModelInfoXmlFilePath modelCode operatingSystemCode
             let! modelInfoXmlFilePath = ensureFileDoesNotExist overwrite path
             let! downloadedFile = downloadFile (modelInfoUri, overwrite, modelInfoXmlFilePath)            
-            let! packageXmlInfos = getPackagesInfo downloadedFile
+            let! packageXmlInfos = loadPackagesXml downloadedFile
             let! downloadedPackageXmls = downloadPackageXmls packageXmlInfos
             let! packageInfos = 
                 (parsePackageXmls downloadedPackageXmls)
