@@ -2,19 +2,15 @@
 
 module LenovoUpdates =    
     open System
-    open FSharp.Data
     open DriverTool.PackageXml
     open DriverTool.Configuration
     open System.Text.RegularExpressions
     open System.Linq
+    open System.Xml.Linq
     open F
     open DriverTool.Web
     open DriverTool.Checksum
     open DriverTool.FileOperations
-    open DriverTool.PackageXml    
-    open System.Xml.Linq
-
-    //open DriverTool.LenovoCatalog
 
     let loggerl = Logging.getLoggerByName("LenovoUpdates")
                
@@ -26,10 +22,7 @@ module LenovoUpdates =
      
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         new Uri(sprintf "https://download.lenovo.com/catalog/%s_%s.xml" (modelCode2DownloadableCode modelCode) (operatingSystemCode2DownloadableCode operatingSystemCode))
-
     
-    type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
-
     let toPackages (packagesXElement:XElement) =
         result
             {
@@ -59,8 +52,6 @@ module LenovoUpdates =
             let! packages = toPackages xDocument.Root
             return packages
         }
-
-    type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
 
     let getXmlFileNameFromUri (uri: Uri) : Result<string,Exception>= 
         try
