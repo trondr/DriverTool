@@ -94,6 +94,7 @@
     <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.zip" />
     <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.latest_V2.zip" />
     <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC_V2.zip" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

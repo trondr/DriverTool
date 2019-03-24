@@ -119,6 +119,7 @@
     <Compile Include="CsvOperations.fs" />
     <Compile Include="Environment.fs" />
     <Compile Include="XmlToolKit.fs" />
+    <Compile Include="XmlHelper.fs" />
     <Compile Include="Cryptography.fs" />
     <Compile Include="Checksum.fs" />
     <Compile Include="ProcessOperations.fs" />
@@ -144,6 +145,7 @@
     <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="WebParsing.fs" />
+    <Compile Include="LenovoCatalog2.fs" />
     <Compile Include="LenovoCatalog.fs" />
     <Compile Include="LenovoUpdates.fs" />
     <Compile Include="Updates.fs" />

@@ -3,7 +3,6 @@
 open NUnit.Framework
 
 [<TestFixture>]
-[<Category(TestCategory.IntegrationTests)>]
 module LenovoCatalogTests=
     
     open DriverTool.LenovoCatalog
@@ -12,8 +11,14 @@ module LenovoCatalogTests=
     open Microsoft.FSharp.Core
     open DriverTool
     open DriverTool.Web
+    open DriverTool.WebParsing
+    open DriverTool.FileOperations
+    open DriverTool.PathOperations
+    open System.Threading            
+    type ThisAssembly = { Empty:string;}
 
-    [<Test>]    
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     let getSccmPackagesInfoTest () =        
         let actual = getSccmPackageInfos
         match actual with
@@ -22,11 +27,10 @@ module LenovoCatalogTests=
             Assert.IsTrue(productArray.Length > 300,"Expected product array greater than zeror." )
         | Error ex -> Assert.Fail("Did not expect getSccmPackagesInfo to fail. Error: " + ex.Message)
 
-    open System.Threading    
-    open System
-    open DriverTool
+    
 
-    [<Test>]    
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     [<Apartment(ApartmentState.STA)>]
     let getSccmPackageDownloadInfosTest () =
         let sccmPackageInfos = getSccmPackageInfos
@@ -52,7 +56,8 @@ module LenovoCatalogTests=
                 Assert.IsTrue(ex.Message.Contains("Sccm package not found"))                
         Assert.IsTrue(true)
       
-    [<Test>]    
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     let getUniqueLenovoOperatingSystemTest () =
         let result = 
             result
@@ -113,7 +118,8 @@ module LenovoCatalogTests=
                                            ))|>ignore
         Assert.IsTrue(true)
 
-    [<Test>]    
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     [<TestCase("ThinkPad P50","win10","*","P50","ThinkPad P50","win10","*")>]
     let findSccmPackageInfoByNameAndOsAndBuildTest (name,os,osbuild,expectedmodel,expectedname,expectedos,expectedosbuild) =
         result{
@@ -128,7 +134,8 @@ module LenovoCatalogTests=
             return actual            
         } |> ignore
            
-    [<Test>]    
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     let findSccmPackageInfoByModelCode4AndOsAndBuildTest () =
         result{
                 let! products = getSccmPackageInfos
@@ -150,6 +157,7 @@ module LenovoCatalogTests=
         } |> ignore
     
     [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     [<TestCase("20L8","win10","1809")>]
     [<TestCase("20L8","win10","*")>]
     [<TestCase("20L6","win10","1809")>]
@@ -182,7 +190,8 @@ module LenovoCatalogTests=
         let actual = getReleaseDateFromUrlBase url
         Assert.AreEqual(expected, actual.ToString("yyyy-MM-dd"),"Release month not expected")    
         
-    [<Test>]    
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     [<Apartment(ApartmentState.STA)>]
     [<TestCase("https://support.lenovo.com/downloads/ds122238","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.txt","297ce1fbe0e0dfe4397c1413fe3850211600274356122b44af7d38fd9fcd5be4","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe","6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513","win10","*")>]
     [<TestCase("https://support.lenovo.com/downloads/ds112090","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt","442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe","a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1","win10","1809")>]
@@ -210,12 +219,8 @@ module LenovoCatalogTests=
         |Error e -> Assert.Fail(e.Message)
     
     
-    open DriverTool.WebParsing
-    open DriverTool.FileOperations
-    open DriverTool.PathOperations
-
-
-    [<Test>]     
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     [<Apartment(ApartmentState.STA)>]
     let getDownloadLinksFromWebPageContentTest () =
 
@@ -297,4 +302,36 @@ module LenovoCatalogTests=
             }
         match testResult with
         |Ok v -> Assert.IsTrue(true)
-        |Error ex -> Assert.Fail(ex.Message)       
+        |Error ex -> Assert.Fail(ex.Message)
+    
+    open DriverTool.LenovoCatalog2
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    let loadLenovoCatalogTest () =
+        match(result {              
+            let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)
+            let! catalogXmlPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("LenovoCatalog.xml", tempDestinationFolderPath,"LenovoCatalog.xml",typeof<ThisAssembly>.Assembly)
+            let! existingCatalogXmlPath = ensureFileExists catalogXmlPath
+            let! catalogProducts = loadLenovoCatalog existingCatalogXmlPath
+            return catalogProducts
+        }) with
+        |Ok v -> 
+            Assert.IsTrue(true,sprintf "Success: %A" v)
+            Assert.IsTrue((Seq.length v) > 0,sprintf "Lenght of CatalogProducts was not greater than zero")
+            let firstProduct = Seq.head v
+            Assert.AreEqual("Tablet10",firstProduct.Model,sprintf "Unexpected model: %A" firstProduct)
+            Assert.AreEqual("len",firstProduct.Family,sprintf "Unexpected family: %A" firstProduct)
+            Assert.AreEqual("win10",firstProduct.Os,sprintf "Unexpected os: %A" firstProduct)
+            Assert.AreEqual("*",firstProduct.Build,sprintf "Unexpected build: %A" firstProduct)
+            Assert.AreEqual("Lenovo Tablet 10",firstProduct.Name,sprintf "Unexpected Name: %A" firstProduct)
+
+            let twelfthProduct = Seq.item 12 v
+            Assert.AreEqual("M710q-SKL",twelfthProduct.Model,sprintf "Unexpected model: %A" twelfthProduct)
+            Assert.AreEqual("tc",twelfthProduct.Family,sprintf "Unexpected family: %A" twelfthProduct)
+            Assert.AreEqual("win764",twelfthProduct.Os,sprintf "Unexpected os: %A" twelfthProduct)
+            Assert.AreEqual("*",twelfthProduct.Build,sprintf "Unexpected build: %A" twelfthProduct)
+            Assert.AreEqual("ThinkCentre M710q - SKL",twelfthProduct.Name,sprintf "Unexpected Name: %A" twelfthProduct)
+
+        |Error ex ->
+            Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)       
