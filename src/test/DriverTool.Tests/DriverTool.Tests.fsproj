@@ -84,6 +84,7 @@
     <Compile Include="XmlToolKitTests.fs" />
     <Compile Include="PackageXmlTests.fs" />
     <Compile Include="SdpCatalogTests.fs" />
+    <Compile Include="InstallXmlTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
@@ -95,6 +96,7 @@
     <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.latest_V2.zip" />
     <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC_V2.zip" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
+    <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
