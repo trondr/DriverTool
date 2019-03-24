@@ -305,10 +305,80 @@ module LenovoCatalogTests=
         |Error ex -> Assert.Fail(ex.Message)
     
     open DriverTool.LenovoCatalog2
+    open NUnit.Framework
+
+    type internal TestData ={IsSuccess:bool;Expected:LenovoCatalogProduct;ItemIndex:int;ExpectedErrorMessage:string}
+
+    let internal testData = 
+        [
+            yield 
+                {
+                    IsSuccess = true
+                    Expected={
+                        Model= "Tablet10"
+                        Family="len"
+                        Os="win10"
+                        Build="*"
+                        Name="Lenovo Tablet 10"
+                        DriverPacks=
+                            [|
+                                yield {Id="sccm";Date= Some (toDateTime 2018 7 1);Url = "https://support.lenovo.com/downloads/ds503143";}
+                                yield {Id="WinPE 10";Date= None;Url = "no winpe"}
+                            |]
+                        Queries = 
+                            {
+                                ModelTypes = 
+                                    [|
+                                        yield ModelType "20L4"
+                                        yield ModelType "20L3"
+                                    |]
+                                Version = "Lenovo Tablet 10"
+                                Smbios = "N29E"
+                            }
+                    }
+                    ItemIndex=0
+                    ExpectedErrorMessage = "N/A"
+                }
+            yield 
+                {
+                    IsSuccess = true
+                    Expected={
+                        Model= "M710q-SKL"
+                        Family="tc"
+                        Os="win764"
+                        Build="*"
+                        Name="ThinkCentre M710q - SKL"
+                        DriverPacks=
+                            [|
+                                yield {Id="sccm";Date= Some (toDateTime 2017 2 1);Url = "https://support.lenovo.com/downloads/ds120804"}
+                                yield {Id="WinPE 3.1 x64";Date= None;Url = "https://support.lenovo.com/downloads/ds105413"}
+                                yield {Id="WinPE 5";Date= None;Url = "no winpe"}
+                                yield {Id="WinPE 10";Date= None;Url = "http://support.lenovo.com/downloads/ds105415"}
+                            |]
+                        Queries = 
+                            {
+                                ModelTypes = 
+                                    [|
+                                        yield ModelType "10QR"
+                                        yield ModelType "10MT"
+                                        yield ModelType "10MS"
+                                        yield ModelType "10MR"                                        
+                                        yield ModelType "10MQ"                                        
+                                    |]
+                                Version = "ThinkCentre M710q"
+                                Smbios = "M1AK"
+                            }
+                    }
+                    ItemIndex=12
+                    ExpectedErrorMessage = "N/A"
+                }
+        ]
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
-    let loadLenovoCatalogTest () =
+    [<TestCaseSource("testData")>]
+    let loadLenovoCatalogTest (testDataObject:obj) =
+        let testData = (testDataObject:?>TestData)
         match(result {              
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)
             let! catalogXmlPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("LenovoCatalog.xml", tempDestinationFolderPath,"LenovoCatalog.xml",typeof<ThisAssembly>.Assembly)
@@ -319,19 +389,7 @@ module LenovoCatalogTests=
         |Ok v -> 
             Assert.IsTrue(true,sprintf "Success: %A" v)
             Assert.IsTrue((Seq.length v) > 0,sprintf "Lenght of CatalogProducts was not greater than zero")
-            let firstProduct = Seq.head v
-            Assert.AreEqual("Tablet10",firstProduct.Model,sprintf "Unexpected model: %A" firstProduct)
-            Assert.AreEqual("len",firstProduct.Family,sprintf "Unexpected family: %A" firstProduct)
-            Assert.AreEqual("win10",firstProduct.Os,sprintf "Unexpected os: %A" firstProduct)
-            Assert.AreEqual("*",firstProduct.Build,sprintf "Unexpected build: %A" firstProduct)
-            Assert.AreEqual("Lenovo Tablet 10",firstProduct.Name,sprintf "Unexpected Name: %A" firstProduct)
-
-            let twelfthProduct = Seq.item 12 v
-            Assert.AreEqual("M710q-SKL",twelfthProduct.Model,sprintf "Unexpected model: %A" twelfthProduct)
-            Assert.AreEqual("tc",twelfthProduct.Family,sprintf "Unexpected family: %A" twelfthProduct)
-            Assert.AreEqual("win764",twelfthProduct.Os,sprintf "Unexpected os: %A" twelfthProduct)
-            Assert.AreEqual("*",twelfthProduct.Build,sprintf "Unexpected build: %A" twelfthProduct)
-            Assert.AreEqual("ThinkCentre M710q - SKL",twelfthProduct.Name,sprintf "Unexpected Name: %A" twelfthProduct)
-
+            let actualProduct = Seq.item testData.ItemIndex v
+            Assert.AreEqual(testData.Expected,actualProduct,"Products Not equal.")
         |Error ex ->
             Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)       
