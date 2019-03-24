@@ -304,7 +304,7 @@ module LenovoCatalogTests=
         |Ok v -> Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
     
-    open DriverTool.LenovoCatalog2
+    open DriverTool.LenovoCatalogXml
     open NUnit.Framework
 
     type internal TestData ={IsSuccess:bool;Expected:LenovoCatalogProduct;ItemIndex:int;ExpectedErrorMessage:string}

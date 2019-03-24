@@ -1,6 +1,6 @@
 ﻿namespace DriverTool
 
-module LenovoCatalog2 =
+module LenovoCatalogXml =
     open System
     open System.Xml.Linq
     open DriverTool.FileSystem

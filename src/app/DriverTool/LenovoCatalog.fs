@@ -7,7 +7,7 @@ module LenovoCatalog =
     let logger = Logging.getLoggerByName("LenovoCatalog")
     
     open System
-    open LenovoCatalog2
+    open LenovoCatalogXml
 
     let getCacheDirectory =
         DriverTool.Configuration.getDownloadCacheDirectoryPath
@@ -28,7 +28,7 @@ module LenovoCatalog =
         result
             {
                 let! catalogXmlPath = downloadCatalog
-                let! lenovoCatalogProducts = DriverTool.LenovoCatalog2.loadLenovoCatalog catalogXmlPath
+                let! lenovoCatalogProducts = DriverTool.LenovoCatalogXml.loadLenovoCatalog catalogXmlPath
                 let products =
                     lenovoCatalogProducts
                     |>Seq.map(fun p -> 

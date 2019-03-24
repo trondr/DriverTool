@@ -145,7 +145,7 @@
     <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="WebParsing.fs" />
-    <Compile Include="LenovoCatalog2.fs" />
+    <Compile Include="LenovoCatalogXml.fs" />
     <Compile Include="LenovoCatalog.fs" />
     <Compile Include="LenovoUpdates.fs" />
     <Compile Include="Updates.fs" />
