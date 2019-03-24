@@ -5,6 +5,15 @@ module LenovoCatalog2 =
     open System.Xml.Linq
     open DriverTool.FileSystem
     
+    type ModelType = ModelType of string
+
+    type Queries = 
+        {
+            ModelTypes:ModelType[]
+            Version:string
+            Smbios:string            
+        }
+
     type DriverPack = 
         {
             Id:string
@@ -20,6 +29,7 @@ module LenovoCatalog2 =
             Build:string
             Name:string
             DriverPacks:DriverPack[]
+            Queries:Queries
         }
 
     let toInt32Unsafe (number:string) = 
@@ -69,6 +79,31 @@ module LenovoCatalog2 =
              return driverPacks
         }
 
+    let toResult (value:string) errorMessage =
+        match value with
+        | null -> Result.Error (new Exception(errorMessage))
+        | _ -> Result.Ok value
+
+    let toModelType (typeXElement:XElement) =
+        result
+            {
+                let modelType = typeXElement.Value
+                return ModelType modelType                
+            }
+
+    let toQueries  (queriesXElement:XElement) =
+        result{
+            let typeElements = queriesXElement.Descendants(XName.Get("Type"))
+            let! modelTypes = typeElements|>Seq.map(fun t -> toModelType t) |> toAccumulatedResult
+            let! version = XmlHelper.getElementValue queriesXElement "Version"
+            let! smbios = XmlHelper.getElementValue queriesXElement "Smbios"
+            return
+                {
+                    ModelTypes=modelTypes |> Seq.toArray
+                    Version = version
+                    Smbios = smbios
+                }
+        }
 
     let toProduct (productXElement:XElement) = 
         result{
@@ -78,6 +113,7 @@ module LenovoCatalog2 =
             let! build = XmlHelper.getRequiredAttribute productXElement "build"
             let! name = XmlHelper.getElementValue productXElement "Name"
             let! driverPacks = toDriverPacks productXElement
+            let! queries = toQueries (productXElement.Element(XName.Get("Queries")))
             return {
                 Model = model
                 Family = family
@@ -85,6 +121,7 @@ module LenovoCatalog2 =
                 Build = build
                 Name = name
                 DriverPacks = driverPacks |> Seq.toArray
+                Queries = queries
                 }
         }
 
