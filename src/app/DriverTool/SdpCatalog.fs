@@ -190,6 +190,7 @@ module SdpCatalog =
         {
             PackageId:string
             Title:string
+            CreationDate:DateTime
             Description:string
             ProductName:string
             UpdateSpecificData:UpdateSpecificData            
@@ -511,10 +512,12 @@ module SdpCatalog =
     let loadSdpFromXElement (sdpXElement:XElement): Result<SoftwareDistributionPackage, Exception> =
         result{
             let! localizedPropertiesSdpElement = (getSdpElement sdpXElement "LocalizedProperties")
-            let! title = getSdpElementValue localizedPropertiesSdpElement "Title"                        
+            let! title = getSdpElementValue localizedPropertiesSdpElement "Title"                
             let! description = getSdpElementValue localizedPropertiesSdpElement "Description"
             let! propertiesSdpElement = (getSdpElement sdpXElement "Properties")
             let! packageId = getRequiredAttribute propertiesSdpElement "PackageID"
+            let! creationDateString = getRequiredAttribute propertiesSdpElement "CreationDate"
+            let! creationDate = toDateTime creationDateString
             let! productName = getSdpElementValue propertiesSdpElement "ProductName"
 
             let! updateSpecificDataSdpElement = (getSdpElement sdpXElement "UpdateSpecificData")
@@ -534,6 +537,7 @@ module SdpCatalog =
             
             return {
                     Title = title
+                    CreationDate = creationDate
                     Description= description
                     ProductName = productName
                     PackageId = packageId
