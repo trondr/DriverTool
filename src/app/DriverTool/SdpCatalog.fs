@@ -193,6 +193,7 @@ module SdpCatalog =
             CreationDate:DateTime
             Description:string
             ProductName:string
+            MoreInfoUrl:string
             UpdateSpecificData:UpdateSpecificData            
             IsInstallable:ApplicabilityRule //An applicability expression that evaluates to true if the package is even relevalant to this machine (e.g., SQL server on XP home). This rule allows the author to specify what prerequisite conditions are necessary for this package to be applicable. If not specified, assummed to be true.
             IsInstalled:ApplicabilityRule option //An applicability expression that evaluates to true if the package is actually installed. This expression is supposed to check for the exact package, not for something that supersedes it.
@@ -519,6 +520,7 @@ module SdpCatalog =
             let! creationDateString = getRequiredAttribute propertiesSdpElement "CreationDate"
             let! creationDate = toDateTime creationDateString
             let! productName = getSdpElementValue propertiesSdpElement "ProductName"
+            let! moreInfoUrl = getSdpElementValue propertiesSdpElement "MoreInfoUrl"
 
             let! updateSpecificDataSdpElement = (getSdpElement sdpXElement "UpdateSpecificData")
             let! msrcSeverityString = getRequiredAttribute updateSpecificDataSdpElement "MsrcSeverity"
@@ -540,6 +542,7 @@ module SdpCatalog =
                     CreationDate = creationDate
                     Description= description
                     ProductName = productName
+                    MoreInfoUrl = moreInfoUrl
                     PackageId = packageId
                     UpdateSpecificData={MsrcSeverity= msrcSeverity;UpdateClassification=updateClassification;SecurityBulletinID=securityBulitinId;KBArticleID=kBArticleID}
                     IsInstallable=isInstallable
