@@ -3,7 +3,6 @@
 open NUnit.Framework
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
 module WebTests =
 
     
@@ -12,8 +11,10 @@ module WebTests =
     open DriverTool.Web
     open DriverTool
     open System
+    open NUnit.Framework
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase(true,true,true,true)>]
     [<TestCase(false,true,false,true)>]
     [<TestCase(false,false,false,false)>]
@@ -54,19 +55,34 @@ module WebTests =
         |Error ex -> Assert.Fail(ex.Message)
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase(30,30,100,"Test message"," 30% (        30 of        100): Test message                                   \r")>]
     let progressMessageTest (percentage,count,totalCount,message,expectedProgressMessage)=
         let actual = progressMessage percentage count totalCount message
         Assert.AreEqual(expectedProgressMessage,actual)
         
 
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("http://ftp.hp.com/pub/softpaq/sp65001-65500/sp65001.html","sp65001.html")>]
+    let getFileNameFromUrlTests (url, expected) =
+        let actual = Web.getFileNameFromUrl url
+        Assert.AreEqual(expected,actual)
+    
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("http://ftp.hp.com/pub/softpaq/sp65001-65500/sp65001.html","http://ftp.hp.com/pub/softpaq/sp65001-65500")>]
+    let getFolderNameFromUrlTests (url, expected) =
+        let actual = Web.getFolderNameFromUrl url
+        Assert.AreEqual(expected,actual)
+
 [<TestFixture>]
-[<Category(TestCategory.ManualTests)>]
 module ManualWebTest =
     open DriverTool
     open DriverTool
     
     [<Test>]
+    [<Category(TestCategory.ManualTests)>]
     [<TestCase("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB",@"c:\temp\7480-win10-A10-2CHK6.CAB")>]
     let downloadFileTest (sourceUrl,destinationFile) =
         let res = 
