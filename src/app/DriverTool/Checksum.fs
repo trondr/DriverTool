@@ -56,7 +56,7 @@ module Checksum=
                     let destinationHash = (computeFileHashFromHashLength destinationFilePath sourceFileHash.Length) |> toLower
                     let sourceHash = sourceFileHash|>toLower
                     if(logger.IsDebugEnabled) then logger.Debug(sprintf "Comparing destination file (%s) hash [%s] and source file hash [%s]..." (FileSystem.pathValue destinationFilePath) destinationHash sourceHash)
-                    (sourceHash = destinationHash)                
+                    (sourceHash = destinationHash) || (String.IsNullOrWhiteSpace(sourceHash))
                 | false  -> false
             |false -> false
 
