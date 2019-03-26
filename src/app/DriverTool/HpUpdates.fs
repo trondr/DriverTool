@@ -145,14 +145,14 @@ module HpUpdates =
                                 Name = sdp.PackageId.ToString();
                                 Title = sdp.Title;
                                 Version = "";
-                                BaseUrl = originFile.OriginUri
+                                BaseUrl = Web.getFolderNameFromUrl originFile.OriginUri
                                 InstallerName = toInstallerName ii.InstallerData
                                 InstallerCrc = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
                                 InstallerSize = originFile.Size
                                 ExtractCommandLine = ""
                                 InstallCommandLine = toInstallerCommandLine ii.InstallerData
                                 Category = sdp.ProductName
-                                ReadmeName = "";
+                                ReadmeName = Web.getFileNameFromUrl sdp.MoreInfoUrl;
                                 ReadmeCrc = "";
                                 ReadmeSize=0L;
                                 ReleaseDate= sdp.CreationDate|>toDateString
@@ -304,5 +304,4 @@ module HpUpdates =
                 | Ok r -> extractInstallerResult
                 | Error ex -> Result.Error ex
             return! res
-        }
-        //raise (new NotImplementedException("HpUpdates.extractUpdate"))
+        }        

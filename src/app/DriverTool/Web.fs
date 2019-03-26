@@ -134,3 +134,7 @@ module Web =
     let getFileNameFromUrl (url:string) =
         let uri = new Uri(url)        
         uri.Segments.[uri.Segments.Length-1]
+
+    let getFolderNameFromUrl (url:string) =
+        let fileName = getFileNameFromUrl url
+        url.Replace(fileName,"").Trim(System.IO.Path.AltDirectorySeparatorChar)
