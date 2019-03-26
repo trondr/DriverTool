@@ -7,6 +7,7 @@ module HpUpdates =
     open DriverTool.HpCatalog
     open System.Xml.Linq
     open DriverTool.SdpCatalog
+    open FileSystem
         
     let toDateString (dateTime:DateTime) =
         dateTime.ToString("yyyy-MM-dd")
@@ -124,36 +125,42 @@ module HpUpdates =
     let getBaseUrl (uri:Uri) =
         let fileName = uri.Segments.[uri.Segments.Length-1]
         uri.OriginalString.Replace(fileName,"").TrimEnd([|'/'|])
+    
+    let toInstallerName installerData = 
+        match installerData with
+        |CommandLineInstallerData d -> d.Program
+        |MsiInstallerData d -> "msiexec.exe"
+    
+    let toInstallerCommandLine installerData = 
+        match installerData with
+        |CommandLineInstallerData d -> sprintf "\"%s\" %s" (toInstallerName installerData) d.Arguments
+        |MsiInstallerData d -> (sprintf "\"%s\" /i \"%s\" /quiet /qn /norestart %s" (toInstallerName installerData) d.MsiFile  d.CommandLine) 
 
-    let toPackageInfo (sdpXmlFile: string, logDirectory:string) : PackageInfo[] =
-        let sdp = sdpeval.Sdp.LoadSdp(sdpXmlFile)
-        let xDocument = XDocument.Load(sdpXmlFile)
-        let packageInfos = 
-            xDocument.Descendants(XName.Get("InstallableItem",sdpNs.NamespaceName))
-            |>Seq.map(fun ii -> 
-                           
-                           let commandLineInstallerData = toCommandLineInstallerData ii
-                           let originFile = toOriginFile ii
+    let toPackageInfos logDirectory sdp  =
+            let pacakgeInfos =
+                sdp.InstallableItems
+                |>Seq.map(fun ii ->
+                           let originFile = ii.OriginFile
                            {
                                 Name = sdp.PackageId.ToString();
                                 Title = sdp.Title;
                                 Version = "";
-                                BaseUrl = getBaseUrl originFile.OriginUri;
-                                InstallerName = commandLineInstallerData.Program
+                                BaseUrl = originFile.OriginUri
+                                InstallerName = toInstallerName ii.InstallerData
                                 InstallerCrc = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
                                 InstallerSize = originFile.Size
                                 ExtractCommandLine = ""
-                                InstallCommandLine = (sprintf "\"%s\" %s" commandLineInstallerData.Program commandLineInstallerData.Arguments) 
-                                Category = sdp.ProductNames.[0]
+                                InstallCommandLine = toInstallerCommandLine ii.InstallerData
+                                Category = sdp.ProductName
                                 ReadmeName = "";
                                 ReadmeCrc = "";
                                 ReadmeSize=0L;
                                 ReleaseDate= sdp.CreationDate|>toDateString
                                 PackageXmlName="";
                            }
-                )
-            |>Seq.toArray
-        packageInfos
+                    )
+                |>Seq.toArray
+            pacakgeInfos
 
     let validateModelAndOs (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) =
         result{
@@ -172,56 +179,79 @@ module HpUpdates =
             return (supportedModelCode, supporteOperatingSystemCode)
         }
 
+    let sdpsToPacakgeInfos logDirectory sdps =
+        let packageInfos =
+            sdps
+            |>Array.map (toPackageInfos logDirectory)                
+            |>Array.concat
+            |>Array.filter(fun p -> p.Category.ToLower().Contains("driver"))
+        packageInfos
+
+    let downloadSdpFiles () =
+        result
+            {
+                let! hpCatalogForSmsLatest = HpCatalog.downloadSmsSdpCatalog()
+                let! hpCatalogForSmsLatestV2 = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue hpCatalogForSmsLatest,"V2"))
+                let! existingHpCatalogForSmsLatestV2 = DirectoryOperations.ensureDirectoryExists false hpCatalogForSmsLatestV2
+                let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2
+                return sdpFiles
+            }
+    
+    let loadSdps sdpFiles =
+        result
+            {
+                let! sdps =
+                    sdpFiles
+                    |>Seq.map DriverTool.SdpCatalog.loadSdpFromFile                        
+                    |>toAccumulatedResult
+                return sdps
+            }
+
+    let evaluateSdpApplicabilityRule (applicabilityRule:ApplicabilityRule option) defaultValue =
+        match applicabilityRule with
+        |Some r -> sdpeval.Sdp.EvaluateApplicabilityXml(r)
+        |None -> defaultValue
+
+    let localUpdatesFilter sdp =
+        sdp.InstallableItems
+        |>Seq.tryFind(fun ii -> 
+                let isInstallable = evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstallable false
+                let isInstalled =  evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstalled false                                
+                (isInstallable && isInstalled)
+            )
+        |> optionToBoolean
+
     let getLocalUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
         result{
-            let! supported = validateModelAndOs modelCode operatingSystemCode
-            let! hpCatalogForSmsLatest = HpCatalog.downloadSmsSdpCatalog()
-            let! hpCatalogForSmsLatestV2 = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue hpCatalogForSmsLatest,"V2"))
-            let! existingHpCatalogForSmsLatestV2 = DirectoryOperations.ensureDirectoryExists false hpCatalogForSmsLatestV2
-            let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2
-            let relevantSdpFiles = 
-                sdpFiles
+            let! supported = validateModelAndOs modelCode operatingSystemCode            
+            let! sdpFiles = downloadSdpFiles()
+            let! sdps = loadSdps sdpFiles
+            let packageInfos = 
+                sdps                
+                |>Seq.filter localUpdatesFilter
                 |>Seq.toArray
-                |>Array.filter(fun sf-> 
-                        let sdp = sdpeval.Sdp.LoadSdp (FileSystem.pathValue sf)
-                        sdp.InstallableItems
-                        |>Seq.tryFind(fun ii -> 
-                                let isInstallable = sdpeval.Sdp.EvaluateApplicabilityXml(ii.IsInstallableApplicabilityRule)
-                                let isInstalled =  sdpeval.Sdp.EvaluateApplicabilityXml(ii.IsInstalledApplicabilityRule)
-                                (isInstallable && isInstalled)
-                            )
-                        |>optionToBoolean
-                    )
-            let packageInfos =
-                relevantSdpFiles
-                |>Array.map(fun sf -> toPackageInfo ((FileSystem.pathValue sf),logDirectory))
-                |>Array.concat
+                |>sdpsToPacakgeInfos logDirectory                
             return packageInfos
         }        
+
+    let remoteUpdatesFilter sdp =
+        sdp.InstallableItems
+        |>Seq.tryFind(fun ii -> 
+                let isInstallable = evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstallable false                
+                isInstallable
+            )
+        |> optionToBoolean
 
     let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
         result{
             let! supported = validateModelAndOs modelCode operatingSystemCode
-            let! hpCatalogForSmsLatest = HpCatalog.downloadSmsSdpCatalog()
-            let! hpCatalogForSmsLatestV2 = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue hpCatalogForSmsLatest,"V2"))
-            let! existingHpCatalogForSmsLatestV2 = DirectoryOperations.ensureDirectoryExists false hpCatalogForSmsLatestV2
-            let! sdpFiles = (DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2)
-            let relevantSdpFiles = 
-                sdpFiles
+            let! sdpFiles = downloadSdpFiles()
+            let! sdps = loadSdps sdpFiles
+            let packageInfos = 
+                sdps                
+                |>Seq.filter remoteUpdatesFilter
                 |>Seq.toArray
-                |>Array.filter(fun sf-> 
-                        let sdp = sdpeval.Sdp.LoadSdp (FileSystem.pathValue sf)
-                        sdp.InstallableItems
-                        |>Seq.tryFind(fun ii -> 
-                                let isInstallable = sdpeval.Sdp.EvaluateApplicabilityXml(ii.IsInstallableApplicabilityRule)                                
-                                isInstallable
-                            )
-                        |>optionToBoolean
-                    )
-            let packageInfos =
-                relevantSdpFiles
-                |>Array.map(fun sf -> toPackageInfo ((FileSystem.pathValue sf),logDirectory))
-                |>Array.concat
+                |>sdpsToPacakgeInfos logDirectory             
             return packageInfos
         }
 
