@@ -58,8 +58,17 @@ module HpUpdatesTests =
     [<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000094780.sdp")>]
     [<TestCase(@"C:\Temp\DriverToolCache\HpCatalogForSms.latest\V2\00004850-0000-0000-5350-000000081886.sdp")>]    
     let toPackageInfoTests (sdpXmlFile) =
-        let actual = HpUpdates.toPackageInfo (sdpXmlFile,"%public%\Logs")        
-        Assert.IsTrue(actual.Length > 0)
+        match(result
+            {
+                let! sdp = SdpCatalog.loadSdpFromFile (FileSystem.pathUnSafe sdpXmlFile)
+                let actual = HpUpdates.toPackageInfos "%public%\Logs" sdp                
+                Assert.IsTrue(actual.Length > 0)
+                return sdp
+            })with
+        |Ok _ -> Assert.IsTrue(true)
+        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        
+        
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
