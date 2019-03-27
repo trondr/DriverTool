@@ -8,6 +8,7 @@ module LenovoCatalog =
     
     open System
     open LenovoCatalogXml
+    open DriverTool.F
 
     let getCacheDirectory =
         DriverTool.Configuration.getDownloadCacheDirectoryPath
@@ -77,14 +78,6 @@ module LenovoCatalog =
     
     open FSharp.Data
 
-    let stringToStream (text:string) =
-        let stream = new System.IO.MemoryStream()
-        let sw = new System.IO.StreamWriter(stream)
-        sw.Write(text)
-        sw.Flush()
-        stream.Position <- 0L
-        stream
-    
     type DownloadType = |Unknown = 0|Readme = 1|Installer = 2
 
     type DownloadLinkInfo = {
