@@ -7,6 +7,8 @@ module HpUpdatesTests =
     open DriverTool
     open System
     open Init
+    open DriverTool
+    type ThisAssembly = { Empty:string;}
     
     [<Test>]
     [<TestCase("WIN10X64","83B3")>]
@@ -94,5 +96,18 @@ module HpUpdatesTests =
                     return actual
                 }) with
         |Ok _ -> Assert.IsTrue(true)
+        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+
+    [<Test>]
+    [<TestCase("HP_sp92489.html","Driver-Keyboard,Mouse and Input Devices")>]
+    [<TestCase("HP_sp95015.html","Driver-Audio")>]
+    let getCategoryFromReadmeHtmlTest (htmlFileName, expectedCategory) =
+        match(result{
+            let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
+            let! readmeHtmlPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (htmlFileName,tempDestinationFolderPath,htmlFileName,typeof<ThisAssembly>.Assembly)
+            let! actual = HpUpdates.getCategoryFromReadmeHtml readmeHtmlPath
+            return actual
+        })with
+        |Ok a -> Assert.AreEqual(expectedCategory,a)
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
         

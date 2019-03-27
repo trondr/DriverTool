@@ -8,6 +8,7 @@ module HpUpdates =
     open System.Xml.Linq
     open DriverTool.SdpCatalog
     open FileSystem
+    open FSharp.Data
         
     let toDateString (dateTime:DateTime) =
         dateTime.ToString("yyyy-MM-dd")
@@ -290,9 +291,25 @@ module HpUpdates =
         |Ok _ -> Result.Ok destinationPath
         |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
 
+    let getCategoryFromReadmeHtml readmeHtmlPath = 
+        result
+            {
+                let! htmlDocument = HtmlHelper.loadHtmlDocument readmeHtmlPath
+                let category =
+                    (htmlDocument.Elements()|>Seq.head).Elements()
+                    |>Seq.filter(fun l -> 
+                            l.InnerText().StartsWith("CATEGORY:")
+                        )
+                    |>Seq.toArray
+                    |>Array.head
+                return category.InnerText().Replace("CATEGORY:","").Trim()
+            }
+
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
-            let packageFolderName = getPackageFolderName downloadedPackageInfo.Package.Category downloadedPackageInfo.Package.ReleaseDate
+            let! readmeHtmlPath = FileSystem.path downloadedPackageInfo.ReadmePath
+            let! category = getCategoryFromReadmeHtml readmeHtmlPath
+            let packageFolderName = getPackageFolderName category downloadedPackageInfo.Package.ReleaseDate
             let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)

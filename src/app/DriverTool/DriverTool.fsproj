@@ -120,6 +120,7 @@
     <Compile Include="Environment.fs" />
     <Compile Include="XmlToolKit.fs" />
     <Compile Include="XmlHelper.fs" />
+    <Compile Include="HtmlHelper.fs" />
     <Compile Include="Cryptography.fs" />
     <Compile Include="Checksum.fs" />
     <Compile Include="ProcessOperations.fs" />
