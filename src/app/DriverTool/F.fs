@@ -258,3 +258,11 @@ module F=
                 x.Combine(body, x.Delay(fun () -> loop()))
             loop()
     let imperative = new ImperativeBuilder()  
+
+    let stringToStream (text:string) =
+        let stream = new System.IO.MemoryStream()
+        let sw = new System.IO.StreamWriter(stream)
+        sw.Write(text)
+        sw.Flush()
+        stream.Position <- 0L
+        stream
