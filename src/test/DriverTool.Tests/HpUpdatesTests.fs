@@ -99,15 +99,22 @@ module HpUpdatesTests =
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
 
     [<Test>]
-    [<TestCase("HP_sp92489.html","Driver-Keyboard,Mouse and Input Devices")>]
-    [<TestCase("HP_sp95015.html","Driver-Audio")>]
-    let getCategoryFromReadmeHtmlTest (htmlFileName, expectedCategory) =
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("HP_sp92489.html","Driver-Keyboard,Mouse and Input Devices", true)>]
+    [<TestCase("HP_sp95015.html","Driver-Audio", true)>]
+    [<TestCase("HP_sp95xxx.html","N/A",false)>]
+    let getCategoryFromReadmeHtmlTest (htmlFileName, expectedCategory,isSuccess:bool) =
         match(result{
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
             let! readmeHtmlPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (htmlFileName,tempDestinationFolderPath,htmlFileName,typeof<ThisAssembly>.Assembly)
             let! actual = HpUpdates.getCategoryFromReadmeHtml readmeHtmlPath
             return actual
         })with
-        |Ok a -> Assert.AreEqual(expectedCategory,a)
-        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        |Ok a -> 
+            Assert.IsTrue(isSuccess,sprintf "Expected failed, but suceeded. Actual value: %A" a)
+            Assert.AreEqual(expectedCategory,a)
+
+        |Error e -> 
+            Assert.IsFalse(isSuccess,sprintf "Expected success, but failed due to: %A" e)
+            printf "%A" e
         

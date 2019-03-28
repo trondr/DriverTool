@@ -13,6 +13,7 @@ module HtmlHelper =
                     try                    
                         Result.Ok (HtmlDocument.Load(htmlStream))
                     with
-                    |ex -> Result.Error ex            
+                    |ex -> 
+                        toErrorResult (sprintf "Failed to load html document '%A'." htmlFilePath) (Some ex)                        
             }
 

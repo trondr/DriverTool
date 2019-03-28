@@ -64,7 +64,7 @@ module RunCommand =
             match result.IsSuccess with
                 |true -> result.Value
                 |false ->                
-                    result.OnFailure(new System.Action<exn>(fun ex -> logger.Error(ex.ToString())))|> ignore
+                    result.OnFailure(new System.Action<exn>(fun ex -> logger.Error(sprintf "%A" ex)))|> ignore
                     1    
         logger.Info(sprintf "Stop: DriverTool.%s Exit code: %i" version exitCode)
         exitCode
