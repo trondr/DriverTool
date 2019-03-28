@@ -313,8 +313,9 @@ module HpUpdates =
             let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
+            let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
             let result = 
-                [|extractInstallerResult|]
+                [|extractInstallerResult;extractReadmeResult|]
                 |> toAccumulatedResult
             let res = 
                 match result with 
