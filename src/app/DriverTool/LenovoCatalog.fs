@@ -11,7 +11,7 @@ module LenovoCatalog =
     open DriverTool.F
 
     let getCacheDirectory =
-        DriverTool.Configuration.getDownloadCacheDirectoryPath
+        DriverTool.Configuration.downloadCacheDirectoryPath
 
     let getLocalLenvoCatalogXmlFilePath =
         FileSystem.path (System.IO.Path.Combine(getCacheDirectory,"LenovoCatalog.xml"))

@@ -223,4 +223,5 @@ module FileOperations =
             return true
         }
         
-            
+    let toFileName filePath =
+        Path.GetFileName(FileSystem.pathValue filePath)
