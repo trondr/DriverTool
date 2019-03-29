@@ -104,9 +104,48 @@
       <NamedTestSelector>
         <TestName>DriverTool.Tests.DellUpdatesTests.getLatestPackageInfoVersionTest</TestName>
       </NamedTestSelector>
-      <FixtureTestSelector>
-        <FixtureName>DriverTool.Tests.SdpCatalogTests</FixtureName>
-      </FixtureTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpsTests("DellSDPCatalogPC_V2.zip","DellSDPCatalogPC_V2",True,4450,"N/A")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("20QE","WIN1","",False,"The operating system code 'WIN1' is not valid. Valid values are: WIN2016X64|WIN2008X64|WIN2008R2X64|WIN2012X64|WIN2012R2X64|WIN10X64|VISTAX64|WIN7X64|WIN8X64|WIN81X64|WIN2016X64|WIN2008X86|WIN2008R2X64|WIN2012X64|WIN2012R2X64|WIN10X86|VISTAX86|WIN7X86|WIN8X86|WIN81X86.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.exportRemoteUpdatesTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("","WIN1","",False,"The model code '' is not valid. ModelCode cannot be null or empty.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("LX123","WIN10X64","c:\\temp\\test.csv",True,"")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("20QE","WIN10X64","",False,"The path '' is not valid. Path cannot be empty.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.validateExportRemoteUdateInfoParametersTest("LX123","WIN10X64","c:\temp\test.csv",False,"The path 'c:\temp\test.csv' is not valid. Path contains invalid characters.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpsTests("HpCatalogForSms.latest_V2.zip","HpCatalogForSms.latest_V2",True,1829,"N/A")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.loadSystemManagementCatalogTests("HpCatalogForSms.zip","HpCatalogForSms.xml",True,1829,"N/A")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.productCodeTests("{FB2B7CC0-8307-47e6-A065-11015CC96B99}","{FB2B7CC0-8307-47e6-A065-11015CC96B99}",True,"N/A")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.productCodeTests(null,"N/A",False,"ProductCode cannot be null.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.productCodeTests("","N/A",False,"ProductCode cannot be empty.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.productCodeTests("abc-bcd","N/A",False,"Invalid product code: 'abc-bcd'")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.loadSystemManagementCatalogTests("DellSDPCatalogPC.zip","DellSDPCatalogPC.xml",True,4450,"N/A")</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
