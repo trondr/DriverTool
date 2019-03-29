@@ -143,7 +143,7 @@ module HpUpdates =
                 |>Seq.map(fun ii ->
                            let originFile = ii.OriginFile
                            {
-                                Name = sdp.PackageId.ToString();
+                                Name = sdp.PackageId;
                                 Title = sdp.Title;
                                 Version = "";
                                 BaseUrl = Web.getFolderNameFromUrl originFile.OriginUri
@@ -157,7 +157,7 @@ module HpUpdates =
                                 ReadmeCrc = "";
                                 ReadmeSize=0L;
                                 ReleaseDate= sdp.CreationDate|>toDateString
-                                PackageXmlName="";
+                                PackageXmlName=sdp.PackageId + ".sdp";
                            }
                     )
                 |>Seq.toArray
@@ -213,6 +213,27 @@ module HpUpdates =
         |Some r -> sdpeval.Sdp.EvaluateApplicabilityXml(r)
         |None -> defaultValue
 
+    let sdpFileFilter packageInfos sdpFilePath =
+        let sdpfileName = FileOperations.toFileName sdpFilePath
+        packageInfos
+        |>Array.tryFind(fun p -> p.PackageXmlName.ToLowerInvariant() = sdpfileName.ToLowerInvariant())
+        |>optionToBoolean
+
+    let copyFileToDownloadCacheDirectoryPath sourceFilePath =
+        result
+            {                
+                let fileName = FileOperations.toFileName sourceFilePath
+                let! destinationFilePath = PathOperations.combine2Paths (Configuration.downloadCacheDirectoryPath, fileName)
+                let! copyResult = FileOperations.copyFile true sourceFilePath destinationFilePath
+                return copyResult
+            }
+     
+    let copySdpFilesToDownloadCache packageInfos sourceFilePaths =
+        sourceFilePaths
+            |>Seq.filter (sdpFileFilter packageInfos)
+            |>Seq.map copyFileToDownloadCacheDirectoryPath
+            |>toAccumulatedResult
+
     let localUpdatesFilter sdp =
         sdp.InstallableItems
         |>Seq.tryFind(fun ii -> 
@@ -232,6 +253,7 @@ module HpUpdates =
                 |>Seq.filter localUpdatesFilter
                 |>Seq.toArray
                 |>sdpsToPacakgeInfos logDirectory                
+            let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles            
             return packageInfos
         }        
 
@@ -252,7 +274,9 @@ module HpUpdates =
                 sdps                
                 |>Seq.filter remoteUpdatesFilter
                 |>Seq.toArray
-                |>sdpsToPacakgeInfos logDirectory             
+                |>sdpsToPacakgeInfos logDirectory
+            
+            let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles
             return packageInfos
         }
 
@@ -314,12 +338,9 @@ module HpUpdates =
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
             let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
-            let result = 
-                [|extractInstallerResult;extractReadmeResult|]
+            let extractPacakgeXmlResult = extractPackageXml (downloadedPackageInfo,existingPackageFolderPath)
+            let! result = 
+                [|extractInstallerResult;extractReadmeResult;extractPacakgeXmlResult|]
                 |> toAccumulatedResult
-            let res = 
-                match result with 
-                | Ok r -> extractInstallerResult
-                | Error ex -> Result.Error ex
-            return! res
+            return result |>Seq.toArray |> Seq.head
         }        

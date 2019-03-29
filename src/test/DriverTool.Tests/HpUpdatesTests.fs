@@ -20,7 +20,7 @@ module HpUpdatesTests =
                     let! operatingSystemCode = (OperatingSystemCode.create operatingSystemCodeString false)
                     let! modelCode = (ModelCode.create modelCodeString false)
                     let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode)                
-                    let cacheDirectory =   Configuration.getDownloadCacheDirectoryPath
+                    let cacheDirectory =   Configuration.downloadCacheDirectoryPath
                                         
                     let! actual = HpUpdates.downloadSccmPackage (cacheDirectory,sccmDriverPackageInfo)
                     Assert.IsFalse(String.IsNullOrWhiteSpace(actual.InstallerPath), "InstallerPath is empty")
@@ -40,7 +40,7 @@ module HpUpdatesTests =
                     let! operatingSystemCode = (OperatingSystemCode.create operatingSystemCodeString false)
                     let! modelCode = (ModelCode.create modelCodeString false)
                     let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode)                
-                    let cacheDirectory =   Configuration.getDownloadCacheDirectoryPath             
+                    let cacheDirectory =   Configuration.downloadCacheDirectoryPath             
                     let! downloadedSccmPackageInfo = HpUpdates.downloadSccmPackage (cacheDirectory,sccmDriverPackageInfo)
                     let! destinationFolderPath = PathOperations.combine2Paths (PathOperations.getTempPath,"005 Sccm Package Test")
                     Assert.IsTrue((FileSystem.pathValue destinationFolderPath).EndsWith("\\005 Sccm Package Test"))

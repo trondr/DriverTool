@@ -39,7 +39,7 @@ module Configuration =
         System.IO.Directory.CreateDirectory(path) |> ignore
         path
 
-    let getDownloadCacheDirectoryPath =
+    let downloadCacheDirectoryPath =
         try
             getDownloadCacheDirectoryPathUnsafe
         with
@@ -48,7 +48,7 @@ module Configuration =
             System.IO.Path.GetTempPath()
 
     let getDownloadCacheFilePath fileName = 
-        System.IO.Path.Combine(getDownloadCacheDirectoryPath , fileName)
+        System.IO.Path.Combine(downloadCacheDirectoryPath , fileName)
 
     type Settings = AppSettings<"App.config">
 

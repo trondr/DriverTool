@@ -26,7 +26,7 @@ module HpCatalog =
 
     let downloadDriverPackCatalog () =
         result{
-            let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath
+            let! destinationFolderPath = FileSystem.path downloadCacheDirectoryPath
             let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HPClientDriverPackCatalog.cab")
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(soruceDriverPackCatalogCab), true, nonExistingDestinationCabFile)
@@ -49,8 +49,8 @@ module HpCatalog =
 
     let downloadSmsSdpCatalog () =
         result{
-            let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath
-            let! hpCatalogDestinationFolderPath = FileSystem.path (System.IO.Path.Combine(getDownloadCacheDirectoryPath,"HpCatalogForSms.latest"))
+            let! destinationFolderPath = FileSystem.path downloadCacheDirectoryPath
+            let! hpCatalogDestinationFolderPath = FileSystem.path (System.IO.Path.Combine(downloadCacheDirectoryPath,"HpCatalogForSms.latest"))
             let! nonExistingHpCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true hpCatalogDestinationFolderPath
             let! existingHpCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (nonExistingHpCatalogDestinationFolderPath,true) 
             let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HpCatalogForSms.latest.cab")

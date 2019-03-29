@@ -273,7 +273,7 @@ module CreateDriverPackage =
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
                 logger.Info("Downloading software and drivers...")
-                let updates = downloadUpdates (DriverTool.Configuration.getDownloadCacheDirectoryPath) uniqueUpdates
+                let updates = downloadUpdates (DriverTool.Configuration.downloadCacheDirectoryPath) uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate updates
                 
                 logger.Info("Getting SCCM package info...")
@@ -283,7 +283,7 @@ module CreateDriverPackage =
                 
                 logger.Info("Downloading SCCM package...")
                 let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc manufacturer
-                let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.getDownloadCacheDirectoryPath), sccmPackage)
+                let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.downloadCacheDirectoryPath), sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let packageName = sprintf "%s %s %s %s %s Drivers %s" packagePublisher (manufacturerToName manufacturer) systemFamily.Value model.Value operatingSystem.Value releaseDate
