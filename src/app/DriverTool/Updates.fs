@@ -9,8 +9,8 @@ module Updates =
         match manufacturer with
         |Manufacturer.Dell _ -> 
             match baseOnLocallyInstalledUpdates with
-            |true -> DellUpdates.getLocalUpdates
-            |false -> DellUpdates.getRemoteUpdates
+            |true -> DellUpdates2.getLocalUpdates
+            |false -> DellUpdates2.getRemoteUpdates
         |Manufacturer.HP _ -> 
             match baseOnLocallyInstalledUpdates with
             |true -> HpUpdates.getLocalUpdates
@@ -22,34 +22,31 @@ module Updates =
 
     let updateDownloadedPackageInfoFunc (manufacturer:Manufacturer) =
         match manufacturer with
-        |Manufacturer.Dell _ -> 
-            DellUpdates.updateDownloadedPackageInfo
-        |Manufacturer.HP _ -> 
-            HpUpdates.updateDownloadedPackageInfo
-        |Manufacturer.Lenovo _ -> 
-            LenovoUpdates.updateDownloadedPackageInfo
+        |Manufacturer.Dell _ -> DellUpdates2.updateDownloadedPackageInfo
+        |Manufacturer.HP _ -> HpUpdates.updateDownloadedPackageInfo
+        |Manufacturer.Lenovo _ -> LenovoUpdates.updateDownloadedPackageInfo
 
     let getSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer.Dell _ -> DellUpdates.getSccmDriverPackageInfo
+        |Manufacturer.Dell _ -> DellUpdates2.getSccmDriverPackageInfo
         |Manufacturer.HP _ -> HpUpdates.getSccmDriverPackageInfo
         |Manufacturer.Lenovo _ -> LenovoUpdates.getSccmDriverPackageInfo
 
         
     let downloadSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer.Dell _ -> DellUpdates.downloadSccmPackage
+        |Manufacturer.Dell _ -> DellUpdates2.downloadSccmPackage
         |Manufacturer.HP _ -> HpUpdates.downloadSccmPackage
         |Manufacturer.Lenovo _ -> LenovoUpdates.downloadSccmPackage
         
     let extractSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer.Dell _ -> DellUpdates.extractSccmPackage
+        |Manufacturer.Dell _ -> DellUpdates2.extractSccmPackage
         |Manufacturer.HP _ -> HpUpdates.extractSccmPackage
         |Manufacturer.Lenovo _->  LenovoUpdates.extractSccmPackage
         
     let extractUpdateFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer.Dell _ -> DellUpdates.extractUpdate
+        |Manufacturer.Dell _ -> DellUpdates2.extractUpdate
         |Manufacturer.HP _ -> HpUpdates.extractUpdate
         |Manufacturer.Lenovo _ -> LenovoUpdates.extractUpdate

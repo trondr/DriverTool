@@ -38,7 +38,7 @@ module DellCommandUpdatesTests =
 [<TestFixture>]
 [<Category(TestCategory.IntegrationTests)>]
 module DellCommandUpdatesIntegrationTests =
-    open DriverToool.UpdatesContext
+    open DriverTool.UpdatesContext
     open DriverTool
     
     [<Test>]

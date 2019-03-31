@@ -4,7 +4,7 @@ open FileOperations
 module ExportRemoteUpdates = 
     open DriverTool
     open DriverTool.ManufacturerTypes
-    open DriverToool.UpdatesContext
+    open DriverTool.UpdatesContext
        
     let exportRemoteUpdates (manufacturer:Manufacturer) (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite excludeUpdatePatterns =         
         result {

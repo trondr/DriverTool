@@ -9,9 +9,6 @@ module HpCatalog =
     open System
     open DriverTool.Configuration
 
-    let expandExe =
-        System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
-    
     open DriverTool.Cab
 
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path, destinationFilePath:FileSystem.Path) =
@@ -37,16 +34,6 @@ module HpCatalog =
             return existingDriverPackageCatalogXmlPath
         }
     
-    let expandSmsSdpCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path) =
-        result{
-            let! expandExePath = FileSystem.path expandExe            
-            let arguments = sprintf "\"%s\" -F:* \"%s\"" (FileSystem.pathValue cabFilePath) (FileSystem.pathValue destinationFolderPath)
-            let workingDirectory =  FileSystem.pathValue destinationFolderPath
-            let! expandExitCode = ProcessOperations.startConsoleProcess (expandExePath, arguments, workingDirectory,-1,null,null,false)
-            let! expandResult = expandExeExitCodeToResult cabFilePath expandExitCode
-            return expandResult
-        }
-
     let downloadSmsSdpCatalog () =
         result{
             let! destinationFolderPath = FileSystem.path downloadCacheDirectoryPath
@@ -57,7 +44,7 @@ module HpCatalog =
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(smsSdpCatalog), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            
-            let! expandResult = expandSmsSdpCabFile (existingDestinationCabFile, existingHpCatalogDestinationFolderPath)                        
+            let! expandResult = DriverTool.SdpUpdates.expandSmsSdpCabFile (existingDestinationCabFile, existingHpCatalogDestinationFolderPath)                        
             return existingHpCatalogDestinationFolderPath
         }
 

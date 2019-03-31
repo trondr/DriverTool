@@ -6,7 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.IntegrationTests)>]
 module DellUpdatesTests =
     open DriverTool
-    open DriverToool.UpdatesContext
+    open DriverTool.UpdatesContext
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
@@ -74,7 +74,7 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create model false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystem false
-            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
+            let! actual = DriverTool.DellUpdates2.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)

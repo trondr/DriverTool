@@ -190,7 +190,7 @@
                     let parametersString = (getParametersString input)
                     functionCall <- sprintf "%s(%s)" functionName parametersString
                     writeErrorLog (sprintf "'%s' failed due to: %s" functionCall ex.Message)
-                    raise ex
+                    raise (sourceException ex)
             finally
                 let stopTime = DateTime.Now
                 let duration = stopTime - startTime

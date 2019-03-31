@@ -11,7 +11,7 @@ module LenovoUpdates =
     open DriverTool.Web
     open DriverTool.Checksum
     open DriverTool.FileOperations
-    open DriverToool.UpdatesContext
+    open DriverTool.UpdatesContext
 
     let loggerl = Logging.getLoggerByName("LenovoUpdates")
                

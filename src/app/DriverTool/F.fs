@@ -11,19 +11,6 @@ module F=
 
     open System
 
-    let sourceException ex = 
-        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).SourceException
-
-    let toException message (innerException: System.Exception option) =
-        match innerException with
-        |Some iex ->
-            (new System.Exception(message, sourceException iex))            
-        |None ->
-            (new System.Exception(message))
-    
-    let toErrorResult message (innerException: System.Exception option) =
-        Result.Error (toException message innerException)
-
     /// <summary>
     /// Null coalescing operator
     /// </summary>
@@ -282,4 +269,5 @@ module F=
         stream.Position <- 0L
         stream
 
-    
+    let toDateString (dateTime:DateTime) =
+        dateTime.ToString("yyyy-MM-dd")

@@ -4,6 +4,12 @@ module Cab =
 
     open System
 
+    /// <summary>
+    /// Path to expand.exe
+    /// </summary>
+    let expandExe =
+        System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
+
     let expandExeExitCodeToResult cabFilePath exitCode =
         let expandResult =
                 if(exitCode = 0) then

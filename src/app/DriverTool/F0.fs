@@ -37,3 +37,16 @@ module F0=
                 match ex.InnerException with
                 | null -> ex.Message
                 | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
+
+    let sourceException ex = 
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).SourceException
+
+    let toException message (innerException: System.Exception option) =
+        match innerException with
+        |Some iex ->
+            (new System.Exception(message, sourceException iex))            
+        |None ->
+            (new System.Exception(message))
+    
+    let toErrorResult message (innerException: System.Exception option) =
+        Result.Error (toException message innerException)
