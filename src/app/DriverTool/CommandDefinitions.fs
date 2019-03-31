@@ -54,9 +54,11 @@ module Commands =
                                          [<OptionalCommandParameter(Description = "Exclude updates where title or category match any of the specified regular expression patterns.", ExampleValue=[|"Software";"BIOS";"Firmware"|], DefaultValue=[||], AlternativeName = "xu")>]
                                             excludeUpdatePatterns : string[],
                                          [<OptionalCommandParameter(Description = "A short name describing the content of the package. Example: 'Software', 'Firmware', 'BIOS'. The package type name will be used in the package name.", ExampleValue = @"Drivers", AlternativeName = "ptn", DefaultValue = "Drivers")>] 
-                                            packageTypeName : string
+                                            packageTypeName : string,
+                                         [<OptionalCommandParameter(Description = "Exclude Sccm package from the created package. Typically you set this to true if you want only non-driver related updates, such as BIOS or firmware, to be part of the package.", ExampleValue = false, AlternativeName = "exs", DefaultValue = false)>] 
+                                            excludeSccmPackage : bool
                                          ) : NCmdLiner.Result<int> = 
-            CommandProviders.createDriverPackage (packagePublisher,manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns,packageTypeName)
+            CommandProviders.createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage)
         
         [<Command(Description="Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.",Summary="Install driver package")>]
         static member InstallDriverPackage(

@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Driver";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="BIOS"</StartArguments>
+    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Driver";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="BIOS" /excludeSccmPackage="True"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

@@ -273,9 +273,10 @@ module CreateDriverPackage =
             LogDirectory:Path
             ExcludeUpdateRegexPatterns: System.Text.RegularExpressions.Regex[]
             PackageTypeName:string
+            ExcludeSccmPackage:bool
         }
 
-    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName =
+    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage =
         {
             PackagePublisher=packagePublisher
             Manufacturer=manufacturer
@@ -287,6 +288,7 @@ module CreateDriverPackage =
             LogDirectory=logDirectory
             ExcludeUpdateRegexPatterns=excludeUpdateRegexPatterns
             PackageTypeName=packageTypeName
+            ExcludeSccmPackage=excludeSccmPackage
         }
 
     open DriverToool.UpdatesContext
@@ -339,13 +341,19 @@ module CreateDriverPackage =
                 let installScriptResults = createInstallScripts (extractedUpdates,dpcc.Manufacturer,dpcc.LogDirectory)
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, dpcc.LogDirectory)
 
-                let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
-                let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists true sccmPackageDestinationPath
-                logger.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath)
-                
-                let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (dpcc.Manufacturer)                
-                let! extractedSccmPackagePath = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
-                let! sccmPackageInstallScriptResult = createSccmPackageInstallScript extractedSccmPackagePath
+                let! sccmPackageExtractResult =
+                    if (not dpcc.ExcludeSccmPackage) then               
+                        result{
+                            let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
+                            let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists true sccmPackageDestinationPath
+                            logger.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath)                
+                            let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (dpcc.Manufacturer)                
+                            let! extractedSccmPackagePath = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
+                            let! sccmPackageInstallScriptResult = createSccmPackageInstallScript extractedSccmPackagePath
+                            return sccmPackageInstallScriptResult                    
+                        }
+                    else
+                        Result.Ok existingDriversPath
 
                 let! installXmlPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"Install.xml"))
                 let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
