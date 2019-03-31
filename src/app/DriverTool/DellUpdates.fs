@@ -121,7 +121,7 @@ module DellUpdates =
                                 )
                   )
 
-    let toPackageInfo (sc: XElement,logDirectory:string) =
+    let toPackageInfo (sc: XElement,logDirectory) =
         let path = getAttribute(sc,"path")
         let dellVersion = getAttribute(sc,"dellVersion")
         let vendorVersion = getAttribute (sc, "vendorVersion")
@@ -136,7 +136,7 @@ module DellUpdates =
             InstallerCrc = getAttribute (sc,"hashMD5")
             InstallerSize = int64 (getAttribute (sc,"size"))
             ExtractCommandLine = ""
-            InstallCommandLine = (sprintf "\"%s\" /s /l=\"%s\\DUP_%s.log\"" installerName logDirectory installerName)
+            InstallCommandLine = (sprintf "\"%s\" /s /l=\"%s\\DUP_%s.log\"" installerName (FileSystem.pathValue logDirectory) installerName)
             Category = getElementValue (sc,"Category")
             ReadmeName = "";
             ReadmeCrc = "";

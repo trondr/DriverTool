@@ -79,13 +79,8 @@ module HpUpdatesTests =
                 {
                     let! currentModelCode = ModelCode.create "" true
                     let! currentOperatingSystem = OperatingSystemCode.create "" true
-                    let updatesRetrievalContext : UpdatesRetrievalContext = 
-                        {
-                            Model = currentModelCode
-                            OperatingSystem = currentOperatingSystem
-                            Overwrite = true
-                            LogDirectory = @"%public%\Logs"
-                        }
+                    let! logDirectory = FileSystem.path "%public%\Logs"
+                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory
                     let! actual = HpUpdates.getLocalUpdates updatesRetrievalContext
                     return actual
                 }) with
@@ -99,13 +94,8 @@ module HpUpdatesTests =
                 {
                     let! currentModelCode = ModelCode.create "" true
                     let! currentOperatingSystem = OperatingSystemCode.create "" true  
-                    let updatesRetrievalContext : UpdatesRetrievalContext = 
-                        {
-                            Model = currentModelCode
-                            OperatingSystem = currentOperatingSystem
-                            Overwrite = true
-                            LogDirectory = @"%public%\Logs"
-                        }
+                    let! logDirectory = FileSystem.path "%public%\Logs"
+                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory
                     let! actual = HpUpdates.getRemoteUpdates updatesRetrievalContext
                     return actual
                 }) with

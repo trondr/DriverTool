@@ -22,13 +22,8 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create modelCodeString false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-            let updatesRetrievalContext : UpdatesRetrievalContext = 
-                        {
-                            Model = modelCode
-                            OperatingSystem = operatingSystemCode
-                            Overwrite = true
-                            LogDirectory = "%public%\Logs"
-                        }
+            let! logDirectory = FileSystem.path "%public%\Logs"
+            let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory
             let! actual = DriverTool.DellUpdates.getRemoteUpdates updatesRetrievalContext
             printfn "Packages: %A" actual
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")

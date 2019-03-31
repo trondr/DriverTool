@@ -48,13 +48,8 @@ module DellCommandUpdatesIntegrationTests =
             result{
                 let! modelCode = ModelCode.create modelCodeString false
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-                let updatesRetrievalContext : UpdatesRetrievalContext = 
-                        {
-                            Model = modelCode
-                            OperatingSystem = operatingSystemCode
-                            Overwrite = true
-                            LogDirectory = @"c:\temp"
-                        }
+                let! logDirectory = FileSystem.path @"c:\temp"
+                let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory
                 let! remoteUpdates = DellUpdates.getRemoteUpdates updatesRetrievalContext
                 let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode, operatingSystemCode,remoteUpdates)
                 return localUpdates
