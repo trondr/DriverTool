@@ -133,3 +133,28 @@ module SdpCatalogTests =
         |Error ex -> 
             Assert.False(isSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
             Assert.IsTrue(ex.Message.Contains(expectedErrorMessage),"Error message not as expected: " + ex.Message)
+
+
+    let internal sdpTestData2 =
+        [
+            let installerData = InstallerData.CommandLineInstallerData{Program="Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";Arguments="/s";RebootByDefault=false;DefaultResult=InstallationResult.Failed;ReturnCodes=[|{Code=0;Result=InstallationResult.Succeeded;Reboot=false};{Code=2;Result=InstallationResult.Succeeded;Reboot=true}|]}
+            let installProperties = {CanRequestUserInput=false;Impact=InstallImpact.Normal;RequiresNetworkConnectivity=false;RebootBehavior=InstallationRebootBehavior.AlwaysRequiresReboot}
+            let originFile1 = {Digest="WCGlVdICgjVY0T0q3DMQE6jy8LY=";FileName="2_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";Size=166945344L;Modified=new DateTime(2017,6,19,8,22,57);OriginUri="http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE"}
+            let originFile2 = {Digest="WCGlVdICgjVY0T0q3DMQE6jy8LY=";FileName="1_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";Size=166945344L;Modified=new DateTime(2018,6,19,8,22,57);OriginUri="http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE"}
+            let originFile3 = {Digest="WCGlVdICgjVY0T0q3DMQE6jy8LY=";FileName="3_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";Size=166945344L;Modified=new DateTime(2016,6,19,8,22,57);OriginUri="http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE"}
+            let installableItems = [|
+                                    {Id="1";ApplicabilityRules={IsInstallable=Some "N/A";IsInstalled=Some "N/A";IsSuperseded=Some "N/A"};InstallProperties=installProperties;UninstallProperties=None;InstallerData=installerData;OriginFile=originFile1};
+                                    {Id="2";ApplicabilityRules={IsInstallable=Some "N/A";IsInstalled=Some "N/A";IsSuperseded=Some "N/A"};InstallProperties=installProperties;UninstallProperties=None;InstallerData=installerData;OriginFile=originFile2};
+                                    {Id="3";ApplicabilityRules={IsInstallable=Some "N/A";IsInstalled=Some "N/A";IsSuperseded=Some "N/A"};InstallProperties=installProperties;UninstallProperties=None;InstallerData=installerData;OriginFile=originFile3};
+                                    |]
+            yield {SdpTestFile="0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";IsSuccess=true;Expected={Title="Realtek High Definition Audio Driver,6.0.1.8454,A02";MoreInfoUrl="http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=99DDD";CreationDate=new DateTime(2018,10,03); Description="This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";ProductName="Drivers and Applications";PackageId="0e6cf4ac-2853-48aa-825b-8fe28206575f";UpdateSpecificData={MsrcSeverity= MsrcSeverity.Important;UpdateClassification=UpdateClassification.Updates;SecurityBulletinID=Some "99DDD";KBArticleID=Some "99DDD"};IsInstallable="";IsInstalled=None;InstallableItems=installableItems};ExpectedErrorMessage="N/A"}
+        ]
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCaseSource("sdpTestData2")>]    
+    let getReleaseDateTest (sdpTestData2:obj) =
+       let sdpTestData2R = (sdpTestData2:?>SdpTestData)
+       let actual = SdpCatalog.getSdpReleaseDate sdpTestData2R.Expected
+       let expected = new DateTime(2018,6,19,8,22,57)
+       Assert.AreEqual(expected, actual)

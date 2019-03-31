@@ -156,7 +156,7 @@ module HpUpdates =
                                 ReadmeName = Web.getFileNameFromUrl sdp.MoreInfoUrl;
                                 ReadmeCrc = "";
                                 ReadmeSize=0L;
-                                ReleaseDate= sdp.CreationDate|>toDateString
+                                ReleaseDate= (getSdpReleaseDate sdp)|>toDateString
                                 PackageXmlName=sdp.PackageId + ".sdp";
                            }
                     )
@@ -329,11 +329,14 @@ module HpUpdates =
                 return category.InnerText().Replace("CATEGORY:","").Trim()
             }
 
+    let toReleaseId downloadedPackageInfo =
+        sprintf "%s-%s" (downloadedPackageInfo.Package.InstallerName.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate
+
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let! readmeHtmlPath = FileSystem.path downloadedPackageInfo.ReadmePath
             let! category = getCategoryFromReadmeHtml readmeHtmlPath
-            let packageFolderName = getPackageFolderName category downloadedPackageInfo.Package.ReleaseDate
+            let packageFolderName = getPackageFolderName category (toReleaseId downloadedPackageInfo)
             let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
