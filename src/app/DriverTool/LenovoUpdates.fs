@@ -196,6 +196,11 @@ module LenovoUpdates =
             let msg = sprintf "Failed to parse all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
     
+    let filterUpdates context packageInfo =
+        (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Category)) 
+        &&                             
+        (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Title))
+
     let getRemoteUpdatesBase (context:UpdatesRetrievalContext) =
         result{
             let modelInfoUri = getModelInfoUri context.Model context.OperatingSystem
@@ -207,7 +212,10 @@ module LenovoUpdates =
             let! packageInfos = 
                 (parsePackageXmls downloadedPackageXmls)
                 |>toAccumulatedResult
-            return packageInfos |> Seq.toArray
+            return 
+                packageInfos 
+                |>Seq.filter (filterUpdates context)
+                |>Seq.toArray
         }
 
     let getRemoteUpdates (context:UpdatesRetrievalContext) =
@@ -238,7 +246,7 @@ module LenovoUpdates =
                             |None -> 
                                 loggerl.Warn(sprintf "Remote update not found for local update: %A" p)
                                 false
-                        )
+                        )            
             //For those local updates that have a corresponding remote update, transfer the BaseUrl and Category information from the remote update to the local update.
             |>Seq.map(fun p -> 
                         let remotePackageInfo = 
@@ -273,7 +281,8 @@ module LenovoUpdates =
                 packageInfos
                 |> Seq.distinct
                 |> updateFromRemote remotePackageInfos
-                |>Seq.toArray
+                |>Seq.filter (filterUpdates context)
+                |>Seq.toArray                
             loggerl.Info(sprintf "Local updates: %A" localUpdates)
             return localUpdates
         }
