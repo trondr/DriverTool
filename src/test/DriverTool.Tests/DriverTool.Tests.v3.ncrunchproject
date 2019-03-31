@@ -146,6 +146,1285 @@
       <NamedTestSelector>
         <TestName>DriverTool.Tests.SdpCatalogTests.loadSystemManagementCatalogTests("DellSDPCatalogPC.zip","DellSDPCatalogPC.xml",True,4450,"N/A")</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.getReleaseDateTest({SdpTestFile = "0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";
+ IsSuccess = true;
+ Expected =
+  {PackageId = "0e6cf4ac-2853-48aa-825b-8fe28206575f";
+   Title = "Realtek High Definition Audio Driver,6.0.1.8454,A02";
+   CreationDate = 10/3/2018 12:00:00 AM;
+   Description =
+    "This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";
+   ProductName = "Drivers and Applications";
+   MoreInfoUrl =
+    "http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=99DDD";
+   UpdateSpecificData = {MsrcSeverity = Important;
+                         UpdateClassification = Updates;
+                         SecurityBulletinID = Some "99DDD";
+                         KBArticleID = Some "99DDD";};
+   IsInstallable = "";
+   IsInstalled = None;
+   InstallableItems =
+    [|{Id = "1";
+       ApplicabilityRules = {IsInstallable = Some "N/A";
+                             IsInstalled = Some "N/A";
+                             IsSuperseded = Some "N/A";};
+       InstallProperties = {CanRequestUserInput = false;
+                            RequiresNetworkConnectivity = false;
+                            Impact = Normal;
+                            RebootBehavior = AlwaysRequiresReboot;};
+       UninstallProperties = None;
+       InstallerData =
+        CommandLineInstallerData
+          {Program =
+            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+           Arguments = "/s";
+           RebootByDefault = false;
+           DefaultResult = Failed;
+           ReturnCodes = [|{Code = 0;
+                            Result = Succeeded;
+                            Reboot = false;}; {Code = 2;
+                                               Result = Succeeded;
+                                               Reboot = true;}|];};
+       OriginFile =
+        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
+         FileName =
+          "2_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Modified = 6/19/2017 8:22:57 AM;
+         OriginUri =
+          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Size = 166945344L;};};
+      {Id = "2";
+       ApplicabilityRules = {IsInstallable = Some "N/A";
+                             IsInstalled = Some "N/A";
+                             IsSuperseded = Some "N/A";};
+       InstallProperties = {CanRequestUserInput = false;
+                            RequiresNetworkConnectivity = false;
+                            Impact = Normal;
+                            RebootBehavior = AlwaysRequiresReboot;};
+       UninstallProperties = None;
+       InstallerData =
+        CommandLineInstallerData
+          {Program =
+            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+           Arguments = "/s";
+           RebootByDefault = false;
+           DefaultResult = Failed;
+           ReturnCodes = [|{Code = 0;
+                            Result = Succeeded;
+                            Reboot = false;}; {Code = 2;
+                                               Result = Succeeded;
+                                               Reboot = true;}|];};
+       OriginFile =
+        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
+         FileName =
+          "1_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Modified = 6/19/2018 8:22:57 AM;
+         OriginUri =
+          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Size = 166945344L;};};
+      {Id = "3";
+       ApplicabilityRules = {IsInstallable = Some "N/A";
+                             IsInstalled = Some "N/A";
+                             IsSuperseded = Some "N/A";};
+       InstallProperties = {CanRequestUserInput = false;
+                            RequiresNetworkConnectivity = false;
+                            Impact = Normal;
+                            RebootBehavior = AlwaysRequiresReboot;};
+       UninstallProperties = None;
+       InstallerData =
+        CommandLineInstallerData
+          {Program =
+            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+           Arguments = "/s";
+           RebootByDefault = false;
+           DefaultResult = Failed;
+           ReturnCodes = [|{Code = 0;
+                            Result = Succeeded;
+                            Reboot = false;}; {Code = 2;
+                                               Result = Succeeded;
+                                               Reboot = true;}|];};
+       OriginFile =
+        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
+         FileName =
+          "3_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Modified = 6/19/2016 8:22:57 AM;
+         OriginUri =
+          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Size = 166945344L;};}|];};
+ ExpectedErrorMessage = "N/A";})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpUpdatesTests.getCategoryFromReadmeHtmlTest&lt;String&gt;("HP_sp92489.html","Driver-Keyboard,Mouse and Input Devices",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpTests({SdpTestFile = "dc718411-a5f1-4b15-966a-63a77cbb156e.sdp";
+ IsSuccess = true;
+ Expected =
+  {PackageId = "dc718411-a5f1-4b15-966a-63a77cbb156e";
+   Title = "Dell OpenManage Inventory Agent (for Dell Business Client Systems)";
+   CreationDate = 1/24/2019 12:00:00 AM;
+   Description =
+    "Dell OpenManage Inventory Agent is a data provider for Microsoft WMI to inventory information for Dell supported devices on Dell Precision workstations, OptiPlex desktops, and Latitude laptops. This service is run at boot time and then stopped automatically.";
+   ProductName = "Drivers and Applications";
+   MoreInfoUrl = "http://downloads.dell.com/cmsdk/DSIA_Readme.doc";
+   UpdateSpecificData = {MsrcSeverity = Important;
+                         UpdateClassification = Updates;
+                         SecurityBulletinID = Some "45YPT";
+                         KBArticleID = Some "45YPT";};
+   IsInstallable = "";
+   IsInstalled = None;
+   InstallableItems =
+    [|{Id = "5968b32a-dc30-4186-8652-ecc4a7cdc684";
+       ApplicabilityRules = {IsInstallable = Some "N/A";
+                             IsInstalled = Some "N/A";
+                             IsSuperseded = Some "N/A";};
+       InstallProperties = {CanRequestUserInput = false;
+                            RequiresNetworkConnectivity = false;
+                            Impact = Normal;
+                            RebootBehavior = NeverReboots;};
+       UninstallProperties = None;
+       InstallerData =
+        MsiInstallerData
+          {MsiFile = "DSIAPC_1.6.6.5.msi";
+           CommandLine = "Reboot=ReallySuppress";
+           UninstallCommandLine = None;
+           ProductCode = ProductCode "{FB2B7CC0-8307-47e6-A065-11015CC96B99}";};
+       OriginFile =
+        {Digest = "7sJyfjiOzAzMVjZ7FqJLS0hQsG0=";
+         FileName = "DSIAPC_1.6.6.5.msi";
+         Modified = 1/24/2019 8:52:15 AM;
+         OriginUri =
+          "http://downloads.dell.com/FOLDER05427436M/1/DSIAPC_1.6.6.5.msi";
+         Size = 26825728L;};}|];};
+ ExpectedErrorMessage = "N/A";})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpTests({SdpTestFile = "0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";
+ IsSuccess = true;
+ Expected =
+  {PackageId = "0e6cf4ac-2853-48aa-825b-8fe28206575f";
+   Title = "Realtek High Definition Audio Driver,6.0.1.8454,A02";
+   CreationDate = 10/3/2018 12:00:00 AM;
+   Description =
+    "This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";
+   ProductName = "Drivers and Applications";
+   MoreInfoUrl =
+    "http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=99DDD";
+   UpdateSpecificData = {MsrcSeverity = Important;
+                         UpdateClassification = Updates;
+                         SecurityBulletinID = Some "99DDD";
+                         KBArticleID = Some "99DDD";};
+   IsInstallable = "";
+   IsInstalled = None;
+   InstallableItems =
+    [|{Id = "3787be40-ec14-47c7-a24d-23210ef448e9";
+       ApplicabilityRules = {IsInstallable = Some "N/A";
+                             IsInstalled = Some "N/A";
+                             IsSuperseded = Some "N/A";};
+       InstallProperties = {CanRequestUserInput = false;
+                            RequiresNetworkConnectivity = false;
+                            Impact = Normal;
+                            RebootBehavior = AlwaysRequiresReboot;};
+       UninstallProperties = None;
+       InstallerData =
+        CommandLineInstallerData
+          {Program =
+            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+           Arguments = "/s";
+           RebootByDefault = false;
+           DefaultResult = Failed;
+           ReturnCodes = [|{Code = 0;
+                            Result = Succeeded;
+                            Reboot = false;}; {Code = 2;
+                                               Result = Succeeded;
+                                               Reboot = true;}|];};
+       OriginFile =
+        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
+         FileName =
+          "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Modified = 6/19/2018 8:22:57 AM;
+         OriginUri =
+          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
+         Size = 166945344L;};}|];};
+ ExpectedErrorMessage = "N/A";})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.getAdjustedExitCodeTests({ExitCodes = [|0; 0; 0; 0; 3010; 0; 0; 0; 0; 0|];
+ ExpectedAdjustedExitCode = 3010;})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.getAdjustedExitCodeTests({ExitCodes = [|0; 0; 0; 0; -2146232576; 0; 0; 0; 0; 0|];
+ ExpectedAdjustedExitCode = 3010;})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.getAdjustedExitCodeTests({ExitCodes = [|0; 0; 0; 0; 0; 0; 0; 0; 0; 0|];
+ ExpectedAdjustedExitCode = 0;})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.XmlToolKitTests.xmlDocLoadSaveTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WebTests.progressMessageTest&lt;String&gt;(30,30,100,"Test message"," 30% (        30 of        100): Test message                                   \r")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest(null,"Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp\\test.txt","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp\\test.tx?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp\\test.*x?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("","Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PackageXmlTests.getPackageFolderNameTests&lt;String&gt;("SomeCategory","2019-08-09","SomeCategory_2019-08-09")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PackageXmlTests.getPackageFolderNameTests&lt;String&gt;("Some\\Category","2019-08-09","Some_Category_2019-08-09")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PackageXmlTests.getPackageFolderNameTests&lt;String&gt;("Some/Category","2019-08-09","Some_Category_2019-08-09")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsBuildForCurrentSystemBaseTests(null,"*")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsBuildForCurrentSystemBaseTests("1809","1809")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FTests.tryCatchWithMessageTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FileOperationTests.ensureFileExtensionTest("c:\\temp\\text.txt","txt",True,"N/A")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FileOperationTests.ensureFileExtensionTest("c:\\temp\\text.txt",".txt",True,"N/A")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FileOperationTests.ensureFileExtensionTest("c:\\temp\\text.txt",".tst",False,"File does not have extension '.tst'")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.DellCommandUpdatesTests.getDownloadedFilesBaseTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.DellCommandUpdatesTests.fileUrlToBaseUrlAndFileNameTest("http://downloads.dell.com/FOLDER05171783M/1/ASMedia-USB-Extended-Host-Controller-Driver_JCDN0_WIN_1.16.54.1_A10.EXE","http://downloads.dell.com/FOLDER05171783M/1","ASMedia-USB-Extended-Host-Controller-Driver_JCDN0_WIN_1.16.54.1_A10.EXE")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CreateDriverPackageTests.packageInfosToDownloadedPackageInfosTests</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CompressionTests.zipFolderTest(True,True,False,"Zip file allready exists",False,True,False,"Test2")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CompressionTests.zipFolderTest(True,False,True,"&lt;No Error&gt;",False,True,False,"Test1")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CompressionTests.zipFolderTest(True,False,True,"&lt;No Error&gt;",False,False,True,"Test6")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CompressionTests.zipFolderTest(True,False,True,"&lt;No Error&gt;",False,False,False,"Test5")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CompressionTests.zipFolderTest(False,True,False,"Zip file allready exists",False,True,False,"Test4")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CompressionTests.zipFolderTest(False,False,False,"Cannot zip down a non existing directory",False,True,False,"Test3")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WmiHelperTests.WmiHelper2Test_Success</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.HP Wmi failed.</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("Lenovo Inc.","Acer",False,True,"Lenovo \"Lenovo\"","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("Dell Inc.","Acer",False,True,"Dell \"Dell\"","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.downloadDriverPackCatalogTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.Dell Supported.</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.AssemblyResolveTests.loadAssemblyFromSearchPathTest(False,False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.AssemblyResolveTests.loadAssemblyFromSearchPathTest(True,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ChecksumTests.hasSameFileHashPartialTest("File hash should not be the same due file size difference.",True,0L,1234L,"c:\\temp\\somedestinationfile.txt","NOTUSED","NOTUSED",False,True,True,False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ChecksumTests.hasSameFileHashPartialTest("File hash should not be the same due destinaton file not exists.",False,1234L,1234L,"c:\\temp\\somedestinationfile.txt","NOTUSED","NOTUSED",False,True,False,False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ChecksumTests.hasSameFileHashPartialTest("File hash should be the same",True,1234L,1234L,"c:\\temp\\somedestinationfile.txt","ABCDE12345ABCDE12345ABCDE12345ABCDE12345","ABCDE12345ABCDE12345ABCDE12345ABCDE12345",True,True,True,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ChecksumTests.hasSameFileHashPartialTest("File hash should be the same if source hash is empty and source size is 0.",True,1234L,0L,"c:\\temp\\somedestinationfile.txt","","NOTUSED",True,True,True,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CryptographyTests.isTrustedTests("n20ku13w_x64.exe",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.CryptographyTests.isTrustedTests("n20ku13w_x64_tampered.exe",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Expect success</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Extract to folder that do not exist - Expect failure</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractPackageTemplateTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.getAllEmbeddedResourceNamesTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.getPackageTemplateEmbeddedResourceNamesTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.mapResourceNamesToFileNamesTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 1</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 2</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 3</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EnvironmentTests.unExpandEnironmentVariablesTests("%Public%\\Logs","%PUBLIC%\\Logs")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FileOperationTests.ensureFileDoesNotExistTest_DoesNotExists</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FileOperationTests.ensureFileDoesNotExistTest_FileExists</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FileOperationTests.ensureFileDoesNotExistTest_FileExists_Overwrite</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FTests.tryCatchErrorTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FTests.tryCatchSuccessTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.assertIsSupportedTest&lt;String&gt;("20EQXXXX","WIN10X64","20EQ","WIN10X64","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.assertIsSupportedTest&lt;String&gt;("20EQXXXX","WIN10X64","20EQX","WIN10X64","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.assertIsSupportedTest&lt;String&gt;("20EQXXXX","WIN10X64","20EQX","WIN7X64","Operating system 'WIN10X64' is not supported by this driver package. Supported operating system: 'WIN7X64'.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.assertIsSupportedTest&lt;String&gt;("20EQXXXX","WIN10X64","20EQY","WIN10X64","Computer model '20EQXXXX' is not supported by this driver package. Supported model: '20EQY'.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.assertIsSupportedTest&lt;String&gt;("20EQXXXX","WIN10X64","20EQY","WIN7X64","Computer model '20EQXXXX' is not supported by this driver package. Supported model: '20EQY'. Operating system 'WIN10X64' is not supported by this driver package. Supported operating system: 'WIN7X64'.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getFileNameFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file.txt","file.txt")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.exe","2018-06-01")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.exe2232","2018-06-01")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.exe2232.txt","2018-06-01")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/file_201806.txt","2018-06-01")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getReleaseDateFromUrlTest&lt;String&gt;("https://somedomain.com/somefolder/ts_p520p520c_w1064_20180613.exe","2018-06-13")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN10X64","win10")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN10X86","win10")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN7X64","win764")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN7X86","win732")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN81X64","win81")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_Supported("WIN81X86","win81")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("VISTAX64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("VISTAX86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN2008X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN2008X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN8X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported("WIN8X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2008R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2012R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2012X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.osShortNameToLenovoOsTest_UnSupported:osShortNameToLenovoOsTest_UnSupported("WIN2016X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.genericLoggerResultTest_Error</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.genericLoggerResultTest_Success</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getDurationStringTestInHours</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getDurationStringTestInMilliseconds</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getDurationStringTestInMinutes</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getDurationStringTestInSeconds</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getFuncLoggerNameTest1</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getFuncLoggerNameTest2</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getParametersStringArrayOfInt</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getParametersStringArrayOfString</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LoggingTests.getParametersTuple</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ModelCodeTests.ModuleCodeTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ModelCodeTests.ModuleCodeTest_Empty_ModuleCode_UseLocalIsFalse</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ModelCodeTests.ModuleCodeTest_Empty_ModuleCode_UseLocalIsTrue</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemCodeTests.OperatingSystemCode_Empty_OperatingSystemCode_UseLocalIsFalse</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemCodeTests.OperatingSystemCode_Empty_OperatingSystemCode_UseLocalIsTrue</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemCodeTests.OperatingSystemCodeTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemCodeTests.OperatingSystemCodeTest_Invalid_OperatingSystemCode</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemCodeTests.OperatingSytemCode_DifferentCase_Win10X64</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(10,0,False,False,"WIN10X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(10,0,False,True,"WIN2016X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(10,0,True,False,"WIN10X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(10,0,True,True,"WIN2016X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,0,False,False,"VISTAX86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,0,False,True,"WIN2008X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,0,True,False,"VISTAX64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,0,True,True,"WIN2008X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,1,False,False,"WIN7X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,1,False,True,"WIN2008R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,1,True,False,"WIN7X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,1,True,True,"WIN2008R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,2,False,False,"WIN8X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,2,False,True,"WIN2012X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,2,True,False,"WIN8X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,2,True,True,"WIN2012X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,3,False,False,"WIN81X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,3,False,True,"WIN2012R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,3,True,False,"WIN81X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getOsShortNameBaseTests(6,3,True,True,"WIN2012R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN10X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN10X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN2008X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN2008X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN7X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN7X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN81X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN81X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN8X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest("WIN8X86")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest:getValidOsShortNamesTest("WIN2008R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest:getValidOsShortNamesTest("WIN2012R2X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest:getValidOsShortNamesTest("WIN2012X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.getValidOsShortNamesTest:getValidOsShortNamesTest("WIN2016X64")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isOperatingSystemX64BaseTests - 32 bits process</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isOperatingSystemX64BaseTests - 32 bits process - 32 Bits OS</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isOperatingSystemX64BaseTests - 64 bits process</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(20,True,"Storage Server Express")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(2,False,"Home Basic")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(19,True,"Windows Storage Server 2008 R2 Essentials")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(18,True,"HPC Edition")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(17,True,"Web Server (full installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(162,False,"Windows 10 Pro for Workstations N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(161,False,"Windows 10 Pro for Workstations")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(16,False,"Business N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(15,True,"Server Enterprise for Itanium-based Systems")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(146,True,"Server Standard, Semi-Annual Channel (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(145,True,"Server Datacenter, Semi-Annual Channel (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(14,True,"Server Enterprise (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(133,False,"Windows 10 Mobile Enterprise")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(131,False,"Windows 10 IoT Core Commercial")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(130,False,"Windows 10 Enterprise 2015 LTSB N Evaluation")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(13,True,"Server Standard (core installation, Windows Server 2008 R2 and earlier)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(129,False,"Windows 10 Enterprise 2015 LTSB Evaluation")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(126,False,"Windows 10 Enterprise 2015 LTSB N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(125,False,"Windows 10 Enterprise 2015 LTSB")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(123,False,"Windows 10 IoT Core")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(122,False,"Windows 10 Education N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(121,False,"Windows 10 Education")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(12,True,"Server Datacenter (core installation, Windows Server 2008 R2 and earlier)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(11,False,"Starter")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(104,False,"Windows 10 Mobile")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(103,False,"Professional with Media Center")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(101,False,"Windows 10 Home")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(100,False,"Windows 10 Home Single Language")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(10,True,"Server Enterprise (full installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(1,False,"Ultimate")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName:isValidOsShortName&lt;Boolean&gt;("WIN2008R2X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName:isValidOsShortName&lt;Boolean&gt;("WIN2012R2X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName:isValidOsShortName&lt;Boolean&gt;("WIN2012X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName:isValidOsShortName&lt;Boolean&gt;("WIN2016X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN10",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN10X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN10X86",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN2008X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN2008X86",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN7X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN7X86",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN81X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN81X86",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN8X64",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN8X86",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PackageInfoTests.packageInfosToDownloadJobs_Duplicate_Readme</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PackageInfoTests.packageInfosToDownloadJobs_Unique_Readme</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PackageTemplateTests.extractPackageTemplateTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.HasInvalidPathCharactersTests("","Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.HasInvalidPathCharactersTests("\\\\servername\\temp","Remote path",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.HasInvalidPathCharactersTests("c:\\temp","Local path",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.HasWildCardCharactersTests("\\\\servername\\temp","Remote path",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.HasWildCardCharactersTests("\\\\servername\\temp*","Wildcard path *",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.HasWildCardCharactersTests("\\\\servername\\temp?","Wildcard path ?",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.IsValidPathTests("","Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.IsValidPathTests("\\\\servername\\temp","Remote path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.IsValidPathTests("\\\\servername\\temp*","Wildcard path *",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.IsValidPathTests("\\\\servername\\temp?","Wildcard path ?",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathsTests.IsValidPathTests("c:\\temp","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCompareTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("","Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp\\test.*x?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp\\test.tx?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp\\test.txt","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest(null,"Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ProcessOperationsTests.startConsoleProcess4Test</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ProcessOperationsTests.startConsoleProcessTests</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.createRegKeyTest("HKCU\\Software\\MyTestCompany123")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.deleteRegKeyTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegistrySubKeyPathsTest(False,100)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegistrySubKeyPathsTest(True,100000)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegValueTest1</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegValueTest2</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegValueTest3</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegValueTest4</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegValueTest5</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegValueTest6</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.getRegValueTest7</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.KeyErrorValueExists_False</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.KeyErrorValueNotExists_False</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.KeyExistsValueExists_True</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.KeyExistsValueNotExists_False</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.KeyNotExistsValueExists_False</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.KeyNotExistsValueNotExists_False</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.parseRegKeyPathTests&lt;String,String&gt;("HKCU\\Software\\Test","HKEY_CURRENT_USER","Software\\Test")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.parseRegKeyPathTests&lt;String,String&gt;("HKLM\\Software","HKEY_LOCAL_MACHINE","Software")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.parseRegKeyPathTests&lt;String,String&gt;("HKLM\\Software\\Test","HKEY_LOCAL_MACHINE","Software\\Test")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regKeyExistsBaseTest&lt;Boolean&gt;("HKEY_CURRENT_USER\\Software",1,"",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regKeyExistsBaseTest&lt;Boolean&gt;("HKEY_CURRENT_USER\\Software",2,"",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regKeyExistsBaseTest&lt;Boolean&gt;("HKEY_CURRENT_USER\\Software",3,"Failed to check registry key exists",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regKeyExistsTests&lt;Boolean&gt;("HKCU\\Software\\Microsoft",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regKeyExistsTests&lt;Boolean&gt;("HKLM\\Software",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regKeyExistsTests&lt;Boolean&gt;("HKLM\\Software\\TestGurba123",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regValueIsTest:ValueIsEqual</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regValueIsTest:ValueIsNull</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.RegistryOperationTests.regValueIsTest:ValueIsUnEqual</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.Dell Wmi failed.</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.Lenovo Supported.</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.Lenovo Wmi failed.</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.Not supported.</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.HP Supported.</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WebTests.verifyDownloadTests(False,False,False,False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WebTests.verifyDownloadTests(False,False,True,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WebTests.verifyDownloadTests(False,True,False,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WebTests.verifyDownloadTests(True,True,True,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WmiHelperTests.WmiHelperTest_InvalidClassName</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WmiHelperTests.WmiHelperTest_InvalidPropertyName</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WmiHelperTests.WmiHelperTest_Success</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(21,True,"Storage Server Standard")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(22,True,"Storage Server Workgroup")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(23,True,"Storage Server Enterprise")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(24,True,"Windows Server 2008 for Windows Essential Server Solutions")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(25,True,"Small Business Server Premium")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(26,False,"Home Premium N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(27,False,"Windows 10 Enterprise N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(28,False,"Ultimate N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(29,True,"Web Server (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(3,False,"Home Premium")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(30,True,"Windows Essential Business Server Management Server")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(31,True,"Windows Essential Business Server Security Server")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(32,True,"Windows Essential Business Server Messaging Server")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(33,True,"Server Foundation")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(34,True,"Windows Home Server 2011")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(35,True,"Windows Server 2008 without Hyper-V for Windows Essential Server Solutions")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(36,True,"Server Standard without Hyper-V")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(37,True,"Server Datacenter without Hyper-V (full installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(38,True,"Server Enterprise without Hyper-V (full installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(39,True,"Server Datacenter without Hyper-V (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(4,False,"Windows 10 Enterprise")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(40,True,"Server Standard without Hyper-V (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(41,True,"Server Enterprise without Hyper-V (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(42,True,"Microsoft Hyper-V Server")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(43,True,"Storage Server Express (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(44,True,"Storage Server Standard (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(45,True,"Storage Server Workgroup (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(46,True,"Storage Server Enterprise (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(47,False,"Starter N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(48,False,"Windows 10 Pro")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(49,False,"Windows 10 Pro N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(5,False,"Home Basic N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(50,True,"Windows Small Business Server 2011 Essentials")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(51,True,"Server For SB Solutions")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(52,True,"Server Solutions Premium")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(53,True,"Server Solutions Premium (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(54,True,"Server For SB Solutions EM")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(55,True,"Server For SB Solutions EM")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(56,True,"Windows MultiPoint Server")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(59,True,"Windows Essential Server Solution Management")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(6,False,"Business")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(60,True,"Windows Essential Server Solution Additional")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(61,True,"Windows Essential Server Solution Management SVC")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(62,True,"Windows Essential Server Solution Additional SVC")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(63,True,"Small Business Server Premium (core installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(64,True,"Server Hyper Core V")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(66,False,"Not supported")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(67,False,"Not supported")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(68,False,"Not supported")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(69,False,"Not supported")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(7,True,"Server Standard (full installation. For Server Core installations of Windows Server 2012 and later, use the method Determining whether Server Core is running.)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(70,False,"Windows 10 Enterprise E")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(71,False,"Not supported")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(72,False,"Windows 10 Enterprise Evaluation")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(76,True,"Windows MultiPoint Server Standard (full installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(77,True,"Windows MultiPoint Server Premium (full installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(79,True,"Server Standard (evaluation installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(8,True,"Server Datacenter (full installation. For Server Core installations of Windows Server 2012 and later, use the method Determining whether Server Core is running.)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(80,True,"Server Datacenter (evaluation installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(84,False,"Windows 10 Enterprise N Evaluation")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(9,True,"Windows Small Business Server")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(95,True,"Storage Server Workgroup (evaluation installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(96,True,"Storage Server Standard (evaluation installation)")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(98,False,"Windows 10 Home N")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(99,False,"Windows 10 Home China")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.OperatingSystemTests.isServerTests(uint.MinValue,False,"An unknown product")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("Microsoft","Acer",False,False,"Microsoft \"Microsoft\"","Manufacturer 'Microsoft' is not supported. Supported manufacturers: Dell|Lenovo|HP.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("Lenovo","Acer",False,True,"Lenovo \"Lenovo\"","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("HP","Acer",False,True,"HP \"HP\"","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("Dell","Acer",False,True,"Dell \"Dell\"","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("","Dell",True,True,"Dell \"Dell\"","")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManufacturerTests.manufacturerStringToManufacturerBaseTests&lt;String&gt;("","",True,False,"Dell \"Dell\"","Current system manufacturer was empty. Supported manufacturers: Dell|Lenovo|HP.")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.getSoftPaqsTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.getProductOSDriverPacksTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.getSccmDriverPackageInfoBase("WIN10X64","83B3")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToFileNameTest("DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe","c:\\temp\\testpackage_2","c:\\temp\\testpackage_2\\Drivers\\DpInstExitCode2ExitCode.exe")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToFileNameTest("DriverTool.PackageTemplate.Install.xml","c:\\temp\\testpackage_1","c:\\temp\\testpackage_1\\Install.xml")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallXmlTests.loadInstallXmlTest({IsSuccess = true;
+ Expected =
+  {LogDirectory = "%public%\Logs";
+   LogFileName =
+    "MyCompany_Lenovo_ThinkPad_P50_20EQ0022MN_WIN10X64_Drivers_2019-03-20.log";
+   PackageName =
+    "MyCompany Lenovo ThinkPad P50 20EQ0022MN WIN10X64 Drivers 2019-03-20";
+   PackageVersion = "1.0";
+   PackageRevision = "000";
+   Publisher = "MyCompany";
+   ComputerVendor = "Lenovo";
+   ComputerModel = "20EQ0022MN";
+   ComputerSystemFamiliy = "ThinkPad P50";
+   OsShortName = "WIN10X64";};
+ ExpectedErrorMessage = "N/A";})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.loadLenovoCatalogTest({IsSuccess = true;
+ Expected =
+  {Model = "M710q-SKL";
+   Family = "tc";
+   Os = "win764";
+   Build = "*";
+   Name = "ThinkCentre M710q - SKL";
+   DriverPacks =
+    [|{Id = "sccm";
+       Date = Some 2/1/2017 12:00:00 AM;
+       Url = "https://support.lenovo.com/downloads/ds120804";};
+      {Id = "WinPE 3.1 x64";
+       Date = None;
+       Url = "https://support.lenovo.com/downloads/ds105413";};
+      {Id = "WinPE 5";
+       Date = None;
+       Url = "no winpe";};
+      {Id = "WinPE 10";
+       Date = None;
+       Url = "http://support.lenovo.com/downloads/ds105415";}|];
+   Queries =
+    {ModelTypes =
+      [|ModelType "10QR"; ModelType "10MT"; ModelType "10MS"; ModelType "10MR";
+        ModelType "10MQ"|];
+     Version = "ThinkCentre M710q";
+     Smbios = "M1AK";};};
+ ItemIndex = 12;
+ ExpectedErrorMessage = "N/A";})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.loadLenovoCatalogTest({IsSuccess = true;
+ Expected =
+  {Model = "Tablet10";
+   Family = "len";
+   Os = "win10";
+   Build = "*";
+   Name = "Lenovo Tablet 10";
+   DriverPacks =
+    [|{Id = "sccm";
+       Date = Some 7/1/2018 12:00:00 AM;
+       Url = "https://support.lenovo.com/downloads/ds503143";};
+      {Id = "WinPE 10";
+       Date = None;
+       Url = "no winpe";}|];
+   Queries = {ModelTypes = [|ModelType "20L4"; ModelType "20L3"|];
+              Version = "Lenovo Tablet 10";
+              Smbios = "N29E";};};
+ ItemIndex = 0;
+ ExpectedErrorMessage = "N/A";})</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WebTests.getFileNameFromUrlTests&lt;String&gt;("http://ftp.hp.com/pub/softpaq/sp65001-65500/sp65001.html","sp65001.html")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.WebTests.getFolderNameFromUrlTests&lt;String&gt;("http://ftp.hp.com/pub/softpaq/sp65001-65500/sp65001.html","http://ftp.hp.com/pub/softpaq/sp65001-65500")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ChecksumTests.hasSameFileHashPartialTest("File hash should be the same if source hash is empty.",True,1234,1234,"c:\\temp\\somedestinationfile.txt","","NOTUSED",True,True,True,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ChecksumTests.hasSameFileHashPartialTest("File hash should not be the same",True,1234L,1234L,"c:\\temp\\somedestinationfile.txt","ABCDE12345ABCDE12345ABCDE12345ABCDE12345","99CDE12345ABCDE12345ABCDE12345ABCDE12399",False,True,True,True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpUpdatesTests.getCategoryFromReadmeHtmlTest&lt;String&gt;("HP_sp95015.html","Driver-Audio",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpUpdatesTests.getCategoryFromReadmeHtmlTest&lt;String&gt;("HP_sp95xxx.html","N/A",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.FTests.exceptionToResultTest</TestName>
+      </NamedTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.RegExpTests</FixtureName>
+      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
