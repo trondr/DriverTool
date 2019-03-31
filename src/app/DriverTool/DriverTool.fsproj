@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Driver";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="BIOS" /excludeSccmPackage="True"</StartArguments>
+    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -141,10 +141,13 @@
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="Cab.fs" />
+    <Compile Include="SdpUpdates.fs" />
     <Compile Include="HpCatalog.fs" />
     <Compile Include="HpUpdates.fs" />
     <Compile Include="DellSettings.fs" />
     <Compile Include="DellCommandUpdate.fs" />
+    <Compile Include="DellCatalog.fs" />
+    <Compile Include="DellUpdates2.fs" />
     <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="WebParsing.fs" />

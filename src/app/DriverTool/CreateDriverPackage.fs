@@ -292,7 +292,7 @@ module CreateDriverPackage =
             ExcludeSccmPackage=excludeSccmPackage
         }
 
-    open DriverToool.UpdatesContext
+    open DriverTool.UpdatesContext
         
     let createDriverPackageBase (dpcc:DriverPackageCreationContext) =             
             result {

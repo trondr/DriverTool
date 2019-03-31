@@ -70,7 +70,7 @@ module HpUpdatesTests =
         |Ok _ -> Assert.IsTrue(true)
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
         
-    open DriverToool.UpdatesContext    
+    open DriverTool.UpdatesContext    
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]

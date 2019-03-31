@@ -5,7 +5,7 @@ module ExportLocalUpdates =
     let logger = Logging.getLoggerByName "ExportLocalUpdates"
 
     open System
-    open DriverToool.UpdatesContext
+    open DriverTool.UpdatesContext
 
     let exportLocalUpdates (csvFilePath:FileSystem.Path) excludeUpdatePatterns =
         result{       

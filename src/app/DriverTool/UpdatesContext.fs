@@ -1,4 +1,4 @@
-﻿namespace DriverToool
+﻿namespace DriverTool
 
 module UpdatesContext =
     open System.Text.RegularExpressions
