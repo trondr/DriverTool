@@ -272,9 +272,10 @@ module CreateDriverPackage =
             BaseOnLocallyInstalledUpdates:bool
             LogDirectory:Path
             ExcludeUpdateRegexPatterns: System.Text.RegularExpressions.Regex[]
+            PackageTypeName:string
         }
 
-    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns =
+    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName =
         {
             PackagePublisher=packagePublisher
             Manufacturer=manufacturer
@@ -285,6 +286,7 @@ module CreateDriverPackage =
             BaseOnLocallyInstalledUpdates=baseOnLocallyInstalledUpdates
             LogDirectory=logDirectory
             ExcludeUpdateRegexPatterns=excludeUpdateRegexPatterns
+            PackageTypeName=packageTypeName
         }
 
     open DriverToool.UpdatesContext
@@ -322,9 +324,9 @@ module CreateDriverPackage =
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let manufacturerName = manufacturerToName dpcc.Manufacturer
-                let systemFamilyName = dpcc.SystemFamily.Value.Replace(manufacturerName,"").Trim()
-                let packageName = sprintf "%s %s %s %s %s Drivers %s" dpcc.PackagePublisher manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value releaseDate
-                let! versionedPackagePath = combine3Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value, releaseDate)
+                let systemFamilyName = dpcc.SystemFamily.Value.Replace(manufacturerName,"").Trim()                
+                let packageName = sprintf "%s %s %s %s %s %s %s" dpcc.PackagePublisher manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value dpcc.PackageTypeName releaseDate
+                let! versionedPackagePath = combine3Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value + "-" + dpcc.PackageTypeName, releaseDate)
 
                 logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath)
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
