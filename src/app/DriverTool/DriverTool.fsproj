@@ -133,6 +133,7 @@
     <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
+    <Compile Include="RegExp.fs" />
     <Compile Include="LenovoSystemUpdateCheck.fs" />
     <Compile Include="Web.fs" />
     <Compile Include="SdpCatalog.fs" />
