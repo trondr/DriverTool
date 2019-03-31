@@ -63,7 +63,7 @@ module HpUpdatesTests =
         match(result
                 {
                     let! sdp = SdpCatalog.loadSdpFromFile (FileSystem.pathUnSafe sdpXmlFile)
-                    let actual = HpUpdates.toPackageInfos "%public%\Logs" sdp                
+                    let actual = HpUpdates.toPackageInfos sdp                
                     Assert.IsTrue(actual.Length > 0)
                     return sdp
                 })with
@@ -80,7 +80,8 @@ module HpUpdatesTests =
                     let! currentModelCode = ModelCode.create "" true
                     let! currentOperatingSystem = OperatingSystemCode.create "" true
                     let! logDirectory = FileSystem.path "%public%\Logs"
-                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory
+                    let! patterns = (RegExp.toRegexPatterns [||] true)
+                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
                     let! actual = HpUpdates.getLocalUpdates updatesRetrievalContext
                     return actual
                 }) with
@@ -95,7 +96,8 @@ module HpUpdatesTests =
                     let! currentModelCode = ModelCode.create "" true
                     let! currentOperatingSystem = OperatingSystemCode.create "" true  
                     let! logDirectory = FileSystem.path "%public%\Logs"
-                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory
+                    let! patterns = (RegExp.toRegexPatterns [||] true)
+                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
                     let! actual = HpUpdates.getRemoteUpdates updatesRetrievalContext
                     return actual
                 }) with

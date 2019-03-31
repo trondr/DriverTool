@@ -9,3 +9,12 @@ CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePubli
 InstallDriverPackage /driverPackagePath="C:\Temp\20EQ_Driver_Package\2018-11-16-CommentedOut"
 
 DriverTool.exe InstallDriverPackage /driverPackagePath="C:\Temp\20EQ_Driver_Package\2018-11-16-CommentedOut"
+
+
+CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False"
+
+
+CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["BIOS";"Firmware";"Software"]
+
+
+CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["BIOS";"Firmware";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"]
