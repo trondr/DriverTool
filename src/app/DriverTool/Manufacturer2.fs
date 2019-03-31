@@ -6,13 +6,13 @@ module ManufacturerTypes =
     open Microsoft.FSharp.Reflection
     open System.Text.RegularExpressions
 
-    type Manufacturer2 =
+    type Manufacturer =
         |Dell of name:string
         |Lenovo of name:string
         |HP of name:string
     
     let getValidManufacturers () = 
-        FSharpType.GetUnionCases typeof<Manufacturer2>
+        FSharpType.GetUnionCases typeof<Manufacturer>
         |>Array.map(fun case -> case.Name)
     
     let getValidManufacturersString () =
@@ -32,9 +32,9 @@ module ManufacturerTypes =
             match(wmiManufacturerValueFunc()) with
             |Ok m -> manufacturerStringToManufacturerUnsafeBase (wmiManufacturerValueFunc,m, false)
             |Error ex -> raise ex
-        |manufacturerName when Regex.Match(manufacturerName,"Dell",RegexOptions.IgnoreCase).Success -> Manufacturer2.Dell "Dell"
-        |manufacturerName when Regex.Match(manufacturerName,"Lenovo",RegexOptions.IgnoreCase).Success -> Manufacturer2.Lenovo "Lenovo"
-        |manufacturerName when Regex.Match(manufacturerName,"HP",RegexOptions.IgnoreCase).Success -> Manufacturer2.HP "HP"
+        |manufacturerName when Regex.Match(manufacturerName,"Dell",RegexOptions.IgnoreCase).Success -> Manufacturer.Dell "Dell"
+        |manufacturerName when Regex.Match(manufacturerName,"Lenovo",RegexOptions.IgnoreCase).Success -> Manufacturer.Lenovo "Lenovo"
+        |manufacturerName when Regex.Match(manufacturerName,"HP",RegexOptions.IgnoreCase).Success -> Manufacturer.HP "HP"
         |_ -> raise (new InvalidManufacturerException(sprintf "Manufacturer '%s' is not supported." manufacturer))
      
     let manufacturerStringToManufacturerBase (wmiManufacturerValueFunc:WmiManufacturerValueFunc,manufacturer:string,defaultToLocal) =
@@ -43,7 +43,7 @@ module ManufacturerTypes =
     let manufacturerStringToManufacturer (manufacturer:string,defaultToLocal) =
         manufacturerStringToManufacturerBase (getWmiManufacturerForCurrentSystem,manufacturer,defaultToLocal)
     
-    let manufacturerToName (manufacturer:Manufacturer2) =
+    let manufacturerToName (manufacturer:Manufacturer) =
         match manufacturer with
         |Dell name -> name
         |Lenovo name -> name

@@ -81,7 +81,7 @@ module CreateDriverPackage =
     let getPrefixes count =
         Array.init count (fun index -> ((index+1)*10).ToString("D3"))
     
-    let extractUpdates (rootDirectory,manufacturer:Manufacturer2, downloadedPackageInfos:seq<DownloadedPackageInfo>) = 
+    let extractUpdates (rootDirectory,manufacturer:Manufacturer, downloadedPackageInfos:seq<DownloadedPackageInfo>) = 
         let downloadedPackageInfosList = downloadedPackageInfos.ToList()
         let prefixes = getPrefixes downloadedPackageInfosList.Count
         let extractUpdate = DriverTool.Updates.extractUpdateFunc manufacturer
@@ -124,7 +124,7 @@ module CreateDriverPackage =
     let writeTextToFile (filePath:FileSystem.Path) (text:string) =
         tryCatch writeTextToFileUnsafe (filePath, text)
 
-    let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer2,logDirectory:FileSystem.Path) =
+    let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer,logDirectory:FileSystem.Path) =
         let sb = new StringBuilder()
         sb.AppendLine("Set ExitCode=0")|>ignore
         sb.AppendLine("pushd \"%~dp0\"")|>ignore
@@ -140,13 +140,13 @@ module CreateDriverPackage =
             sb.AppendLine("REM Set DpInstExitCode=%errorlevel%")|>ignore
             sb.AppendLine("REM \"%~dp0..\\DpInstExitCode2ExitCode.exe\" %DpInstExitCode%")|>ignore
         match manufacturer with
-        |Manufacturer2.Dell _ ->
+        |Manufacturer.Dell _ ->
             sb.AppendLine("")|>ignore
             sb.AppendLine("Set DupExitCode=%errorlevel%")|>ignore
             sb.AppendLine("\"%~dp0..\\DriverTool.DupExitCode2ExitCode.exe\" %DupExitCode%")|>ignore
-        |Manufacturer2.Lenovo _ -> 
+        |Manufacturer.Lenovo _ -> 
             sb.AppendLine("")|>ignore
-        |Manufacturer2.HP _ -> 
+        |Manufacturer.HP _ -> 
             sb.AppendLine("")|>ignore
         sb.AppendLine("")|>ignore
         sb.AppendLine("Set ExitCode=%errorlevel%")|>ignore
@@ -169,7 +169,7 @@ module CreateDriverPackage =
     let dtInstallPackageCmd = "DT-Install-Package.cmd"
     let dtUnInstallPackageCmd = "DT-UnInstall-Package.cmd"
 
-    let createInstallScript (extractedUpdate:ExtractedPackageInfo,manufacturer:Manufacturer2,logDirectory:FileSystem.Path) =
+    let createInstallScript (extractedUpdate:ExtractedPackageInfo,manufacturer:Manufacturer,logDirectory:FileSystem.Path) =
         result{
             let! installScriptPath = PathOperations.combine2Paths(extractedUpdate.ExtractedDirectoryPath,dtInstallPackageCmd)
             let installCommandLine = extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")            
@@ -184,7 +184,7 @@ module CreateDriverPackage =
             return installScript
         }
 
-    let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer2,logDirectory:FileSystem.Path) =
+    let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer,logDirectory:FileSystem.Path) =
         let extractedUpdatesList = 
             extractedUpdates.ToList()
         logger.InfoFormat("Creating install script for {0} packages...",extractedUpdatesList.Count)
@@ -262,7 +262,7 @@ module CreateDriverPackage =
     
     open DriverToool.UpdatesContext
         
-    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns) =             
+    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info(sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled)
@@ -348,7 +348,7 @@ module CreateDriverPackage =
                 return! res
             }
     
-    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path,baseOnLocallyInstalledUpdates:bool, logDirectory, excludeUpdateRegexPatterns) =
+    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path,baseOnLocallyInstalledUpdates:bool, logDirectory, excludeUpdateRegexPatterns) =
         Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns)
 
         
