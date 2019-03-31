@@ -11,6 +11,7 @@ module LenovoUpdates =
     open DriverTool.Web
     open DriverTool.Checksum
     open DriverTool.FileOperations
+    open DriverToool.UpdatesContext
 
     let loggerl = Logging.getLoggerByName("LenovoUpdates")
                
@@ -195,12 +196,12 @@ module LenovoUpdates =
             let msg = sprintf "Failed to parse all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
     
-    let getRemoteUpdatesBase (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
+    let getRemoteUpdatesBase (context:UpdatesRetrievalContext) =
         result{
-            let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
-            let! path = getModelInfoXmlFilePath modelCode operatingSystemCode
-            let! modelInfoXmlFilePath = ensureFileDoesNotExist overwrite path
-            let! downloadedFile = downloadFile (modelInfoUri, overwrite, modelInfoXmlFilePath)            
+            let modelInfoUri = getModelInfoUri context.Model context.OperatingSystem
+            let! path = getModelInfoXmlFilePath context.Model context.OperatingSystem
+            let! modelInfoXmlFilePath = ensureFileDoesNotExist context.Overwrite path
+            let! downloadedFile = downloadFile (modelInfoUri, context.Overwrite, modelInfoXmlFilePath)            
             let! packageXmlInfos = loadPackagesXml downloadedFile
             let! downloadedPackageXmls = downloadPackageXmls packageXmlInfos
             let! packageInfos = 
@@ -209,8 +210,8 @@ module LenovoUpdates =
             return packageInfos |> Seq.toArray
         }
 
-    let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase (modelCode, operatingSystemCode, overwrite, logDirectory)
+    let getRemoteUpdates (context:UpdatesRetrievalContext) =
+        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase context
     
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
         if(actualModel.Value.StartsWith(model.Value)) then
@@ -252,7 +253,7 @@ module LenovoUpdates =
                         )
         updatedPacageInfos
 
-    let getLocalUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
+    let getLocalUpdates (context:UpdatesRetrievalContext) =
         result{
             loggerl.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
@@ -261,13 +262,13 @@ module LenovoUpdates =
             let! packageInfos = DriverTool.LenovoSystemUpdate.getLocalUpdates()
             
             let! actualModelCode = ModelCode.create String.Empty true
-            let! modelCodeIsValid = assertThatModelCodeIsValid modelCode actualModelCode
-            loggerl.Info(sprintf "Model code '%s' is valid: %b" modelCode.Value modelCodeIsValid)
+            let! modelCodeIsValid = assertThatModelCodeIsValid context.Model actualModelCode
+            loggerl.Info(sprintf "Model code '%s' is valid: %b" context.Model.Value modelCodeIsValid)
             let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
-            let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid operatingSystemCode actualOperatingSystemCode
-            loggerl.Info(sprintf "Operating system code '%s' is valid: %b" operatingSystemCode.Value operatingSystemCodeIsValid)
+            let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid context.OperatingSystem actualOperatingSystemCode
+            loggerl.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
 
-            let! remotePackageInfos = getRemoteUpdates (modelCode, operatingSystemCode, overwrite,logDirectory)
+            let! remotePackageInfos = getRemoteUpdates context
             let localUpdates = 
                 packageInfos
                 |> Seq.distinct
