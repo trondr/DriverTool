@@ -18,6 +18,7 @@ module CreateDriverPackage =
     open PackageDefinition
     open DriverTool.Requirements
     open DriverTool.PackageTemplate    
+    open FileSystem
     
     let logger = Logging.getLoggerByName("CreateDriverPackage")
 
@@ -260,17 +261,43 @@ module CreateDriverPackage =
                 return isAdministrator
         }
     
+    type DriverPackageCreationContext =
+        {
+            PackagePublisher:string
+            Manufacturer:Manufacturer
+            SystemFamily:SystemFamily
+            Model:ModelCode
+            OperatingSystem:OperatingSystemCode
+            DestinationFolderPath:Path
+            BaseOnLocallyInstalledUpdates:bool
+            LogDirectory:Path
+            ExcludeUpdateRegexPatterns: System.Text.RegularExpressions.Regex[]
+        }
+
+    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns =
+        {
+            PackagePublisher=packagePublisher
+            Manufacturer=manufacturer
+            SystemFamily=systemFamily
+            Model=modelCode
+            OperatingSystem=operatingSystemCode
+            DestinationFolderPath=destinationFolderPath
+            BaseOnLocallyInstalledUpdates=baseOnLocallyInstalledUpdates
+            LogDirectory=logDirectory
+            ExcludeUpdateRegexPatterns=excludeUpdateRegexPatterns
+        }
+
     open DriverToool.UpdatesContext
         
-    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns) =             
+    let createDriverPackageBase (dpcc:DriverPackageCreationContext) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info(sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled)
                                 
-                let getUpdates = DriverTool.Updates.getUpdatesFunc (manufacturer,baseOnLocallyInstalledUpdates) 
+                let getUpdates = DriverTool.Updates.getUpdatesFunc (dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
-                let updatesRetrievalContext = toUpdatesRetrievalContext model operatingSystem true logDirectory excludeUpdateRegexPatterns
+                let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.ExcludeUpdateRegexPatterns
                 
                 let! packageInfos = getUpdates updatesRetrievalContext
                 let uniquePackageInfos = packageInfos |> Seq.distinct
@@ -281,23 +308,23 @@ module CreateDriverPackage =
                 let latestRelaseDate = getLastestReleaseDate downloadedUpdates
 
                 logger.Info("Update package info based from downloaded files (such as content in readme file)")
-                let updatePackageInfo = DriverTool.Updates.updateDownloadedPackageInfoFunc (manufacturer)
+                let updatePackageInfo = DriverTool.Updates.updateDownloadedPackageInfoFunc (dpcc.Manufacturer)
                 let! updatedInfoDownloadedUpdates = updatePackageInfo downloadedUpdates
 
                 logger.Info("Getting SCCM package info...")
-                let getSccmPackage = DriverTool.Updates.getSccmPackageFunc manufacturer
-                let! sccmPackage = getSccmPackage (model,operatingSystem)
+                let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer
+                let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem)
                 logger.Info(sprintf "Sccm packge: %A" sccmPackage)
                 
                 logger.Info("Downloading SCCM package...")
-                let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc manufacturer
+                let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc dpcc.Manufacturer
                 let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.downloadCacheDirectoryPath), sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
-                let manufacturerName = manufacturerToName manufacturer
-                let systemFamilyName = systemFamily.Value.Replace(manufacturerName,"").Trim()
-                let packageName = sprintf "%s %s %s %s %s Drivers %s" packagePublisher manufacturerName systemFamilyName model.Value operatingSystem.Value releaseDate
-                let! versionedPackagePath = combine3Paths (FileSystem.pathValue destinationFolderPath, model.Value, releaseDate)
+                let manufacturerName = manufacturerToName dpcc.Manufacturer
+                let systemFamilyName = dpcc.SystemFamily.Value.Replace(manufacturerName,"").Trim()
+                let packageName = sprintf "%s %s %s %s %s Drivers %s" dpcc.PackagePublisher manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value releaseDate
+                let! versionedPackagePath = combine3Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value, releaseDate)
 
                 logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath)
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
@@ -306,15 +333,15 @@ module CreateDriverPackage =
                 let! driversPath = combine2Paths (FileSystem.pathValue versionedPackagePath, "Drivers")
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", driversPath)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
-                let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updatedInfoDownloadedUpdates)
-                let installScriptResults = createInstallScripts (extractedUpdates,manufacturer,logDirectory)
-                let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
+                let! extractedUpdates = extractUpdates (existingDriversPath,dpcc.Manufacturer, updatedInfoDownloadedUpdates)
+                let installScriptResults = createInstallScripts (extractedUpdates,dpcc.Manufacturer,dpcc.LogDirectory)
+                let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, dpcc.LogDirectory)
 
                 let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
                 let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists true sccmPackageDestinationPath
                 logger.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath)
                 
-                let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (manufacturer)                
+                let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (dpcc.Manufacturer)                
                 let! extractedSccmPackagePath = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
                 let! sccmPackageInstallScriptResult = createSccmPackageInstallScript extractedSccmPackagePath
 
@@ -324,16 +351,16 @@ module CreateDriverPackage =
                 
                 let updatedInstallConfiguration = 
                     { installConfiguration with 
-                        LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables (FileSystem.pathValue logDirectory));
+                        LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables (FileSystem.pathValue dpcc.LogDirectory));
                         LogFileName = toValidDirectoryName (sprintf "%s.log" packageName);
                         PackageName = packageName;
                         PackageVersion = "1.0"
                         PackageRevision = "000"
-                        ComputerModel = model.Value;
-                        ComputerSystemFamiliy = systemFamily.Value;
-                        ComputerVendor = DriverTool.ManufacturerTypes.manufacturerToName manufacturer;
-                        OsShortName = operatingSystem.Value;
-                        Publisher = packagePublisher
+                        ComputerModel = dpcc.Model.Value;
+                        ComputerSystemFamiliy = dpcc.SystemFamily.Value;
+                        ComputerVendor = DriverTool.ManufacturerTypes.manufacturerToName dpcc.Manufacturer;
+                        OsShortName = dpcc.OperatingSystem.Value;
+                        Publisher = dpcc.PackagePublisher
                     }
                 let savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
                 logger.InfoFormat("Saved install configuration to '%s'. Value:", existingInstallXmlPath, (Logging.valueToString savedInstallConfiguration))
@@ -350,7 +377,7 @@ module CreateDriverPackage =
                 return! res
             }
     
-    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path,baseOnLocallyInstalledUpdates:bool, logDirectory, excludeUpdateRegexPatterns) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns)
+    let createDriverPackage driverPackageCreationContext =
+        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase driverPackageCreationContext
 
         
