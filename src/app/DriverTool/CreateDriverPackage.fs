@@ -284,17 +284,6 @@ module CreateDriverPackage =
                 let updatePackageInfo = DriverTool.Updates.updateDownloadedPackageInfoFunc (manufacturer)
                 let! updatedInfoDownloadedUpdates = updatePackageInfo downloadedUpdates
 
-                //logger.Info("Filter updates package info based from downloaded files (such as content in readme file)")
-                //let filteredUpdates = 
-                //    updatedInfoDownloadedUpdates
-                //    |>Seq.filter(fun p ->             
-                //            //Exlude any updates that is matching one of the exclude patterns
-                //            (not (RegExp.matchAny excludeUpdateRegexPatterns p.Package.Category)) 
-                //            &&                             
-                //            (not (RegExp.matchAny excludeUpdateRegexPatterns p.Package.Title))
-                //          )
-                //    |>Seq.toArray
-                                
                 logger.Info("Getting SCCM package info...")
                 let getSccmPackage = DriverTool.Updates.getSccmPackageFunc manufacturer
                 let! sccmPackage = getSccmPackage (model,operatingSystem)
