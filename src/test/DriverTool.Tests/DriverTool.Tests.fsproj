@@ -85,12 +85,13 @@
     <Compile Include="PackageXmlTests.fs" />
     <Compile Include="SdpCatalogTests.fs" />
     <Compile Include="InstallXmlTests.fs" />
+    <Compile Include="RegExpTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp92489.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95015.html" />
-	<EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
+    <EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
     <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC.zip" />
     <EmbeddedResource Include="TestData\SdpCatalog\0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp" />
@@ -101,7 +102,7 @@
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_n1cx802w_2_.xml" />
-    <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />    
+    <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
