@@ -87,3 +87,25 @@ module CreateDriverPackageTests =
         match actual with
         |Ok p -> Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
+    
+    open DriverTool.ManufacturerTypes
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase(false,"setup.exe /s", "Dell", @"c:\temp",true)>]
+    [<TestCase(false,"setup.exe /s", "HP", @"c:\temp",true)>]
+    [<TestCase(false,"setup.exe /s", "Lenovo", @"c:\temp",true)>]
+    let createInstallScriptFileContentTests (packageIsUsingDpInst:bool, installCommandLine:string, manufacturerString:string, logDirectoryString:string, isSuccess:bool) =
+        match(result{
+            let! manufacturer = manufacturerStringToManufacturer (manufacturerString,false)
+            let! logDirectory = FileSystem.path logDirectoryString
+            let actual = createInstallScriptFileContent (packageIsUsingDpInst, installCommandLine,manufacturer, logDirectory)            
+            Assert.IsTrue(actual.Contains("IF NOT EXIST \"c:\\temp\" md \"c:\\temp\""))
+            return actual
+        })with
+        |Ok _ -> 
+            Assert.IsTrue(isSuccess,"Expected fail, but succeeded")
+        |Error ex -> 
+            Assert.IsFalse(isSuccess,sprintf "Expected success, but failed. %A" ex)
+        
+        
