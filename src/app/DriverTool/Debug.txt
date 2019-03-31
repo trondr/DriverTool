@@ -17,4 +17,10 @@ CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePubli
 CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["BIOS";"Firmware";"Software"]
 
 
-CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["BIOS";"Firmware";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"]
+CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["BIOS";"Firmware";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="Drivers"
+
+CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Software"]
+
+CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Driver";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="BIOS"
+
+CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Driver";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="BIOS" /excludeSccmPackage="True"
