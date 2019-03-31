@@ -381,3 +381,9 @@ module LenovoUpdates =
                 | Error ex -> Result.Error ex
             return! res
         }
+
+    let updateDownloadedPackageInfo downloadedUpdates =
+        result
+            {
+                return downloadedUpdates        
+            }

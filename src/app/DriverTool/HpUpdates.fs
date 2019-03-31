@@ -138,7 +138,7 @@ module HpUpdates =
         |CommandLineInstallerData d -> sprintf "\"%s\" %s" (toInstallerName installerData) d.Arguments
         |MsiInstallerData d -> (sprintf "\"%s\" /i \"%s\" /quiet /qn /norestart %s" (toInstallerName installerData) d.MsiFile  d.CommandLine) 
 
-    let toPackageInfos logDirectory sdp  =
+    let toPackageInfos sdp  =
             let pacakgeInfos =
                 sdp.InstallableItems
                 |>Seq.map(fun ii ->
@@ -181,12 +181,18 @@ module HpUpdates =
             return (supportedModelCode, supporteOperatingSystemCode)
         }
 
-    let sdpsToPacakgeInfos logDirectory sdps =
+    let sdpsToPacakgeInfos context sdps =
         let packageInfos =
             sdps
-            |>Array.map (toPackageInfos logDirectory)                
+            |>Array.map toPackageInfos                
             |>Array.concat
-            |>Array.filter(fun p -> p.Category.ToLower().Contains("driver"))
+            |>Array.filter(fun p -> 
+                     let exclude =
+                         (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns p.Category)) 
+                                &&                             
+                         (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns p.Title))
+                     exclude
+                )
         packageInfos
 
     let downloadSdpFiles () =
@@ -253,7 +259,7 @@ module HpUpdates =
                 sdps                
                 |>Seq.filter localUpdatesFilter
                 |>Seq.toArray
-                |>sdpsToPacakgeInfos context.LogDirectory
+                |>sdpsToPacakgeInfos context
             let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles            
             return packageInfos
         }        
@@ -275,7 +281,7 @@ module HpUpdates =
                 sdps                
                 |>Seq.filter remoteUpdatesFilter
                 |>Seq.toArray
-                |>sdpsToPacakgeInfos context.LogDirectory
+                |>sdpsToPacakgeInfos context
             
             let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles
             return packageInfos
@@ -316,6 +322,23 @@ module HpUpdates =
         |Ok _ -> Result.Ok destinationPath
         |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
 
+    let toReleaseId downloadedPackageInfo =
+        sprintf "%s-%s" (downloadedPackageInfo.Package.InstallerName.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate
+
+    let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
+        result{
+            let packageFolderName = getPackageFolderName downloadedPackageInfo.Package.Category (toReleaseId downloadedPackageInfo)
+            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
+            let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
+            let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
+            let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
+            let extractPacakgeXmlResult = extractPackageXml (downloadedPackageInfo,existingPackageFolderPath)
+            let! result = 
+                [|extractInstallerResult;extractReadmeResult;extractPacakgeXmlResult|]
+                |> toAccumulatedResult
+            return result |>Seq.toArray |> Seq.head
+        }
+
     let getCategoryFromReadmeHtml readmeHtmlPath = 
         result
             {
@@ -329,22 +352,27 @@ module HpUpdates =
                     |>Array.head
                 return category.InnerText().Replace("CATEGORY:","").Trim()
             }
-
-    let toReleaseId downloadedPackageInfo =
-        sprintf "%s-%s" (downloadedPackageInfo.Package.InstallerName.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate
-
-    let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
-        result{
-            let! readmeHtmlPath = FileSystem.path downloadedPackageInfo.ReadmePath
-            let! category = getCategoryFromReadmeHtml readmeHtmlPath
-            let packageFolderName = getPackageFolderName category (toReleaseId downloadedPackageInfo)
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
-            let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
-            let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
-            let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
-            let extractPacakgeXmlResult = extractPackageXml (downloadedPackageInfo,existingPackageFolderPath)
-            let! result = 
-                [|extractInstallerResult;extractReadmeResult;extractPacakgeXmlResult|]
-                |> toAccumulatedResult
-            return result |>Seq.toArray |> Seq.head
-        }        
+        
+    /// <summary>
+    /// HP. Get and update category info from the update readme html file as the "category" from the SDPs product name ('Driver') is not giving info about type of driver.
+    /// The readme html "CATEGORY:" line gives more information of the type of driver. Example: 'Driver-Network' or 'Driver-Keyboard,Mouse and Input Devices'
+    /// </summary>
+    /// <param name="downloadedUpdates"></param>
+    let updateDownloadedPackageInfo (downloadedUpdates:seq<DownloadedPackageInfo>) =
+        result
+            {
+                let! updatedUpdates = 
+                    downloadedUpdates
+                    |>Seq.map(fun d ->
+                                result
+                                    {
+                                        let! readmeHtmlPath = FileSystem.path d.ReadmePath
+                                        let! category = getCategoryFromReadmeHtml readmeHtmlPath
+                                        let up = {d.Package with Category = category}
+                                        let ud = {d with Package = up}
+                                        return ud
+                                    }
+                            )
+                    |>toAccumulatedResult
+                return updatedUpdates
+            }

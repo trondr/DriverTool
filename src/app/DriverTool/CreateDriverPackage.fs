@@ -262,7 +262,7 @@ module CreateDriverPackage =
     
     open DriverToool.UpdatesContext
         
-    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory) =             
+    let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info(sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled)
@@ -270,16 +270,31 @@ module CreateDriverPackage =
                 let getUpdates = DriverTool.Updates.getUpdatesFunc (manufacturer,baseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
-                let updatesRetrievalContext = toUpdatesRetrievalContext model operatingSystem true logDirectory
+                let updatesRetrievalContext = toUpdatesRetrievalContext model operatingSystem true logDirectory excludeUpdateRegexPatterns
                 
                 let! packageInfos = getUpdates updatesRetrievalContext
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
                 logger.Info("Downloading software and drivers...")
-                let updates = downloadUpdates (DriverTool.Configuration.downloadCacheDirectoryPath) uniqueUpdates
-                let latestRelaseDate = getLastestReleaseDate updates
-                
+                let downloadedUpdates = downloadUpdates (DriverTool.Configuration.downloadCacheDirectoryPath) uniqueUpdates
+                let latestRelaseDate = getLastestReleaseDate downloadedUpdates
+
+                logger.Info("Update package info based from downloaded files (such as content in readme file)")
+                let updatePackageInfo = DriverTool.Updates.updateDownloadedPackageInfoFunc (manufacturer)
+                let! updatedInfoDownloadedUpdates = updatePackageInfo downloadedUpdates
+
+                //logger.Info("Filter updates package info based from downloaded files (such as content in readme file)")
+                //let filteredUpdates = 
+                //    updatedInfoDownloadedUpdates
+                //    |>Seq.filter(fun p ->             
+                //            //Exlude any updates that is matching one of the exclude patterns
+                //            (not (RegExp.matchAny excludeUpdateRegexPatterns p.Package.Category)) 
+                //            &&                             
+                //            (not (RegExp.matchAny excludeUpdateRegexPatterns p.Package.Title))
+                //          )
+                //    |>Seq.toArray
+                                
                 logger.Info("Getting SCCM package info...")
                 let getSccmPackage = DriverTool.Updates.getSccmPackageFunc manufacturer
                 let! sccmPackage = getSccmPackage (model,operatingSystem)
@@ -300,7 +315,7 @@ module CreateDriverPackage =
                 let! driversPath = combine2Paths (FileSystem.pathValue versionedPackagePath, "Drivers")
                 logger.InfoFormat("Extracting drivers to folder '{0}'...", driversPath)
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
-                let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updates)
+                let! extractedUpdates = extractUpdates (existingDriversPath,manufacturer, updatedInfoDownloadedUpdates)
                 let installScriptResults = createInstallScripts (extractedUpdates,manufacturer,logDirectory)
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, logDirectory)
 
@@ -344,7 +359,7 @@ module CreateDriverPackage =
                 return! res
             }
     
-    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path,baseOnLocallyInstalledUpdates:bool, logDirectory) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory)
+    let createDriverPackage (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,modelCode: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path,baseOnLocallyInstalledUpdates:bool, logDirectory, excludeUpdateRegexPatterns) =
+        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystem, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns)
 
         

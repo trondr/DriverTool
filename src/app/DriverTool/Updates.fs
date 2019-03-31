@@ -20,6 +20,15 @@ module Updates =
             |true -> LenovoUpdates.getLocalUpdates
             |false -> LenovoUpdates.getRemoteUpdates
 
+    let updateDownloadedPackageInfoFunc (manufacturer:Manufacturer2) =
+        match manufacturer with
+        |Manufacturer2.Dell _ -> 
+            DellUpdates.updateDownloadedPackageInfo
+        |Manufacturer2.HP _ -> 
+            HpUpdates.updateDownloadedPackageInfo
+        |Manufacturer2.Lenovo _ -> 
+            LenovoUpdates.updateDownloadedPackageInfo
+
     let getSccmPackageFunc (manufacturer:Manufacturer2) = 
         match manufacturer with
         |Manufacturer2.Dell _ -> DellUpdates.getSccmDriverPackageInfo
