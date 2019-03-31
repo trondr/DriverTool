@@ -2,6 +2,8 @@
 open F
 
 module CommandProviders =
+    open ManufacturerTypes
+    open FileSystem
 
     let exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result {
@@ -31,7 +33,7 @@ module CommandProviders =
 
     let exportLocalUdateInfo (csvFilePathString, overwrite, excludeUpdatePatterns) =
         Logging.genericLogger Logging.LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns)
-
+    
     let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns) =
         match (result {
                 let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString,true)
@@ -41,7 +43,8 @@ module CommandProviders =
                 let! destinationFolderPath = FileSystem.path destinationFolder
                 let! logDirectory = FileSystem.path DriverTool.Configuration.getDriverPackageLogDirectoryPath
                 let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
-                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystemCode, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory, excludeUpdateRegexPatterns)
+                let driverPackageCreationContext = DriverTool.CreateDriverPackage.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns
+                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage driverPackageCreationContext
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
