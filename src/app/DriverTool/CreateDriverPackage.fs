@@ -259,16 +259,25 @@ module CreateDriverPackage =
                 logger.Info(sprintf "Installation is running with admin privileges: %b" isAdministrator)                
                 return isAdministrator
         }
+    
+    open DriverToool.UpdatesContext
         
     let createDriverPackageBase (packagePublisher:string,manufacturer:Manufacturer2,systemFamily:SystemFamily,model: ModelCode, operatingSystem:OperatingSystemCode, destinationFolderPath:FileSystem.Path, baseOnLocallyInstalledUpdates, logDirectory) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info(sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled)
                                 
-                let getUpdates = DriverTool.Updates.getUpdates (manufacturer,baseOnLocallyInstalledUpdates) 
+                let getUpdates = DriverTool.Updates.getUpdatesFunc (manufacturer,baseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
-                let! packageInfos = getUpdates (model, operatingSystem, true, logDirectory)
+                let updatesRetrievalContext : UpdatesRetrievalContext = 
+                    {
+                        Model = model
+                        OperatingSystem = operatingSystem
+                        Overwrite = true
+                        LogDirectory = logDirectory
+                    }
+                let! packageInfos = getUpdates updatesRetrievalContext
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 

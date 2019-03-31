@@ -6,6 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.IntegrationTests)>]
 module DellUpdatesTests =
     open DriverTool
+    open DriverToool.UpdatesContext
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
@@ -21,7 +22,14 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create modelCodeString false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-            let! actual = DriverTool.DellUpdates.getRemoteUpdates (modelCode, operatingSystemCode,true,"%public%\Logs")
+            let updatesRetrievalContext : UpdatesRetrievalContext = 
+                        {
+                            Model = modelCode
+                            OperatingSystem = operatingSystemCode
+                            Overwrite = true
+                            LogDirectory = "%public%\Logs"
+                        }
+            let! actual = DriverTool.DellUpdates.getRemoteUpdates updatesRetrievalContext
             printfn "Packages: %A" actual
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())

@@ -136,6 +136,7 @@
     <Compile Include="RegExp.fs" />
     <Compile Include="LenovoSystemUpdateCheck.fs" />
     <Compile Include="Web.fs" />
+    <Compile Include="UpdatesContext.fs" />
     <Compile Include="SdpCatalog.fs" />
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />

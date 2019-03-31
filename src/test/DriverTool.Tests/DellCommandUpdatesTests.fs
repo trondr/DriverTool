@@ -38,6 +38,7 @@ module DellCommandUpdatesTests =
 [<TestFixture>]
 [<Category(TestCategory.IntegrationTests)>]
 module DellCommandUpdatesIntegrationTests =
+    open DriverToool.UpdatesContext
     
     [<Test>]
     [<TestCase("07A7","WIN10X64")>]
@@ -47,7 +48,14 @@ module DellCommandUpdatesIntegrationTests =
             result{
                 let! modelCode = ModelCode.create modelCodeString false
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-                let! remoteUpdates = DellUpdates.getRemoteUpdates (modelCode, operatingSystemCode,true,@"c:\temp")
+                let updatesRetrievalContext : UpdatesRetrievalContext = 
+                        {
+                            Model = modelCode
+                            OperatingSystem = operatingSystemCode
+                            Overwrite = true
+                            LogDirectory = @"c:\temp"
+                        }
+                let! remoteUpdates = DellUpdates.getRemoteUpdates updatesRetrievalContext
                 let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode, operatingSystemCode,remoteUpdates)
                 return localUpdates
             }

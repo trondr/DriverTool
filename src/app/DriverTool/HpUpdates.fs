@@ -9,6 +9,7 @@ module HpUpdates =
     open DriverTool.SdpCatalog
     open FileSystem
     open FSharp.Data
+    open DriverToool.UpdatesContext
         
     let toDateString (dateTime:DateTime) =
         dateTime.ToString("yyyy-MM-dd")
@@ -243,16 +244,16 @@ module HpUpdates =
             )
         |> optionToBoolean
 
-    let getLocalUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
+    let getLocalUpdates (context:UpdatesRetrievalContext) =
         result{
-            let! supported = validateModelAndOs modelCode operatingSystemCode            
+            let! supported = validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles()
             let! sdps = loadSdps sdpFiles
             let packageInfos = 
                 sdps                
                 |>Seq.filter localUpdatesFilter
                 |>Seq.toArray
-                |>sdpsToPacakgeInfos logDirectory                
+                |>sdpsToPacakgeInfos context.LogDirectory
             let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles            
             return packageInfos
         }        
@@ -265,16 +266,16 @@ module HpUpdates =
             )
         |> optionToBoolean
 
-    let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
+    let getRemoteUpdates (context:UpdatesRetrievalContext) =
         result{
-            let! supported = validateModelAndOs modelCode operatingSystemCode
+            let! supported = validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles()
             let! sdps = loadSdps sdpFiles
             let packageInfos = 
                 sdps                
                 |>Seq.filter remoteUpdatesFilter
                 |>Seq.toArray
-                |>sdpsToPacakgeInfos logDirectory
+                |>sdpsToPacakgeInfos context.LogDirectory
             
             let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles
             return packageInfos

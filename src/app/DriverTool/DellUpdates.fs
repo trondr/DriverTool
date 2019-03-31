@@ -65,6 +65,7 @@ module DellUpdates =
         tryCatch operatingSystemCodeToDellOsCodeUnsafe operatingSystemCode
 
     open System.Xml.Linq    
+    open DriverToool.UpdatesContext
 
     let isSupportedForModel (softwareComponent:XElement, modelCode:ModelCode) =
         softwareComponent
@@ -144,29 +145,29 @@ module DellUpdates =
             PackageXmlName="";
         }
 
-    let getRemoteUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool,logDirectory:string) =
+    let getRemoteUpdates (context:UpdatesRetrievalContext) =
         result{
             let! softwareCatalogXmlFile = downloadSoftwareComponentsCatalog()            
-            let! dellOsCode = operatingSystemCodeToDellOsCode operatingSystemCode            
+            let! dellOsCode = operatingSystemCodeToDellOsCode context.OperatingSystem            
             let softwareComponentsXDocument = XDocument.Load(FileSystem.pathValue softwareCatalogXmlFile)
             let manifestRoot = softwareComponentsXDocument.Root            
             let softwareComponents = manifestRoot.Descendants(XName.Get("SoftwareComponent"))
             let updates =
                 softwareComponents
-                |>Seq.filter(fun sc -> isSupportedForModel (sc,modelCode))                
+                |>Seq.filter(fun sc -> isSupportedForModel (sc,context.Model))                
                 |>Seq.filter(fun sc -> isSupportedForOs (sc,dellOsCode))
-                |>Seq.map(fun sc -> toPackageInfo (sc,logDirectory))
+                |>Seq.map(fun sc -> toPackageInfo (sc,context.LogDirectory))
                 |>getLatestPackageInfoVersion
                 |>Seq.toArray
             loggerd.Info(sprintf "Updates: %i" updates.Length)
             return updates
         }
 
-    let getLocalUpdates (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode,overwrite:bool,logDirectory:string) : Result<PackageInfo[],Exception> =
+    let getLocalUpdates (context:UpdatesRetrievalContext) =
         result
             {
-                let! remoteUpdates = getRemoteUpdates (modelCode, operatingSystemCode,overwrite,logDirectory)
-                let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode,operatingSystemCode,remoteUpdates)
+                let! remoteUpdates = getRemoteUpdates context
+                let! localUpdates = DellCommandUpdate.getLocalUpdates (context.Model, context.OperatingSystem, remoteUpdates)
                 return localUpdates
             }
         

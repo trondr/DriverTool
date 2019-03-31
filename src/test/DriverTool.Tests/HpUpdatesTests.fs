@@ -70,7 +70,7 @@ module HpUpdatesTests =
         |Ok _ -> Assert.IsTrue(true)
         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
         
-        
+    open DriverToool.UpdatesContext    
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
@@ -78,8 +78,15 @@ module HpUpdatesTests =
         match(result
                 {
                     let! currentModelCode = ModelCode.create "" true
-                    let! currentOperatingSystem = OperatingSystemCode.create "" true            
-                    let! actual = HpUpdates.getLocalUpdates (currentModelCode, currentOperatingSystem,true, @"%public%\Logs")
+                    let! currentOperatingSystem = OperatingSystemCode.create "" true
+                    let updatesRetrievalContext : UpdatesRetrievalContext = 
+                        {
+                            Model = currentModelCode
+                            OperatingSystem = currentOperatingSystem
+                            Overwrite = true
+                            LogDirectory = @"%public%\Logs"
+                        }
+                    let! actual = HpUpdates.getLocalUpdates updatesRetrievalContext
                     return actual
                 }) with
         |Ok _ -> Assert.IsTrue(true)
@@ -91,8 +98,15 @@ module HpUpdatesTests =
         match(result
                 {
                     let! currentModelCode = ModelCode.create "" true
-                    let! currentOperatingSystem = OperatingSystemCode.create "" true            
-                    let! actual = HpUpdates.getRemoteUpdates (currentModelCode, currentOperatingSystem,true, @"%public%\Logs")
+                    let! currentOperatingSystem = OperatingSystemCode.create "" true  
+                    let updatesRetrievalContext : UpdatesRetrievalContext = 
+                        {
+                            Model = currentModelCode
+                            OperatingSystem = currentOperatingSystem
+                            Overwrite = true
+                            LogDirectory = @"%public%\Logs"
+                        }
+                    let! actual = HpUpdates.getRemoteUpdates updatesRetrievalContext
                     return actual
                 }) with
         |Ok _ -> Assert.IsTrue(true)

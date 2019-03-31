@@ -5,7 +5,7 @@ open DriverTool.ManufacturerTypes
 
 module Updates =
 
-    let getUpdates (manufacturer:Manufacturer2,baseOnLocallyInstalledUpdates:bool) =
+    let getUpdatesFunc (manufacturer:Manufacturer2,baseOnLocallyInstalledUpdates:bool) =
         match manufacturer with
         |Manufacturer2.Dell _ -> 
             match baseOnLocallyInstalledUpdates with
