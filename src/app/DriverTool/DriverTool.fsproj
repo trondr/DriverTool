@@ -128,7 +128,7 @@
     <Compile Include="WmiHelper.fs" />
     <Compile Include="OperatingSystem.fs" />
     <Compile Include="OperatingSystemOperations.fs" />
-    <Compile Include="Manufacturer2.fs" />
+    <Compile Include="Manufacturer.fs" />
     <Compile Include="SystemInfo.fs" />
     <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
