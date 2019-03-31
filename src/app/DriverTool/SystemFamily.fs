@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
 open System
 open DriverTool
+open DriverTool.SystemInfo
 
 type InvalidSystemFamilyException(systemFamily:string, message : string) =
         inherit Exception(
@@ -13,13 +14,10 @@ type SystemFamily private (systemFamily : string) =
     member x.Value = systemFamily
     
     static member createWithContinuation success failure (systemFamily:string) (defaultToLocal:bool) : Result<SystemFamily, Exception> =
-        let getSystemFamilyForLocalSystem : Result<string, Exception> = 
-            let localSystemFamilyResult = WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "SystemFamily"
-            localSystemFamilyResult
-        
+
         match systemFamily with
         | systemFamily when System.String.IsNullOrWhiteSpace(systemFamily) && defaultToLocal -> 
-            match getSystemFamilyForLocalSystem with
+            match getSystemFamilyForCurrentSystem() with
             | Ok sf -> success (SystemFamily sf)
             | Error ex -> failure ((new InvalidSystemFamilyException(String.Empty,sprintf "Failed to get system family from WMI. %s" ex.Message)):> Exception)
             
