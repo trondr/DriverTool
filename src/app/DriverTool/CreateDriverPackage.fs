@@ -125,12 +125,13 @@ module CreateDriverPackage =
     let writeTextToFile (filePath:FileSystem.Path) (text:string) =
         tryCatch writeTextToFileUnsafe (filePath, text)
 
-    let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer,logDirectory:FileSystem.Path) =
+    let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer, logDirectory:FileSystem.Path) =
         let sb = new StringBuilder()
         sb.AppendLine("Set ExitCode=0")|>ignore
         sb.AppendLine("pushd \"%~dp0\"")|>ignore
         sb.AppendLine("")|>ignore
-        sb.Append((sprintf "IF NOT EXIST \"%s\" md \"%s\"",(FileSystem.pathValue logDirectory))).AppendLine(String.Empty)|>ignore
+        let logDirectoryLine = sprintf "IF NOT EXIST \"%s\" md \"%s\"" (FileSystem.pathValue logDirectory) (FileSystem.pathValue logDirectory)
+        sb.Append(logDirectoryLine).AppendLine(String.Empty)|>ignore
         sb.AppendLine(installCommandLine)|>ignore
         if (packageIsUsingDpInst) then
             sb.AppendLine("")|>ignore
