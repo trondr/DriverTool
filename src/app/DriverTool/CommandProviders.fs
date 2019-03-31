@@ -34,7 +34,7 @@ module CommandProviders =
     let exportLocalUdateInfo (csvFilePathString, overwrite, excludeUpdatePatterns) =
         Logging.genericLogger Logging.LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns)
     
-    let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns) =
+    let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns, packageTypeName) =
         match (result {
                 let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString,true)
                 let! systemFamily = SystemFamily.create systemFamilyString true
@@ -43,15 +43,15 @@ module CommandProviders =
                 let! destinationFolderPath = FileSystem.path destinationFolder
                 let! logDirectory = FileSystem.path DriverTool.Configuration.getDriverPackageLogDirectoryPath
                 let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
-                let driverPackageCreationContext = DriverTool.CreateDriverPackage.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns
+                let driverPackageCreationContext = DriverTool.CreateDriverPackage.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName
                 let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage driverPackageCreationContext
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns) =
-        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns)
+    let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns,packageTypeName) =
+        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns,packageTypeName)
     
     let installDriverPackageBase (driverPackagePathString) =
         match( result {
