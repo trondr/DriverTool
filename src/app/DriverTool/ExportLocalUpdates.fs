@@ -13,15 +13,8 @@ module ExportLocalUpdates =
             let! localModelCode = ModelCode.create String.Empty true
             let! localOperatingSystemCode = OperatingSystemCode.create String.Empty true
             let getUpdates = DriverTool.Updates.getUpdatesFunc (localManufacturer, true)
-            
-            let updatesRetrievalContext : UpdatesRetrievalContext = 
-                    {
-                        Model = localModelCode
-                        OperatingSystem = localOperatingSystemCode
-                        Overwrite = true
-                        LogDirectory = DriverTool.Configuration.getDriverPackageLogDirectoryPath
-                    }
-            
+            let! logDirectory = FileSystem.path DriverTool.Configuration.getDriverPackageLogDirectoryPath
+            let updatesRetrievalContext = toUpdatesRetrievalContext localModelCode localOperatingSystemCode true logDirectory
             let! localUpdates = getUpdates updatesRetrievalContext
             let! exportResult = DriverTool.CsvOperations.exportToCsv (csvFilePath, localUpdates)
             logger.Info("Locally installed updates have been exported to file: " + FileSystem.pathValue csvFilePath)

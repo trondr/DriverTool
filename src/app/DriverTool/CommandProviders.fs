@@ -39,7 +39,7 @@ module CommandProviders =
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! destinationFolderPath = FileSystem.path destinationFolder
-                let logDirectory = DriverTool.Configuration.getDriverPackageLogDirectoryPath
+                let! logDirectory = FileSystem.path DriverTool.Configuration.getDriverPackageLogDirectoryPath
                 let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage (packagePublisher,manufacturer,systemFamily,modelCode, operatingSystemCode, destinationFolderPath,baseOnLocallyInstalledUpdates, logDirectory)
                 return createDriverPackageResult
             }) with

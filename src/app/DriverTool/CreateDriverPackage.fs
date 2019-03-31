@@ -124,12 +124,12 @@ module CreateDriverPackage =
     let writeTextToFile (filePath:FileSystem.Path) (text:string) =
         tryCatch writeTextToFileUnsafe (filePath, text)
 
-    let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer2,logDirectory:string) =
+    let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer2,logDirectory:FileSystem.Path) =
         let sb = new StringBuilder()
         sb.AppendLine("Set ExitCode=0")|>ignore
         sb.AppendLine("pushd \"%~dp0\"")|>ignore
         sb.AppendLine("")|>ignore
-        sb.AppendFormat("IF NOT EXIST \"{0}\" md \"{0}\"",logDirectory).AppendLine(String.Empty)|>ignore
+        sb.Append((sprintf "IF NOT EXIST \"%s\" md \"%s\"",(FileSystem.pathValue logDirectory))).AppendLine(String.Empty)|>ignore
         sb.AppendLine(installCommandLine)|>ignore
         if (packageIsUsingDpInst) then
             sb.AppendLine("")|>ignore
@@ -169,7 +169,7 @@ module CreateDriverPackage =
     let dtInstallPackageCmd = "DT-Install-Package.cmd"
     let dtUnInstallPackageCmd = "DT-UnInstall-Package.cmd"
 
-    let createInstallScript (extractedUpdate:ExtractedPackageInfo,manufacturer:Manufacturer2,logDirectory:string) =
+    let createInstallScript (extractedUpdate:ExtractedPackageInfo,manufacturer:Manufacturer2,logDirectory:FileSystem.Path) =
         result{
             let! installScriptPath = PathOperations.combine2Paths(extractedUpdate.ExtractedDirectoryPath,dtInstallPackageCmd)
             let installCommandLine = extractedUpdate.DownloadedPackage.Package.InstallCommandLine.Replace("%PACKAGEPATH%\\","")            
@@ -184,7 +184,7 @@ module CreateDriverPackage =
             return installScript
         }
 
-    let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer2,logDirectory:string) =
+    let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer2,logDirectory:FileSystem.Path) =
         let extractedUpdatesList = 
             extractedUpdates.ToList()
         logger.InfoFormat("Creating install script for {0} packages...",extractedUpdatesList.Count)
@@ -215,8 +215,8 @@ module CreateDriverPackage =
             let! packageDefinitonSmsPath = combine2Paths (extractedUpdate.ExtractedDirectoryPath,"PackageDefinition.sms")   
             let installLogFileName = toValidDirectoryName ("Install_" + extractedUpdate.DownloadedPackage.Package.Title + "_" + extractedUpdate.DownloadedPackage.Package.Version + ".log")
             let unInstallLogFileName = toValidDirectoryName ("UnInstall_" + extractedUpdate.DownloadedPackage.Package.Title + "_" + extractedUpdate.DownloadedPackage.Package.Version + ".log")
-            let installLogFile = System.IO.Path.Combine(logDirectory,installLogFileName)
-            let unInstallLogFile = System.IO.Path.Combine(logDirectory,unInstallLogFileName)
+            let installLogFile = System.IO.Path.Combine(FileSystem.pathValue logDirectory,installLogFileName)
+            let unInstallLogFile = System.IO.Path.Combine(FileSystem.pathValue logDirectory,unInstallLogFileName)
             let packageDefinition =
                 {
                     Name = extractedUpdate.DownloadedPackage.Package.Title;
@@ -232,7 +232,7 @@ module CreateDriverPackage =
             return! writeTextToFileResult
         }
     
-    let createPackageDefinitionFiles (extractedUpdates:seq<ExtractedPackageInfo>, logDirectory:string) =
+    let createPackageDefinitionFiles (extractedUpdates:seq<ExtractedPackageInfo>, logDirectory) =
         extractedUpdates
         |> PSeq.map (fun u -> (createPackageDefinitionFile (logDirectory, u)))
         |> PSeq.toArray
@@ -270,13 +270,8 @@ module CreateDriverPackage =
                 let getUpdates = DriverTool.Updates.getUpdatesFunc (manufacturer,baseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
-                let updatesRetrievalContext : UpdatesRetrievalContext = 
-                    {
-                        Model = model
-                        OperatingSystem = operatingSystem
-                        Overwrite = true
-                        LogDirectory = logDirectory
-                    }
+                let updatesRetrievalContext = toUpdatesRetrievalContext model operatingSystem true logDirectory
+                
                 let! packageInfos = getUpdates updatesRetrievalContext
                 let uniquePackageInfos = packageInfos |> Seq.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
@@ -323,7 +318,7 @@ module CreateDriverPackage =
                 
                 let updatedInstallConfiguration = 
                     { installConfiguration with 
-                        LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables logDirectory);
+                        LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables (FileSystem.pathValue logDirectory));
                         LogFileName = toValidDirectoryName (sprintf "%s.log" packageName);
                         PackageName = packageName;
                         PackageVersion = "1.0"

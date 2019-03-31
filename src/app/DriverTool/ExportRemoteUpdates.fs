@@ -10,15 +10,8 @@ module ExportRemoteUpdates =
         result {
             let! csvFilePath = ensureFileDoesNotExist overwrite csvFilePath
             let getUpdates = DriverTool.Updates.getUpdatesFunc (manufacturer, false)
-            
-            let updatesRetrievalContext : UpdatesRetrievalContext = 
-                    {
-                        Model = model
-                        OperatingSystem = operatingSystem
-                        Overwrite = overwrite
-                        LogDirectory = DriverTool.Configuration.getDriverPackageLogDirectoryPath
-                    }
-            
+            let! logDirectory = FileSystem.path DriverTool.Configuration.getDriverPackageLogDirectoryPath
+            let updatesRetrievalContext = toUpdatesRetrievalContext model operatingSystem overwrite logDirectory
             let! r = getUpdates updatesRetrievalContext
             let u = Seq.distinct r
             let! e = CsvOperations.exportToCsv (csvFilePath, u)
