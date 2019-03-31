@@ -294,7 +294,9 @@ module CreateDriverPackage =
                 let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.downloadCacheDirectoryPath), sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
-                let packageName = sprintf "%s %s %s %s %s Drivers %s" packagePublisher (manufacturerToName manufacturer) systemFamily.Value model.Value operatingSystem.Value releaseDate
+                let manufacturerName = manufacturerToName manufacturer
+                let systemFamilyName = systemFamily.Value.Replace(manufacturerName,"").Trim()
+                let packageName = sprintf "%s %s %s %s %s Drivers %s" packagePublisher manufacturerName systemFamilyName model.Value operatingSystem.Value releaseDate
                 let! versionedPackagePath = combine3Paths (FileSystem.pathValue destinationFolderPath, model.Value, releaseDate)
 
                 logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath)
