@@ -205,6 +205,16 @@ module SdpCatalog =
             SoftwareDistributionPackages:SoftwareDistributionPackage[]
         }
     
+    /// <summary>
+    /// Release date is calculated as the latest modified time of the origin files
+    /// </summary>
+    /// <param name="sdp">Software distribution package</param>
+    let getSdpReleaseDate sdp =
+        sdp.InstallableItems
+        |>Array.sortByDescending(fun ii -> ii.OriginFile.Modified)
+        |>Array.map(fun ii -> ii.OriginFile.Modified)
+        |>Array.head
+
     let smcNs =
         XNamespace.Get("http://schemas.microsoft.com/sms/2005/04/CorporatePublishing/SystemsManagementCatalog.xsd")
     let sdpNs =
