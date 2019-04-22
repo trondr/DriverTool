@@ -164,7 +164,7 @@ module SdpUpdates =
     let toInstallerName installerData = 
         match installerData with
         |CommandLineInstallerData d -> d.Program
-        |MsiInstallerData d -> "msiexec.exe"
+        |MsiInstallerData d -> d.MsiFile
     
     /// <summary>
     /// Installer data to installer command line arguments
@@ -173,4 +173,4 @@ module SdpUpdates =
     let toInstallerCommandLine installerData = 
         match installerData with
         |CommandLineInstallerData d -> sprintf "\"%s\" %s" (toInstallerName installerData) d.Arguments
-        |MsiInstallerData d -> (sprintf "\"%s\" /i \"%s\" /quiet /qn /norestart %s" (toInstallerName installerData) d.MsiFile  d.CommandLine) 
+        |MsiInstallerData d -> (sprintf "\"%s\" /i \"%s\" /quiet /qn /norestart %s" "msiexec.exe" d.MsiFile d.CommandLine)
