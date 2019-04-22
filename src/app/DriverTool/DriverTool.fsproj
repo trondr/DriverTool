@@ -226,7 +226,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.UpdateServices.Administration">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19063.1\lib\net472\Microsoft.UpdateServices.Administration.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.19112.1\lib\net472\Microsoft.UpdateServices.Administration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -237,7 +237,7 @@
       <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="sdpeval">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19063.1\lib\net472\sdpeval.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.19112.1\lib\net472\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="SharpYaml">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\SharpYaml.dll</HintPath>
