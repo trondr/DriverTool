@@ -21,16 +21,25 @@ module HpUpdates =
                                 Name = sdp.PackageId;
                                 Title = sdp.Title;
                                 Version = "";
-                                BaseUrl = Web.getFolderNameFromUrl originFile.OriginUri
-                                InstallerName = toInstallerName ii.InstallerData
-                                InstallerCrc = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
-                                InstallerSize = originFile.Size
+                                Installer =
+                                    {
+                                        Url = new Uri(originFile.OriginUri)
+                                        Name = toInstallerName ii.InstallerData
+                                        Checksum = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
+                                        Size = originFile.Size
+                                        Type = Installer
+                                    }                                
                                 ExtractCommandLine = ""
                                 InstallCommandLine = toInstallerCommandLine ii.InstallerData
                                 Category = sdp.ProductName
-                                ReadmeName = Web.getFileNameFromUrl sdp.MoreInfoUrl;
-                                ReadmeCrc = "";
-                                ReadmeSize=0L;
+                                Readme =
+                                    {
+                                        Url = new Uri(sdp.MoreInfoUrl)
+                                        Name = Web.getFileNameFromUrl sdp.MoreInfoUrl
+                                        Checksum = ""
+                                        Size = 0L
+                                        Type = Readme
+                                    }
                                 ReleaseDate= (getSdpReleaseDate sdp)|>toDateString
                                 PackageXmlName=sdp.PackageId + ".sdp";
                            }
@@ -113,7 +122,7 @@ module HpUpdates =
         |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
 
     let toReleaseId downloadedPackageInfo =
-        sprintf "%s-%s" (downloadedPackageInfo.Package.InstallerName.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate
+        sprintf "%s-%s" (downloadedPackageInfo.Package.Installer.Name.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate
 
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{

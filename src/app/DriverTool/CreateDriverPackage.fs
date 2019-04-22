@@ -25,7 +25,7 @@ module CreateDriverPackage =
     let getUniqueUpdatesByInstallerName packageInfos = 
         let uniqueUpdates = 
             packageInfos
-            |> Seq.groupBy (fun p -> p.InstallerName)
+            |> Seq.groupBy (fun p -> p.Installer.Name)
             |> Seq.map (fun (k,v) -> v |>Seq.head)
         uniqueUpdates
 
@@ -55,7 +55,7 @@ module CreateDriverPackage =
         |> Seq.filter(fun p ->
                         let downloadJob = downloadJobs|>Seq.tryFind(fun dj -> 
                                                 let djFileName = toFileName dj.DestinationFile
-                                                p.InstallerName = djFileName
+                                                p.Installer.Name = djFileName
                                             )
                         optionToBoolean downloadJob
                     )

@@ -113,16 +113,25 @@ module DellUpdates =
             Name = name
             Title = name
             Version = getAttribute (sc, "vendorVersion")
-            BaseUrl = downloadsBaseUrl + "/" + directory;
-            InstallerName = installerName
-            InstallerCrc = getAttribute (sc,"hashMD5")
-            InstallerSize = int64 (getAttribute (sc,"size"))
+            Installer =
+                {
+                    Url = new Uri(sprintf "%s/%s/%s" downloadsBaseUrl directory installerName)
+                    Name = installerName
+                    Checksum = getAttribute (sc,"hashMD5")
+                    Size = int64 (getAttribute (sc,"size"))
+                    Type = Installer
+                }
             ExtractCommandLine = ""
             InstallCommandLine = (sprintf "\"%s\" /s /l=\"%s\\DUP_%s.log\"" installerName (FileSystem.pathValue logDirectory) installerName)
             Category = getElementValue (sc,"Category")
-            ReadmeName = "";
-            ReadmeCrc = "";
-            ReadmeSize=0L;
+            Readme =
+                {
+                    Url = new Uri("http://dummy")
+                    Name = ""
+                    Checksum = ""
+                    Size = 0L
+                    Type = Readme
+                }            
             ReleaseDate= (getAttribute (sc,"dateTime"))|>toDateString
             PackageXmlName="";
         }

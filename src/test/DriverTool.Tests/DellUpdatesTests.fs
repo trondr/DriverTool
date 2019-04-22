@@ -41,9 +41,36 @@ module DellUpdatesTests =
 
     open DriverTool.PackageXml
     open DriverTool
+    open System
 
     let packageInfoTestData () =        
-        let packageInfo = {Name = "";Title = "";Version = "";BaseUrl = "";InstallerName = "";InstallerCrc = "";InstallerSize = 0L;ExtractCommandLine = "";InstallCommandLine = "";Category = "";ReadmeName = "";ReadmeCrc = "";ReadmeSize=0L;ReleaseDate= "";PackageXmlName="";}
+        let packageInfo = 
+            {
+                Name = "";
+                Title = "";
+                Version = "";                
+                Installer = 
+                    {
+                        Url = new Uri("http://dymmy")
+                        Name = ""
+                        Checksum = ""
+                        Size = 0L
+                        Type = Installer
+                    }
+                ExtractCommandLine = "";
+                InstallCommandLine = "";
+                Category = "";
+                Readme =
+                    {
+                        Url = new Uri("http://dummy")
+                        Name = ""
+                        Checksum = ""
+                        Size = 0L
+                        Type = Installer
+                    }
+                ReleaseDate= "";
+                PackageXmlName="";
+            }
         
         seq{
             yield {packageInfo with Name="Name1";Version="1.0.20.0"}
