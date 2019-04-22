@@ -373,8 +373,8 @@ module CreateDriverPackage =
                         OsShortName = dpcc.OperatingSystem.Value;
                         Publisher = dpcc.PackagePublisher
                     }
-                let savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
-                logger.InfoFormat("Saved install configuration to '%s'. Value:", existingInstallXmlPath, (Logging.valueToString savedInstallConfiguration))
+                let! savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
+                logger.Info(sprintf "Saved install configuration to '%s'. Value: %A" (FileSystem.pathValue existingInstallXmlPath) savedInstallConfiguration)
                 logger.Info("Create PackageDefinition.sms")
                 let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"PackageDefinition.sms"))                
                 let! packageDefintionWriteResult = 
