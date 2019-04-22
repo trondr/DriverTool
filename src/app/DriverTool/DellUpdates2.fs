@@ -9,8 +9,8 @@ module DellUpdates2=
     open DriverTool.DellSettings
     open DriverTool.Web    
     open DriverTool.UpdatesContext
-    open DriverTool.SdpCatalog
-    open DriverTool.SdpUpdates
+    open DriverTool.SdpCatalog    
+    open FSharp.Collections.ParallelSeq
 
     type DellUpdates2 = class end
     let logger = Logging.getLoggerByName(typeof<DellUpdates2>.Name)
@@ -35,11 +35,11 @@ module DellUpdates2=
                                 Title = sdp.Title;
                                 Version = "";
                                 BaseUrl = Web.getFolderNameFromUrl originFile.OriginUri
-                                InstallerName = toInstallerName ii.InstallerData
+                                InstallerName = DriverTool.SdpUpdates.toInstallerName ii.InstallerData
                                 InstallerCrc = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
                                 InstallerSize = originFile.Size
                                 ExtractCommandLine = ""
-                                InstallCommandLine = toInstallerCommandLine ii.InstallerData
+                                InstallCommandLine = DriverTool.SdpUpdates.toInstallerCommandLine ii.InstallerData
                                 Category = sdp.ProductName
                                 ReadmeName = Web.getFileNameFromUrl sdp.MoreInfoUrl;
                                 ReadmeCrc = "";
@@ -53,30 +53,39 @@ module DellUpdates2=
 
     let getLocalUpdates (context:UpdatesRetrievalContext) =
         result{
-            let! supported = validateModelAndOs context.Model context.OperatingSystem
+            let! supported = DriverTool.SdpUpdates.validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles()
-            let! sdps = loadSdps sdpFiles
+            let! sdps = DriverTool.SdpUpdates.loadSdps sdpFiles
             let packageInfos = 
                 sdps                
-                |>Seq.filter localUpdatesFilter
+                |>Seq.filter DriverTool.SdpUpdates.localUpdatesFilter
                 |>Seq.toArray
-                |>(sdpsToPacakgeInfos context toPackageInfos)
-            let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles            
+                |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
+            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache packageInfos sdpFiles            
             return packageInfos
         }
+
+    let printCount count totalCount p =        
+        printf "%i of %i\r" count totalCount
+        p
         
     let getRemoteUpdates (context:UpdatesRetrievalContext) =
         result{
-            let! supported = validateModelAndOs context.Model context.OperatingSystem
+            let! supported = DriverTool.SdpUpdates.validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles()
-            let! sdps = loadSdps sdpFiles
+            let! sdps = DriverTool.SdpUpdates.loadSdps sdpFiles            
+            let mutable count = 0
             let packageInfos = 
                 sdps                
-                |>Seq.filter remoteUpdatesFilter
-                |>Seq.toArray
-                |>(sdpsToPacakgeInfos context toPackageInfos)
-            
-            let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles
+                |>Seq.map(fun p -> 
+                    count <- count + 1 
+                    printf "%i\r" count
+                    p
+                    )
+                |>PSeq.filter DriverTool.SdpUpdates.remoteUpdatesFilter
+                |>PSeq.toArray
+                |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
+            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache packageInfos sdpFiles
             return packageInfos
         }
 
