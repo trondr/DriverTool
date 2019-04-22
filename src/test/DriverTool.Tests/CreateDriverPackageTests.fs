@@ -15,16 +15,25 @@ module CreateDriverPackageTests =
             Name="";
             Title="";
             Version="";
-            BaseUrl="";
-            InstallerName="";
-            InstallerCrc="";
-            InstallerSize=0L;
+            Installer = 
+                {
+                    Url = new Uri("http://dummy")
+                    Name = ""
+                    Checksum = ""
+                    Size = 0L
+                    Type = Installer
+                }            
             ExtractCommandLine="";
             InstallCommandLine="";
             Category="";
-            ReadmeName="";
-            ReadmeCrc="";
-            ReadmeSize=0L;
+            Readme =
+                {
+                    Url = new Uri("http://dummy")
+                    Name = ""
+                    Checksum = ""
+                    Size = 0L
+                    Type = Readme
+                }            
             ReleaseDate="";
             PackageXmlName=""
         }
@@ -47,11 +56,11 @@ module CreateDriverPackageTests =
         let installerName5="somefile_with_invalid_signature_xghijkl.exe"
         
         let packageInfos : array<PackageInfo> = [|
-                    {defaulPackageInfo with InstallerName=installerName1}
-                    {defaulPackageInfo with InstallerName=installerName2}
-                    {defaulPackageInfo with InstallerName=installerName3}
-                    {defaulPackageInfo with InstallerName=installerName4}
-                    {defaulPackageInfo with InstallerName=installerName5}
+                    {defaulPackageInfo with Installer={defaulPackageInfo.Installer with Name=installerName1}}
+                    {defaulPackageInfo with Installer={defaulPackageInfo.Installer with Name=installerName2}}
+                    {defaulPackageInfo with Installer={defaulPackageInfo.Installer with Name=installerName3}}
+                    {defaulPackageInfo with Installer={defaulPackageInfo.Installer with Name=installerName4}}
+                    {defaulPackageInfo with Installer={defaulPackageInfo.Installer with Name=installerName5}}
                     |]
 
         let downloadInfos = 

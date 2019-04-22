@@ -240,7 +240,7 @@ module LenovoUpdates =
             |>Seq.filter(fun p -> 
                             let remotePackageInfo = 
                                 remotePackageInfos
-                                |> Seq.tryFind(fun rp -> rp.InstallerName = p.InstallerName)
+                                |> Seq.tryFind(fun rp -> rp.Installer.Name = p.Installer.Name)
                             match remotePackageInfo with
                             |Some _ -> true
                             |None -> 
@@ -251,11 +251,11 @@ module LenovoUpdates =
             |>Seq.map(fun p -> 
                         let remotePackageInfo = 
                             remotePackageInfos
-                            |> Seq.tryFind(fun rp -> rp.InstallerName = p.InstallerName)
+                            |> Seq.tryFind(fun rp -> rp.Installer.Name = p.Installer.Name)
                         let updatedPackageInfo =
                             match remotePackageInfo with
-                            |Some rp ->                         
-                                {p with Category=rp.Category;BaseUrl=rp.BaseUrl} 
+                            |Some rp ->                                
+                                {p with Category=rp.Category;Installer={p.Installer with Url = rp.Installer.Url};Readme={p.Readme with Url = rp.Readme.Url}}
                             |None -> p
                         updatedPackageInfo
                         )

@@ -34,16 +34,25 @@ module DellUpdates2=
                                 Name = sdp.PackageId;
                                 Title = sdp.Title;
                                 Version = "";
-                                BaseUrl = Web.getFolderNameFromUrl originFile.OriginUri
-                                InstallerName = DriverTool.SdpUpdates.toInstallerName ii.InstallerData
-                                InstallerCrc = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
-                                InstallerSize = originFile.Size
+                                Installer =
+                                    {
+                                        Url = new Uri(originFile.OriginUri)
+                                        Name = DriverTool.SdpUpdates.toInstallerName ii.InstallerData
+                                        Checksum = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
+                                        Size = originFile.Size
+                                        Type = Installer
+                                    }                                
                                 ExtractCommandLine = ""
                                 InstallCommandLine = DriverTool.SdpUpdates.toInstallerCommandLine ii.InstallerData
                                 Category = sdp.ProductName
-                                ReadmeName = Web.getFileNameFromUrl sdp.MoreInfoUrl;
-                                ReadmeCrc = "";
-                                ReadmeSize=0L;
+                                Readme =
+                                    {
+                                        Url = new Uri(sdp.MoreInfoUrl)
+                                        Name = Web.getFileNameFromUrl sdp.MoreInfoUrl
+                                        Checksum = ""
+                                        Size = 0L
+                                        Type = Readme
+                                    }                                
                                 ReleaseDate= (getSdpReleaseDate sdp)|>toDateString
                                 PackageXmlName=sdp.PackageId + ".sdp";
                            }
