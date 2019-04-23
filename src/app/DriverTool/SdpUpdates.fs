@@ -73,10 +73,9 @@ module SdpUpdates =
     /// <param name="sdp"></param>
     let localUpdatesFilter sdp =
         sdp.InstallableItems
-        |>Seq.tryFind(fun ii -> 
-                let isInstallable = evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstallable false
-                let isInstalled =  evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstalled false                                
-                (isInstallable && isInstalled)
+        |>Seq.tryFind(fun ii ->                 
+                let isInstalled =  evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstalled false
+                isInstalled
             )
         |> optionToBoolean
 
