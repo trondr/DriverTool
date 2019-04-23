@@ -65,10 +65,16 @@ module DellUpdates2=
             let! supported = DriverTool.SdpUpdates.validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles()
             let! sdps = DriverTool.SdpUpdates.loadSdps sdpFiles
+            let mutable count = 0
             let packageInfos = 
-                sdps                
-                |>Seq.filter DriverTool.SdpUpdates.localUpdatesFilter
-                |>Seq.toArray
+                sdps
+                |>Seq.map(fun p -> 
+                    count <- count + 1 
+                    printf "%i\r" count
+                    p
+                    )
+                |>PSeq.filter DriverTool.SdpUpdates.localUpdatesFilter
+                |>PSeq.toArray
                 |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
             let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache packageInfos sdpFiles            
             return packageInfos
