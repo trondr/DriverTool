@@ -216,7 +216,7 @@
       <HintPath>..\..\..\packages\FSharp.Core.4.6.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.3.0.1\lib\net45\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.1.1\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Interop.Dynamic">
       <HintPath>..\..\..\packages\FSharp.Interop.Dynamic.4.0.3.130\lib\net40\FSharp.Interop.Dynamic.dll</HintPath>
@@ -226,7 +226,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.UpdateServices.Administration">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19112.1\lib\net472\Microsoft.UpdateServices.Administration.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.19114.2\lib\net472\Microsoft.UpdateServices.Administration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -234,10 +234,10 @@
       <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net452\NCmdLiner.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="sdpeval">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19112.1\lib\net472\sdpeval.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.19114.2\lib\net472\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="SharpYaml">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\SharpYaml.dll</HintPath>
@@ -248,7 +248,7 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive">
-      <HintPath>..\..\..\packages\System.Reactive.4.1.3\lib\net46\System.Reactive.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Reactive.4.1.5\lib\net46\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
       <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
