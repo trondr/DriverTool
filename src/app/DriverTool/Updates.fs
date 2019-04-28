@@ -5,42 +5,48 @@ open DriverTool.ManufacturerTypes
 
 module Updates =
 
-    let getUpdates (manufacturer:Manufacturer2,baseOnLocallyInstalledUpdates:bool) =
+    let getUpdatesFunc (manufacturer:Manufacturer,baseOnLocallyInstalledUpdates:bool) =
         match manufacturer with
-        |Manufacturer2.Dell _ -> 
+        |Manufacturer.Dell _ -> 
             match baseOnLocallyInstalledUpdates with
-            |true -> DellUpdates.getLocalUpdates
-            |false -> DellUpdates.getRemoteUpdates
-        |Manufacturer2.HP _ -> 
+            |true -> DellUpdates2.getLocalUpdates
+            |false -> DellUpdates2.getRemoteUpdates
+        |Manufacturer.HP _ -> 
             match baseOnLocallyInstalledUpdates with
-            |true -> raise (new NotImplementedException("Getting locally installed HP updates is not implemented"))
+            |true -> HpUpdates.getLocalUpdates
             |false -> HpUpdates.getRemoteUpdates
-        |Manufacturer2.Lenovo _ ->        
+        |Manufacturer.Lenovo _ ->        
             match baseOnLocallyInstalledUpdates with
             |true -> LenovoUpdates.getLocalUpdates
             |false -> LenovoUpdates.getRemoteUpdates
 
-    let getSccmPackageFunc (manufacturer:Manufacturer2) = 
+    let updateDownloadedPackageInfoFunc (manufacturer:Manufacturer) =
         match manufacturer with
-        |Manufacturer2.Dell _ -> DellUpdates.getSccmDriverPackageInfo
-        |Manufacturer2.HP _ -> HpUpdates.getSccmDriverPackageInfo
-        |Manufacturer2.Lenovo _ -> LenovoUpdates.getSccmDriverPackageInfo
+        |Manufacturer.Dell _ -> DellUpdates2.updateDownloadedPackageInfo
+        |Manufacturer.HP _ -> HpUpdates.updateDownloadedPackageInfo
+        |Manufacturer.Lenovo _ -> LenovoUpdates.updateDownloadedPackageInfo
+
+    let getSccmPackageFunc (manufacturer:Manufacturer) = 
+        match manufacturer with
+        |Manufacturer.Dell _ -> DellUpdates2.getSccmDriverPackageInfo
+        |Manufacturer.HP _ -> HpUpdates.getSccmDriverPackageInfo
+        |Manufacturer.Lenovo _ -> LenovoUpdates.getSccmDriverPackageInfo
 
         
-    let downloadSccmPackageFunc (manufacturer:Manufacturer2) = 
+    let downloadSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer2.Dell _ -> DellUpdates.downloadSccmPackage
-        |Manufacturer2.HP _ -> HpUpdates.downloadSccmPackage
-        |Manufacturer2.Lenovo _ -> LenovoUpdates.downloadSccmPackage
+        |Manufacturer.Dell _ -> DellUpdates2.downloadSccmPackage
+        |Manufacturer.HP _ -> HpUpdates.downloadSccmPackage
+        |Manufacturer.Lenovo _ -> LenovoUpdates.downloadSccmPackage
         
-    let extractSccmPackageFunc (manufacturer:Manufacturer2) = 
+    let extractSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer2.Dell _ -> DellUpdates.extractSccmPackage
-        |Manufacturer2.HP _ -> HpUpdates.extractSccmPackage
-        |Manufacturer2.Lenovo _->  LenovoUpdates.extractSccmPackage
+        |Manufacturer.Dell _ -> DellUpdates2.extractSccmPackage
+        |Manufacturer.HP _ -> HpUpdates.extractSccmPackage
+        |Manufacturer.Lenovo _->  LenovoUpdates.extractSccmPackage
         
-    let extractUpdateFunc (manufacturer:Manufacturer2) = 
+    let extractUpdateFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer2.Dell _ -> DellUpdates.extractUpdate
-        |Manufacturer2.HP _ -> HpUpdates.extractUpdate
-        |Manufacturer2.Lenovo _ -> LenovoUpdates.extractUpdate
+        |Manufacturer.Dell _ -> DellUpdates2.extractUpdate
+        |Manufacturer.HP _ -> HpUpdates.extractUpdate
+        |Manufacturer.Lenovo _ -> LenovoUpdates.extractUpdate

@@ -83,20 +83,33 @@
     <Compile Include="CompressionTests.fs" />
     <Compile Include="XmlToolKitTests.fs" />
     <Compile Include="PackageXmlTests.fs" />
+    <Compile Include="SdpCatalogTests.fs" />
+    <Compile Include="InstallXmlTests.fs" />
+    <Compile Include="RegExpTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
+    <EmbeddedResource Include="TestData\HPCatalog\HP_sp92489.html" />
+    <EmbeddedResource Include="TestData\HPCatalog\HP_sp95015.html" />
+    <EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
+    <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC.zip" />
+    <EmbeddedResource Include="TestData\SdpCatalog\0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp" />
+    <EmbeddedResource Include="TestData\SdpCatalog\dc718411-a5f1-4b15-966a-63a77cbb156e.sdp" />
+    <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.zip" />
+    <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.latest_V2.zip" />
+    <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC_V2.zip" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_n1cx802w_2_.xml" />
+    <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
       <HintPath>..\..\..\packages\FSharp.Core.4.6.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.3.0.0\lib\net45\FSharp.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Data.Xsd">
-      <HintPath>..\..\..\packages\FSharp.Data.Xsd.1.0.2\lib\net45\FSharp.Data.Xsd.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.0.1\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>

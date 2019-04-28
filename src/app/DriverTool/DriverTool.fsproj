@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /manufacturer="LENOVO" /modelCode="10FL"  /operatingSystemCode="WIN10X64" /baseOnLocallyInstalledUpdates="False"</StartArguments>
+    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="True"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -79,6 +79,9 @@
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
     <EmbeddedResource Include="Tools\CorFlags\x86\CorFlags.exe" />
     <EmbeddedResource Include="Tools\CorFlags\x64\CorFlags.exe" />
+    <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.dll" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
     <EmbeddedResource Include="Libs\Dynamitey.dll" />
@@ -91,8 +94,10 @@
     <EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
     <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
     <EmbeddedResource Include="Libs\log4net.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.UpdateServices.Administration.dll" />
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Libs\sdpeval.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
     <EmbeddedResource Include="Libs\System.Reactive.dll" />
     <EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
@@ -114,6 +119,8 @@
     <Compile Include="CsvOperations.fs" />
     <Compile Include="Environment.fs" />
     <Compile Include="XmlToolKit.fs" />
+    <Compile Include="XmlHelper.fs" />
+    <Compile Include="HtmlHelper.fs" />
     <Compile Include="Cryptography.fs" />
     <Compile Include="Checksum.fs" />
     <Compile Include="ProcessOperations.fs" />
@@ -121,23 +128,30 @@
     <Compile Include="WmiHelper.fs" />
     <Compile Include="OperatingSystem.fs" />
     <Compile Include="OperatingSystemOperations.fs" />
-    <Compile Include="Manufacturer2.fs" />
+    <Compile Include="Manufacturer.fs" />
     <Compile Include="SystemInfo.fs" />
     <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
+    <Compile Include="RegExp.fs" />
     <Compile Include="LenovoSystemUpdateCheck.fs" />
     <Compile Include="Web.fs" />
+    <Compile Include="UpdatesContext.fs" />
+    <Compile Include="SdpCatalog.fs" />
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="Cab.fs" />
+    <Compile Include="SdpUpdates.fs" />
     <Compile Include="HpCatalog.fs" />
     <Compile Include="HpUpdates.fs" />
     <Compile Include="DellSettings.fs" />
     <Compile Include="DellCommandUpdate.fs" />
+    <Compile Include="DellCatalog.fs" />
+    <Compile Include="DellUpdates2.fs" />
     <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoSystemUpdate.fs" />
     <Compile Include="WebParsing.fs" />
+    <Compile Include="LenovoCatalogXml.fs" />
     <Compile Include="LenovoCatalog.fs" />
     <Compile Include="LenovoUpdates.fs" />
     <Compile Include="Updates.fs" />
@@ -177,6 +191,12 @@
     <Reference Include="Common">
       <HintPath>..\..\..\packages_manual\Lenovo\Common.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\..\..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
     <Reference Include="CsvHelper">
       <HintPath>..\..\..\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll</HintPath>
     </Reference>
@@ -190,16 +210,13 @@
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Control.Reactive">
-      <HintPath>..\..\..\packages\FSharp.Control.Reactive.4.1.0\lib\net46\FSharp.Control.Reactive.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Control.Reactive.4.2.0\lib\net46\FSharp.Control.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\..\..\packages\FSharp.Core.4.6.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.3.0.0\lib\net45\FSharp.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Data.Xsd">
-      <HintPath>..\..\..\packages\FSharp.Data.Xsd.1.0.2\lib\net45\FSharp.Data.Xsd.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.1.1\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Interop.Dynamic">
       <HintPath>..\..\..\packages\FSharp.Interop.Dynamic.4.0.3.130\lib\net40\FSharp.Interop.Dynamic.dll</HintPath>
@@ -208,12 +225,19 @@
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.UpdateServices.Administration">
+      <HintPath>..\..\..\packages\sdpeval.1.0.19114.2\lib\net472\Microsoft.UpdateServices.Administration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NCmdLiner">
       <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net452\NCmdLiner.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="sdpeval">
+      <HintPath>..\..\..\packages\sdpeval.1.0.19114.2\lib\net472\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="SharpYaml">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\SharpYaml.dll</HintPath>
@@ -224,13 +248,13 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive">
-      <HintPath>..\..\..\packages\System.Reactive.4.1.2\lib\net46\System.Reactive.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Reactive.4.1.5\lib\net46\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
-      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>

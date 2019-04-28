@@ -1,0 +1,28 @@
+HP Issue 1
+----------
+There is an issue with an currently unknown HP driver or software creating and installing files into folder: C:\Windows\sysnative
+	MSVCP140.dll
+	VCRUNTIME140.dll
+These files should probably have been installed into C:\Windows\System32.
+The fact that C:\Windows\sysnative exists for a 64 bit process this might trip an cmd installations checking for this folder in the following manner: "If sysnative folder exists then assume 32 bit process and set "C:\Windows\sysnative" as location of the 64 bits cmd.exe to launch 64 bits process cmd." This logic will only work if c:\Windows\sysnative does not exists for 64 bit processes, which is usually correct.
+This needs to be investigated further.
+
+
+HP Issue 2
+----------
+After installing the HP updates using command lines as specified in WSUS updates ftp://ftp.hp.com/pub/softlib/software/sms_catalog/HpCatalogForSms.latest.cab
+the updates leave a folder with all the installation files C:\SWSetup. Approx 5 GB of data. No cleanup is done.
+
+
+
+Dell Update Catalog
+-------------------
+ftp://ftp.dell.com/catalog/DellSDPCatalogPC.cab
+
+
+
+Lenovo Update Catalog?
+----------------------
+
+
+

@@ -5,11 +5,12 @@ open NUnit.Framework
 open System
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
 module HpCatalogTests =
     open Init
+    open DriverTool
     
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     let downloadDriverPackCatalogTest () = 
         let actual = 
             result
@@ -24,6 +25,7 @@ module HpCatalogTests =
         |Error e -> Assert.Fail(e.Message)
     
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     let getSoftPaqsTest () =
         match(result
                 {
@@ -49,6 +51,7 @@ module HpCatalogTests =
         |Error e -> Assert.Fail(e.Message)
        
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     let getProductOSDriverPacksTest () =  
          match(result
                 {
@@ -67,7 +70,8 @@ module HpCatalogTests =
          |Ok _ -> Assert.IsTrue(true)
          |Error e -> Assert.Fail(e.Message)
         
-    [<Test>]    
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     [<TestCase("WIN10X64","83B3")>]
     let getSccmDriverPackageInfoBase (operatingSystemCodeString:string,modelCodeString:string) =
         match(result
@@ -85,3 +89,14 @@ module HpCatalogTests =
          |Ok _ -> Assert.IsTrue(true)
          |Error e -> Assert.Fail(e.Message)
         
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let downloadSmsSdpCatalogTest () =
+        let res = result{
+            let! actual = HpCatalog.downloadSmsSdpCatalog()
+            Assert.IsTrue(FileOperations.directoryExists actual)
+            return actual
+        }
+        match res with
+        |Ok s -> Assert.IsTrue(true)
+        |Error ex -> Assert.Fail(ex.Message)

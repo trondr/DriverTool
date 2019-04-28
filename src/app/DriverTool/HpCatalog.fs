@@ -4,14 +4,11 @@ module HpCatalog =
     let soruceDriverPackCatalogCab = "https://ftp.hp.com/pub/caps-softpaq/cmit/HPClientDriverPackCatalog.cab"
     let platformListCab = "https://ftp.hp.com/pub/caps-softpaq/cmit/imagepal/ref/platformList.cab"
     let softPackSource = "https://ftp.hp.com/pub/softpaq/"
-    let sccmPackageCatalog = "https://ftp.hp.com/pub/softlib/software/sms_catalog/HpCatalogForSms.latest.cab"
+    let smsSdpCatalog = "https://ftp.hp.com/pub/softlib/software/sms_catalog/HpCatalogForSms.latest.cab"
 
     open System
     open DriverTool.Configuration
 
-    let expandExe =
-        System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
-    
     open DriverTool.Cab
 
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path, destinationFilePath:FileSystem.Path) =
@@ -26,7 +23,7 @@ module HpCatalog =
 
     let downloadDriverPackCatalog () =
         result{
-            let! destinationFolderPath = FileSystem.path getDownloadCacheDirectoryPath
+            let! destinationFolderPath = FileSystem.path downloadCacheDirectoryPath
             let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HPClientDriverPackCatalog.cab")
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(soruceDriverPackCatalogCab), true, nonExistingDestinationCabFile)
@@ -35,6 +32,20 @@ module HpCatalog =
             let! expandResult = expandCabFile (existingDestinationCabFile, destinationFolderPath,destinationFilePath)
             let! existingDriverPackageCatalogXmlPath = FileOperations.ensureFileExists destinationFilePath            
             return existingDriverPackageCatalogXmlPath
+        }
+    
+    let downloadSmsSdpCatalog () =
+        result{
+            let! destinationFolderPath = FileSystem.path downloadCacheDirectoryPath
+            let! hpCatalogDestinationFolderPath = FileSystem.path (System.IO.Path.Combine(downloadCacheDirectoryPath,"HpCatalogForSms.latest"))
+            let! nonExistingHpCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true hpCatalogDestinationFolderPath
+            let! existingHpCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (nonExistingHpCatalogDestinationFolderPath,true) 
+            let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HpCatalogForSms.latest.cab")
+            let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
+            let! downloadResult = Web.downloadFile (new Uri(smsSdpCatalog), true, nonExistingDestinationCabFile)
+            let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            
+            let! expandResult = DriverTool.SdpUpdates.expandSmsSdpCabFile (existingDestinationCabFile, existingHpCatalogDestinationFolderPath)                        
+            return existingHpCatalogDestinationFolderPath
         }
 
     open System.Xml.Linq

@@ -1,7 +1,8 @@
 ﻿namespace DriverTool
 
 module Robocopy=
-    open System
+    open System    
+    open DriverTool.Environment
 
     let logger = Logging.getLoggerByName("Robocopy")
 
@@ -60,10 +61,6 @@ module Robocopy=
             Result.Ok 0
         | _ -> Result.Error (new Exception(sprintf "Unknown Robocopy exit code: %i" roboCopyExitCode))
     
-    open System
-    open DriverTool.Environment
-
-
     let roboCopyExe =
         System.IO.Path.Combine(nativeSystemFolder,"Robocopy.exe")
         

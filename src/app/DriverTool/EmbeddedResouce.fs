@@ -132,12 +132,13 @@ module EmbeddedResouce =
     let extractEmbeddedResouceByFileNameBase (fileName, destinationFolderPath:FileSystem.Path, destinationFileName, assembly:Assembly) =
         let resourceNames = 
             getAllEmbeddedResourceNamesBase assembly
-            |> Seq.filter (fun rn -> rn.EndsWith(fileName))
-            |> Seq.toArray
-        match resourceNames.Length with
-        | 1 -> 
+            |>Seq.filter (fun rn -> rn.EndsWith(fileName))
+            |>Seq.sort
+            |>Seq.toArray            
+        match resourceNames.Length > 0 with
+        | true -> 
             extractEmbeddedResourceBase (resourceNames.[0],destinationFolderPath,destinationFileName, assembly)
-        | _ -> raise (new Exception("File not found in embedded resource: " + fileName))
+        | false -> raise (new Exception("File not found in embedded resource: " + fileName))
 
     let extractEmbeddedResouceByFileName (fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =
         let assembly = typeof<ThisAssembly>.Assembly

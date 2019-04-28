@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+  <action>
+    <Name>Conexant HD Audio Driver 2017/2018</Name>
+    <GUID>91fe8a2f-f09f-44b9-b93d-d6a5ce2637cb</GUID>
+    <Softpaq>sp92797</Softpaq>
+    <Status>1</Status>
+  </action>
+  <action>
+    <Name>HP Firmware Pack (Q78)</Name>
+    <GUID>955752f0-0da8-4b39-b597-61e786bd8131</GUID>
+    <Softpaq>sp94780</Softpaq>
+    <Status>0</Status>
+  </action>
+  <action>
+    <Name>HP Universal Camera Driver 2017/2018</Name>
+    <GUID>72f0008a-a8c6-45bd-a47b-009ef33002c1</GUID>
+    <Softpaq>sp90115</Softpaq>
+    <Status>0</Status>
+  </action>
+  <action>
+    <Name>Intel Bluetooth Driver</Name>
+    <GUID>584607f6-3da3-4747-9c79-60ad16c5a1db</GUID>
+    <Softpaq>sp93050</Softpaq>
+    <Status>0</Status>
+  </action>
+  <action>
+    <Name>Intel Chipset Installation Utility</Name>
+    <GUID>31efc543-8406-4569-a0ca-631a263c906b</GUID>
+    <Softpaq>sp84426</Softpaq>
+    <Status>0</Status>
+  </action>
+  <action>
+    <Name>Intel Management Engine Driver</Name>
+    <GUID>b21fba77-11cb-43b9-8248-b534cd81f47d</GUID>
+    <Softpaq>sp88934</Softpaq>
+    <Status>0</Status>
+  </action>
+  <action>
+    <Name>Intel WLAN Driver for Microsoft Windows 10</Name>
+    <GUID>0a10a774-b4b7-4396-b6ce-284b85e0cb09</GUID>
+    <Softpaq>sp88888</Softpaq>
+    <Status>0</Status>
+  </action>
+  <action>
+    <Name>Synaptics VFS7552 WBF Touch Fingerprint Driver</Name>
+    <GUID>515021d7-4bf9-4c48-95dd-215c127589be</GUID>
+    <Softpaq>sp93499</Softpaq>
+    <Status>0</Status>
+  </action>
+</actions>

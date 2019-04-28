@@ -9,6 +9,8 @@ module Web =
     type Web = class end
     let logger = Logging.getLoggerByName(typeof<Web>.Name)
 
+    type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
+
     type DownloadInfo =
         {
             SourceUri:Uri;
@@ -42,15 +44,18 @@ module Web =
             messageLoop()
             )
 
+    let progressMessage percentage count totalCount msg =
+        sprintf "%3i%% (%10i of %10i): %-47s\r" percentage count totalCount msg
+        
     let printProgress sourceUri (progress:DownloadProgressChangedEventArgs) = 
-        progressActor.Post (sprintf "%A: %i%% (%i of %i)\r" sourceUri progress.ProgressPercentage progress.BytesReceived progress.TotalBytesToReceive)
+        progressActor.Post (progressMessage progress.ProgressPercentage progress.BytesReceived progress.TotalBytesToReceive sourceUri)
 
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
             webClient.Proxy <- null;            
             use disposable = 
-                webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri progress)
+                webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri.OriginalString progress)
             let webHeaderCollection = new WebHeaderCollection()
             webHeaderCollection.Add("User-Agent", "DriverTool/1.0") 
             webClient.Headers <- webHeaderCollection                          
@@ -62,7 +67,7 @@ module Web =
                 Result.Ok path      
             |Error ex -> Result.Error (new Exception((sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)), ex))
         with
-        | ex -> Result.Error (new Exception(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString ex.Message, ex))
+        | ex -> Result.Error (new Exception(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (getAccumulatedExceptionMessages ex), ex))
     
     let downloadFile (sourceUri:Uri, force, destinationFilePath) =
         Logging.genericLoggerResult Logging.LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
@@ -71,14 +76,16 @@ module Web =
         (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
 
     let downloadIsRequired downloadInfo =
-        not (hasSameFileHash downloadInfo)        
+        (String.IsNullOrEmpty(downloadInfo.SourceChecksum))||(not (hasSameFileHash downloadInfo))
     
     type HasSameFileHashFunc = (DownloadInfo) -> bool
     type IsTrustedFunc = FileSystem.Path -> bool
 
     let verifyDownloadBase (hasSameFileHashFunc: HasSameFileHashFunc, isTrustedFunc: IsTrustedFunc, logger: ILog , downloadInfo, ignoreVerificationErrors) = 
         match (hasSameFileHashFunc downloadInfo) with
-        |true  -> Result.Ok downloadInfo
+        |true  -> 
+            logger.Info(sprintf "Destination file ('%s') hash match source file ('%s') hash." )
+            Result.Ok downloadInfo
         |false ->
             let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue downloadInfo.DestinationFile) downloadInfo.SourceUri.OriginalString
             match ignoreVerificationErrors with
@@ -109,15 +116,13 @@ module Web =
             logger.Info(sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile))
             Result.Ok downloadInfo
 
-    type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
-
     let toUriUnsafe url =
         new Uri(url)
     
     let toUri url =
         tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
 
-    let downloadWebFile (destinationFolderPath:FileSystem.Path, webFile:WebFile) =
+    let downloadWebFile (destinationFolderPath:FileSystem.Path) (webFile:WebFile) =
         result{
             let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,webFile.FileName))
             let! sourceUri = toUri webFile.Url
@@ -129,3 +134,7 @@ module Web =
     let getFileNameFromUrl (url:string) =
         let uri = new Uri(url)        
         uri.Segments.[uri.Segments.Length-1]
+
+    let getFolderNameFromUrl (url:string) =
+        let fileName = getFileNameFromUrl url
+        url.Replace(fileName,"").Trim(System.IO.Path.AltDirectorySeparatorChar)

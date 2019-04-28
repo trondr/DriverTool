@@ -7,11 +7,11 @@ module LenovoCatalog =
     let logger = Logging.getLoggerByName("LenovoCatalog")
     
     open System
-
-    type CatalogXmlProvider = XmlProvider<"https://download.lenovo.com/cdrt/td/catalog.xml">
+    open LenovoCatalogXml
+    open DriverTool.F
 
     let getCacheDirectory =
-        DriverTool.Configuration.getDownloadCacheDirectoryPath
+        DriverTool.Configuration.downloadCacheDirectoryPath
 
     let getLocalLenvoCatalogXmlFilePath =
         FileSystem.path (System.IO.Path.Combine(getCacheDirectory,"LenovoCatalog.xml"))
@@ -26,29 +26,38 @@ module LenovoCatalog =
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
 
     let getSccmPackageInfos =
-        result{
-            let! catalogXmlPath = downloadCatalog
-            let productsXml = CatalogXmlProvider.Load(FileSystem.pathValue catalogXmlPath)
-            let products =  
-                productsXml.Products
-                |>  Seq.map (fun p-> 
-                            let driverPack = (p.DriverPacks|> Seq.tryFind (fun dp-> dp.Id = "sccm"))
-                            {
-                                Model=p.Model.String;
-                                Os=p.Os;
-                                OsBuild=p.Build.String;
-                                Name=p.Name;
-                                SccmDriverPackUrl= 
-                                    (match driverPack with
-                                    |Some v -> Some v.Value
-                                    |None -> None);
-                                ModelCodes = p.Queries.Types |> Seq.map (fun m-> m.String.Value) |> Seq.toArray
-                            }
+        result
+            {
+                let! catalogXmlPath = downloadCatalog
+                let! lenovoCatalogProducts = DriverTool.LenovoCatalogXml.loadLenovoCatalog catalogXmlPath
+                let products =
+                    lenovoCatalogProducts
+                    |>Seq.map(fun p -> 
+                            
+                                let driverPack = (p.DriverPacks|> Seq.tryFind (fun dp-> dp.Id = "sccm"))                                
+                                {
+                                    Model=Some p.Model;
+                                    Os=p.Os;
+                                    OsBuild=Some p.Build;
+                                    Name=p.Name;
+                                    SccmDriverPackUrl= 
+                                        (match driverPack with
+                                        |Some v -> Some v.Url
+                                        |None -> None
+                                        );
+                                    ModelCodes = (p.Queries.ModelTypes 
+                                                    |> Seq.map (fun m-> 
+                                                                match m with
+                                                                |ModelType modelType -> modelType
+                                                        ) 
+                                                    |> Seq.toArray
+                                                 )
+                                }                            
                         )
-                |> Seq.toArray
-            return products
-        }
-    
+                    |>Seq.toArray
+                return products
+            }
+
     open F    
     open System
     open Web          
@@ -69,14 +78,6 @@ module LenovoCatalog =
     
     open FSharp.Data
 
-    let stringToStream (text:string) =
-        let stream = new System.IO.MemoryStream()
-        let sw = new System.IO.StreamWriter(stream)
-        sw.Write(text)
-        sw.Flush()
-        stream.Position <- 0L
-        stream
-    
     type DownloadType = |Unknown = 0|Readme = 1|Installer = 2
 
     type DownloadLinkInfo = {
@@ -255,7 +256,9 @@ module LenovoCatalog =
             |> Seq.filter (fun p -> 
                                 let foundModelCodes = 
                                     p.ModelCodes
-                                    |>Array.filter (fun m-> (m = modelCode4))
+                                    |>Array.filter (fun m-> 
+                                            (m = modelCode4)
+                                        )
                                 foundModelCodes.Length > 0
                            )
             |> Seq.filter (fun p -> (p.Os = os))

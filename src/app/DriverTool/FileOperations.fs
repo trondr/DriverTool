@@ -41,6 +41,9 @@ module FileOperations =
     let fileExists filePath =
         System.IO.File.Exists(FileSystem.pathValue filePath)
 
+    let directoryExists directoryPath = 
+        System.IO.Directory.Exists(FileSystem.pathValue directoryPath)
+
     let getFileSize filePath =
         (new System.IO.FileInfo(FileSystem.pathValue filePath)).Length
  
@@ -80,6 +83,20 @@ module FileOperations =
         |>Seq.toArray
         |>toAccumulatedResult
     
+    let copyFilePaths (destinationFolderPath) (files:seq<Path>) =
+        files
+        |>Seq.map(fun fp -> 
+                    result{
+                        let sourceFile = (new System.IO.FileInfo(FileSystem.pathValue fp))
+                        let! sourceFilePath = FileSystem.path sourceFile.FullName
+                        let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath, sourceFile.Name))
+                        let! copyResult = copyFile true sourceFilePath destinationFilePath
+                        return copyResult
+                    }
+                 )
+        |>Seq.toArray
+        |>toAccumulatedResult
+
     /// <summary>
     /// Prepend a period to a file extension if necessary
     /// </summary>
@@ -206,4 +223,5 @@ module FileOperations =
             return true
         }
         
-            
+    let toFileName filePath =
+        Path.GetFileName(FileSystem.pathValue filePath)

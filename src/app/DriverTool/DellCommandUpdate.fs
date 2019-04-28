@@ -77,8 +77,8 @@ module DellCommandUpdate =
                 |>Seq.filter(fun p -> 
                                 downloadedFiles
                                 |>Seq.tryFind(fun df -> 
-                                    let (baseUrl,fileName) = fileUrlToBaseUrlAndFileName df
-                                    (p.BaseUrl = baseUrl) && (p.InstallerName = fileName)
+                                    let (_,fileName) = fileUrlToBaseUrlAndFileName df
+                                    (p.Installer.Url.ToString() = df) && (p.Installer.Name = fileName)
                                 )|>optionToBoolean
                             )
                 |>Seq.toArray

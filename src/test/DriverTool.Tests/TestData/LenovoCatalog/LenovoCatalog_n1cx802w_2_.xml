@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?pcdDescriptor version="0230"?>
+<Package name="RTK_MCREADER_N1CX" id="n1cx802w" version="10.0.10125.21277" hide="False">
+  <Title default="EN">
+    <Desc id="EN">Realtek Media Card Reader Driver - 7 [32,64]/8.1 [64]</Desc>
+  </Title>
+  <DetectVersion type="File">
+    <File>%WINDOWS%\system32\drivers\RtsPer.sys</File>
+  </DetectVersion>
+  <Summary default="EN" />
+  <Severity type="3" />
+  <SeverityOverride type="2">
+    <Not>
+      <Or>
+        <_FileExists>%WINDOWS%\system32\drivers\RtsPer.sys</_FileExists>
+      </Or>
+    </Not>
+  </SeverityOverride>
+  <Vendor>Lenovo</Vendor>
+  <ExtractCommand>n1cx802w.exe /VERYSILENT /DIR=%PACKAGEPATH% /EXTRACT="YES"</ExtractCommand>
+  <ReleaseDate>2016-08-08</ReleaseDate>
+  <DiskSpaceNeeded>39086335</DiskSpaceNeeded>
+  <Reboot type="3" />
+  <Install rc="0" type="cmd" default="EN">
+    <Cmdline id="EN">%PACKAGEPATH%\Setup.exe -s</Cmdline>
+  </Install>
+  <ManualInstall type="cmd" default="EN">
+    <Cmdline id="EN">%PACKAGEPATH%\Setup.exe</Cmdline>
+  </ManualInstall>
+  <Uninstall />
+  <DetectInstall>
+    <_FileVersion>
+      <File>%WINDOWS%\system32\drivers\RtsPer.sys</File>
+      <Version>10.0.10125.21277^</Version>
+    </_FileVersion>
+  </DetectInstall>
+  <Dependencies>
+    <And>
+      <Or>
+        <_OS>
+          <OS>WIN7-ENT.*</OS>
+          <OS>WIN7-HOMEBASIC.*</OS>
+          <OS>WIN7-HOMEPREM.*</OS>
+          <OS>WIN7-PRO.*</OS>
+          <OS>WIN7-STARTER.*</OS>
+          <OS>WIN7-ULT.*</OS>
+        </_OS>
+        <And>
+          <_OS>
+            <OS>WIN81</OS>
+            <OS>WIN81-ENT</OS>
+            <OS>WIN81-PRO</OS>
+          </_OS>
+          <_CPUAddressWidth>
+            <AddressWidth>64</AddressWidth>
+          </_CPUAddressWidth>
+        </And>
+      </Or>
+      <Or>
+        <_PnPID><![CDATA[PCI\VEN_10EC&DEV_522A&SUBSYS_223317AA]]></_PnPID>
+      </Or>
+    </And>
+  </Dependencies>
+  <Files>
+    <Installer>
+      <File>
+        <Name>n1cx802w.exe</Name>
+        <CRC>179407598BC626E76AAE999D0CA7EFBDB7A47A8B</CRC>
+        <Size>6318472</Size>
+      </File>
+    </Installer>
+    <Readme default="EN">
+      <File id="EN">
+        <Name>n1cx802w.txt</Name>
+        <CRC>278EC6ECFCC8A9969D9F45845D7433F004DACB96</CRC>
+        <Size>6672</Size>
+      </File>
+    </Readme>
+  </Files>
+</Package>

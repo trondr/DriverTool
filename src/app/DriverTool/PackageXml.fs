@@ -22,22 +22,29 @@ module PackageXml =
             CheckSum:string;
         }
 
+
+    type PackageFileType = Installer|Readme
+    
+    type PackageFile =
+        {
+            Url:Uri
+            Name:string
+            Checksum:string
+            Size:Int64
+            Type:PackageFileType
+        }
+
     type PackageInfo = 
         {
-            Name:string;
-            Title:string;
-            Version:string;
-            BaseUrl:string;
-            InstallerName:string;
-            InstallerCrc:string;
-            InstallerSize:Int64;
-            ExtractCommandLine:string;
-            InstallCommandLine:string;
-            Category:string;
-            ReadmeName:string;
-            ReadmeCrc:string;
-            ReadmeSize:Int64;
-            ReleaseDate:string;
+            Name:string
+            Title:string
+            Version:string
+            Installer:PackageFile
+            ExtractCommandLine:string
+            InstallCommandLine:string
+            Category:string
+            Readme:PackageFile
+            ReleaseDate:string
             PackageXmlName:string
         }
 
@@ -77,16 +84,16 @@ module PackageXml =
     type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
 
     let getDestinationReadmePath destinationDirectory packageInfo =
-        if(String.IsNullOrWhiteSpace(packageInfo.ReadmeName)) then
+        if(String.IsNullOrWhiteSpace(packageInfo.Readme.Name)) then
             String.Empty
         else
-            System.IO.Path.Combine(destinationDirectory, packageInfo.ReadmeName)
+            System.IO.Path.Combine(destinationDirectory, packageInfo.Readme.Name)
 
     let getDestinationInstallerPath destinationDirectory packageInfo =
-        if(String.IsNullOrWhiteSpace(packageInfo.InstallerName)) then
+        if(String.IsNullOrWhiteSpace(packageInfo.Installer.Name)) then
             String.Empty
         else
-            System.IO.Path.Combine(destinationDirectory, packageInfo.InstallerName)
+            System.IO.Path.Combine(destinationDirectory, packageInfo.Installer.Name)
 
     let getDestinationPackageXmlPath destinationDirectory packageInfo =
         System.IO.Path.Combine(destinationDirectory, packageInfo.PackageXmlName)
@@ -95,11 +102,9 @@ module PackageXml =
 
     let toReadmeDownloadInfo destinationDirectory (packageInfo:PackageInfo) =
         let readmeDownloadInfo = 
-                result{
-                    let sourceReadmeUrl = sprintf "%s/%s" packageInfo.BaseUrl packageInfo.ReadmeName
-                    let! sourceReadmeUri = DriverTool.Web.toUri (sourceReadmeUrl)
+                result{                    
                     let! destinationReadmeFilePath = FileSystem.path (getDestinationReadmePath destinationDirectory packageInfo)
-                    return {SourceUri = sourceReadmeUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationReadmeFilePath;}
+                    return {SourceUri = packageInfo.Readme.Url;SourceChecksum = packageInfo.Readme.Checksum; SourceFileSize = packageInfo.Readme.Size; DestinationFile = destinationReadmeFilePath;}
                 }
         match readmeDownloadInfo with
         |Ok d -> Some d
@@ -109,11 +114,9 @@ module PackageXml =
        
     let toInstallerDownloadInfo destinationDirectory (packageInfo:PackageInfo) =
         let installerDownloadInfo = 
-                    result{
-                        let sourceInstallerUrl = sprintf "%s/%s" packageInfo.BaseUrl packageInfo.InstallerName
-                        let! sourceInstallerUri = toUri (sourceInstallerUrl)
+                    result{                        
                         let! destinationInstallerFilePath = FileSystem.path (getDestinationInstallerPath destinationDirectory packageInfo)
-                        return {SourceUri = sourceInstallerUri;SourceChecksum = packageInfo.ReadmeCrc; SourceFileSize = packageInfo.ReadmeSize; DestinationFile = destinationInstallerFilePath; }
+                        return {SourceUri = packageInfo.Installer.Url;SourceChecksum = packageInfo.Installer.Checksum; SourceFileSize = packageInfo.Installer.Size; DestinationFile = destinationInstallerFilePath; }
                     }
         installerDownloadInfo
 
@@ -198,13 +201,22 @@ module PackageXml =
             Name = name;
             Title = title;
             Version = version;
-            InstallerName = installerName;
-            InstallerCrc = installerCrc;
-            InstallerSize = installerSize;
-            BaseUrl = baseUrl;
-            ReadmeName = readmeName;
-            ReadmeCrc = readmeCrc;
-            ReadmeSize = readmeSize;
+            Installer = 
+                {
+                    Url = new Uri(sprintf "%s/%s" baseUrl installerName)
+                    Name = installerName
+                    Checksum = installerCrc
+                    Size = installerSize
+                    Type = Installer
+                }
+            Readme = 
+                {
+                    Url = new Uri(sprintf "%s/%s" baseUrl readmeName)
+                    Name = readmeName
+                    Checksum = readmeCrc
+                    Size = readmeSize
+                    Type = Readme
+                }            
             ExtractCommandLine = extractCommandLine;
             InstallCommandLine = installCommandLine;                
             Category = category;
@@ -251,7 +263,7 @@ module PackageXml =
         |Error ex -> Result.Error ex
 
     let extractReadme (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
-        let destinationReadmeFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.ReadmeName)
+        let destinationReadmeFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Readme.Name)
         match FileSystem.existingFilePath downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
             match (copyFile (FileSystem.existingFilePathValue readmeFilePath, destinationReadmeFilePath)) with
@@ -267,7 +279,7 @@ module PackageXml =
     let extractInstaller (downloadedPackageInfo, packageFolderPath:FileSystem.Path) =
         if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine)) then
            logger.Info("Installer does not support extraction, copy the installer directly to package folder...")
-           let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.InstallerName)
+           let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Installer.Name)
            match FileSystem.existingFilePath downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
                 match copyFile (FileSystem.existingFilePathValue installerPath, destinationInstallerFilePath) with

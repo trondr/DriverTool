@@ -39,7 +39,8 @@ module Environment=
 
     let nativeSystemFolder =
         let sysNative = System.IO.Path.Combine(windowsFolder,"sysnative")
-        if(System.IO.Directory.Exists(sysNative)) then
+        let sysNativeCmdExe = System.IO.Path.Combine(sysNative,"cmd.exe")
+        if((System.IO.Directory.Exists(sysNative)) && (System.IO.File.Exists(sysNativeCmdExe))) then
             sysNative
         else
             System.Environment.GetFolderPath(System.Environment.SpecialFolder.System)

@@ -5,9 +5,7 @@ open DriverTool.InstallDriverPackage
 open DriverTool.InstallXml
 
 [<TestFixture>]
-[<Category(TestCategory.ManualTests)>]
 module InstallDriverPackageTests =
-    open DriverTool
     open DriverTool
     
     [<Test>]
@@ -35,6 +33,26 @@ module InstallDriverPackageTests =
         match actual with
         |Ok _ -> Assert.AreEqual(expectedErrorMessage, "")
         |Error ex -> Assert.AreEqual(expectedErrorMessage, ex.Message)        
+        ()
+    
+    type ExitCodeTestData = {
+        ExitCodes: array<int>
+        ExpectedAdjustedExitCode:int
+    }
+
+    let testData = 
+        [|
+            {ExitCodes=[|0;0;0;0;0;0;0;0;0;0;|];ExpectedAdjustedExitCode=0}            
+            {ExitCodes=[|0;0;0;0;-2146232576;0;0;0;0;0;|];ExpectedAdjustedExitCode=3010}
+            {ExitCodes=[|0;0;0;0;3010;0;0;0;0;0;|];ExpectedAdjustedExitCode=3010}
+        |]
+
+    [<Test>]
+    [<TestCaseSource("testData")>]
+    [<Category(TestCategory.UnitTests)>]
+    let getAdjustedExitCodeTests (exitCodeTestData:ExitCodeTestData) =
+        let actual = getAdjustedExitCode exitCodeTestData.ExitCodes
+        Assert.AreEqual(exitCodeTestData.ExpectedAdjustedExitCode,actual)
         ()
 
     [<Test>]

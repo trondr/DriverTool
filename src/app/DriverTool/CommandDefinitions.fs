@@ -18,18 +18,22 @@ module Commands =
                                             [<OptionalCommandParameter(Description = "Model code. Powershell script to extract the model code for (1)LENOVO: $(Get-WmiObject Win32_ComputerSystem|Select-Object Model).Model.SubString(0,4); (2) Dell: $(Get-WmiObject Win32_ComputerSystem|Select-Object SystemSKUNumber).SystemSKUNumber; (3) HP: (Get-WmiObject -Class MS_SystemInformation -Namespace \"root\\WMI\"| Select-Object BaseBoardProduct).BaseBoardProduct. If model code is not specified the current system model code will be looked up and used.", ExampleValue = @"20EQ", AlternativeName = "m", DefaultValue = "")>] 
                                             modelCode : string,
                                             [<OptionalCommandParameter(Description = "Operating system code. If operating system code is not specified the current system model code will be looked up and used.", ExampleValue = @"WIN10X64", AlternativeName = "op", DefaultValue = "")>] 
-                                            operatingSystemCode : string        
+                                            operatingSystemCode : string,
+                                            [<OptionalCommandParameter(Description = "Exclude updates where title or category match any of the specified regular expression patterns.", ExampleValue=[|"Software";"BIOS";"Firmware"|], DefaultValue=[||], AlternativeName = "xu")>]
+                                            excludeUpdatePatterns : string[]
                                             ) : NCmdLiner.Result<int> =                
-                CommandProviders.exportRemoteUdateInfo (manufacturer,modelCode, operatingSystemCode, csvFileName, overWrite)                
+                CommandProviders.exportRemoteUdateInfo (manufacturer,modelCode, operatingSystemCode, csvFileName, overWrite, excludeUpdatePatterns)                
         
         [<Command(Description = "Export local update information for the current system to csv file. The current system is typically a reference machine and the exported info can be used to automate download of necessary updates to be installed on new systems with the same specification. It is required that vendor specific update utility (such as Lenovo System Update) is installed on the system and has been run to install all relevant updates. Currently only Lenovo System update is supported.", Summary="Export local update information for the current system to csv file.")>]
         static member ExportLocalUdateInfo (
                                             [<RequiredCommandParameter(Description = "Path to csv file.", ExampleValue = @"c:\temp\updates.csv", AlternativeName = "f")>] 
                                             csvFileName: string,
                                             [<OptionalCommandParameter(Description = "Overwrite csv file if it allready exists.", ExampleValue = false,DefaultValue = false, AlternativeName = "o")>] 
-                                            overWrite : bool
+                                            overWrite : bool,
+                                            [<OptionalCommandParameter(Description = "Exclude updates where title or category match any of the specified regular expression patterns.", ExampleValue=[|"Software";"BIOS";"Firmware"|], DefaultValue=[||], AlternativeName = "xu")>]
+                                            excludeUpdatePatterns : string[]
                                             ) : NCmdLiner.Result<int> =                
-                CommandProviders.exportLocalUdateInfo (csvFileName, overWrite)
+                CommandProviders.exportLocalUdateInfo (csvFileName, overWrite, excludeUpdatePatterns)
 
         [<Command(Description="Create driver package for given manufacturer and model. Currently Lenovo is fully supported. Support for Dell and HP is partial and includes creating driver package with all possible updates (needed and and unneeded alike) so for Dell and HP there is more requirement for manual decsion on what to include or not after package has been created. If manufacturer or model or operating system is not given the respective values are automatically looked up for current system.",Summary="Create driver package for given manufacturer and model and operating system.")>]
         static member CreateDriverPackage(
@@ -46,9 +50,15 @@ module Commands =
                                          [<OptionalCommandParameter(Description = "Operating system code. If operating system code is not specified the current system operating system code will be looked up and used.", ExampleValue = @"WIN10X64", AlternativeName = "op", DefaultValue = "")>] 
                                             operatingSystemCode : string,
                                          [<OptionalCommandParameter(Description = "Create driver package based on locally installed updates. Use this on a a fully updated reference machine where the vendor specific update utility (Lenovo System Update) has been run and no more updates are available. This option is currently not supported on Dell and HP.", ExampleValue = false, AlternativeName = "lu", DefaultValue = false)>]
-                                            baseOnLocallyInstalledUpdates : bool
+                                            baseOnLocallyInstalledUpdates : bool,
+                                         [<OptionalCommandParameter(Description = "Exclude updates where title or category match any of the specified regular expression patterns.", ExampleValue=[|"Software";"BIOS";"Firmware"|], DefaultValue=[||], AlternativeName = "xu")>]
+                                            excludeUpdatePatterns : string[],
+                                         [<OptionalCommandParameter(Description = "A short name describing the content of the package. Example: 'Software', 'Firmware', 'BIOS'. The package type name will be used in the package name.", ExampleValue = @"Drivers", AlternativeName = "ptn", DefaultValue = "Drivers")>] 
+                                            packageTypeName : string,
+                                         [<OptionalCommandParameter(Description = "Exclude Sccm package from the created package. Typically you set this to true if you want only non-driver related updates, such as BIOS or firmware, to be part of the package.", ExampleValue = false, AlternativeName = "exs", DefaultValue = false)>] 
+                                            excludeSccmPackage : bool
                                          ) : NCmdLiner.Result<int> = 
-            CommandProviders.createDriverPackage (packagePublisher,manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder,baseOnLocallyInstalledUpdates)
+            CommandProviders.createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage)
         
         [<Command(Description="Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.",Summary="Install driver package")>]
         static member InstallDriverPackage(

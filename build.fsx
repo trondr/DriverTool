@@ -1,8 +1,10 @@
 #r "paket:
 nuget Fake.IO.FileSystem
+nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.MSBuild
 nuget Fake.DotNet.Testing.Nunit
 nuget Fake.Testing.Common
+nuget Fake.DotNet.NuGet
 nuget Fake.IO.Zip
 nuget Fake.Core.Target //"
 #load "./.fake/build.fsx/intellisense.fsx"
@@ -22,6 +24,14 @@ let buildTestFolder = buildFolder + "test"
 let artifactFolder = System.IO.Path.GetFullPath("./artifact/")
 let artifactAppFolder = artifactFolder + "app"
 
+let assemblyVersion =
+    let majorVersion = "1"
+    let minorVersion = "0"
+    let now = System.DateTime.Now    
+    let buildVersion = sprintf "%02d%03d" (now.Year - 2000) (now.DayOfYear) //Example: 19063
+    let revisionVersion = "14"
+    sprintf "%s.%s.%s.%s" majorVersion minorVersion buildVersion revisionVersion //Example: 1.0.19063.1
+
 let getVersion file = 
     System.Reflection.AssemblyName.GetAssemblyName(file).Version.ToString()
 
@@ -31,8 +41,28 @@ Target.create "Clean" (fun _ ->
     Shell.cleanDirs [ buildFolder; artifactFolder ]
 )
 
+Target.create "RestorePackages" (fun _ ->
+     "./DriverTool.sln"
+     |> Fake.DotNet.NuGet.Restore.RestoreMSSolutionPackages (fun p ->
+         { p with             
+             Retries = 4 })
+   )
+
 Target.create "BuildApp" (fun _ -> 
     Trace.trace "Building app..."
+    AssemblyInfoFile.createFSharp "./src/app/DriverTool/AssemblyInfo.fs"
+        [
+            AssemblyInfo.Title "DriverTool"
+            AssemblyInfo.Description "Download drivers and software for a specific PC model and create a driver package that can be imported into SCCM as a package or application." 
+            AssemblyInfo.Product "DriverTool"
+            AssemblyInfo.Company "github/trondr"
+            AssemblyInfo.Copyright "Copyright \u00A9 github/trondr 2018-2019"
+            AssemblyInfo.Version assemblyVersion
+            AssemblyInfo.FileVersion assemblyVersion                        
+            AssemblyInfo.ComVisible false
+            AssemblyInfo.Guid "19822aea-c088-455d-b5a5-4738a3a9dba7"
+            AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
+        ]
     !! "src/app/**/*.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
@@ -82,6 +112,7 @@ Target.create "Default" (fun _ ->
 open Fake.Core.TargetOperators
 
 "Clean" 
+    ==> "RestorePackages"
     ==> "BuildApp"
     ==> "BuildTest"
     ==> "Test"

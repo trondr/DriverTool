@@ -10,6 +10,7 @@ module F=
     #endif
 
     open System
+
     /// <summary>
     /// Null coalescing operator
     /// </summary>
@@ -17,45 +18,44 @@ module F=
     /// <param name="rhs"></param>
     let (|?) lhs rhs = (if lhs = null then rhs else lhs)
     
-    let sourceException ex = 
-        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).SourceException
-
     let tryCatch<'T, 'R> f  (t:'T) : Result<'R, Exception> =
         try
             Result.Ok (f t)
         with
-            | ex -> Result.Error ex
+            | ex -> Result.Error (sourceException ex)
 
     let tryCatchWithMessage<'T,'R> f (t:'T) message : Result<'R, Exception> =
         try
             Result.Ok (f t)
         with
-            | ex -> Result.Error (new Exception(message, sourceException ex))
+            | ex -> toErrorResult message (Some ex)
 
     let tryCatch2<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) : Result<'R, Exception> =
         try
             Result.Ok (f t1 t2)
         with
-            | ex -> Result.Error ex
+            | ex -> Result.Error (sourceException ex)
 
     let tryCatch2WithMessage<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) message : Result<'R, Exception> =
         try
             Result.Ok (f t1 t2)
         with
-            | ex -> Result.Error (new Exception(message, sourceException ex))
+            | ex -> toErrorResult message (Some ex)
 
     let tryCatch3<'T1,'T2, 'T3, 'R> f  (t1:'T1) (t2:'T2) (t3:'T3) : Result<'R, Exception> =
         try
             Result.Ok (f t1 t2 t3)
         with
-            | ex -> Result.Error ex
+            | ex -> Result.Error (sourceException ex)
 
     let tryCatch3WithMessage<'T1,'T2, 'T3, 'R> f  (t1:'T1) (t2:'T2) (t3:'T3) message : Result<'R, Exception> =
         try
             Result.Ok (f t1 t2 t3)
         with
             | ex ->                
-                Result.Error (new Exception(message, sourceException ex))
+                toErrorResult message (Some ex)
+
+
 
     //Source: http://www.fssnip.net/7UJ/title/ResultBuilder-Computational-Expression
     let ofOption error = function Some s -> Ok s | None -> Error error
@@ -123,7 +123,8 @@ module F=
             | 0 -> 
                 let allValues = getAllValues results
                 Result.Ok allValues
-            | _ -> Result.Error (new Exception(String.Join<string>(" ", allExceptionMessages)))
+            | _ -> 
+                toErrorResult (String.Join<string>(" ", allExceptionMessages)) None
         accumulatedResult
 
     open System.IO
@@ -158,7 +159,8 @@ module F=
     
     let nullGuardResult (obj: 'T when 'T : not struct, argumentName:string) =
         match obj with
-        |Null -> Result.Error (new ArgumentNullException("Value cannot be null.",argumentName) :> Exception)
+        |Null -> 
+            toErrorResult (sprintf "Value '%s' cannot be null." argumentName) None            
         |NotNull v -> Result.Ok v
 
     let nullGuard (obj: 'T when 'T : not struct) (argumentName:string) =
@@ -177,7 +179,7 @@ module F=
         
     let createGeneric validator (value:'T) =
         let success v = Result.Ok v
-        let failure ex = Result.Error ex
+        let failure ex = Result.Error (sourceException ex)
         createWithContinuationGeneric success failure validator value 
 
     open System.Text.RegularExpressions
@@ -258,3 +260,14 @@ module F=
                 x.Combine(body, x.Delay(fun () -> loop()))
             loop()
     let imperative = new ImperativeBuilder()  
+
+    let stringToStream (text:string) =
+        let stream = new System.IO.MemoryStream()
+        let sw = new System.IO.StreamWriter(stream)
+        sw.Write(text)
+        sw.Flush()
+        stream.Position <- 0L
+        stream
+
+    let toDateString (dateTime:DateTime) =
+        dateTime.ToString("yyyy-MM-dd")

@@ -6,6 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.IntegrationTests)>]
 module DellUpdatesTests =
     open DriverTool
+    open DriverTool.UpdatesContext
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
@@ -21,7 +22,10 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create modelCodeString false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-            let! actual = DriverTool.DellUpdates.getRemoteUpdates (modelCode, operatingSystemCode,true,"%public%\Logs")
+            let! logDirectory = FileSystem.path "%public%\Logs"
+            let! patterns = (RegExp.toRegexPatterns [||] true)
+            let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
+            let! actual = DriverTool.DellUpdates.getRemoteUpdates updatesRetrievalContext
             printfn "Packages: %A" actual
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())
@@ -37,9 +41,36 @@ module DellUpdatesTests =
 
     open DriverTool.PackageXml
     open DriverTool
+    open System
 
     let packageInfoTestData () =        
-        let packageInfo = {Name = "";Title = "";Version = "";BaseUrl = "";InstallerName = "";InstallerCrc = "";InstallerSize = 0L;ExtractCommandLine = "";InstallCommandLine = "";Category = "";ReadmeName = "";ReadmeCrc = "";ReadmeSize=0L;ReleaseDate= "";PackageXmlName="";}
+        let packageInfo = 
+            {
+                Name = "";
+                Title = "";
+                Version = "";                
+                Installer = 
+                    {
+                        Url = new Uri("http://dymmy")
+                        Name = ""
+                        Checksum = ""
+                        Size = 0L
+                        Type = Installer
+                    }
+                ExtractCommandLine = "";
+                InstallCommandLine = "";
+                Category = "";
+                Readme =
+                    {
+                        Url = new Uri("http://dummy")
+                        Name = ""
+                        Checksum = ""
+                        Size = 0L
+                        Type = Installer
+                    }
+                ReleaseDate= "";
+                PackageXmlName="";
+            }
         
         seq{
             yield {packageInfo with Name="Name1";Version="1.0.20.0"}
@@ -70,7 +101,7 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create model false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystem false
-            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
+            let! actual = DriverTool.DellUpdates2.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)

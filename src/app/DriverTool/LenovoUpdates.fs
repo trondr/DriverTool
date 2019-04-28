@@ -1,51 +1,59 @@
 ﻿namespace DriverTool
 
-module LenovoUpdates =
-    type LenovoUpdates = class end
-    let loggerl = Logging.getLoggerByName(typeof<LenovoUpdates>.Name)
-    
+module LenovoUpdates =    
+    open System
+    open DriverTool.PackageXml
+    open DriverTool.Configuration
+    open System.Text.RegularExpressions
+    open System.Linq
+    open System.Xml.Linq
+    open F
+    open DriverTool.Web
+    open DriverTool.Checksum
+    open DriverTool.FileOperations
+    open DriverTool.UpdatesContext
+
+    let loggerl = Logging.getLoggerByName("LenovoUpdates")
+               
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
         operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")
     
     let modelCode2DownloadableCode (modelCode: ModelCode) =
         modelCode.Value.Substring(0,4)
      
-    open System
-    open FSharp.Data
-    open DriverTool.PackageXml
-
     let getModelInfoUri (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         new Uri(sprintf "https://download.lenovo.com/catalog/%s_%s.xml" (modelCode2DownloadableCode modelCode) (operatingSystemCode2DownloadableCode operatingSystemCode))
-
-
-    type PackagesXmlProvider = XmlProvider<"https://download.lenovo.com/catalog/20FA_Win7.xml">
-    type PackageXmlProvider = XmlProvider<"https://download.lenovo.com/pccbbs/mobiles/n1cx802w_2_.xml">
     
-    open DriverTool.Configuration
+    let toPackages (packagesXElement:XElement) =
+        result
+            {
+                let! packages = 
+                    packagesXElement.Elements(XName.Get("package"))
+                    |>Seq.map(fun p -> 
+                            result{
+                                let! location = XmlHelper.getElementValue p "location"
+                                let! category = XmlHelper.getElementValue p "category"
+                                let! checksumValue = XmlHelper.getElementValue p "checksum"
+                                let! checksumType = XmlHelper.getRequiredAttribute (p.Element(XName.Get("checksum"))) "type"
+                                return {
+                                    Location = location
+                                    Category = category
+                                    CheckSum = checksumValue
+                                }                            
+                            }                            
+                        )
+                    |>toAccumulatedResult
+                return packages                
+            }
 
-    let getPackagesInfo (modelInfoXmlFilePath:FileSystem.Path) : Result<seq<PackageXmlInfo>,Exception>= 
-        try
-            let x = PackagesXmlProvider.Load(FileSystem.pathValue modelInfoXmlFilePath)
-            x.Packages
-            |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
-            |> Result.Ok            
-        with
-        |ex -> Result.Error ex
+    let loadPackagesXml (xmlPath:FileSystem.Path) = 
+        result{
+            let! existingXmlPath = FileOperations.ensureFileExistsWithMessage (sprintf "Packages xml file '%A' not found." xmlPath) xmlPath
+            let! xDocument = XmlHelper.loadXDocument existingXmlPath
+            let! packages = toPackages xDocument.Root
+            return packages
+        }
 
-    let getPackagesInfoR (modelInfoXmlFilePath:Result<FileSystem.Path,Exception>) : Result<seq<PackageXmlInfo>,Exception>= 
-        try
-            match modelInfoXmlFilePath with
-            |Ok p -> 
-                let x = PackagesXmlProvider.Load(FileSystem.pathValue p)
-                x.Packages
-                |> Seq.map (fun p -> { Location = p.Location; Category = p.Category; CheckSum = p.Checksum.Value})
-                |> Result.Ok
-            |Error ex -> Result.Error ex
-        with
-        |ex -> Result.Error ex
-    
-    open System.Text.RegularExpressions
-    
     let getXmlFileNameFromUri (uri: Uri) : Result<string,Exception>= 
         try
             let regExMatch = 
@@ -65,9 +73,6 @@ module LenovoUpdates =
             FileSystem.path tempXmlFilePathString
         |Result.Error ex -> Result.Error ex
 
-    open System.Linq
-    open F
-    open DriverTool.Web
 
     let getBaseUrl locationUrl =
         let uri = new Uri(locationUrl)
@@ -81,7 +86,7 @@ module LenovoUpdates =
             BaseUrl = getBaseUrl packageXmlInfo.Location;
             CheckSum = packageXmlInfo.CheckSum;
         }
-    open DriverTool.Checksum
+    
 
     let verifyDownload (sourceUri:Uri, destinationFile, checksum, fileSize, verificationWarningOnly) =
         match (hasSameFileHash (destinationFile, checksum, fileSize)) with
@@ -191,24 +196,30 @@ module LenovoUpdates =
             let msg = sprintf "Failed to parse all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
     
-    open DriverTool.FileOperations
-    
-    let getRemoteUpdatesBase (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
+    let filterUpdates context packageInfo =
+        (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Category)) 
+        &&                             
+        (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Title))
+
+    let getRemoteUpdatesBase (context:UpdatesRetrievalContext) =
         result{
-            let modelInfoUri = getModelInfoUri modelCode operatingSystemCode
-            let! path = getModelInfoXmlFilePath modelCode operatingSystemCode
-            let! modelInfoXmlFilePath = ensureFileDoesNotExist overwrite path
-            let! downloadedFile = downloadFile (modelInfoUri, overwrite, modelInfoXmlFilePath)            
-            let! packageXmlInfos = getPackagesInfo downloadedFile
+            let modelInfoUri = getModelInfoUri context.Model context.OperatingSystem
+            let! path = getModelInfoXmlFilePath context.Model context.OperatingSystem
+            let! modelInfoXmlFilePath = ensureFileDoesNotExist context.Overwrite path
+            let! downloadedFile = downloadFile (modelInfoUri, context.Overwrite, modelInfoXmlFilePath)            
+            let! packageXmlInfos = loadPackagesXml downloadedFile
             let! downloadedPackageXmls = downloadPackageXmls packageXmlInfos
             let! packageInfos = 
                 (parsePackageXmls downloadedPackageXmls)
                 |>toAccumulatedResult
-            return packageInfos |> Seq.toArray
+            return 
+                packageInfos 
+                |>Seq.filter (filterUpdates context)
+                |>Seq.toArray
         }
 
-    let getRemoteUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase (modelCode, operatingSystemCode, overwrite, logDirectory)
+    let getRemoteUpdates (context:UpdatesRetrievalContext) =
+        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase context
     
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
         if(actualModel.Value.StartsWith(model.Value)) then
@@ -229,28 +240,28 @@ module LenovoUpdates =
             |>Seq.filter(fun p -> 
                             let remotePackageInfo = 
                                 remotePackageInfos
-                                |> Seq.tryFind(fun rp -> rp.InstallerName = p.InstallerName)
+                                |> Seq.tryFind(fun rp -> rp.Installer.Name = p.Installer.Name)
                             match remotePackageInfo with
                             |Some _ -> true
                             |None -> 
                                 loggerl.Warn(sprintf "Remote update not found for local update: %A" p)
                                 false
-                        )
+                        )            
             //For those local updates that have a corresponding remote update, transfer the BaseUrl and Category information from the remote update to the local update.
             |>Seq.map(fun p -> 
                         let remotePackageInfo = 
                             remotePackageInfos
-                            |> Seq.tryFind(fun rp -> rp.InstallerName = p.InstallerName)
+                            |> Seq.tryFind(fun rp -> rp.Installer.Name = p.Installer.Name)
                         let updatedPackageInfo =
                             match remotePackageInfo with
-                            |Some rp ->                         
-                                {p with Category=rp.Category;BaseUrl=rp.BaseUrl} 
+                            |Some rp ->                                
+                                {p with Category=rp.Category;Installer={p.Installer with Url = rp.Installer.Url};Readme={p.Readme with Url = rp.Readme.Url}}
                             |None -> p
                         updatedPackageInfo
                         )
         updatedPacageInfos
 
-    let getLocalUpdates (modelCode: ModelCode, operatingSystemCode: OperatingSystemCode, overwrite,logDirectory:string) =
+    let getLocalUpdates (context:UpdatesRetrievalContext) =
         result{
             loggerl.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
@@ -259,37 +270,34 @@ module LenovoUpdates =
             let! packageInfos = DriverTool.LenovoSystemUpdate.getLocalUpdates()
             
             let! actualModelCode = ModelCode.create String.Empty true
-            let! modelCodeIsValid = assertThatModelCodeIsValid modelCode actualModelCode
-            loggerl.Info(sprintf "Model code '%s' is valid: %b" modelCode.Value modelCodeIsValid)
+            let! modelCodeIsValid = assertThatModelCodeIsValid context.Model actualModelCode
+            loggerl.Info(sprintf "Model code '%s' is valid: %b" context.Model.Value modelCodeIsValid)
             let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
-            let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid operatingSystemCode actualOperatingSystemCode
-            loggerl.Info(sprintf "Operating system code '%s' is valid: %b" operatingSystemCode.Value operatingSystemCodeIsValid)
+            let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid context.OperatingSystem actualOperatingSystemCode
+            loggerl.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
 
-            let! remotePackageInfos = getRemoteUpdates (modelCode, operatingSystemCode, overwrite,logDirectory)
+            let! remotePackageInfos = getRemoteUpdates context
             let localUpdates = 
                 packageInfos
                 |> Seq.distinct
                 |> updateFromRemote remotePackageInfos
-                |>Seq.toArray
+                |>Seq.filter (filterUpdates context)
+                |>Seq.toArray                
             loggerl.Info(sprintf "Local updates: %A" localUpdates)
             return localUpdates
         }
    
-    open DriverTool.PackageXml
-    
-    open DriverTool.LenovoCatalog
-
     let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
         match content with
         |Ok downloadPageContent -> 
             let downloadLinks =             
                 downloadPageContent
-                |> getDownloadLinksFromWebPageContent                
+                |> DriverTool.LenovoCatalog.getDownloadLinksFromWebPageContent                
                 |> Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
                 |> Seq.toArray
                 |> Array.rev
-            let lenovoOs = (osShortNameToLenovoOs os)
+            let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
             let sccmPackages =
                 downloadLinks
                 |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
@@ -311,7 +319,7 @@ module LenovoUpdates =
                     Result.Error (new Exception(sprintf "Sccm package not found for url '%s', OS=%s, OsBuild=%s." uri os osbuild))
         |Error ex -> Result.Error ex
 
-    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<Product>) =
+    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<DriverTool.LenovoCatalog.Product>) =
         let sccmPackageInfos = 
             products
             |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = osbuild))
@@ -327,8 +335,8 @@ module LenovoUpdates =
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode)  : Result<SccmPackageInfo,Exception> =
         result
             {
-                let! products = getSccmPackageInfos
-                let product = findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
+                let! products = DriverTool.LenovoCatalog.getSccmPackageInfos
+                let product = DriverTool.LenovoCatalog.findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
                 let osBuild = product.Value.OsBuild.Value
                 let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
                 return sccmPackage
@@ -382,3 +390,9 @@ module LenovoUpdates =
                 | Error ex -> Result.Error ex
             return! res
         }
+
+    let updateDownloadedPackageInfo downloadedUpdates =
+        result
+            {
+                return downloadedUpdates        
+            }

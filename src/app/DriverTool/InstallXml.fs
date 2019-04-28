@@ -2,28 +2,7 @@
 
 module InstallXml =
     
-    open FSharp.Data
-    
-    type InstallConfiguration = XmlProvider<Schema="""   
-    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-      <xs:element name="configuration">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="LogDirectory" type="xs:string" />
-            <xs:element name="LogFileName" type="xs:string" />
-            <xs:element name="PackageName" type="xs:string" />
-            <xs:element name="PackageVersion" type="xs:string" />
-            <xs:element name="PackageRevision" type="xs:string" />
-            <xs:element name="Publisher" type="xs:string" />
-            <xs:element name="ComputerVendor" type="xs:string" />
-            <xs:element name="ComputerModel" type="xs:string" />
-            <xs:element name="ComputerSystemFamiliy" type="xs:string" />
-            <xs:element name="OsShortName" type="xs:string" />
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-    </xs:schema>
-        """>
+    open System.Xml.Linq
     
     type InstallConfigurationData = {
         LogDirectory:string;
@@ -38,26 +17,41 @@ module InstallXml =
         OsShortName:string;
     }
 
-    let loadInstallXml (installXmlPath:FileSystem.Path) = 
-       
-        try
-            let installXml = 
-                InstallConfiguration.Load(FileSystem.pathValue installXmlPath)
-            Result.Ok {
-                LogDirectory = installXml.LogDirectory;
-                LogFileName = installXml.LogFileName;
-                PackageName = installXml.PackageName;
-                PackageVersion = installXml.PackageVersion;
-                PackageRevision = installXml.PackageRevision;
-                Publisher = installXml.Publisher;
-                ComputerVendor = installXml.ComputerVendor;
-                ComputerModel = installXml.ComputerModel;
-                ComputerSystemFamiliy = installXml.ComputerSystemFamiliy;
-                OsShortName = installXml.OsShortName;
+    let toInstallDataConfiguration (configurationXElement:XElement) = 
+        result
+            {
+                let! logDirectory = XmlHelper.getElementValue configurationXElement "LogDirectory"
+                let! logFileName = XmlHelper.getElementValue configurationXElement "LogFileName"
+                let! packageName = XmlHelper.getElementValue configurationXElement "PackageName"
+                let! packageVersion = XmlHelper.getElementValue configurationXElement "PackageVersion"
+                let! packageRevision = XmlHelper.getElementValue configurationXElement "PackageRevision"
+                let! publisher = XmlHelper.getElementValue configurationXElement "Publisher"
+                let! computerVendor = XmlHelper.getElementValue configurationXElement "ComputerVendor"
+                let! computerModel = XmlHelper.getElementValue configurationXElement "ComputerModel"
+                let! computerSystemFamiliy = XmlHelper.getElementValue configurationXElement "ComputerSystemFamiliy"
+                let! osShortName = XmlHelper.getElementValue configurationXElement "OsShortName"
+                return {
+                    LogDirectory = logDirectory
+                    LogFileName = logFileName
+                    PackageName = packageName
+                    PackageVersion = packageVersion
+                    PackageRevision = packageRevision
+                    Publisher = publisher
+                    ComputerVendor = computerVendor
+                    ComputerModel = computerModel
+                    ComputerSystemFamiliy = computerSystemFamiliy
+                    OsShortName = osShortName                
+                }
             }
-        with
-        | _ as ex -> Result.Error ex
-        
+
+    let loadInstallXml (installXmlPath:FileSystem.Path) = 
+        result{
+            let! existingInstallXmlPath = FileOperations.ensureFileExistsWithMessage (sprintf "Install xml file '%A' not found." installXmlPath) installXmlPath
+            let! xDocument = XmlHelper.loadXDocument existingInstallXmlPath
+            let! installDataConfiguration = toInstallDataConfiguration xDocument.Root                
+            return installDataConfiguration
+        }
+
     open DriverTool.XmlToolKit
     
     let saveInstallXml (installXmlPath:FileSystem.Path, installConfigurationData:InstallConfigurationData) =
