@@ -229,8 +229,53 @@ module DellUpdates2=
             return result |>Seq.toArray |> Seq.head
         }
 
+    let getCategoryFromInstallerName installerName defaultCategory =
+        match installerName with
+        |Regex "Firmware" [] -> "Firmware"
+        |Regex "Audio.+Driver" [] -> "Audio-Driver"
+        |Regex "Chipset.+Driver" [] -> "Chipset"
+        |Regex "Chipset.+Software" [] -> "Chipset"
+        |Regex "Controller.+Driver" [] -> "Chipset"
+        |Regex "Thermal.+Framework" [] -> "Chipset"        
+        |Regex "Card.+Reader.+Driver" [] -> "Card-Reader"        
+        |Regex "Docks.+Driver" [] -> "Docks"
+        |Regex "Input.+Driver" [] -> "Input"
+        |Regex "Touchpad.+Driver" [] -> "Input"        
+        |Regex "HID.+Event.+Filter.+Driver" [] -> "Input"
+        |Regex "Communications.+Driver" [] -> "Network"
+        |Regex "GPS.+driver" [] -> "Network"
+        |Regex "Ethernet.+Driver" [] -> "Network"
+        |Regex "Ethernet.+Controller" [] -> "Network"
+        |Regex "WiFi.+Driver" [] -> "Network"
+        |Regex "WiGig.+Driver" [] -> "Network"
+        |Regex "Network.+Driver" [] -> "Network"
+        |Regex "Bluetooth.+Driver" [] -> "Network"
+        |Regex "Serial-ATA.+Driver" [] -> "Storage"
+        |Regex "Storage.+Driver" [] -> "Storage"
+        |Regex "Video.+Driver" [] -> "Video"
+        |Regex "Graphics.+Driver" [] -> "Video"
+        |Regex "Application" [] -> "Software"
+        |Regex "Service" [] -> "Software"        
+        |_ -> defaultCategory
+    
+    /// <summary>
+    /// Dell. Decuct category from the installer name and update the package info category. The sdp only have "Drivers and Applications" as category.
+    /// </summary>
+    /// <param name="downloadedUpdates"></param>
     let updateDownloadedPackageInfo downloadedUpdates =
         result
             {
-                return downloadedUpdates        
+                let! updatedUpdates = 
+                    downloadedUpdates
+                    |>Seq.map(fun d ->
+                                result
+                                    {                                        
+                                        let category = getCategoryFromInstallerName d.Package.Installer.Name d.Package.Category
+                                        let up = {d.Package with Category = category}
+                                        let ud = {d with Package = up}
+                                        return ud
+                                    }
+                            )
+                    |>toAccumulatedResult
+                return (updatedUpdates |> Seq.sortBy (fun dp -> dp.Package.Category))
             }
