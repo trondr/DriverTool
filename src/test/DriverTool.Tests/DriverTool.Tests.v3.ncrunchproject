@@ -911,9 +911,6 @@
         <TestName>DriverTool.Tests.OperatingSystemTests.isValidOsShortName&lt;Boolean&gt;("WIN8X86",True)</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.PackageInfoTests.packageInfosToDownloadJobs_Duplicate_Readme</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
         <TestName>DriverTool.Tests.PackageInfoTests.packageInfosToDownloadJobs_Unique_Readme</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
@@ -1092,12 +1089,6 @@
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.WebTests.verifyDownloadTests(True,True,True,True)</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WmiHelperTests.WmiHelperTest_InvalidClassName</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WmiHelperTests.WmiHelperTest_InvalidPropertyName</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.WmiHelperTests.WmiHelperTest_Success</TestName>
