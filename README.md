@@ -5,8 +5,8 @@ Downloads drivers and software for a specific PC model and creates a driver pack
 ## Command line help
 
 ```
-DriverTool 1.0.0.11 - Downloads drivers and software for a specific PC model and creates a driver package that can be imported into SCCM as a package or application.
-Copyright © <github.com/trondr> 2018-2019
+DriverTool 1.0.19118.14 - Download drivers and software for a specific PC model and create a driver package that can be imported into SCCM as a package or application.
+Copyright © github/trondr 2018-2019
 Usage: DriverTool.exe <command> [parameters]
 
 Commands:
@@ -75,9 +75,13 @@ ExportRemoteUdateInfo           Export remote update information for
                                 current system model code will be looked up
                                 and used. Alternative parameter name: /op.
                                 Default value:
+   /excludeUpdatePatterns       [Optional] Exclude updates where title or
+                                category match any of the specified regular
+                                expression patterns. Alternative parameter
+                                name: /xu. Default value: []
 
-   Example: DriverTool.exe ExportRemoteUdateInfo /csvFileName="c:\temp\updates.csv" /overWrite="False" /manufacturer="LENOVO" /modelCode="20EQ" /operatingSystemCode="WIN10X64" 
-   Example (alternative): DriverTool.exe ExportRemoteUdateInfo /f="c:\temp\updates.csv" /o="False" /ma="LENOVO" /m="20EQ" /op="WIN10X64" 
+   Example: DriverTool.exe ExportRemoteUdateInfo /csvFileName="c:\temp\updates.csv" /overWrite="False" /manufacturer="LENOVO" /modelCode="20EQ" /operatingSystemCode="WIN10X64" /excludeUpdatePatterns="['Software';'BIOS';'Firmware']" 
+   Example (alternative): DriverTool.exe ExportRemoteUdateInfo /f="c:\temp\updates.csv" /o="False" /ma="LENOVO" /m="20EQ" /op="WIN10X64" /xu="['Software';'BIOS';'Firmware']" 
 
 
 ExportLocalUdateInfo            Export local update information for the
@@ -96,9 +100,13 @@ ExportLocalUdateInfo            Export local update information for the
    /overWrite                   [Optional] Overwrite csv file if it allready
                                 exists. Alternative parameter name: /o.
                                 Default value: False
+   /excludeUpdatePatterns       [Optional] Exclude updates where title or
+                                category match any of the specified regular
+                                expression patterns. Alternative parameter
+                                name: /xu. Default value: []
 
-   Example: DriverTool.exe ExportLocalUdateInfo /csvFileName="c:\temp\updates.csv" /overWrite="False" 
-   Example (alternative): DriverTool.exe ExportLocalUdateInfo /f="c:\temp\updates.csv" /o="False" 
+   Example: DriverTool.exe ExportLocalUdateInfo /csvFileName="c:\temp\updates.csv" /overWrite="False" /excludeUpdatePatterns="['Software';'BIOS';'Firmware']" 
+   Example (alternative): DriverTool.exe ExportLocalUdateInfo /f="c:\temp\updates.csv" /o="False" /xu="['Software';'BIOS';'Firmware']" 
 
 
 CreateDriverPackage             Create driver package for given manufacturer
@@ -169,9 +177,24 @@ CreateDriverPackage             Create driver package for given manufacturer
                                 available. This option is currently not
                                 supported on Dell and HP. Alternative
                                 parameter name: /lu. Default value: False
+   /excludeUpdatePatterns       [Optional] Exclude updates where title or
+                                category match any of the specified regular
+                                expression patterns. Alternative parameter
+                                name: /xu. Default value: []
+   /packageTypeName             [Optional] A short name describing the
+                                content of the package. Example: 'Software',
+                                'Firmware', 'BIOS'. The package type name
+                                will be used in the package name. Alternative
+                                parameter name: /ptn. Default value: Drivers
+   /excludeSccmPackage          [Optional] Exclude Sccm package from the
+                                created package. Typically you set this to
+                                true if you want only non-driver related
+                                updates, such as BIOS or firmware, to be part
+                                of the package. Alternative parameter name:
+                                /exs. Default value: False
 
-   Example: DriverTool.exe CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /manufacturer="LENOVO" /systemFamily="ThinkPad P50" /modelCode="20EQ" /operatingSystemCode="WIN10X64" /baseOnLocallyInstalledUpdates="False" 
-   Example (alternative): DriverTool.exe CreateDriverPackage /df="c:\temp\Drivers\SomeModel" /pu="MyCompany" /ma="LENOVO" /sf="ThinkPad P50" /mo="20EQ" /op="WIN10X64" /lu="False" 
+   Example: DriverTool.exe CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /manufacturer="LENOVO" /systemFamily="ThinkPad P50" /modelCode="20EQ" /operatingSystemCode="WIN10X64" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns="['Software';'BIOS';'Firmware']" /packageTypeName="Drivers" /excludeSccmPackage="False" 
+   Example (alternative): DriverTool.exe CreateDriverPackage /df="c:\temp\Drivers\SomeModel" /pu="MyCompany" /ma="LENOVO" /sf="ThinkPad P50" /mo="20EQ" /op="WIN10X64" /lu="False" /xu="['Software';'BIOS';'Firmware']" /ptn="Drivers" /exs="False" 
 
 
 InstallDriverPackage            Install driver package. This command looks
