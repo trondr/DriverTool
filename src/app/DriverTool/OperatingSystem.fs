@@ -234,6 +234,23 @@ module OperatingSystem =
         |Regex @"(\d{4})" [osBuild] -> osBuild
         | _ -> "*"
 
+    let getOsBuildFromName2 name = 
+        match name with
+        |Regex @"(1607)" [osBuild] -> osBuild
+        |Regex @"(1703)" [osBuild] -> osBuild
+        |Regex @"(1709)" [osBuild] -> osBuild
+        |Regex @"(1803)" [osBuild] -> osBuild
+        |Regex @"(1809)" [osBuild] -> osBuild
+        |Regex @"(1903)" [osBuild] -> osBuild
+        |Regex @"(1909)" [osBuild] -> osBuild
+        |Regex @"(2003)" [osBuild] -> osBuild
+        |Regex @"(2009)" [osBuild] -> osBuild
+        |Regex @"(2103)" [osBuild] -> osBuild
+        |Regex @"(2109)" [osBuild] -> osBuild
+        |Regex @"(2203)" [osBuild] -> osBuild
+        |Regex @"(2209)" [osBuild] -> osBuild
+        | _ -> "*"
+
     let getOsBuildForCurrentSystemBase (getRegValueFunc:(string -> string -> option<obj>)) =
         let relaseId = getRegValueFunc "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion" "ReleaseId"
         relaseId|> Option.fold (fun _ r -> r.ToString()) "*"

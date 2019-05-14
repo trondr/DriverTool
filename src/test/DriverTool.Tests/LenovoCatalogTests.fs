@@ -193,8 +193,17 @@ module LenovoCatalogTests=
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
     [<Apartment(ApartmentState.STA)>]
-    [<TestCase("https://support.lenovo.com/downloads/ds122238","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.txt","297ce1fbe0e0dfe4397c1413fe3850211600274356122b44af7d38fd9fcd5be4","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe","6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513","win10","*")>]
-    [<TestCase("https://support.lenovo.com/downloads/ds112090","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt","442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe","a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1","win10","1809")>]
+    //[<TestCase("https://support.lenovo.com/downloads/ds122238","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.txt","297ce1fbe0e0dfe4397c1413fe3850211600274356122b44af7d38fd9fcd5be4","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe","6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513","win10","*")>]
+    //[<TestCase("https://support.lenovo.com/downloads/ds112090","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt","442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe","a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1","win10","1809")>]
+
+    [<TestCase("https://support.lenovo.com/downloads/ds112247",
+    "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.txt",
+    "c6f9044b4f8bef5f21e121a4ae1cff883fe9d9eb1832bee76394e22bfe0107b5",
+    "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.exe",
+    "6c8e3d708de02450fb08df2d06a34753554f466954e3ea01c4b0a18895b7252d",
+    "win10",
+    "*"
+    )>]
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum,os,osBuild) =      
         printfn "%s" (System.IntPtr.Size.ToString())
         let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl "WIN10X64" "*"

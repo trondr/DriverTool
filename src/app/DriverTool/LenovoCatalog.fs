@@ -93,7 +93,10 @@ module LenovoCatalog =
     let driverTypeToDownloadType (driverType:string) =
         match driverType.Trim() with
         |"TXT README" -> DownloadType.Readme
+        |"README" -> DownloadType.Readme
         |"EXE" -> DownloadType.Installer
+        |".exe" -> DownloadType.Installer
+        |"SCCM Package" -> DownloadType.Installer
         |_ -> DownloadType.Unknown
 
     let getDownloadLink (liNode:HtmlNode) =
@@ -151,16 +154,18 @@ module LenovoCatalog =
         let osName = getOs liElements.[1]
         let url = getDownloadLink ulNode
         let checksum = getCheckSum ulNode
-        let osBuild = getOsBuildFromName name
-        {
-            DriverName = name
-            Type = driverTypeToDownloadType dtype
-            Url = url
-            Checksum = checksum
-            FileName= getFileNameFromUrl url
-            Os = osNameToOsShortName osName
-            OsBuild = osBuild
-        }
+        let osBuild = getOsBuildFromName2 name
+        let downloadLinkInfo =
+            {
+                DriverName = name
+                Type = driverTypeToDownloadType dtype
+                Url = url
+                Checksum = checksum
+                FileName= getFileNameFromUrl url
+                Os = osNameToOsShortName osName
+                OsBuild = osBuild
+            }
+        downloadLinkInfo
     
     let osShortNameToLenovoOs osShortName =
         match osShortName with
@@ -218,7 +223,7 @@ module LenovoCatalog =
                                 c.Descendants["ul"]
                                 //Find all unordered list containing items of type "EXE" or "TXT README" 
                                 |>Seq.filter (fun ul-> 
-                                                    (ul.Elements() |> Seq.exists (fun li -> li.InnerText().Contains("EXE") || li.InnerText().Contains("TXT README")))
+                                                    (ul.Elements() |> Seq.exists (fun li -> li.InnerText().Contains(".exe") || li.InnerText().Contains("TXT README") || li.InnerText().Contains("README")))
                                                 )
                                 |> getSccmPackageInfoFromUlNodes                                                      
                            )        
