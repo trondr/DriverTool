@@ -29,7 +29,7 @@ let assemblyVersion =
     let minorVersion = "0"
     let now = System.DateTime.Now    
     let buildVersion = sprintf "%02d%03d" (now.Year - 2000) (now.DayOfYear) //Example: 19063
-    let revisionVersion = "16"
+    let revisionVersion = "18"
     sprintf "%s.%s.%s.%s" majorVersion minorVersion buildVersion revisionVersion //Example: 1.0.19063.1
 
 let getVersion file = 
@@ -53,7 +53,7 @@ Target.create "BuildApp" (fun _ ->
     AssemblyInfoFile.createFSharp "./src/app/DriverTool/AssemblyInfo.fs"
         [
             AssemblyInfo.Title "DriverTool"
-            AssemblyInfo.Description "Download drivers and software for a specific PC model and create a driver package that can be imported into SCCM as a package or application." 
+            AssemblyInfo.Description "Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application." 
             AssemblyInfo.Product "DriverTool"
             AssemblyInfo.Company "github/trondr"
             AssemblyInfo.Copyright "Copyright \u00A9 github/trondr 2018-2019"
