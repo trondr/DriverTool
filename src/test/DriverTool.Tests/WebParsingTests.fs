@@ -4,7 +4,6 @@ open System
 open DriverTool
 
 [<TestFixture>]
-[<Category(TestCategory.IntegrationTests)>]
 module WebParsingTests  =    
    
     open F    
@@ -14,7 +13,8 @@ module WebParsingTests  =
     open DriverTool.FileOperations
 
     [<Test>]
-    [<TestCase("https://support.lenovo.com/no/en/downloads/ds112090")>]
+    [<Category(TestCategory.IntegrationTests)>]
+    [<TestCase("https://support.lenovo.com/no/en/downloads/ds112090")>]    
     [<Apartment(ApartmentState.STA)>]
     let getContentFromWebPagetest (webPageUrl:string) =
         let testResult = 

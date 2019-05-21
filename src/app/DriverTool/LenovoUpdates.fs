@@ -286,38 +286,45 @@ module LenovoUpdates =
             loggerl.Info(sprintf "Local updates: %A" localUpdates)
             return localUpdates
         }
+
+    let getLenovoSccmPackageDownloadInfoFromContent (content:string) os osbuild =
+            result{
+                let! sccmPackageInfos = DriverTool.LenovoCatalog.getDownloadLinksFromWebPageContent content
+                let downloadLinks = 
+                    sccmPackageInfos
+                    |>Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
+                    |> Seq.toArray
+                    |> Array.rev
+                let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
+                let sccmPackages =
+                    downloadLinks
+                    |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
+                    |> Seq.toArray
+                let! sccmPackageInfo =
+                    match (sccmPackages.Length > 0) with
+                    |true -> Result.Ok sccmPackages.[0]
+                    |false -> 
+                        match osbuild with
+                        |"*" ->
+                            let sccmPackages =
+                                downloadLinks
+                                |> Seq.filter (fun s -> (s.Os = lenovoOs))
+                                |> Seq.toArray
+                            match (sccmPackages.Length > 0) with
+                            |true -> Result.Ok sccmPackages.[0]
+                            | false ->
+                                Result.Error (new Exception(sprintf "Sccm package not found OS=%s, OsBuild=%s." os osbuild))
+                        |_ ->
+                            Result.Error (new Exception(sprintf "Sccm package not found for OS=%s, OsBuild=%s." os osbuild))
+                return sccmPackageInfo            
+            }            
    
     let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
         match content with
         |Ok downloadPageContent -> 
-            let downloadLinks =             
-                downloadPageContent
-                |> DriverTool.LenovoCatalog.getDownloadLinksFromWebPageContent                
-                |> Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
-                |> Seq.toArray
-                |> Array.rev
-            let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
-            let sccmPackages =
-                downloadLinks
-                |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
-                |> Seq.toArray
-            match (sccmPackages.Length > 0) with
-            |true -> Result.Ok sccmPackages.[0]
-            |false -> 
-                match osbuild with
-                |"*" ->
-                    let sccmPackages =
-                        downloadLinks
-                        |> Seq.filter (fun s -> (s.Os = lenovoOs))
-                        |> Seq.toArray
-                    match (sccmPackages.Length > 0) with
-                    |true -> Result.Ok sccmPackages.[0]
-                    | false ->
-                        Result.Error (new Exception(sprintf "Sccm package not found for url '%s', OS=%s, OsBuild=%s." uri os osbuild))
-                |_ ->
-                    Result.Error (new Exception(sprintf "Sccm package not found for url '%s', OS=%s, OsBuild=%s." uri os osbuild))
-        |Error ex -> Result.Error ex
+            getLenovoSccmPackageDownloadInfoFromContent downloadPageContent os osbuild
+        |Error ex -> Result.Error (toException (sprintf "Failed to get content from url '%s', OS=%s, OsBuild=%s." uri os osbuild) (Some ex))
 
     let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<DriverTool.LenovoCatalog.Product>) =
         let sccmPackageInfos = 

@@ -103,6 +103,10 @@
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_n1cx802w_2_.xml" />
     <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />
+    <EmbeddedResource Include="TestData\LenovoSccm\ds112090.html" />
+    <EmbeddedResource Include="TestData\LenovoSccm\ds112090_MissingDownloadsTab.html" />
+    <EmbeddedResource Include="TestData\LenovoSccm\ds112090_Missing_Downloads_Links.html" />
+    <EmbeddedResource Include="TestData\LenovoSccm\ds112090_Invalid_Document.html" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

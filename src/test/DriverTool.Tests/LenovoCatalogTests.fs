@@ -1,6 +1,7 @@
 ﻿namespace DriverTool.Tests
 
 open NUnit.Framework
+open DriverTool
 
 [<TestFixture>]
 module LenovoCatalogTests=
@@ -197,12 +198,12 @@ module LenovoCatalogTests=
     //[<TestCase("https://support.lenovo.com/downloads/ds112090","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt","442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe","a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1","win10","1809")>]
 
     [<TestCase("https://support.lenovo.com/downloads/ds112247",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.txt",
-    "c6f9044b4f8bef5f21e121a4ae1cff883fe9d9eb1832bee76394e22bfe0107b5",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.exe",
-    "6c8e3d708de02450fb08df2d06a34753554f466954e3ea01c4b0a18895b7252d",
-    "win10",
-    "*"
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.txt",
+        "c6f9044b4f8bef5f21e121a4ae1cff883fe9d9eb1832bee76394e22bfe0107b5",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.exe",
+        "6c8e3d708de02450fb08df2d06a34753554f466954e3ea01c4b0a18895b7252d",
+        "win10",
+        "*"
     )>]
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum,os,osBuild) =      
         printfn "%s" (System.IntPtr.Size.ToString())
@@ -292,7 +293,8 @@ module LenovoCatalogTests=
                 let! contentFile = FileSystem.path (getTempFile "ds112090.html")        
                 let! file = (downloadWebContent url contentFile false)
                 let! content = (file|> readContentFromFile)                
-                let actual = (getDownloadLinksFromWebPageContent content)|>Seq.toArray
+                let! actualResult = (getDownloadLinksFromWebPageContent content)
+                let actual = actualResult |>Seq.toArray
                 System.Console.Write(actual.ToString())
                 let expectedArray = (expectedSccmPacakages |> Seq.toArray)
                 for i in 0..2 do
@@ -402,3 +404,44 @@ module LenovoCatalogTests=
             Assert.AreEqual(testData.Expected,actualProduct,"Products Not equal.")
         |Error ex ->
             Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)       
+
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("ds112090.html","WIN10X64", "1809",true)>]
+    let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool) =
+        match(result{
+            let! destinationFolderPath = FileSystem.path getTempPath
+            let! destinationFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
+            let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
+            let! info = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
+            return destinationFolderPath
+        }) with
+        |Ok v -> Assert.IsTrue(expectedSucess,sprintf "Expected failure but succeded instead." )
+        |Error ex ->
+            Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)      
+        
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("ds112090.html", 3, true,"N/A", "https://support.lenovo.com/no/en/downloads/ds112090")>]
+    [<TestCase("ds112090_MissingDownloadsTab.html", 0, false,"Download tabs ('downloadTabs') not found in html document.", "https://support.lenovo.com/no/en/downloads/ds112090")>]
+    [<TestCase("ds112090_Missing_Downloads_Links.html", 0, false,"No download links were found beneath the downloads tab in the html document.", "https://support.lenovo.com/no/en/downloads/ds112090")>]
+    //[<TestCase("ds112090_Invalid_Document.html", 0, false,"N/A.", "https://support.lenovo.com/no/en/downloads/ds112090")>]
+
+    
+    let getDownloadLinksFromWebPageContentTests (fileName:string, expectedCount:int, expectedSuccess:bool,expectedErrorMessage:string,source:string) =
+        match(result{
+            let! destinationFolderPath = FileSystem.path getTempPath
+            let! destinationFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
+            let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
+            let! actual = getDownloadLinksFromWebPageContent content
+            let actualArray = actual |> Seq.toArray
+            Assert.AreEqual(expectedCount,(Array.length actualArray),"Sccm package info count is not expected.")
+            return actual
+        }) with
+        |Ok v -> Assert.IsTrue(expectedSuccess,sprintf "Expected failure but succeded instead." )
+        |Error ex ->
+            Assert.IsFalse(expectedSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
+            Assert.IsTrue(ex.Message.StartsWith(expectedErrorMessage),sprintf "Error message '%s' does not contain '%s'" ex.Message expectedErrorMessage)
