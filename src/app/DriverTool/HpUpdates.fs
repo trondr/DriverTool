@@ -23,7 +23,7 @@ module HpUpdates =
                                 Version = "";
                                 Installer =
                                     {
-                                        Url = new Uri(originFile.OriginUri)
+                                        Url = toOptionalUri originFile.OriginUri ""
                                         Name = toInstallerName ii.InstallerData
                                         Checksum = (Checksum.base64StringToFileHash originFile.Digest)|>Checksum.fileHashToString
                                         Size = originFile.Size
@@ -34,7 +34,7 @@ module HpUpdates =
                                 Category = sdp.ProductName
                                 Readme =
                                     {
-                                        Url = new Uri(sdp.MoreInfoUrl)
+                                        Url = toOptionalUri sdp.MoreInfoUrl ""
                                         Name = Web.getFileNameFromUrl sdp.MoreInfoUrl
                                         Checksum = ""
                                         Size = 0L

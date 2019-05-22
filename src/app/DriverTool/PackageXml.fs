@@ -27,7 +27,7 @@ module PackageXml =
     
     type PackageFile =
         {
-            Url:Uri
+            Url:Uri option
             Name:string
             Checksum:string
             Size:Int64
@@ -103,11 +103,16 @@ module PackageXml =
     
     open DriverTool.Web
 
+    let toDownloadUriUnsafe optionUri : Uri =
+        match optionUri with
+        |None -> raise (toException "Download Url not defined." None)
+        |Some u ->  u
+
     let toReadmeDownloadInfo destinationDirectory (packageInfo:PackageInfo) =
         let readmeDownloadInfo = 
                 result{                    
                     let! destinationReadmeFilePath = FileSystem.path (getDestinationReadmePath destinationDirectory packageInfo)
-                    return {SourceUri = packageInfo.Readme.Url;SourceChecksum = packageInfo.Readme.Checksum; SourceFileSize = packageInfo.Readme.Size; DestinationFile = destinationReadmeFilePath;}
+                    return {SourceUri = toDownloadUriUnsafe packageInfo.Readme.Url;SourceChecksum = packageInfo.Readme.Checksum; SourceFileSize = packageInfo.Readme.Size; DestinationFile = destinationReadmeFilePath;}
                 }
         match readmeDownloadInfo with
         |Ok d -> Some d
@@ -119,7 +124,7 @@ module PackageXml =
         let installerDownloadInfo = 
                     result{                        
                         let! destinationInstallerFilePath = FileSystem.path (getDestinationInstallerPath destinationDirectory packageInfo)
-                        return {SourceUri = packageInfo.Installer.Url;SourceChecksum = packageInfo.Installer.Checksum; SourceFileSize = packageInfo.Installer.Size; DestinationFile = destinationInstallerFilePath; }
+                        return {SourceUri = toDownloadUriUnsafe packageInfo.Installer.Url;SourceChecksum = packageInfo.Installer.Checksum; SourceFileSize = packageInfo.Installer.Size; DestinationFile = destinationInstallerFilePath; }
                     }
         installerDownloadInfo
 
@@ -144,6 +149,16 @@ module PackageXml =
         //Make sure destination file is unique
         |> Seq.groupBy (fun p -> p.DestinationFile) 
         |> Seq.map (fun (k,v) -> v |>Seq.head)
+
+    let toOptionalUri baseUrl fileName =
+        match String.IsNullOrWhiteSpace(baseUrl) with
+        |true -> None
+        |false -> 
+            match String.IsNullOrWhiteSpace(fileName) with
+            |true -> 
+                Some (new Uri(sprintf "%s" baseUrl))
+            |false ->
+                Some (new Uri(sprintf "%s/%s" baseUrl fileName))
 
     let getPackageInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         let packageXDocument = XDocument.Load(FileSystem.pathValue downloadedPackageInfo.FilePath)
@@ -206,7 +221,7 @@ module PackageXml =
             Version = version;
             Installer = 
                 {
-                    Url = new Uri(sprintf "%s/%s" baseUrl installerName)
+                    Url = toOptionalUri baseUrl installerName
                     Name = installerName
                     Checksum = installerCrc
                     Size = installerSize
@@ -214,7 +229,7 @@ module PackageXml =
                 }
             Readme = 
                 {
-                    Url = new Uri(sprintf "%s/%s" baseUrl readmeName)
+                    Url = toOptionalUri baseUrl readmeName
                     Name = readmeName
                     Checksum = readmeCrc
                     Size = readmeSize

@@ -17,7 +17,7 @@ module CreateDriverPackageTests =
             Version="";
             Installer = 
                 {
-                    Url = new Uri("http://dummy")
+                    Url = toOptionalUri "http://dummy" ""
                     Name = ""
                     Checksum = ""
                     Size = 0L
@@ -28,7 +28,7 @@ module CreateDriverPackageTests =
             Category="";
             Readme =
                 {
-                    Url = new Uri("http://dummy")
+                    Url = toOptionalUri "http://dummy" ""
                     Name = ""
                     Checksum = ""
                     Size = 0L

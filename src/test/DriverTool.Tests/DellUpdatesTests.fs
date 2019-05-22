@@ -51,7 +51,7 @@ module DellUpdatesTests =
                 Version = "";                
                 Installer = 
                     {
-                        Url = new Uri("http://dymmy")
+                        Url = toOptionalUri "http://dummy" ""
                         Name = ""
                         Checksum = ""
                         Size = 0L
@@ -62,7 +62,7 @@ module DellUpdatesTests =
                 Category = "";
                 Readme =
                     {
-                        Url = new Uri("http://dummy")
+                        Url = toOptionalUri "http://dummy" ""
                         Name = ""
                         Checksum = ""
                         Size = 0L
