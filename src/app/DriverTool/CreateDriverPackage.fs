@@ -207,10 +207,13 @@ module CreateDriverPackage =
         |> toAccumulatedResult
     
     let getLastestReleaseDate (updates:seq<DownloadedPackageInfo>) =
-        updates
-        |> Seq.map (fun p -> p.Package.ReleaseDate)
-        |> Seq.max
-
+        match (Seq.isEmpty updates) with
+        |true -> 
+            String.Empty
+        |false -> 
+            updates
+            |> Seq.map (fun p -> p.Package.ReleaseDate)
+            |> Seq.max
 
     let createPackageDefinitionFile (logDirectory, extractedUpdate:ExtractedPackageInfo) = 
         result{
