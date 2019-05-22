@@ -48,6 +48,9 @@ module PackageXml =
             PackageXmlName:string
         }
 
+    let packageInfoSortKey packageInfo =
+        sprintf "%s-%s" packageInfo.Category packageInfo.ReleaseDate
+
     type DownloadJob = 
         {
             SourceUri:Uri;

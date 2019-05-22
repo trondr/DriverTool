@@ -173,5 +173,5 @@ module HpUpdates =
                                     }
                             )
                     |>toAccumulatedResult
-                return updatedUpdates
+                return (updatedUpdates |> Seq.sortBy (fun dp -> packageInfoSortKey dp.Package))
             }

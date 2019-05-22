@@ -1,6 +1,6 @@
 ﻿namespace DriverTool
 
-module DellUpdates2=
+module DellUpdates=
     
     open System
     open System.Xml.Linq
@@ -12,8 +12,8 @@ module DellUpdates2=
     open DriverTool.SdpCatalog    
     open FSharp.Collections.ParallelSeq
 
-    type DellUpdates2 = class end
-    let logger = Logging.getLoggerByName(typeof<DellUpdates2>.Name)
+    type DellUpdates = class end
+    let logger = Logging.getLoggerByName(typeof<DellUpdates>.Name)
 
     let downloadSdpFiles () =
         result
@@ -277,5 +277,5 @@ module DellUpdates2=
                                     }
                             )
                     |>toAccumulatedResult
-                return (updatedUpdates |> Seq.sortBy (fun dp -> dp.Package.Category))
+                return (updatedUpdates |> Seq.sortBy (fun dp -> packageInfoSortKey dp.Package))
             }

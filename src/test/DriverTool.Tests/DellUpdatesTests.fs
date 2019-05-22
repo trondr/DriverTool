@@ -11,7 +11,7 @@ module DellUpdatesTests =
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
     [<TestCase("FOLDER01766254M/1/9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE","FOLDER01766254M/1","9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE")>]
     let pathToDirectoryAndFileTests (path:string,expectedDirectory,expectedFileName) =
-       let (actualDirectory,actualFileName) = DriverTool.DellUpdates2.pathToDirectoryAndFile path
+       let (actualDirectory,actualFileName) = DriverTool.DellUpdates.pathToDirectoryAndFile path
        Assert.AreEqual(expectedDirectory,actualDirectory,"Directory not expected")
        Assert.AreEqual(expectedFileName,actualFileName,"FileName not expected")
     
@@ -25,7 +25,7 @@ module DellUpdatesTests =
             let! logDirectory = FileSystem.path "%public%\Logs"
             let! patterns = (RegExp.toRegexPatterns [||] true)
             let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
-            let! actual = DriverTool.DellUpdates2.getRemoteUpdates updatesRetrievalContext
+            let! actual = DriverTool.DellUpdates.getRemoteUpdates updatesRetrievalContext
             printfn "Packages: %A" actual
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())
@@ -88,7 +88,7 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create model false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystem false
-            let! actual = DriverTool.DellUpdates2.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
+            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)
