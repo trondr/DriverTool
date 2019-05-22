@@ -5,7 +5,7 @@ Downloads drivers and software for current PC model and creates a driver package
 ## Command line help
 
 ```
-DriverTool 1.0.19141.18 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
+DriverTool 1.0.19142.20 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
 Copyright © github/trondr 2018-2019
 Usage: DriverTool.exe <command> [parameters]
 
