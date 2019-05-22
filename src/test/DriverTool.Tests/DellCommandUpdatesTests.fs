@@ -52,7 +52,7 @@ module DellCommandUpdatesIntegrationTests =
                 let! logDirectory = FileSystem.path @"c:\temp"
                 let! patterns = (RegExp.toRegexPatterns [||] true)
                 let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
-                let! remoteUpdates = DellUpdates.getRemoteUpdates updatesRetrievalContext
+                let! remoteUpdates = DellUpdates2.getRemoteUpdates updatesRetrievalContext
                 let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode, operatingSystemCode,remoteUpdates)
                 return localUpdates
             }

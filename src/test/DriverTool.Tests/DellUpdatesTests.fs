@@ -3,7 +3,6 @@
 open NUnit.Framework
 
 [<TestFixture>]
-[<Category(TestCategory.IntegrationTests)>]
 module DellUpdatesTests =
     open DriverTool
     open DriverTool.UpdatesContext
@@ -12,12 +11,13 @@ module DellUpdatesTests =
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
     [<TestCase("FOLDER01766254M/1/9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE","FOLDER01766254M/1","9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE")>]
     let pathToDirectoryAndFileTests (path:string,expectedDirectory,expectedFileName) =
-       let (actualDirectory,actualFileName) = DriverTool.DellUpdates.pathToDirectoryAndFile path
+       let (actualDirectory,actualFileName) = DriverTool.DellUpdates2.pathToDirectoryAndFile path
        Assert.AreEqual(expectedDirectory,actualDirectory,"Directory not expected")
        Assert.AreEqual(expectedFileName,actualFileName,"FileName not expected")
     
     [<Test>]
     [<TestCase("07A7","WIN10X64")>]
+    [<Category(TestCategory.IntegrationTests)>]
     let getUpdates2Test (modelCodeString,operatingSystemCodeString) =
         match(result{
             let! modelCode = ModelCode.create modelCodeString false
@@ -25,7 +25,7 @@ module DellUpdatesTests =
             let! logDirectory = FileSystem.path "%public%\Logs"
             let! patterns = (RegExp.toRegexPatterns [||] true)
             let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
-            let! actual = DriverTool.DellUpdates.getRemoteUpdates updatesRetrievalContext
+            let! actual = DriverTool.DellUpdates2.getRemoteUpdates updatesRetrievalContext
             printfn "Packages: %A" actual
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())
@@ -81,22 +81,9 @@ module DellUpdatesTests =
             yield {packageInfo with Name="Name2";Version="002.01.20.0"}
         }
     
-    [<Test>] 
-    [<Category(TestCategory.UnitTests)>]
-    let getLatestPackageInfoVersionTest () =
-        let packageInfos = packageInfoTestData ()
-        let actual = DriverTool.DellUpdates.getLatestPackageInfoVersion (packageInfos) |> Seq.toArray
-        Assert.AreEqual(2,actual.Length,"Selected package info should be 1")
-        let actualPackageInfo1 = actual.[0]
-        Assert.AreEqual("Name1",actualPackageInfo1.Name,"Name")
-        Assert.AreEqual("3.0.20.0",actualPackageInfo1.Version,"Version")
-        let actualPackageInfo2 = actual.[1]
-        Assert.AreEqual("Name2",actualPackageInfo2.Name,"Name")
-        Assert.AreEqual("002.01.20.0",actualPackageInfo2.Version,"Version")
-        ()
-    
     [<Test>]
     [<TestCase("07A0","WIN10X64")>]
+    [<Category(TestCategory.IntegrationTests)>]
     let getSccmDriverPackageInfoTest(model, operatingSystem) =
         match(result{
             let! modelCode = ModelCode.create model false
