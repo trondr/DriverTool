@@ -139,7 +139,7 @@ module HpUpdates =
             return result |>Seq.toArray |> Seq.head
         }
 
-    let getCategoryFromReadmeHtml readmeHtmlPath = 
+    let getCategoryFromReadmeHtml readmeHtmlPath defaultCategory = 
         result
             {
                 let! htmlDocument = HtmlHelper.loadHtmlDocument readmeHtmlPath
@@ -153,7 +153,7 @@ module HpUpdates =
                     |>Array.tryHead                
                 return 
                     match category with
-                    |None -> "Unknown"
+                    |None -> defaultCategory
                     |Some n -> n.InnerText().Replace("CATEGORY:","").Trim()
             }
         
@@ -171,7 +171,7 @@ module HpUpdates =
                                 result
                                     {
                                         let! readmeHtmlPath = FileSystem.path d.ReadmePath
-                                        let! category = getCategoryFromReadmeHtml readmeHtmlPath
+                                        let! category = getCategoryFromReadmeHtml readmeHtmlPath d.Package.Category
                                         let up = {d.Package with Category = category}
                                         let ud = {d with Package = up}
                                         return ud
