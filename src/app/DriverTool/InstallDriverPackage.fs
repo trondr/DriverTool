@@ -88,12 +88,17 @@ module InstallDriverPackage =
             return copyResult
         }
 
+    let folderStartsWithUnderscore path =
+        let folderPath = FileSystem.pathValue path
+        let directoryInfo = new System.IO.DirectoryInfo(folderPath)
+        directoryInfo.Name.StartsWith("_")
+
     let getGetActiveDriverFolders driversFolderPath =
         result{
             let! subDirectoryPaths = DirectoryOperations.getSubDirectoryPaths driversFolderPath
             let activeDriverFolders =
                     subDirectoryPaths
-                    |>Seq.filter (fun path-> not ((FileSystem.pathValue path).StartsWith("_")))
+                    |>Seq.filter (fun path-> not (folderStartsWithUnderscore path))
                     |>Seq.toArray
             return activeDriverFolders
         }
@@ -103,7 +108,7 @@ module InstallDriverPackage =
             let! subDirectoryPaths = DirectoryOperations.getSubDirectoryPaths driversFolderPath
             let activeDriverFolders =
                     subDirectoryPaths
-                    |>Seq.filter (fun path-> ((FileSystem.pathValue path).StartsWith("_")))
+                    |>Seq.filter (fun path-> (folderStartsWithUnderscore path))
                     |>Seq.toArray
             return activeDriverFolders
         }
