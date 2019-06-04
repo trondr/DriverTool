@@ -401,5 +401,5 @@ module LenovoUpdates =
     let updateDownloadedPackageInfo downloadedUpdates =
         result
             {
-                return (downloadedUpdates |> Seq.sortBy (fun dp -> packageInfoSortKey dp.Package))
+                return (downloadedUpdates |> Array.sortBy (fun dp -> packageInfoSortKey dp.Package))
             }

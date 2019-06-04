@@ -25,8 +25,8 @@ module CreateDriverPackage =
     let getUniqueUpdatesByInstallerName packageInfos = 
         let uniqueUpdates = 
             packageInfos
-            |> Seq.groupBy (fun p -> p.Installer.Name)
-            |> Seq.map (fun (k,v) -> v |>Seq.head)
+            |> Array.groupBy (fun p -> p.Installer.Name)
+            |> Array.map (fun (k,v) -> v |>Array.head)
         uniqueUpdates
 
     let verifyDownload downloadJob verificationWarningOnly =
@@ -68,6 +68,7 @@ module CreateDriverPackage =
                             Package = p;
                         }
                     )
+        |>Seq.toArray
     
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
@@ -305,10 +306,9 @@ module CreateDriverPackage =
                 let getUpdates = DriverTool.Updates.getUpdatesFunc (dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
-                let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.ExcludeUpdateRegexPatterns
-                
+                let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.ExcludeUpdateRegexPatterns                
                 let! packageInfos = getUpdates updatesRetrievalContext
-                let uniquePackageInfos = packageInfos |> Seq.distinct
+                let uniquePackageInfos = packageInfos |> Array.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
                 logger.Info("Downloading software and drivers...")

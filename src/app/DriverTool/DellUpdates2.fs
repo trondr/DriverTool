@@ -267,7 +267,7 @@ module DellUpdates=
             {
                 let! updatedUpdates = 
                     downloadedUpdates
-                    |>Seq.map(fun d ->
+                    |>Array.map(fun d ->
                                 result
                                     {                                        
                                         let category = getCategoryFromInstallerName d.Package.Installer.Name d.Package.Category
@@ -277,5 +277,5 @@ module DellUpdates=
                                     }
                             )
                     |>toAccumulatedResult
-                return (updatedUpdates |> Seq.sortBy (fun dp -> packageInfoSortKey dp.Package))
+                return (updatedUpdates |> Seq.toArray |> Array.sortBy (fun dp -> packageInfoSortKey dp.Package))
             }

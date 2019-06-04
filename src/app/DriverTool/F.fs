@@ -114,14 +114,16 @@ module F=
         |> Seq.choose f
 
     let toAccumulatedResult (results:seq<Result<_,Exception>>) =
+        let resultsArray = results |> Seq.toArray        
+        
         let allExceptionMessages = 
-                (getAllExceptions results) 
+                (getAllExceptions resultsArray) 
                 |> Seq.toArray
         
         let accumulatedResult =             
             match allExceptionMessages.Length with
             | 0 -> 
-                let allValues = getAllValues results
+                let allValues = getAllValues resultsArray
                 Result.Ok allValues
             | _ -> 
                 toErrorResult (String.Join<string>(" ", allExceptionMessages)) None

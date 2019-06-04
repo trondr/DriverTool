@@ -11,6 +11,7 @@ module HpUpdates =
     open FileSystem
     open FSharp.Data
     open DriverTool.UpdatesContext
+    open DriverTool.PackageXml
         
     let toPackageInfos sdp  =
             let pacakgeInfos =
@@ -144,12 +145,16 @@ module HpUpdates =
                 let! htmlDocument = HtmlHelper.loadHtmlDocument readmeHtmlPath
                 let category =
                     (htmlDocument.Elements()|>Seq.head).Elements()
-                    |>Seq.filter(fun l -> 
-                            l.InnerText().StartsWith("CATEGORY:")
+                    |>Seq.filter(fun l ->
+                            let innerText = l.InnerText()
+                            innerText.StartsWith("CATEGORY:")
                         )
                     |>Seq.toArray
-                    |>Array.head
-                return category.InnerText().Replace("CATEGORY:","").Trim()
+                    |>Array.tryHead                
+                return 
+                    match category with
+                    |None -> "Unknown"
+                    |Some n -> n.InnerText().Replace("CATEGORY:","").Trim()
             }
         
     /// <summary>
@@ -157,12 +162,12 @@ module HpUpdates =
     /// The readme html "CATEGORY:" line gives more information of the type of driver. Example: 'Driver-Network' or 'Driver-Keyboard,Mouse and Input Devices'
     /// </summary>
     /// <param name="downloadedUpdates"></param>
-    let updateDownloadedPackageInfo (downloadedUpdates:seq<DownloadedPackageInfo>) =
+    let updateDownloadedPackageInfo (downloadedUpdates:array<DownloadedPackageInfo>) =
         result
             {
                 let! updatedUpdates = 
-                    downloadedUpdates
-                    |>Seq.map(fun d ->
+                    downloadedUpdates                                        
+                    |>Array.map(fun d ->
                                 result
                                     {
                                         let! readmeHtmlPath = FileSystem.path d.ReadmePath
@@ -173,5 +178,6 @@ module HpUpdates =
                                     }
                             )
                     |>toAccumulatedResult
-                return (updatedUpdates |> Seq.sortBy (fun dp -> packageInfoSortKey dp.Package))
+                let updatedUpdatesArray = updatedUpdates |> Seq.toArray
+                return (updatedUpdatesArray |> Array.sortBy (fun dp -> packageInfoSortKey dp.Package))
             }

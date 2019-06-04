@@ -64,3 +64,74 @@ module FTests =
             Assert.AreEqual("Test Message. subfunctionThatThrows.", getAccumulatedExceptionMessages ex)
             printf "%A" ex
             Assert.IsTrue(ex.ToString().StartsWith("System.Exception: Test Message. ---> System.Exception: subfunctionThatThrows."))
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    let getAllExceptionsTests_One_Exception() =
+        let sequence = 
+            seq {
+                yield Result.Ok(123)
+                yield Result.Error(new Exception("Test Exception 1"))
+            }
+        let actual = 
+            DriverTool.F.getAllExceptions sequence
+            |> Seq.toArray
+        Assert.AreEqual(1,actual.Length)
+        Assert.AreEqual("Test Exception 1",actual.[0])
+    
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    let getAllExceptionsTests_Empty_Sequence() =
+        let sequence = Seq.empty<Result<int,Exception>>            
+        let actual = 
+            DriverTool.F.getAllExceptions sequence
+            |> Seq.toArray
+        Assert.AreEqual(0,actual.Length)        
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    let toAccumulatedResult_One_Exception() =
+        let expectedSuccess = false
+        let sequence = 
+            seq {
+                yield Result.Ok(123)
+                yield Result.Error(new Exception("Test Exception 1"))
+            }
+        let actual = 
+            DriverTool.F.toAccumulatedResult sequence 
+        match actual with
+        |Error ex -> 
+            Assert.False(expectedSuccess,"Expected result to be Ok but was Error.")
+            Assert.IsTrue(ex.Message.Contains("Test Exception 1"))
+        |Ok v -> Assert.IsTrue(expectedSuccess,"Expected result to be Error but was Ok.")
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    let toAccumulatedResult_No_Exceptions() =
+        let expectedSuccess = true
+        let sequence = 
+            seq {
+                yield Result.Ok(123)
+                yield Result.Ok(234)
+            }
+        let actual = 
+            DriverTool.F.toAccumulatedResult sequence 
+        match actual with
+        |Error ex -> Assert.False(expectedSuccess,"Expected result to be Ok but was Error.")
+        |Ok v -> 
+            Assert.IsTrue(expectedSuccess,"Expected result to be Error but was Ok.")
+            Assert.AreEqual(2,(v|>Seq.toArray|>Array.length))
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    let toAccumulatedResult_Empty_Sequence() =
+        let expectedSuccess = true
+        let sequence = Seq.empty<Result<string,Exception>>
+        let actual = 
+            DriverTool.F.toAccumulatedResult sequence   
+        match actual with
+        |Error ex -> Assert.False(expectedSuccess,"Expected result to be Ok but was Error.")
+        |Ok v -> 
+            Assert.IsTrue(expectedSuccess,"Expected result to be Error but was Ok.")
+            Assert.AreEqual(0,(v|>Seq.toArray|>Array.length))
+    
