@@ -113,7 +113,7 @@ module HpUpdatesTests =
         match(result{
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
             let! readmeHtmlPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (htmlFileName,tempDestinationFolderPath,htmlFileName,typeof<ThisAssembly>.Assembly)
-            let! actual = HpUpdates.getCategoryFromReadmeHtml readmeHtmlPath
+            let! actual = HpUpdates.getCategoryFromReadmeHtml readmeHtmlPath "Default"
             return actual
         })with
         |Ok a -> 
