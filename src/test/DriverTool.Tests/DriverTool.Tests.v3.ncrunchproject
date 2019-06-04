@@ -1715,6 +1715,9 @@
          Size = 26825728L;};}|];};
  ExpectedErrorMessage = "N/A";})</TestName>
       </NamedTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.LenovoCatalogTests</FixtureName>
+      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
