@@ -57,3 +57,27 @@ module Configuration =
     
     let getDriverPackageLogDirectoryPath =
         getValue "DriverPackageLogDirectoryPath"
+
+    let getWebProxyUrl =
+        getValue "WebProxyUrl"
+
+    let getWebProxyByPassOnLocal =
+        let value = getValue "WebProxyByPassOnLocal"
+        match value with
+        | "True" -> true
+        | "False" -> false
+        | "true" -> true
+        | "false" -> false
+        | "1" -> true
+        | "0" -> false
+        | _ -> false
+    
+    let getWebProxyByPassList : String[] =
+        let value = getValue "WebProxyByPassList"
+        match value with
+        | "" -> [||]
+        | null -> [||]
+        | v -> 
+            v.Split([|';'|])
+            |> Array.filter (fun s -> not (String.IsNullOrWhiteSpace(s)))
+        
