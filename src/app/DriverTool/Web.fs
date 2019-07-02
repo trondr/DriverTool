@@ -50,10 +50,20 @@ module Web =
     let printProgress sourceUri (progress:DownloadProgressChangedEventArgs) = 
         progressActor.Post (progressMessage progress.ProgressPercentage progress.BytesReceived progress.TotalBytesToReceive sourceUri)
 
+    let getWebProxy (webProxyUrl:string) (byPassOnLocal:bool) (byPassList:string[]) = 
+        match webProxyUrl with
+        | "" -> null
+        | null -> null
+        | url -> 
+                let webProxy = new WebProxy(url, byPassOnLocal, byPassList)
+                logger.Info(sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList)
+                webProxy
+    
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
-            webClient.Proxy <- null;            
+            let webProxy = getWebProxy Configuration.getWebProxyUrl Configuration.getWebProxyByPassOnLocal Configuration.getWebProxyByPassList
+            webClient.Proxy <- webProxy
             use disposable = 
                 webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri.OriginalString progress)
             let webHeaderCollection = new WebHeaderCollection()
