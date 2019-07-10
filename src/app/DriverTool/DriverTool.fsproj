@@ -225,7 +225,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.UpdateServices.Administration">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19114.2\lib\net472\Microsoft.UpdateServices.Administration.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.19191.4\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -236,7 +236,7 @@
       <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="sdpeval">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19114.2\lib\net472\sdpeval.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.19191.4\lib\net45\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="SharpYaml">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\SharpYaml.dll</HintPath>
@@ -253,7 +253,7 @@
       <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
-      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
