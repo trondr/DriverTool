@@ -82,7 +82,7 @@ module RegistryOperations =
                 |Some _ -> true
                 |None -> false
         |Result.Error ex ->
-            if (loggerIsEnabled) then logWrite(new Msg(fun m ->m.Invoke((sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message))|>ignore))
+            if (loggerIsEnabled) then logWrite(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message)
             false
 
     let regValueExists (regKeyPath:string) valueName =
