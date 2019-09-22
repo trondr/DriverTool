@@ -122,5 +122,6 @@ module HpUpdatesTests =
 
         |Error e -> 
             Assert.IsFalse(isSuccess,sprintf "Expected success, but failed due to: %A" e)
+            Assert.AreEqual("Invalid HTML",e.InnerException.Message,"Inner exception not as expected.")
             printf "%A" e
         
