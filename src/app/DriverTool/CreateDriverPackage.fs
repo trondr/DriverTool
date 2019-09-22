@@ -217,7 +217,7 @@ module CreateDriverPackage =
             |> Seq.map (fun p -> p.Package.ReleaseDate)
             |> Seq.max
 
-    let createPackageDefinitionFile (logDirectory, extractedUpdate:ExtractedPackageInfo) = 
+    let createPackageDefinitionFile (logDirectory, extractedUpdate:ExtractedPackageInfo, packagePublisher) = 
         result{
             let! packageDefinitonSmsPath = combine2Paths (extractedUpdate.ExtractedDirectoryPath,"PackageDefinition.sms")   
             let installLogFileName = toValidDirectoryName ("Install_" + extractedUpdate.DownloadedPackage.Package.Title + "_" + extractedUpdate.DownloadedPackage.Package.Version + ".log")
@@ -229,7 +229,7 @@ module CreateDriverPackage =
                     Name = extractedUpdate.DownloadedPackage.Package.Title;
                     Version = extractedUpdate.DownloadedPackage.Package.Version;
                     Language = "EN";
-                    Publisher = "LENOVO";
+                    Publisher = packagePublisher;
                     InstallCommandLine = dtInstallPackageCmd + sprintf " > \"%s\"" installLogFile;
                     UnInstallCommandLine = dtUnInstallPackageCmd + sprintf " > \"%s\"" unInstallLogFile;
                     RegistryValue="";
@@ -239,9 +239,9 @@ module CreateDriverPackage =
             return! writeTextToFileResult
         }
     
-    let createPackageDefinitionFiles (extractedUpdates:seq<ExtractedPackageInfo>, logDirectory) =
+    let createPackageDefinitionFiles (extractedUpdates:seq<ExtractedPackageInfo>, logDirectory, packagePublisher) =
         extractedUpdates
-        |> PSeq.map (fun u -> (createPackageDefinitionFile (logDirectory, u)))
+        |> PSeq.map (fun u -> (createPackageDefinitionFile (logDirectory, u, packagePublisher)))
         |> PSeq.toArray
         |> Seq.ofArray
         |> toAccumulatedResult
@@ -344,7 +344,7 @@ module CreateDriverPackage =
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
                 let! extractedUpdates = extractUpdates (existingDriversPath,dpcc.Manufacturer, updatedInfoDownloadedUpdates)
                 let installScriptResults = createInstallScripts (extractedUpdates,dpcc.Manufacturer,dpcc.LogDirectory)
-                let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, dpcc.LogDirectory)
+                let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, dpcc.LogDirectory, dpcc.PackagePublisher)
 
                 let! sccmPackageExtractResult =
                     if (not dpcc.ExcludeSccmPackage) then               
