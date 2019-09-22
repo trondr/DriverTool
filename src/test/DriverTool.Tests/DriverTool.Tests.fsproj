@@ -139,12 +139,9 @@
       <Name>DriverTool</Name>
       <Project>{19822aea-c088-455d-b5a5-4738a3a9dba7}</Project>
       <Private>True</Private>
-    </ProjectReference>
-    <Reference Include="FSharp.Data.Xsd.DesignTime">
-      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data.xsd\1.0.2\lib\net45\FSharp.Data.Xsd.DesignTime.dll</HintPath>
-    </Reference>
+    </ProjectReference>    
     <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.2.4\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">

@@ -274,12 +274,9 @@
     </ProjectReference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup Condition="'$(NCrunch)' == '1'">
-    <Reference Include="FSharp.Data.Xsd.DesignTime">
-      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data.xsd\1.0.2\lib\net45\FSharp.Data.Xsd.DesignTime.dll</HintPath>
-    </Reference>
+  <ItemGroup >    
     <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>$(USERPROFILE)\.nuget\packages\fsharp.data\3.0.0\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.2.4\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup>
