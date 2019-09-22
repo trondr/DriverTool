@@ -6,7 +6,7 @@ module Checksum=
     open System.Security.Cryptography
     open DriverTool
     open DriverTool.FileOperations
-    
+    open DriverTool.Logging
     let logger = Logging.getLoggerByName("Checksum")
 
     let getHashAlgorithmFromHashStringLength hashStringLength = 
@@ -55,7 +55,7 @@ module Checksum=
                 |true ->              
                     let destinationHash = (computeFileHashFromHashLength destinationFilePath sourceFileHash.Length) |> toLower
                     let sourceHash = sourceFileHash|>toLower
-                    if(logger.IsDebugEnabled) then logger.Debug(sprintf "Comparing destination file (%s) hash [%s] and source file hash [%s]..." (FileSystem.pathValue destinationFilePath) destinationHash sourceHash)
+                    logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Comparing destination file (%s) hash [%s] and source file hash [%s]..." (FileSystem.pathValue destinationFilePath) destinationHash sourceHash)|>ignore))
                     (sourceHash = destinationHash) || (String.IsNullOrWhiteSpace(sourceHash))
                 | false  -> false
             |false -> false

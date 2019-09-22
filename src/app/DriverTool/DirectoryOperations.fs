@@ -3,6 +3,7 @@ module DirectoryOperations =
     type DirectoryOperations = class end
     open System
     open System.IO
+    open DriverTool.Logging
     
     let logger = Logging.getLoggerByName("DirectoryOperations")
 
@@ -35,7 +36,7 @@ module DirectoryOperations =
             directoryPathExists directoryPath
         match (not directoryExists && createIfNotExists) with
         |true->
-            logger.Info(sprintf "Creating directory: '%s'..." (FileSystem.pathValue directoryPath))
+            logger.Info(msg (sprintf  "Creating directory: '%s'..." (FileSystem.pathValue directoryPath)))
             createDirectory directoryPath
         |false->
            match directoryExists with
@@ -58,7 +59,7 @@ module DirectoryOperations =
             match (directoryIsEmpty dp) with
             |true -> Result.Ok dp
             |false -> Result.Error (new Exception(sprintf "Directory '%s' is not empty. %s" (FileSystem.pathValue dp) message))
-        |Error ex -> Result.Error ex
+        |Result.Error ex -> Result.Error ex
 
     let ensureDirectoryExistsAndIsEmpty (directoryPath:FileSystem.Path, createIfNotExists) =
         ensureDirectoryExistsAndIsEmptyWithMessage String.Empty directoryPath createIfNotExists

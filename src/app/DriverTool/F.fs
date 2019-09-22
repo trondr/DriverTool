@@ -192,7 +192,7 @@ module F=
         else None
     
     open System.Security.Cryptography
-    open log4net
+    open Common.Logging
 
     //Source: https://stackoverflow.com/questions/33312260/how-can-i-select-a-random-value-from-a-list-using-f
     let shuffleCrypto xs =

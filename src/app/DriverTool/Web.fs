@@ -4,8 +4,8 @@ open System
 open System.Net
 
 module Web =
-    open log4net
-
+    open Common.Logging
+    open DriverTool.Logging
     type Web = class end
     let logger = Logging.getLoggerByName(typeof<Web>.Name)
 
@@ -56,7 +56,7 @@ module Web =
         | null -> null
         | url -> 
                 let webProxy = new WebProxy(url, byPassOnLocal, byPassList)
-                logger.Info(sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList)
+                logger.Info(msg (sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList))
                 webProxy
     
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
@@ -71,11 +71,11 @@ module Web =
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
             |Ok path -> 
-                logger.Info(sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path))
+                logger.Info(msg (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path)))
                 let downloadTask = webClient.DownloadFileTaskAsync(sourceUri.OriginalString,FileSystem.pathValue path)                
                 Async.AwaitTask downloadTask |> Async.RunSynchronously                
                 Result.Ok path      
-            |Error ex -> Result.Error (new Exception((sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)), ex))
+            |Result.Error ex -> Result.Error (new Exception((sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)), ex))
         with
         | ex -> Result.Error (new Exception(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (getAccumulatedExceptionMessages ex), ex))
     
@@ -94,10 +94,10 @@ module Web =
     let verifyDownloadBase (hasSameFileHashFunc: HasSameFileHashFunc, isTrustedFunc: IsTrustedFunc, logger: ILog , downloadInfo, ignoreVerificationErrors) = 
         match (hasSameFileHashFunc downloadInfo) with
         |true  -> 
-            logger.Info(sprintf "Destination file ('%s') hash match source file ('%s') hash." )
+            logger.Info(msg (sprintf  "Destination file ('%A') hash match source file ('%A') hash." (downloadInfo.DestinationFile) (downloadInfo.SourceUri) ))
             Result.Ok downloadInfo
         |false ->
-            let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue downloadInfo.DestinationFile) downloadInfo.SourceUri.OriginalString
+            let msg1 = (sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue downloadInfo.DestinationFile) downloadInfo.SourceUri.OriginalString)
             match ignoreVerificationErrors with
             |true ->
                 logger.Warn(msg)
@@ -106,10 +106,10 @@ module Web =
                 let isTrusted = isTrustedFunc downloadInfo.DestinationFile
                 match isTrusted with
                 |true ->                    
-                    logger.Warn(msg + "However the file is trusted (the file is digitally signed) so it is assumed that there is a mistake in the published checksum data on the vendor web page.")
+                    logger.Warn(msg1 + "However the file is trusted (the file is digitally signed) so it is assumed that there is a mistake in the published checksum data on the vendor web page.")
                     Result.Ok downloadInfo
                 |false ->    
-                    Result.Error (new Exception(msg + "Additionally the file is not trusted (not signed or signature has been invalidated.)"))
+                    Result.Error (new Exception(msg1 + "Additionally the file is not trusted (not signed or signature has been invalidated.)"))
 
 
     let verifyDownload downloadInfo ignoreVerificationErrors =
@@ -123,7 +123,7 @@ module Web =
                 verifyDownload downloadInfo ignoreVerificationErrors
             |Result.Error ex -> Result.Error (new Exception(sprintf "Failed to download '%A' due to: %s " downloadInfo.SourceUri ex.Message, ex))
         |false -> 
-            logger.Info(sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile))
+            logger.Info(msg (sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile)))
             Result.Ok downloadInfo
 
     let toUriUnsafe url =

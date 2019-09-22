@@ -6,13 +6,13 @@
         open System
         open System.IO         
         open System.Runtime.CompilerServices
-        open log4net                
+        open Common.Logging                
         open System.Text.RegularExpressions        
                 
         let configureLogging () =
             log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
             let appConfigFile = new FileInfo(getAppConfigFilePath)            
-            let loggerRepository = LogManager.GetRepository(typeof<F0.ThisAssembly>.Assembly)
+            let loggerRepository = log4net.LogManager.GetRepository(typeof<F0.ThisAssembly>.Assembly)
             log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
             |>ignore
 
@@ -30,12 +30,16 @@
                 cachedLogFactory(x.GetType())
 
         let getLoggerByName (name:string) =
-            LogManager.GetLogger(typeof<F0.ThisAssembly>.Assembly,name)
+            LogManager.GetLogger(name)
 
         type LoggingExtensions() = 
             [<Extension>]
             static member inline Logger( obj : System.Object) =
                 LogManager.GetLogger(obj.GetType())
+
+        type Msg = System.Action<Common.Logging.FormatMessageHandler>
+        let msg message =
+            new Msg(fun m -> m.Invoke(message)|>ignore)
                 
         let getFunctionName func = 
             let functionName = 
@@ -127,14 +131,6 @@
             |Fatal -> logger.Fatal
             |Debug -> logger.Debug
         
-        let logFormat (logger:ILog) logLevel =
-            match logLevel with
-            |Info -> logger.InfoFormat
-            |Warn -> logger.WarnFormat
-            |Error -> logger.ErrorFormat
-            |Fatal -> logger.FatalFormat
-            |Debug -> logger.DebugFormat
-        
         let genericLoggerResult logLevel func input : Result<'T,Exception> =
             let logger = getFunctionLogger func
             let doLog = isLoggingEnabled logger logLevel
@@ -146,7 +142,7 @@
                 let functionName = getFunctionName func
                 let parametersString = (getParametersString input)
                 functionCall <- sprintf "%s(%s)" functionName parametersString
-                writeLog ("Call: " + functionCall)
+                writeLog (msg (sprintf "Call: %s" functionCall))
             
             let startTime = DateTime.Now
             
@@ -161,8 +157,8 @@
                     |Result.Error ex -> "ERROR: " + getAccumulatedExceptionMessages ex
                 let functionCallResult = sprintf "Return: %s -> %s (Duration: %s)" functionCall resultString (getDurationString duration)
                 match result with
-                |Ok _ -> writeLog (functionCallResult)
-                |Result.Error _ -> writeErrorLog (functionCallResult)
+                |Ok _ -> writeLog (msg functionCallResult)
+                |Result.Error _ -> writeErrorLog (msg functionCallResult)
             result
         
 
@@ -177,7 +173,7 @@
                 let functionName = getFunctionName func
                 let parametersString = (getParametersString input)
                 functionCall <- sprintf "%s(%s)" functionName  parametersString
-                writeLog ("Call: " + functionCall)
+                writeLog (msg (sprintf "Call: %s" functionCall))
             
             let startTime = DateTime.Now
             let mutable returnValue = box null
@@ -189,14 +185,14 @@
                     let functionName = getFunctionName func
                     let parametersString = (getParametersString input)
                     functionCall <- sprintf "%s(%s)" functionName parametersString
-                    writeErrorLog (sprintf "'%s' failed due to: %s" functionCall ex.Message)
+                    writeErrorLog (msg (sprintf "'%s' failed due to: %s" functionCall (ex.ToString())))
                     raise (sourceException ex)
             finally
                 let stopTime = DateTime.Now
                 let duration = stopTime - startTime
                 if(doLog) then                
                     let functionCallResult = sprintf "Return: %s -> %s (Duration: %s)" functionCall (resultToString returnValue) (getDurationString duration)
-                    writeLog (functionCallResult)
+                    writeLog (msg functionCallResult)
             unbox returnValue
     
         let logSeq (logger:ILog) records  =
@@ -211,7 +207,7 @@
             records
             |> Seq.map  (fun r -> 
                                 let valueString = sprintf "%A" r
-                                logger.Info(formatedSprintfF1 valueString)
+                                logger.Info(msg (formatedSprintfF1 valueString))
                                 r
                             )
             |>Seq.toArray

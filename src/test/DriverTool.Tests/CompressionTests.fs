@@ -6,7 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.UnitTests)>]
 module CompressionTests=
     open DriverTool
-    open log4net
+    open Common.Logging
     open DriverTool
         
     let logger = LogManager.GetLogger("CompressionTests")

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Threading;
-using log4net;
+using Common.Logging;
 using SHDocVw;
 
 namespace DriverTool.CSharpLib
@@ -10,7 +10,7 @@ namespace DriverTool.CSharpLib
     {
         private static InternetExplorer GetInternetExplorer(ILog logger)
         {
-            var ie = new SHDocVw.InternetExplorer { Visible = false };
+            var ie = new InternetExplorer { Visible = false };
             //Add event handlers
             ie.BeforeNavigate2 += (object sender, ref object url, ref object flags, ref object name, ref object data,
                 ref object headers, ref bool cancel) =>
@@ -46,7 +46,7 @@ namespace DriverTool.CSharpLib
                 internetExplorer.Navigate(uri);
                 while (internetExplorer.ReadyState != tagREADYSTATE.READYSTATE_COMPLETE)
                 {
-                    System.Threading.Thread.Sleep(100);
+                    Thread.Sleep(100);
                     logger.Info($"Waiting for '{uri}' to complete loading...");
                 }
                 logger.Info($"Done loading '{uri}'!");

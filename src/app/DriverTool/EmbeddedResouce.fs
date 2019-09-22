@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
 
 module EmbeddedResouce =
+    open DriverTool.Logging
     let logger = Logging.getLoggerByName "EmbeddedResouce"
     open System
         
@@ -13,11 +14,11 @@ module EmbeddedResouce =
         static member createWithContinuation success failure value =
             match (createWithContinuationGeneric success failure ResourceName.validator value) with
             |Ok v -> Result.Ok (ResourceName v)
-            |Error ex -> Result.Error ex
+            |Result.Error ex -> Result.Error ex
         static member create value =
             match (createGeneric ResourceName.validator value) with
             |Ok v -> Result.Ok (ResourceName v)
-            |Error ex -> Result.Error ex
+            |Result.Error ex -> Result.Error ex
 
     open System.Reflection
            
@@ -25,10 +26,10 @@ module EmbeddedResouce =
         nullGuard assembly "assembly" |> ignore
         if(logger.IsDebugEnabled) then
             let resourceNames = assembly.GetManifestResourceNames()
-            logger.Debug(sprintf "Assembly '%s' has %i embedded resources." assembly.FullName resourceNames.Length)
+            logger.Debug( new Msg(fun m ->m.Invoke((sprintf "Assembly '%s' has %i embedded resources." assembly.FullName resourceNames.Length))|>ignore))
             resourceNames
                 |> Array.toSeq
-                |> Seq.map (fun rn -> logger.Debug("Embeded resource: " + rn))
+                |> Seq.map (fun rn -> logger.Debug(new Msg(fun m -> m.Invoke(sprintf "Embeded resource: %s"  rn)|>ignore)))
                 |> Seq.toArray
                 |> ignore
         ()
@@ -55,7 +56,7 @@ module EmbeddedResouce =
                 fileStream.Write(buffer,0,buffer.Length) |> ignore
                 s.Dispose()
                 FileOperations.ensureFileExists filePath
-            |Error ex -> Result.Error ex    
+            |Result.Error ex -> Result.Error ex    
         with
         | _ as ex -> Result.Error ex
         
@@ -108,7 +109,7 @@ module EmbeddedResouce =
                 let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists true parentDirectoryPath
                 logger.Info("Verified that directory exists:" + FileSystem.pathValue existingParentDirectoryPath)
                 let assembly = destinationFilePath.GetType().Assembly
-                logger.Info(sprintf "Extracting resource '%s' -> '%s'" resourceName (FileSystem.pathValue destinationFilePath))
+                logger.Info(msg (sprintf "Extracting resource '%s' -> '%s'" resourceName (FileSystem.pathValue destinationFilePath)))
                 let! fileResult = 
                     extractEmbeddedResourceInAssemblyToFile (resourceNameObject,assembly, destinationFilePath)
                 return fileResult

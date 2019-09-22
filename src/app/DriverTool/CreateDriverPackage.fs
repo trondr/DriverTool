@@ -19,6 +19,7 @@ module CreateDriverPackage =
     open DriverTool.Requirements
     open DriverTool.PackageTemplate    
     open FileSystem
+    open DriverTool.Logging
     
     let logger = Logging.getLoggerByName("CreateDriverPackage")
 
@@ -190,7 +191,7 @@ module CreateDriverPackage =
     let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer,logDirectory:FileSystem.Path) =
         let extractedUpdatesList = 
             extractedUpdates.ToList()
-        logger.InfoFormat("Creating install script for {0} packages...",extractedUpdatesList.Count)
+        logger.Info(msg (sprintf "Creating install script for %i packages..." extractedUpdatesList.Count))
         let installScripts = 
             extractedUpdatesList 
             |> PSeq.map (fun u -> (createInstallScript (u, manufacturer,logDirectory)) )       
@@ -262,7 +263,7 @@ module CreateDriverPackage =
     let assertDriverPackageCreateRequirements =
         result{
                 let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package create from an elevated command prompt."
-                logger.Info(sprintf "Installation is running with admin privileges: %b" isAdministrator)                
+                logger.Info(msg (sprintf "Installation is running with admin privileges: %b" isAdministrator))
                 return isAdministrator
         }
     
@@ -301,7 +302,7 @@ module CreateDriverPackage =
     let createDriverPackageBase (dpcc:DriverPackageCreationContext) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
-                logger.Info(sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled)
+                logger.Info(msg (sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled))
                                 
                 let getUpdates = DriverTool.Updates.getUpdatesFunc (dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 
 
@@ -322,7 +323,7 @@ module CreateDriverPackage =
                 logger.Info("Getting SCCM package info...")
                 let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer
                 let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem)
-                logger.Info(sprintf "Sccm packge: %A" sccmPackage)
+                logger.Info(msg (sprintf "Sccm packge: %A" sccmPackage))
                 
                 logger.Info("Downloading SCCM package...")
                 let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc dpcc.Manufacturer
@@ -334,12 +335,12 @@ module CreateDriverPackage =
                 let packageName = sprintf "%s %s %s %s %s %s %s" dpcc.PackagePublisher manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value dpcc.PackageTypeName releaseDate
                 let! versionedPackagePath = combine3Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value + "-" + dpcc.PackageTypeName, releaseDate)
 
-                logger.InfoFormat("Extracting package template to '{0}'",versionedPackagePath)
+                logger.Info(msg (sprintf "Extracting package template to '%A'" versionedPackagePath))
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
-                logger.InfoFormat("Package template was extracted successfully from embedded resource. Number of files extracted: {0}", extractedPackagePaths.Count())
+                logger.Info(msg (sprintf "Package template was extracted successfully from embedded resource. Number of files extracted: %i" (extractedPackagePaths.Count())))
 
                 let! driversPath = combine2Paths (FileSystem.pathValue versionedPackagePath, "Drivers")
-                logger.InfoFormat("Extracting drivers to folder '{0}'...", driversPath)
+                logger.Info(msg (sprintf "Extracting drivers to folder '%A'..." driversPath))
                 let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
                 let! extractedUpdates = extractUpdates (existingDriversPath,dpcc.Manufacturer, updatedInfoDownloadedUpdates)
                 let installScriptResults = createInstallScripts (extractedUpdates,dpcc.Manufacturer,dpcc.LogDirectory)
@@ -350,7 +351,7 @@ module CreateDriverPackage =
                         result{
                             let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
                             let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists true sccmPackageDestinationPath
-                            logger.InfoFormat("Extracting Sccm Package to folder '{0}'...", existingSccmPackageDestinationPath)                
+                            logger.Info(msg (sprintf "Extracting Sccm Package to folder '%A'..." existingSccmPackageDestinationPath))                
                             let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (dpcc.Manufacturer)                
                             let! extractedSccmPackagePath = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
                             let! sccmPackageInstallScriptResult = createSccmPackageInstallScript extractedSccmPackagePath
@@ -377,7 +378,7 @@ module CreateDriverPackage =
                         Publisher = dpcc.PackagePublisher
                     }
                 let! savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
-                logger.Info(sprintf "Saved install configuration to '%s'. Value: %A" (FileSystem.pathValue existingInstallXmlPath) savedInstallConfiguration)
+                logger.Info(msg (sprintf  "Saved install configuration to '%s'. Value: %A" (FileSystem.pathValue existingInstallXmlPath) savedInstallConfiguration))
                 logger.Info("Create PackageDefinition.sms")
                 let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"PackageDefinition.sms"))                
                 let! packageDefintionWriteResult = 
@@ -387,7 +388,7 @@ module CreateDriverPackage =
                 let res = 
                     match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with
                     |Ok _ -> Result.Ok ()
-                    |Error ex -> Result.Error ex  
+                    |Result.Error ex -> Result.Error ex  
                 return! res
             }
     

@@ -49,24 +49,24 @@ module RunCommand =
         let logger = getLoggerByName "DriverTool"
         let version = 
             typeof<F0.ThisAssembly>.Assembly.GetName().Version.ToString()
-        logger.Info(sprintf "Start: DriverTool.%s. Command Line: %s" version System.Environment.CommandLine)
+        logger.Info(msg (sprintf "Start: DriverTool.%s. Command Line: %s" version System.Environment.CommandLine))
         logger.Info("ComputerName: " + System.Environment.MachineName)
         logger.Info("UserName: " + System.Environment.UserName)
         logger.Info("UserDomain: " + System.Environment.UserDomainName)
-        logger.Info(sprintf "UserInteractive: %b" System.Environment.UserInteractive)
-        logger.Info(sprintf "Is Administrator: %b" (Requirements.isAdministrator()))
-        logger.Info(sprintf "Is X64 bit Operating System: %b" System.Environment.Is64BitOperatingSystem)
+        logger.Info(msg (sprintf "UserInteractive: %b" System.Environment.UserInteractive))
+        logger.Info(msg (sprintf "Is Administrator: %b" (Requirements.isAdministrator())))
+        logger.Info(msg (sprintf "Is X64 bit Operating System: %b" System.Environment.Is64BitOperatingSystem))
         logger.Info("Process Bit: " + Environment.processBit)
-        logger.Info(sprintf "Is native process bit: %b (64 bit process on a 64 bit operating system, 32 bit process on a 32 bit operatings system)" Environment.isNativeProcessBit)
+        logger.Info(msg (sprintf "Is native process bit: %b (64 bit process on a 64 bit operating system, 32 bit process on a 32 bit operatings system)" Environment.isNativeProcessBit))
         use notepadMessenger = new NotepadMessenger()
         let result = NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args,notepadMessenger)
         let exitCode = 
             match result.IsSuccess with
                 |true -> result.Value
                 |false ->                
-                    result.OnFailure(new System.Action<exn>(fun ex -> logger.Error(sprintf "%A" ex)))|> ignore
+                    result.OnFailure(new System.Action<exn>(fun ex -> logger.Error(msg (sprintf  "%A" ex))))|> ignore
                     1    
-        logger.Info(sprintf "Stop: DriverTool.%s Exit code: %i" version exitCode)
+        logger.Info(msg (sprintf "Stop: DriverTool.%s Exit code: %i" version exitCode))
         exitCode
     
     let runCommand (args)=

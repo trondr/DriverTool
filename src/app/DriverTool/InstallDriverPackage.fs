@@ -6,7 +6,7 @@ module InstallDriverPackage =
     open DriverTool.PackageDefinition
     open DriverTool.Requirements
     open Microsoft.FSharp.Core.Operators
-
+    open DriverTool.Logging
     let logger = Logging.getLoggerByName("InstallDriverPackage")
         
     let getInstallXmlPath (driverPackagePath:FileSystem.Path) =
@@ -119,7 +119,7 @@ module InstallDriverPackage =
                 |> Seq.map (fun spr -> 
                                 match spr with
                                 |Ok p -> FileOperations.ensureFileExistsWithMessage (sprintf "It is required that the script '%s' exists in each active driver folder. Not found: %s. " installScriptName (FileSystem.pathValue p)) p
-                                |Error _ -> spr
+                                |Result.Error _ -> spr
                             )
                 |> Seq.toArray
                 |> toAccumulatedResult
@@ -152,7 +152,7 @@ module InstallDriverPackage =
             
             logger.Info("Getting active drivers...")
             let! activeDriverFolders = getGetActiveDriverFolders existingLocalDriversFolderPath    
-            activeDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger  (sprintf "Will be processed: %s")|>ignore
+            activeDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Will be processed: %s")|>ignore
             
             logger.Info("Getting inactive drivers...")
             let! inactiveDriverFolders = getGetInActiveDriverFolders existingLocalDriversFolderPath
@@ -162,12 +162,12 @@ module InstallDriverPackage =
             let! existingInstallScripts = getExistingScripts (activeDriverFolders, installScriptName)
             existingInstallScripts |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Script verified: %s")|>Seq.toArray|>ignore
 
-            logger.Info(sprintf "Executing '%s' for each driver folder..." installScriptName)
+            logger.Info(msg (sprintf  "Executing '%s' for each driver folder..." installScriptName))
             let! installedDriverExitCodes = executeScripts (existingInstallScripts,installScriptName,installConfiguration,driverPackageName)
             existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Script execution result: %s") |> ignore
-            logger.Info(sprintf "Finished executing '%s' for each driver folder!" installScriptName)
+            logger.Info(msg (sprintf "Finished executing '%s' for each driver folder!" installScriptName))
             let adjustedExitCode = getAdjustedExitCode installedDriverExitCodes
-            logger.Info(sprintf "Adjusted exit code: %i" adjustedExitCode)
+            logger.Info(msg (sprintf "Adjusted exit code: %i" adjustedExitCode))
             return adjustedExitCode
         }
     
@@ -175,11 +175,11 @@ module InstallDriverPackage =
         result{
                 logger.Info("Checking if driver package is supported...")
                 let! isSupported = assertIsSupported installConfiguration systemInfo
-                logger.Info(sprintf "Driver package is supported: %b" isSupported)
+                logger.Info(msg (sprintf  "Driver package is supported: %b" isSupported))
                 let! isAdministrator = assertIsAdministrator "Administrative privileges are required. Please run driver package install from an elevated command prompt."
-                logger.Info(sprintf "Installation is running with admin privileges: %b" isAdministrator)
+                logger.Info(msg (sprintf  "Installation is running with admin privileges: %b" isAdministrator))
                 let! isRunningNativeProcess = assertIsRunningNativeProcess (sprintf "Driver install must be run in native process (64-bit on a x64 operating system, 32-bit on a x86 operating system). The current process is %s. Contact the developer or use CoreFlags.exe (in the .NET SDK) to change the prefered execution bit on the current assembly." Environment.processBit)
-                logger.Info(sprintf "Installation is running in native process: {%b} (%s)" isRunningNativeProcess Environment.processBit)
+                logger.Info(msg (sprintf  "Installation is running in native process: {%b} (%s)" isRunningNativeProcess Environment.processBit))
                 return (isSupported && isAdministrator && isRunningNativeProcess)
         }
     
@@ -194,7 +194,7 @@ module InstallDriverPackage =
                         //which we do not want for a standard user user at logon, so set 
                         //ConfigFlags to 0                        
                         (DriverTool.RegistryOperations.setRegValue p "ConfigFlags" 0) |> ignore
-                        logger.Info(sprintf "ConfigFlag value in '[%s]' was reset to 0." p)
+                        logger.Info(msg (sprintf  "ConfigFlag value in '[%s]' was reset to 0." p))
                     )
         |>Seq.toArray
         |>ignore
@@ -209,7 +209,7 @@ module InstallDriverPackage =
             let! installConfiguration = InstallXml.loadInstallXml installXmlPath
             let! systemInfo = getSystemInfo
             let! requirementsAreFullfilled = assertDriverInstallRequirements installConfiguration systemInfo
-            logger.Info(sprintf "All install requirements are fullfilled: %b" requirementsAreFullfilled)            
+            logger.Info(msg (sprintf "All install requirements are fullfilled: %b" requirementsAreFullfilled))            
             let unregisterSccmApplication = unRegisterSccmApplication installConfiguration
             let! bitLockerSuspendExitCode = DriverTool.BitLockerOperations.suspendBitLockerProtection()            
             let driverPackageName = getDriverPackageName installConfiguration
@@ -233,7 +233,7 @@ module InstallDriverPackage =
             let! installConfiguration = InstallXml.loadInstallXml installXmlPath
             let! systemInfo = getSystemInfo
             let! requirementsAreFullfilled = assertDriverInstallRequirements installConfiguration systemInfo
-            logger.Info(sprintf "All install requirements are fullfilled: %b" requirementsAreFullfilled)
+            logger.Info(msg (sprintf "All install requirements are fullfilled: %b" requirementsAreFullfilled))
             let driverPackageName = getDriverPackageName installConfiguration
             let localDriversFolder = getLocalDriversPackageFolder driverPackageName
             let! localDriversFolderPath = FileSystem.path localDriversFolder

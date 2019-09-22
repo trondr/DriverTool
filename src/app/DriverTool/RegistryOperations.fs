@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
 
 module RegistryOperations =
+    open DriverTool.Logging
     let logger = Logging.getLoggerByName("RegistryOperations")
     open System
     open Microsoft.Win32;
@@ -21,7 +22,7 @@ module RegistryOperations =
 
     let openRegKeyUnsafe (regKeyPath:string, writeable:bool) =
         nullGuard regKeyPath "regKeyPath"
-        if (logger.IsDebugEnabled) then logger.Debug(sprintf "Opening registry key: [%s] (writeable: %b)" regKeyPath writeable)
+        logger.Debug(new Msg(fun m ->m.Invoke((sprintf  "Opening registry key: [%s] (writeable: %b)" regKeyPath writeable))|>ignore))
         let (regHive,subPath) = parseRegKeyPath regKeyPath
         regHive.OpenSubKey(subPath,writeable)
     
@@ -35,7 +36,7 @@ module RegistryOperations =
             match regKey with
             |null -> None
             |_ -> Some regKey
-        |Error ex ->
+        |Result.Error ex ->
             if(loggerIsEnabled) then logWrite(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message)
             None
     
@@ -52,7 +53,7 @@ module RegistryOperations =
             match regKey with
             |null -> false
             |_ -> true
-        |Error ex ->
+        |Result.Error ex ->
             if (loggerIsEnabled) then logWrite(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message)
             false
 
@@ -80,8 +81,8 @@ module RegistryOperations =
                 match value with
                 |Some _ -> true
                 |None -> false
-        |Error ex ->
-            if (loggerIsEnabled) then logWrite(sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message)
+        |Result.Error ex ->
+            if (loggerIsEnabled) then logWrite(new Msg(fun m ->m.Invoke((sprintf "Failed to open registry key [%s] due to: %s" regKeyPath ex.Message))|>ignore))
             false
 
     let regValueExists (regKeyPath:string) valueName =

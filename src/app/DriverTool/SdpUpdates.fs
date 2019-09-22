@@ -1,11 +1,12 @@
 ﻿namespace DriverTool
 
-module SdpUpdates =
-    
+module SdpUpdates =    
     open System
     open DriverTool.SdpCatalog
     open DriverTool.PackageXml    
     open DriverTool.UpdatesContext
+    open DriverTool.Logging
+    let logger = Logging.getLoggerByName("SdpUpdates")
 
     /// <summary>
     /// Load sdp files
@@ -63,7 +64,8 @@ module SdpUpdates =
     /// <param name="defaultValue"></param>
     let evaluateSdpApplicabilityRule (applicabilityRule:ApplicabilityRule option) defaultValue =
         match applicabilityRule with
-        |Some r -> sdpeval.Sdp.EvaluateApplicabilityXml(r)
+        |Some r ->             
+            sdpeval.Sdp.EvaluateApplicabilityXmlWithLogging logger r
         |None -> defaultValue
 
 
@@ -74,6 +76,7 @@ module SdpUpdates =
     let localUpdatesFilter sdp =
         sdp.InstallableItems
         |>Seq.tryFind(fun ii ->                 
+                logger.Debug(new Msg(fun m -> m.Invoke( (sprintf "Evaluating 'IsInstalled' applicability rule for sdp '%s' " sdp.PackageId))|>ignore))
                 let isInstalled =  evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstalled false
                 isInstalled
             )
@@ -87,6 +90,7 @@ module SdpUpdates =
     let remoteUpdatesFilter sdp =
         sdp.InstallableItems
         |>Seq.tryFind(fun ii -> 
+                logger.Debug(new Msg(fun m -> m.Invoke( (sprintf "Evaluating 'IsInstallable' applicability rule for sdp '%s' " sdp.PackageId))|>ignore))
                 let isInstallable = evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstallable false                
                 isInstallable
             )

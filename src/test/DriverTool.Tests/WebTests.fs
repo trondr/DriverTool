@@ -6,7 +6,7 @@ open NUnit.Framework
 module WebTests =
 
     
-    open log4net
+    open Common.Logging
     open Rhino.Mocks
     open DriverTool.Web
     open DriverTool

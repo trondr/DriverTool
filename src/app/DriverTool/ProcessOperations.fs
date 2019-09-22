@@ -2,6 +2,7 @@
 open F
 
 module ProcessOperations =
+    open DriverTool.Logging
     let logger = Logging.getLoggerByName("ProcessOperations")
 
     type ProcessOperations = class end
@@ -36,14 +37,14 @@ module ProcessOperations =
             |>Seq.toArray
             |>ignore
 
-        logger.Debug("writeToLog command line")        
+        logger.Debug(new Msg(fun m ->m.Invoke((sprintf "writeToLog command line"))|>ignore))        
         writeToLog logger.Info (sprintf "'%s' %s" (FileSystem.pathValue processExitData.FileName) processExitData.Arguments)
         
-        logger.Debug("writeToLog StdOutput")
+        logger.Debug(new Msg(fun m ->m.Invoke((sprintf "writeToLog StdOutput"))|>ignore))
         if (not (String.IsNullOrWhiteSpace(processExitData.StdOutput))) then
             writeToLog logger.Info processExitData.StdOutput
          
-        logger.Debug("writeToLog StdError")
+        logger.Debug(new Msg(fun m ->m.Invoke((sprintf "writeToLog StdError"))|>ignore))
         if (not (String.IsNullOrWhiteSpace(processExitData.StdError))) then
             writeToLog logger.Error processExitData.StdError
 
