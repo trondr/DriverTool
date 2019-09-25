@@ -51,11 +51,14 @@ module PackageTemplate =
                 let! exeFileDirectoryPath = FileSystem.path ((new System.IO.FileInfo(FileSystem.pathValue exeFilePath))).Directory.FullName
                 let! fsharpCoreDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"FSharp.Core.dll"))
                 let! extractedFSharpCoreDllPath = extractIfNotExists fsharpCoreDllPath
+                let! commonLoggingDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"Common.Logging.dll"))                
+                let! extractedCommonLoggingDllPath = extractIfNotExists commonLoggingDllPath
                 let driverToolFiles =
                     [|
                         yield exeFilePath
                         yield exeFileConfigPath
                         yield extractedFSharpCoreDllPath
+                        yield extractedCommonLoggingDllPath
                     |]
                 return driverToolFiles 
             }

@@ -3,5 +3,8 @@
     <AdditionalFilesToIncludeForProject>
       <Value>Libs\FSharp.Data.DesignTime.dll</Value>
     </AdditionalFilesToIncludeForProject>
+    <HiddenComponentWarnings>
+      <Value>PostBuildEventDisabled</Value>
+    </HiddenComponentWarnings>
   </Settings>
 </ProjectConfiguration>

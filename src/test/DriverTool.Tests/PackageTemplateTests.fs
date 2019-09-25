@@ -22,7 +22,8 @@ module PackageTemplateTests =
             @"Drivers\FSharp.Core.dll"
             @"DriverTool\DriverTool.exe"
             @"DriverTool\DriverTool.exe.config"
-            @"DriverTool\FSharp.Core.dll"                        
+            @"DriverTool\FSharp.Core.dll"
+            @"DriverTool\Common.Logging.dll"
         |]
     
     [<Test>]    
