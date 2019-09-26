@@ -166,12 +166,15 @@ module LenovoCatalogTests=
     [<TestCase("20HJ","win10","1809")>]    
     [<TestCase("20HJ","win10","*")>]
     let findSccmPackageInfoByModelCode4AndOsAndBuildTest2 (modelCode:string,os:string,osBuild:string) =
-        result{
-                let! products = getSccmPackageInfos
-                let actual = findSccmPackageInfoByModelCode4AndOsAndBuild modelCode os osBuild products
-                Assert.IsTrue(actual.IsSome,sprintf "Did not find model %s %s %s" modelCode os osBuild) |> ignore
-                return ""
-        } |> ignore
+        match (result{
+            let! products = getSccmPackageInfos
+            let actual = findSccmPackageInfoByModelCode4AndOsAndBuild modelCode os osBuild products
+            Assert.IsTrue(actual.IsSome,sprintf "Did not find model %s %s %s" modelCode os osBuild) |> ignore
+            printfn "%A" actual
+            return actual
+        }) with        
+        |Ok _ -> ()
+        |Error e -> Assert.Fail(e.ToString())
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
