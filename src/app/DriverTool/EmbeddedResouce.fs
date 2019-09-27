@@ -155,3 +155,37 @@ module EmbeddedResouce =
             |None -> None
             )
         |> Seq.choose id
+
+    let deleteFolderIfExists folderPath =
+        match (DirectoryOperations.directoryPathExists folderPath) with
+        |true -> 
+            DirectoryOperations.deleteDirectory true folderPath                                    
+        |false -> 
+            Result.Ok folderPath
+
+    type ExtractedEmbeddedResource(fileName, logger:Common.Logging.ILog) =
+        let tempFolderPath = 
+            result {
+                let! nonExistingTempFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),(Guid.NewGuid().ToString())))
+                let! existingTempFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempFolderPath
+                return existingTempFolderPath
+            }
+
+        let tempFilePath =
+            result{
+                let! folderPath = tempFolderPath                
+                let! extractedFile = extractEmbeddedResouceByFileNameBase (fileName,folderPath,fileName,typeof<ThisAssembly>.Assembly)
+                return extractedFile
+            }
+
+        member this.FilePath = tempFilePath
+        interface IDisposable with
+            member x.Dispose() = 
+                logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing extracted embedded resource '%A'" tempFilePath))|>ignore))
+                match (result{
+                    let! folderPath = tempFolderPath
+                    let! deleted = deleteFolderIfExists folderPath
+                    return deleted                                                
+                }) with
+                |Result.Ok v -> ()
+                |Result.Error ex -> raise ex                

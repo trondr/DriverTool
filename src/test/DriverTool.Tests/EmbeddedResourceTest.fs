@@ -8,6 +8,7 @@ module EmbeddedResourceTest  =
     open DriverTool.EmbeddedResouce
     open System
     open System.IO
+    let logger = Common.Logging.Simple.ConsoleOutLogger("EmbeddedResourceTest",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
     [<Test>]
     [<TestCase(@"c:\temp\DpInstExitCode2ExitCode_tst.exe",true,"NotUsed",TestName="extractEmbeddedResourceToFile - Expect success")>]
@@ -103,3 +104,19 @@ module EmbeddedResourceTest  =
             EmbeddedResouce.getAllEmbeddedResourceNames
         let allResourceNames = String.concat Environment.NewLine actual                
         Assert.AreEqual(60,actual.Length,allResourceNames)
+
+
+    [<Test>]
+    let extractedEmbeddedResourceTest () =
+        let extractAndDispose =            
+            use extractedEmbeddedResource = new ExtractedEmbeddedResource("7za.exe",logger)
+            match(result{
+                let! filePath = extractedEmbeddedResource.FilePath
+                Assert.IsTrue(System.IO.File.Exists(FileSystem.pathValue filePath),sprintf "File does not exist: '%A'" filePath)
+                return filePath
+                })with
+            |Ok p -> p
+            |Result.Error ex -> raise ex
+        let filePath = extractAndDispose
+        Assert.IsFalse(FileSystem.fileExists filePath,sprintf "File exists: '%A'" filePath)        
+        ()
