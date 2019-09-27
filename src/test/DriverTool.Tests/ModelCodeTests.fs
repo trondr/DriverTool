@@ -4,9 +4,9 @@ open DriverTool
 open System
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
 module ModelCodeTests  =
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     let ModuleCodeTest() =
         let modelCodeResult = ModelCode.create "EQ10" false
         match modelCodeResult with
@@ -14,6 +14,7 @@ module ModelCodeTests  =
         |Error ex -> Assert.Fail(sprintf "Did not expect to fail. Error: %s" ex.Message)
 
     [<Test>]
+    [<Category(TestCategory.UnitTests)>]
     let ModuleCodeTest_Empty_ModuleCode_UseLocalIsFalse() =
         let modelCodeResult = ModelCode.create "" false
         match modelCodeResult with
@@ -21,6 +22,7 @@ module ModelCodeTests  =
         |Error ex -> Assert.IsTrue(ex.Message.EndsWith("ModelCode cannot be null or empty."))
 
     [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
     let ModuleCodeTest_Empty_ModuleCode_UseLocalIsTrue() =
         let modelCodeResult = ModelCode.create "" true
         match modelCodeResult with
