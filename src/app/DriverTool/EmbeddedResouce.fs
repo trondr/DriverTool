@@ -163,6 +163,7 @@ module EmbeddedResouce =
         |false -> 
             Result.Ok folderPath
 
+    [<AllowNullLiteral>]
     type ExtractedEmbeddedResource(fileName, logger:Common.Logging.ILog) =
         let tempFolderPath = 
             result {
