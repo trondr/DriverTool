@@ -156,13 +156,6 @@ module EmbeddedResource =
             )
         |> Seq.choose id
 
-    let deleteFolderIfExists folderPath =
-        match (DirectoryOperations.directoryPathExists folderPath) with
-        |true -> 
-            DirectoryOperations.deleteDirectory true folderPath                                    
-        |false -> 
-            Result.Ok folderPath
-
     [<AllowNullLiteral>]
     type ExtractedEmbeddedResource(fileName, logger:Common.Logging.ILog) =
         let tempFolderPath = 
@@ -185,7 +178,7 @@ module EmbeddedResource =
                 logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing extracted embedded resource '%A'" tempFilePath))|>ignore))
                 match (result{
                     let! folderPath = tempFolderPath
-                    let! deleted = deleteFolderIfExists folderPath
+                    let! deleted = DirectoryOperations.deleteDirectoryIfExists folderPath
                     return deleted                                                
                 }) with
                 |Result.Ok v -> ()

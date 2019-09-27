@@ -118,3 +118,9 @@ module DirectoryOperations =
         with
         |ex -> Result.Error (new Exception(sprintf "Failed to find files in folder '%s' due to: %s" (FileSystem.pathValue folder) ex.Message,ex))
     
+    let deleteDirectoryIfExists folderPath =
+        match (directoryPathExists folderPath) with
+        |true -> 
+            deleteDirectory true folderPath                                    
+        |false -> 
+            Result.Ok folderPath
