@@ -638,6 +638,9 @@
       <NamedTestSelector>
         <TestName>DriverTool.Tests.ManualWebTest.downloadFileTest("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB","c:\\temp\\7480-win10-A10-2CHK6.CAB")</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ModelCodeTests.ModuleCodeTest_Empty_ModuleCode_UseLocalIsTrue</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
