@@ -121,11 +121,10 @@ module SdpCatalogTests =
             
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
             let! sdpZipFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)            
-            let! tempCatalogDestinationFolderPath = PathOperations.combine2Paths ((PathOperations.getTempPath),testFolder)
-            let! nonExistingTempCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true tempCatalogDestinationFolderPath
-            let! existingTempCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempCatalogDestinationFolderPath
-            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,existingTempCatalogDestinationFolderPath)            
-            let! actual = SdpCatalog.loadSdps existingTempCatalogDestinationFolderPath
+            use temporaryFolder = new DirectoryOperations.TemporaryFolder()
+            let! temporaryFolderPath = temporaryFolder.FolderPath
+            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,temporaryFolderPath)            
+            let! actual = SdpCatalog.loadSdps temporaryFolderPath
             return actual
         }) with        
         |Ok v -> 
