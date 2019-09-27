@@ -53,7 +53,7 @@ module SdpCatalogTests =
         let sdpTestDataR = (sdpTestData:?>SdpTestData)
         match(result {            
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
-            let! sdpFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (sdpTestDataR.SdpTestFile,tempDestinationFolderPath,sdpTestDataR.SdpTestFile,typeof<ThisAssembly>.Assembly)
+            let! sdpFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (sdpTestDataR.SdpTestFile,tempDestinationFolderPath,sdpTestDataR.SdpTestFile,typeof<ThisAssembly>.Assembly)
             let! sdpXDocument = SdpCatalog.loadSdpXDocument sdpFilePath
             let! sdpXElement = SdpCatalog.loadSdpXElement sdpXDocument
             let! actual = SdpCatalog.loadSdpFromXElement sdpXElement
@@ -93,8 +93,7 @@ module SdpCatalogTests =
         match(result {            
             
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
-            let! sdpZipFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)
-            
+            let! sdpZipFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)            
             let! tempCatalogDestinationFolderPath = PathOperations.combine2Paths ((PathOperations.getTempPath),"SDPCatalogTests")            
             let! nonExistingTempCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true tempCatalogDestinationFolderPath
             let! existingTempCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempCatalogDestinationFolderPath
@@ -120,7 +119,7 @@ module SdpCatalogTests =
         match(result {            
             
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
-            let! sdpZipFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)            
+            let! sdpZipFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)            
             let! tempCatalogDestinationFolderPath = PathOperations.combine2Paths ((PathOperations.getTempPath),testFolder)
             let! nonExistingTempCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true tempCatalogDestinationFolderPath
             let! existingTempCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempCatalogDestinationFolderPath

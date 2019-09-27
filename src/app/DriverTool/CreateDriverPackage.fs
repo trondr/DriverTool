@@ -13,7 +13,7 @@ module CreateDriverPackage =
     open FSharp.Collections.ParallelSeq    
     open DriverTool.ManufacturerTypes
     open DriverTool.Web
-    open EmbeddedResouce
+    open EmbeddedResource
     open DriverTool.PathOperations
     open PackageDefinition
     open DriverTool.Requirements

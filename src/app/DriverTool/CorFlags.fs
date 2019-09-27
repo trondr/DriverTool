@@ -11,7 +11,7 @@ module CorFlags=
         System.IO.Path.Combine(System.IO.Path.GetTempPath(),"CorFlags.exe")
 
     let extractCorFlagsExe () =        
-        EmbeddedResouce.extractEmbededResouceToFile (corFlagsExeResourceName, corFlagsExe)
+        EmbeddedResource.extractEmbededResouceToFile (corFlagsExeResourceName, corFlagsExe)
     
     let cleanupCorFlagsExe () =
         if(System.IO.File.Exists(corFlagsExe)) then

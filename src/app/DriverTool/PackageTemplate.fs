@@ -1,7 +1,7 @@
 ﻿namespace DriverTool
 
 module PackageTemplate =
-    open DriverTool.EmbeddedResouce
+    open DriverTool.EmbeddedResource
         
     let isDriverPackageEmbeddedResourceName (resourceName:string) =
         resourceName.StartsWith("DriverTool.PackageTemplate")

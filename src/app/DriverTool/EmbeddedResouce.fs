@@ -1,6 +1,6 @@
 ﻿namespace DriverTool
 
-module EmbeddedResouce =
+module EmbeddedResource =
     open DriverTool.Logging
     let logger = Logging.getLoggerByName "EmbeddedResouce"
     open System

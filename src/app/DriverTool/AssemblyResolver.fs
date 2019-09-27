@@ -3,7 +3,7 @@
 module AssemblyResolver=
     open System
     open System.Reflection
-    open DriverTool.EmbeddedResouce
+    open DriverTool.EmbeddedResource
     
     let programFilesFolderX86 = 
         System.Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
@@ -79,7 +79,7 @@ module AssemblyResolver=
             if(resourceName.EndsWith("XmlSerializers.dll")) then
                 null
             else
-                let resourceNameExists = EmbeddedResouce.embeddedResourceExists resourceName
+                let resourceNameExists = EmbeddedResource.embeddedResourceExists resourceName
                 if(resourceNameExists) then
                     loadAssemblyFromEmbeddedResource (assemblyName, resourceName, resourceAssembly)                    
                 else
