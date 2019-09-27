@@ -111,9 +111,12 @@ module EmbeddedResourceTest  =
         let extractAndDispose =            
             use extractedEmbeddedResource = new ExtractedEmbeddedResource("7za.exe",logger)
             match(result{
-                let! filePath = extractedEmbeddedResource.FilePath
-                Assert.IsTrue(System.IO.File.Exists(FileSystem.pathValue filePath),sprintf "File does not exist: '%A'" filePath)
-                return filePath
+                let! filePath1 = extractedEmbeddedResource.FilePath
+                Assert.IsTrue(System.IO.File.Exists(FileSystem.pathValue filePath1),sprintf "File does not exist: '%A'" filePath1)
+                let! filePath2 = extractedEmbeddedResource.FilePath
+                Assert.IsTrue(System.IO.File.Exists(FileSystem.pathValue filePath1),sprintf "File does not exist: '%A'" filePath2)
+                Assert.AreEqual(FileSystem.pathValue filePath1,FileSystem.pathValue filePath2)
+                return filePath1
                 })with
             |Ok p -> p
             |Result.Error ex -> raise ex
