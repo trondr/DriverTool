@@ -124,3 +124,24 @@ module DirectoryOperations =
             deleteDirectory true folderPath                                    
         |false -> 
             Result.Ok folderPath
+
+    [<AllowNullLiteral>]
+    type TemporaryFolder()=
+        let temporaryFolderPath = 
+            result {
+                let! nonExistingTempFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),(Guid.NewGuid().ToString())))
+                let! existingTempFolderPath = ensureDirectoryExists true nonExistingTempFolderPath
+                return existingTempFolderPath
+            }
+
+        member this.FolderPath = temporaryFolderPath
+        interface IDisposable with
+            member x.Dispose() = 
+                logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing folder '%A'" temporaryFolderPath))|>ignore))
+                match (result{
+                    let! folderPath = temporaryFolderPath
+                    let! deleted = deleteDirectoryIfExists folderPath
+                    return deleted                                                
+                }) with
+                |Result.Ok v -> ()
+                |Result.Error ex -> raise ex
