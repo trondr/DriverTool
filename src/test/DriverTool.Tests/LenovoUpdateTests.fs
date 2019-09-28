@@ -50,7 +50,7 @@ module LenovoUpdateTests =
                                     Type = PackageFileType.Installer
                                 }
                             ExtractCommandLine = "nz3gs05w.exe /VERYSILENT /DIR=%PACKAGEPATH% /EXTRACT=\"YES\""
-                            InstallCommandLine = "%PACKAGEPATH%\nz3gs05w.exe /verysilent /DIR=%PACKAGEPATH%\TMP"
+                            InstallCommandLine = "%PACKAGEPATH%\\nz3gs05w.exe /verysilent /DIR=%PACKAGEPATH%\\TMP"
                             Category = "SomeCategory"
                             Readme =
                                 {
