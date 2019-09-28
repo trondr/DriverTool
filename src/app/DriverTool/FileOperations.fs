@@ -142,7 +142,9 @@ module FileOperations =
       /// Returns next block as 'Item' of async seq
       let rec nextBlock() = async {
         let! count = stream.AsyncRead(buffer, 0, size)
-        if count = 0 then return Ended
+        if count = 0 then 
+            stream.Dispose()
+            return Ended
         else 
           // Create buffer with the right size
           let res = 
