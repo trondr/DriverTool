@@ -21,41 +21,59 @@ module LenovoCatalogTests=
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
     let getSccmPackagesInfoTest () =        
-        let actual = getSccmPackageInfos
-        match actual with
-        | Ok products -> 
-            let productArray = products|>Seq.toArray
-            Assert.IsTrue(productArray.Length > 300,"Expected product array greater than zeror." )
-        | Error ex -> Assert.Fail("Did not expect getSccmPackagesInfo to fail. Error: " + ex.Message)
-
-    
+        match(result{
+              use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+              let! cacheFolderPath = cacheFolder.FolderPath
+              let actual = getSccmPackageInfos cacheFolderPath
+              let res =
+                  match actual with
+                  |Result.Ok products -> 
+                      let productArray = products|>Seq.toArray
+                      Assert.IsTrue(productArray.Length > 300,"Expected product array greater than zeror." )
+                  |Result.Error ex -> 
+                      Assert.Fail("Did not expect getSccmPackagesInfo to fail. Error: " + ex.Message)        
+              return cacheFolderPath
+        })with
+        |Result.Ok v -> Assert.IsTrue(true)
+        |Result.Error ex -> Assert.Fail(ex.Message)
 
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
     [<Apartment(ApartmentState.STA)>]
     let getSccmPackageDownloadInfosTest () =
-        let sccmPackageInfos = getSccmPackageInfos
-        match sccmPackageInfos with
-        |Error ex -> 
-            Assert.Fail("Did not expect to fail. Error:" + ex.Message)
-            //Result.Error (new System.Exception("Did not expect to fail"))
-        |Ok products ->
-            let downloadInfosResult = 
-                products
-                |> F.getNRandomItems 4
-                |> Seq.map (fun p -> 
-                                getLenovoSccmPackageDownloadInfo  p.SccmDriverPackUrl.Value "WIN10X64" "*"
-                                )
-                |> F.toAccumulatedResult                
-            match downloadInfosResult with
-            |Ok dis -> 
-                dis 
-                |> Seq.map(fun di -> System.Console.WriteLine("{0};{1}",di.InstallerUrl,di.InstallerChecksum))
-                |> Seq.iter (fun p -> p)
-                //|> ignore
-            |Error ex -> 
-                Assert.IsTrue(ex.Message.Contains("Sccm package not found"))                
-        Assert.IsTrue(true)
+        match(result{
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let sccmPackageInfos = getSccmPackageInfos cacheFolderPath
+            let res =
+                match sccmPackageInfos with
+                |Error ex -> 
+                    Assert.Fail("Did not expect to fail. Error:" + ex.Message)
+                    //Result.Error (new System.Exception("Did not expect to fail"))
+                |Ok products ->
+                    let downloadInfosResult = 
+                        products
+                        |> F.getNRandomItems 4
+                        |> Seq.map (fun p -> 
+                                        getLenovoSccmPackageDownloadInfo  p.SccmDriverPackUrl.Value "WIN10X64" "*"
+                                        )
+                        |> F.toAccumulatedResult                
+                    match downloadInfosResult with
+                    |Ok dis -> 
+                        dis 
+                        |> Seq.map(fun di -> System.Console.WriteLine("{0};{1}",di.InstallerUrl,di.InstallerChecksum))
+                        |> Seq.iter (fun p -> p)
+                        //|> ignore
+                    |Error ex -> 
+                        Assert.IsTrue(ex.Message.Contains("Sccm package not found"))                
+                Assert.IsTrue(true)
+            return cacheFolderPath
+        })with
+        |Result.Ok v -> Assert.IsTrue(true)
+        |Result.Error ex -> Assert.Fail(ex.Message)
+        
+        
+        
       
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
@@ -63,7 +81,9 @@ module LenovoCatalogTests=
         let result = 
             result
                 {
-                    let! products = getSccmPackageInfos
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    let! products = getSccmPackageInfos cacheFolderPath
                     let uniqueOses = 
                         products 
                         |> Seq.map(fun p -> p.Os)                        
@@ -124,7 +144,9 @@ module LenovoCatalogTests=
     [<TestCase("ThinkPad P50","win10","*","P50","ThinkPad P50","win10","*")>]
     let findSccmPackageInfoByNameAndOsAndBuildTest (name,os,osbuild,expectedmodel,expectedname,expectedos,expectedosbuild) =
         result{
-            let! products = getSccmPackageInfos
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let! products = getSccmPackageInfos cacheFolderPath
             let actual = findSccmPackageInfoByNameAndOsAndBuild name os osbuild products
             Assert.AreEqual(actual.Model.Value,expectedmodel)
             Assert.AreEqual(actual.Name,expectedname)
@@ -139,7 +161,9 @@ module LenovoCatalogTests=
     [<Category(TestCategory.IntegrationTests)>]
     let findSccmPackageInfoByModelCode4AndOsAndBuildTest () =
         result{
-                let! products = getSccmPackageInfos
+                use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                let! cacheFolderPath = cacheFolder.FolderPath
+                let! products = getSccmPackageInfos cacheFolderPath
                 let randomProducts = 
                     products
                     |>getNRandomItems 10
@@ -165,13 +189,19 @@ module LenovoCatalogTests=
     [<TestCase("20FA","win10","1709")>]
     [<TestCase("20HJ","win10","1809")>]    
     [<TestCase("20HJ","win10","*")>]
+    [<TestCase("20QG","win10","*")>]
     let findSccmPackageInfoByModelCode4AndOsAndBuildTest2 (modelCode:string,os:string,osBuild:string) =
-        result{
-                let! products = getSccmPackageInfos
-                let actual = findSccmPackageInfoByModelCode4AndOsAndBuild modelCode os osBuild products
-                Assert.IsTrue(actual.IsSome,sprintf "Did not find model %s %s %s" modelCode os osBuild) |> ignore
-                return ""
-        } |> ignore
+        match (result{
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let! products = getSccmPackageInfos cacheFolderPath
+            let actual = findSccmPackageInfoByModelCode4AndOsAndBuild modelCode os osBuild products
+            Assert.IsTrue(actual.IsSome,sprintf "Did not find model %s %s %s" modelCode os osBuild) |> ignore
+            printfn "%A" actual
+            return actual
+        }) with        
+        |Ok _ -> ()
+        |Error e -> Assert.Fail(e.ToString())
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -194,20 +224,39 @@ module LenovoCatalogTests=
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
     [<Apartment(ApartmentState.STA)>]
-    //[<TestCase("https://support.lenovo.com/downloads/ds122238","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.txt","297ce1fbe0e0dfe4397c1413fe3850211600274356122b44af7d38fd9fcd5be4","https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe","6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513","win10","*")>]
-    //[<TestCase("https://support.lenovo.com/downloads/ds112090","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt","442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1","https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe","a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1","win10","1809")>]
+    [<TestCase("https://support.lenovo.com/downloads/ds122238",
+        "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.txt",
+        "297ce1fbe0e0dfe4397c1413fe3850211600274356122b44af7d38fd9fcd5be4",
+        "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe",
+        "6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513",
+        "win10",
+        "*")>]
+
+    [<TestCase("https://support.lenovo.com/downloads/ds112090",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt",
+        "442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe",
+        "a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1",
+        "win10",
+        "1809")>]
 
     [<TestCase("https://support.lenovo.com/downloads/ds112247",
-        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.txt",
-        "c6f9044b4f8bef5f21e121a4ae1cff883fe9d9eb1832bee76394e22bfe0107b5",
-        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.exe",
-        "6c8e3d708de02450fb08df2d06a34753554f466954e3ea01c4b0a18895b7252d",
-        "win10",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201905.txt",
+        "4c47c813d16baa3dc5b3e3b25a251eb98ab13cf9d069d29d2bcc001be7c29889",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201905.exe",
+        "7144fde1287e6289944ae82342792923021f222cc14312e0febcd752c1ab277d",
+        "WIN10X64",
         "*"
-    )>]
+        )>]
+
+    [<TestCase("https://support.lenovo.com/no/en/downloads/ds540208",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.txt",
+        "b0e8fe25ee16800a177a31a49a8ac2827b9f4e92b7d3a827b15707a6b3156f84",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe",
+        "b165b8756735dc0e5bab30335a05217d6cce5ca7430821522e83182d1fbf8bab","WIN10X64","1809")>]
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum,os,osBuild) =      
         printfn "%s" (System.IntPtr.Size.ToString())
-        let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl "WIN10X64" "*"
+        let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl os osBuild
         let expected = 
             {
                 ReadmeFile=
@@ -221,7 +270,7 @@ module LenovoCatalogTests=
                 InstallerChecksum = expectedInstallerChecksum; 
                 InstallerFileName=(getFileNameFromUrl expectedInstallerUrl);
                 Released=(getReleaseDateFromUrl expectedInstallerUrl);
-                Os=os;
+                Os=osShortNameToLenovoOs os;
                 OsBuild=osBuild
             }
         match actualResult with
@@ -392,7 +441,7 @@ module LenovoCatalogTests=
         let testData = (testDataObject:?>TestData)
         match(result {              
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)
-            let! catalogXmlPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("LenovoCatalog.xml", tempDestinationFolderPath,"LenovoCatalog.xml",typeof<ThisAssembly>.Assembly)
+            let! catalogXmlPath = EmbeddedResource.extractEmbeddedResouceByFileNameBase ("LenovoCatalog.xml", tempDestinationFolderPath,"LenovoCatalog.xml",typeof<ThisAssembly>.Assembly)
             let! existingCatalogXmlPath = ensureFileExists catalogXmlPath
             let! catalogProducts = loadLenovoCatalog existingCatalogXmlPath
             return catalogProducts
@@ -408,14 +457,17 @@ module LenovoCatalogTests=
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
-    [<TestCase("ds112090.html","WIN10X64", "1809",true)>]
-    let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool) =
+    [<TestCase("ds112090.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe")>]
+    [<TestCase("ds540208.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe")>]
+    [<TestCase("ds540208.html","WIN10X64", "1903",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1903_201908.exe")>]
+    let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool, expectedInstallerUrlString:string) =
         match(result{
             let! destinationFolderPath = FileSystem.path getTempPath
-            let! destinationFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
             Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
             let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
             let! info = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
+            Assert.AreEqual(expectedInstallerUrlString,info.InstallerUrl)
             return destinationFolderPath
         }) with
         |Ok v -> Assert.IsTrue(expectedSucess,sprintf "Expected failure but succeded instead." )
@@ -433,7 +485,7 @@ module LenovoCatalogTests=
     let getDownloadLinksFromWebPageContentTests (fileName:string, expectedCount:int, expectedSuccess:bool,expectedErrorMessage:string,source:string) =
         match(result{
             let! destinationFolderPath = FileSystem.path getTempPath
-            let! destinationFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
             Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
             let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
             let! actual = getDownloadLinksFromWebPageContent content

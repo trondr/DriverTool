@@ -13,22 +13,22 @@ module LenovoCatalog =
     let getCacheDirectory =
         DriverTool.Configuration.downloadCacheDirectoryPath
 
-    let getLocalLenvoCatalogXmlFilePath =
-        FileSystem.path (System.IO.Path.Combine(getCacheDirectory,"LenovoCatalog.xml"))
+    let getLocalLenvoCatalogXmlFilePath cacheFolderPath =
+        FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue cacheFolderPath ,"LenovoCatalog.xml"))
 
-    let downloadCatalog =
+    let downloadCatalog cacheFolderPath =
         result {
-            let! destinationFile = getLocalLenvoCatalogXmlFilePath
+            let! destinationFile = getLocalLenvoCatalogXmlFilePath cacheFolderPath
             let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml"), true, destinationFile)
             return downloadResult
         }
     
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
 
-    let getSccmPackageInfos =
+    let getSccmPackageInfos cacheFolderPath =
         result
             {
-                let! catalogXmlPath = downloadCatalog
+                let! catalogXmlPath = downloadCatalog cacheFolderPath
                 let! lenovoCatalogProducts = DriverTool.LenovoCatalogXml.loadLenovoCatalog catalogXmlPath
                 let products =
                     lenovoCatalogProducts
@@ -172,6 +172,10 @@ module LenovoCatalog =
         | "WIN7X64" -> "win764"
         | "WIN81X86" -> "win81"
         | "WIN81X64" -> "win81"
+        | "win10" -> "win10"
+        | "win81" -> "win81"
+        | "win732" -> "win732"
+        | "win764" -> "win764"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
     
     open DriverTool.Web

@@ -2,26 +2,14 @@
 open System
 open NUnit.Framework
 open DriverTool
-
 open FileOperations
+open DriverTool.DirectoryOperations
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module FileOperationTests =
 
-    type TemporaryFile() =
-        let createTestFile =                        
-            match FileSystem.path (System.IO.Path.GetTempFileName()) with
-            | Ok path -> path
-            | Error ex -> raise ex
-        
-        member _this.Path = createTestFile
-        interface IDisposable with
-            member this.Dispose() =
-                match System.IO.File.Exists(FileSystem.pathValue this.Path) with
-                | true -> System.IO.File.Delete(FileSystem.pathValue this.Path)
-                | false -> ()
-        
+    let logger = Common.Logging.Simple.ConsoleOutLogger("FileOperationTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 
     [<Test>]
     let ensureFileDoesNotExistTest_FileExists() =
@@ -68,4 +56,24 @@ module FileOperationTests =
             Assert.IsTrue(ex.Message.StartsWith(expectedErrorMessage),"Error message did not start with: " + expectedErrorMessage)
 
         
-        
+    
+    [<Test>]
+    let compareFileTest () =
+        match(result{
+            use temporaryFolder1 = new TemporaryFolder(logger)
+            let! temporaryFolder1Path = temporaryFolder1.FolderPath
+            let! temporaryFile1 = createRandomFile logger temporaryFolder1Path
+            let! existingTemporaryFile1 = FileSystem.existingFilePath temporaryFile1
+
+            use temporaryFolder2 = new TemporaryFolder(logger)
+            let! temporaryFolder2Path = temporaryFolder2.FolderPath
+            let! temporaryFile2 = createRandomFile logger temporaryFolder2Path
+            let! existingTemporaryFile2 = FileSystem.existingFilePath temporaryFile2
+
+            let! actual = compareFile existingTemporaryFile1 existingTemporaryFile2
+            Assert.IsFalse(actual, sprintf "'%s' != '%s'" (FileSystem.existingFilePathValue existingTemporaryFile1) (FileSystem.existingFilePathValue existingTemporaryFile2))
+                                                        
+            return temporaryFolder1Path              
+        })with
+        |Result.Ok v -> Assert.IsTrue(true)
+        |Result.Error ex -> Assert.Fail(ex.Message)

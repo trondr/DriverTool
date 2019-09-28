@@ -13,7 +13,7 @@ module CreateDriverPackage =
     open FSharp.Collections.ParallelSeq    
     open DriverTool.ManufacturerTypes
     open DriverTool.Web
-    open EmbeddedResouce
+    open EmbeddedResource
     open DriverTool.PathOperations
     open PackageDefinition
     open DriverTool.Requirements
@@ -322,7 +322,8 @@ module CreateDriverPackage =
 
                 logger.Info("Getting SCCM package info...")
                 let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer
-                let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem)
+                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
+                let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem,cacheFolderPath)
                 logger.Info(msg (sprintf "Sccm packge: %A" sccmPackage))
                 
                 logger.Info("Downloading SCCM package...")

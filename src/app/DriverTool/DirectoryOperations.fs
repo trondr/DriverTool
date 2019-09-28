@@ -118,3 +118,30 @@ module DirectoryOperations =
         with
         |ex -> Result.Error (new Exception(sprintf "Failed to find files in folder '%s' due to: %s" (FileSystem.pathValue folder) ex.Message,ex))
     
+    let deleteDirectoryIfExists folderPath =
+        match (directoryPathExists folderPath) with
+        |true -> 
+            deleteDirectory true folderPath                                    
+        |false -> 
+            Result.Ok folderPath
+
+    [<AllowNullLiteral>]
+    type TemporaryFolder(logger:Common.Logging.ILog)=
+        let temporaryFolderPath = 
+            result {
+                let! nonExistingTempFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),"DT",(Guid.NewGuid().ToString())))
+                let! existingTempFolderPath = ensureDirectoryExists true nonExistingTempFolderPath
+                return existingTempFolderPath
+            }
+
+        member this.FolderPath = temporaryFolderPath
+        interface IDisposable with
+            member x.Dispose() = 
+                logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing folder '%A'" temporaryFolderPath))|>ignore))
+                match (result{
+                    let! folderPath = temporaryFolderPath
+                    let! deleted = deleteDirectory true folderPath
+                    return deleted                
+                }) with
+                |Result.Ok v -> ()
+                |Result.Error ex -> raise ex

@@ -9,6 +9,9 @@ module HpUpdatesTests =
     open Init
     open DriverTool
     type ThisAssembly = { Empty:string;}
+    open DriverTool.Logging
+    let logger = Common.Logging.Simple.ConsoleOutLogger("HpUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+    
     
     [<Test>]
     [<TestCase("WIN10X64","83B3")>]
@@ -19,7 +22,9 @@ module HpUpdatesTests =
 
                     let! operatingSystemCode = (OperatingSystemCode.create operatingSystemCodeString false)
                     let! modelCode = (ModelCode.create modelCodeString false)
-                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode)                
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode,cacheFolderPath)                
                     let cacheDirectory =   Configuration.downloadCacheDirectoryPath
                                         
                     let! actual = HpUpdates.downloadSccmPackage (cacheDirectory,sccmDriverPackageInfo)
@@ -27,8 +32,8 @@ module HpUpdatesTests =
                     
                     return actual
                 }) with
-         |Ok _ -> Assert.IsTrue(true)
-         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+         |Result.Ok _ -> Assert.IsTrue(true)
+         |Result.Error e -> Assert.Fail(String.Format("{0}", e.Message))
 
     [<Test>]
     [<TestCase("WIN10X64","83B3")>]
@@ -39,7 +44,9 @@ module HpUpdatesTests =
 
                     let! operatingSystemCode = (OperatingSystemCode.create operatingSystemCodeString false)
                     let! modelCode = (ModelCode.create modelCodeString false)
-                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode)                
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode, cacheFolderPath)                
                     let cacheDirectory =   Configuration.downloadCacheDirectoryPath             
                     let! downloadedSccmPackageInfo = HpUpdates.downloadSccmPackage (cacheDirectory,sccmDriverPackageInfo)
                     let! destinationFolderPath = PathOperations.combine2Paths (PathOperations.getTempPath,"005 Sccm Package Test")
@@ -51,8 +58,8 @@ module HpUpdatesTests =
                     
                     return actual
                 }) with
-         |Ok _ -> Assert.IsTrue(true)
-         |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+         |Result.Ok _ -> Assert.IsTrue(true)
+         |Result.Error e -> Assert.Fail(String.Format("{0}", e.Message))
 
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
@@ -67,8 +74,8 @@ module HpUpdatesTests =
                     Assert.IsTrue(actual.Length > 0)
                     return sdp
                 })with
-        |Ok _ -> Assert.IsTrue(true)
-        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        |Result.Ok _ -> Assert.IsTrue(true)
+        |Result.Error e -> Assert.Fail(String.Format("{0}", e.Message))
         
     open DriverTool.UpdatesContext    
 
@@ -85,8 +92,8 @@ module HpUpdatesTests =
                     let! actual = HpUpdates.getLocalUpdates updatesRetrievalContext
                     return actual
                 }) with
-        |Ok _ -> Assert.IsTrue(true)
-        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        |Result.Ok _ -> Assert.IsTrue(true)
+        |Result.Error e -> Assert.Fail(String.Format("{0}", e.Message))
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
@@ -101,8 +108,8 @@ module HpUpdatesTests =
                     let! actual = HpUpdates.getRemoteUpdates updatesRetrievalContext
                     return actual
                 }) with
-        |Ok _ -> Assert.IsTrue(true)
-        |Error e -> Assert.Fail(String.Format("{0}", e.Message))
+        |Result.Ok _ -> Assert.IsTrue(true)
+        |Result.Error e -> Assert.Fail(String.Format("{0}", e.Message))
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -112,15 +119,15 @@ module HpUpdatesTests =
     let getCategoryFromReadmeHtmlTest (htmlFileName, expectedCategory,isSuccess:bool) =
         match(result{
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
-            let! readmeHtmlPath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (htmlFileName,tempDestinationFolderPath,htmlFileName,typeof<ThisAssembly>.Assembly)
+            let! readmeHtmlPath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (htmlFileName,tempDestinationFolderPath,htmlFileName,typeof<ThisAssembly>.Assembly)
             let! actual = HpUpdates.getCategoryFromReadmeHtml readmeHtmlPath "Default"
             return actual
         })with
-        |Ok a -> 
+        |Result.Ok a -> 
             Assert.IsTrue(isSuccess,sprintf "Expected failed, but suceeded. Actual value: %A" a)
             Assert.AreEqual(expectedCategory,a)
 
-        |Error e -> 
+        |Result.Error e -> 
             Assert.IsFalse(isSuccess,sprintf "Expected success, but failed due to: %A" e)
             Assert.AreEqual("Invalid HTML",e.InnerException.Message,"Inner exception not as expected.")
             printf "%A" e

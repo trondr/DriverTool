@@ -298,7 +298,7 @@ module LenovoUpdates =
                 let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
                 let sccmPackages =
                     downloadLinks
-                    |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
+                    |> Seq.filter (fun s -> (s.Os = lenovoOs && s.OsBuild = osbuild))
                     |> Seq.toArray
                 let! sccmPackageInfo =
                     match (sccmPackages.Length > 0) with
@@ -339,10 +339,10 @@ module LenovoUpdates =
             |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = "*"))
             |> Seq.head
 
-    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode)  : Result<SccmPackageInfo,Exception> =
+    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath)  : Result<SccmPackageInfo,Exception> =
         result
             {
-                let! products = DriverTool.LenovoCatalog.getSccmPackageInfos
+                let! products = DriverTool.LenovoCatalog.getSccmPackageInfos cacheFolderPath
                 let product = DriverTool.LenovoCatalog.findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
                 let osBuild = product.Value.OsBuild.Value
                 let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
@@ -373,7 +373,7 @@ module LenovoUpdates =
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         loggerl.Info("Extract SccmPackage installer...")        
         let arguments = sprintf "/VERYSILENT /DIR=\"%s\" /EXTRACT=\"YES\"" (FileSystem.pathValue destinationPath)
-        match (FileSystem.existingFilePath downloadedSccmPackage.InstallerPath) with
+        match (FileSystem.existingFilePathString downloadedSccmPackage.InstallerPath) with
         |Ok fp -> 
             match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
             |Ok _ -> Result.Ok destinationPath

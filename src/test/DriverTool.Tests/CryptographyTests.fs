@@ -17,7 +17,7 @@
                         {
                             let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                             let assembly = typeof<ThisTestAssembly>.Assembly
-                            let! extractedFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,assembly)                
+                            let! extractedFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,assembly)                
                             let actual = Cryptography.isTrusted extractedFilePath
                             Assert.AreEqual(expected,actual)
                             return extractedFilePath

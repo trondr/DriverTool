@@ -15,17 +15,15 @@ module WebParsing =
             let msg = sprintf "Failed to get web content for web page '%s' due to %s" uri ex.Message
             Result.Error (new System.Exception(msg,ex))
     
-    open DriverTool.PathOperations
     open DriverTool.FileOperations
 
     let downloadWebContent url destinationFilePath refresh =
         match (fileExists destinationFilePath) && (not refresh) with
         |false -> 
             result{
-                let! content = getContentFromWebPage url
-                let! filePath = FileSystem.path (getTempFile "ds112090.html")
-                let! writeResult = 
-                    content |> (writeContentToFile filePath)
-                return destinationFilePath
+                let! content = getContentFromWebPage url                
+                let! outputPath = 
+                    content |> (writeContentToFile logger destinationFilePath)
+                return outputPath
             }
         | true -> Result.Ok destinationFilePath   

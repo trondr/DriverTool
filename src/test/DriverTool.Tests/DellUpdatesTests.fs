@@ -6,6 +6,8 @@ open NUnit.Framework
 module DellUpdatesTests =
     open DriverTool
     open DriverTool.UpdatesContext
+    open Common.Logging
+    let logger = Common.Logging.Simple.ConsoleOutLogger("DellUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
@@ -88,7 +90,9 @@ module DellUpdatesTests =
         match(result{
             let! modelCode = ModelCode.create model false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystem false
-            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode)
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode, cacheFolderPath)
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)

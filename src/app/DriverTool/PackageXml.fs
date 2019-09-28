@@ -272,7 +272,7 @@ module PackageXml =
     
     let extractPackageXml (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
         let destinationFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.PackageXmlName)
-        match FileSystem.existingFilePath downloadedPackageInfo.PackageXmlPath with
+        match FileSystem.existingFilePathString downloadedPackageInfo.PackageXmlPath with
         |Ok filePath -> 
             match (copyFile (FileSystem.existingFilePathValue filePath, destinationFilePath)) with
             |Ok _ -> 
@@ -282,7 +282,7 @@ module PackageXml =
 
     let extractReadme (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
         let destinationReadmeFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Readme.Name)
-        match FileSystem.existingFilePath downloadedPackageInfo.ReadmePath with
+        match FileSystem.existingFilePathString downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
             match (copyFile (FileSystem.existingFilePathValue readmeFilePath, destinationReadmeFilePath)) with
             |Ok _ -> 
@@ -298,7 +298,7 @@ module PackageXml =
         if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine)) then
            logger.Info("Installer does not support extraction, copy the installer directly to package folder...")
            let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Installer.Name)
-           match FileSystem.existingFilePath downloadedPackageInfo.InstallerPath with
+           match FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
                 match copyFile (FileSystem.existingFilePathValue installerPath, destinationInstallerFilePath) with
                 |Ok _ -> 
@@ -311,7 +311,7 @@ module PackageXml =
             let extractCommandLine = downloadedPackageInfo.Package.ExtractCommandLine.Replace("%PACKAGEPATH%",sprintf "\"%s\"" (FileSystem.pathValue packageFolderPath))
             let fileName = getFileNameFromCommandLine extractCommandLine
             let arguments = extractCommandLine.Replace(fileName,"")
-            match (FileSystem.existingFilePath downloadedPackageInfo.InstallerPath) with
+            match (FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath) with
             |Ok fp -> 
                 match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments,FileSystem.pathValue packageFolderPath,-1,null,null,false) with
                 |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))

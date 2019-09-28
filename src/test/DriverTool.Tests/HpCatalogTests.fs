@@ -31,7 +31,7 @@ module HpCatalogTests =
                 {
                     let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                     let assembly = typeof<ThisTestAssembly>.Assembly
-                    let! extractedFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
+                    let! extractedFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
                     let! actual = HpCatalog.getSoftPaqs extractedFilePath
                     Assert.IsTrue(actual.Length > 0, "Did not load any SoftPaq's")
                     Assert.IsFalse(String.IsNullOrWhiteSpace(actual.[0].Category),"Category was empty")
@@ -57,7 +57,7 @@ module HpCatalogTests =
                 {
                     let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                     let assembly = typeof<ThisTestAssembly>.Assembly
-                    let! extractedFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
+                    let! extractedFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
                     let! actual = HpCatalog.getProductOSDriverPacks extractedFilePath
                     Assert.IsTrue(actual.Length > 0, "Did not load any SoftPaq's")
                     Assert.IsFalse(String.IsNullOrWhiteSpace(actual.[0].OSName),"OSName was empty")
@@ -80,7 +80,7 @@ module HpCatalogTests =
                     let! modelCode = (ModelCode.create modelCodeString false)
                     let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                     let assembly = typeof<ThisTestAssembly>.Assembly
-                    let! extractedFilePath = EmbeddedResouce.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
+                    let! extractedFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
                     let! actual = HpCatalog.getSccmDriverPackageInfoBase (extractedFilePath,modelCode,operatingSystemCode)
                     Assert.IsFalse(String.IsNullOrWhiteSpace( actual.InstallerFileName), "InstallerFileName is empty")
                     

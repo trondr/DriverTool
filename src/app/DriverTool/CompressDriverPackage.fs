@@ -12,7 +12,7 @@ module CompressDriverPackage =
             let! existingDriversFolderPath = DirectoryOperations.ensureDirectoryExistsWithMessage false (sprintf "Failed to compress Drivers folder as the folder does not exist.") driversFolderPath
             let! driversZipFilepath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Drivers.zip"))
             let! nonExistingDriversZipFilePath = FileOperations.ensureFileDoesNotExistWithMessage (sprintf "Failed to compress Drivers folder as the Drivers.zip allready exist.") false driversZipFilepath
-            let! zipResult = Compression.zipFolder (existingDriversFolderPath,nonExistingDriversZipFilePath)
+            let! zipResult = Compression.zipFolder (existingDriversFolderPath,nonExistingDriversZipFilePath,logger)
             logger.Warn(msg (sprintf "The Drivers folder '%s' can now be deleted manually." (FileSystem.pathValue driversFolderPath)))
             return zipResult
         }
@@ -25,6 +25,6 @@ module CompressDriverPackage =
             let! nonexistingDriversFolderPath = DirectoryOperations.ensureDirectoryNotExistsWithMessage (sprintf "Failed to decompress Drivers.zip to Drivers folder as the folder allready exists.") driversFolderPath
             let! driversZipFilepath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Drivers.zip"))
             let! existingDriversZipFilePath = FileOperations.ensureFileExistsWithMessage (sprintf "Failed to decompress Drivers.zip as the file does not exist.") driversZipFilepath
-            let! zipResult = Compression.unzipFile (existingDriversZipFilePath, nonexistingDriversFolderPath)        
+            let! zipResult = Compression.unzipFile (existingDriversZipFilePath, nonexistingDriversFolderPath,logger)        
             return zipResult
         }

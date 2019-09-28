@@ -4,6 +4,7 @@ open System
 
 module FileOperations =
     open FileSystem
+    open DriverTool.Logging
 
     let deleteFileUnsafe path  =
         System.IO.File.Delete (FileSystem.pathValue path)
@@ -11,8 +12,8 @@ module FileOperations =
     let deleteFile path = 
         let deleteFileResult = tryCatch deleteFileUnsafe path
         match deleteFileResult with
-        | Ok _ -> Result.Ok path
-        | Error ex -> Result.Error ex
+        | Result.Ok _ -> Result.Ok path
+        | Result.Error ex -> Result.Error ex
 
     type FileExistsException(message : string) =
         inherit Exception(message)    
@@ -47,10 +48,12 @@ module FileOperations =
     let getFileSize filePath =
         (new System.IO.FileInfo(FileSystem.pathValue filePath)).Length
  
-    let writeContentToFile filePath (content:string) =         
+    let writeContentToFile (logger:Common.Logging.ILog) filePath (content:string) =         
         try
             use sw = (new System.IO.StreamWriter(FileSystem.pathValue filePath))
-            (sw.Write(content))
+            logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))|>ignore))
+            (sw.Write(content))            
+            logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Finished writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))|>ignore))
             Result.Ok filePath
         with
         |ex -> Result.Error ex
@@ -69,20 +72,6 @@ module FileOperations =
     let copyFile force sourceFilePath destinationFilePath =
         tryCatch3WithMessage copyFileUnsafe force sourceFilePath destinationFilePath (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)
 
-    let copyFiles (destinationFolderPath) (files:seq<string>) =
-        files
-        |>Seq.map(fun fp -> 
-                    result{
-                        let sourceFile = (new System.IO.FileInfo(fp))
-                        let! sourceFilePath = FileSystem.path sourceFile.FullName
-                        let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath, sourceFile.Name))
-                        let! copyResult = copyFile true sourceFilePath destinationFilePath
-                        return copyResult
-                    }
-                 )
-        |>Seq.toArray
-        |>toAccumulatedResult
-    
     let copyFilePaths (destinationFolderPath) (files:seq<Path>) =
         files
         |>Seq.map(fun fp -> 
@@ -135,23 +124,24 @@ module FileOperations =
     
     /// Read file 'fn' in blocks of size 'size'
     /// (returns on-demand asynchronous sequence)
-    let readInBlocks filePath size = async {
-      let stream = File.OpenRead(FileSystem.existingFilePathValue filePath)
-      let buffer = Array.zeroCreate size
-  
-      /// Returns next block as 'Item' of async seq
-      let rec nextBlock() = async {
-        let! count = stream.AsyncRead(buffer, 0, size)
-        if count = 0 then return Ended
-        else 
-          // Create buffer with the right size
-          let res = 
-            if count = size then buffer
-            else buffer |> Seq.take count |> Array.ofSeq
-          return Item(res, nextBlock()) }
-
-      return! nextBlock() }
-
+    let readInBlocks (stream:FileStream) size = 
+        async {                            
+            let buffer = Array.zeroCreate size
+            /// Returns next block as 'Item' of async seq
+            let rec nextBlock() = 
+                async {
+                    let! count = stream.AsyncRead(buffer, 0, size)
+                    if count = 0 then return Ended
+                    else 
+                        // Create buffer with the right size
+                        let res = 
+                            if count = size then buffer
+                            else buffer |> Seq.take count |> Array.ofSeq
+                        return Item(res, nextBlock()) 
+                }
+            return! nextBlock()
+        }
+        
     /// Asynchronous function that compares two asynchronous sequences
     /// item by item. If an item doesn't match, 'false' is returned
     /// immediately without generating the rest of the sequence. If the
@@ -167,11 +157,15 @@ module FileOperations =
 
     /// Compare two files using 1k blocks
     let compareFileUnsafe (filePath1, filePath2) =
-        let s1 = readInBlocks filePath1 1000
-        let s2 = readInBlocks filePath2 1000
-        compareAsyncSeqs s1 s2
-        |> Async.RunSynchronously
-    
+        use stream1 = File.OpenRead(FileSystem.existingFilePathValue filePath1)
+        use stream2 = File.OpenRead(FileSystem.existingFilePathValue filePath2)
+        let s1 = readInBlocks stream1 1000        
+        let s2 = readInBlocks stream2 1000
+        let isEqual =
+            compareAsyncSeqs s1 s2
+            |> Async.RunSynchronously                
+        isEqual
+
     let compareFile filePath1 filePath2 =
         tryCatchWithMessage compareFileUnsafe (filePath1, filePath2) (sprintf "Failed to compare files: '%A' <-> %A. " filePath1 filePath2)
 
@@ -206,15 +200,15 @@ module FileOperations =
                 let isEqualResult = 
                     result
                         {
-                            let! existingFile1 = FileSystem.existingFilePath file1
-                            let! existingFile2 = FileSystem.existingFilePath file2
+                            let! existingFile1 = FileSystem.existingFilePathString file1
+                            let! existingFile2 = FileSystem.existingFilePathString file2
                             let! filesAreEqual = compareFile existingFile1 existingFile2 
                             return filesAreEqual
                         }
                 let isEqual =
                     match isEqualResult with 
-                    |Ok b -> b                    
-                    |Error _ -> false
+                    |Result.Ok b -> b                    
+                    |Result.Error _ -> false
                 if(not isEqual) then 
                     return false
                 
@@ -225,3 +219,25 @@ module FileOperations =
         
     let toFileName filePath =
         Path.GetFileName(FileSystem.pathValue filePath)
+
+    let createRandomFile logger folderPath =
+        result {
+            let! existingFolderPath = DirectoryOperations.ensureDirectoryExists false folderPath
+            let! randomFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingFolderPath, System.IO.Path.GetRandomFileName()))
+            let! writeResult = writeContentToFile logger randomFilePath (System.Guid.NewGuid().ToString())
+            return randomFilePath
+        }
+
+    [<AllowNullLiteral>]
+    type TemporaryFile() =
+           let createTestFile =                        
+               match FileSystem.path (System.IO.Path.GetTempFileName()) with
+               | Result.Ok path -> path
+               | Result.Error ex -> raise ex
+           
+           member _this.Path = createTestFile
+           interface IDisposable with
+               member this.Dispose() =
+                   match System.IO.File.Exists(FileSystem.pathValue this.Path) with
+                   | true -> System.IO.File.Delete(FileSystem.pathValue this.Path)
+                   | false -> ()
