@@ -1,0 +1,334 @@
+                                                                   Revision : 02
+--------------------------------------------------------------------------------
+Software name      Intel Software Guard Extensions Software and Device for
+                   Windows 10 Version 1709 and later
+
+Support models     ThinkPad 25                       (Machine types: 20K7)
+                   ThinkPad L380                     (Machine types: 20M5, 20M6)
+                   ThinkPad L380 Yoga                (Machine types: 20M7, 20M8)
+                   ThinkPad L390                     (Machine types: 20NR, 20NS)
+                   ThinkPad L390 Yoga                (Machine types: 20NT, 20NU)
+                   ThinkPad L460                     (Machine types: 20FU, 20FV)
+                   ThinkPad L470         (Machine types: 20J4, 20J5, 20JU, 20JV)
+                   ThinkPad P1                       (Machine types: 20MD, 20ME)
+                   ThinkPad P50/P70
+                   ThinkPad P51          (Machine types: 20HH, 20HJ, 20MN, 20MM)
+                   ThinkPad P51s
+                   ThinkPad P52s                     (Machine types: 20LB, 20LC)
+                   ThinkPad P71                      (Machine types: 20HK, 20HL)
+                   ThinkPad S1 Gen 4
+                   ThinkPad S1 (PRC)
+                   ThinkPad S2 Gen 3                 (Machine types: 20L1)
+                   ThinkPad S2 Gen 4                 (Machine types: 20NV)
+                   ThinkPad S2 Yoga Gen 3            (Machine types: 20L2)
+                   ThinkPad S2 Yoga Gen 4            (Machine types: 20NW)
+                   ThinkPad T460                     (Machine types: 20FM, 20FN)
+                   ThinkPad T460p
+                   ThinkPad T460s
+                   ThinkPad T470         (Machine types: 20JM, 20JN, 20HD, 20HE)
+                   ThinkPad T470p                    (Machine types: 20J6, 20J7)
+                   ThinkPad T470s        (Machine types: 20HF, 20HG, 20JS, 20JT)
+                   ThinkPad T480                     (Machine types: 20L5, 20L6)
+                   ThinkPad T480s                    (Machine types: 20L7, 20L8)
+                   ThinkPad T570
+                   ThinkPad T580                     (Machine types: 20L9, 20LA)
+                   Thinkpad X1 Carbon Gen 4          (Machine types: 20FB, 20FC)
+                   ThinkPad X1 Carbon Gen 5  (Machine types:20HQ,20HR,20K3,20K4)
+                   ThinkPad X1 Carbon Gen 6          (Machine types: 20KH, 20KG)
+                   ThinkPad X1 Extreme               (Machine types: 20MF, 20MG)
+                   ThinkPad X1 Tablet Gen 2          (Machine types: 20JB, 20JC)
+                   ThinkPad X1 Tablet Gen 3          (Machine types: 20KJ, 20KK)
+                   ThinkPad X1 Yoga Gen 1            (Machine types: 20FQ, 20FR)
+                   ThinkPad X1 Yoga Gen 2    (Machine types:20JD,20JE,20JF,20JG)
+                   ThinkPad X1 Yoga Gen 3    (Machine types:20LD,20LE,20LF,20LG)
+                   ThinkPad X270         (Machine types: 20HM, 20HN, 20K5, 20K6)
+                   ThinkPad X280                     (Machine types: 20KE, 20KF)
+                   ThinkPad X380 Yoga
+                   ThinkPad X390 Yoga                (Machine types: 20NN, 20NQ)
+                   ThinkPad Yoga 370 (WW)
+                   Thinkpad Yoga260/Y260/S1
+
+Operating System   Microsoft Windows 10  64-bit (Version 1709 and later)
+
+                   Refer to marketing materials to find out what computer models
+                   support which Operating Systems.
+
+Versions           2.3.100.49777 (Software)
+                   2.3.100.49813 (Device)
+
+Support device     Intel(R) Software Guard Extensions Software
+                   Intel(R) Software Guard Extensions Device
+
+
+--------------------------------------------------------------------------------
+WHAT THIS PACKAGE DOES
+
+  This package installs the software (Intel SGX device and software) to enable
+  the following device.
+
+  Device name    Device name in the Device Manager
+  -----------    -------------------------------------------
+  Intel SGX      Intel(R) Software Guard Extensions Software
+  Intel SGX      Intel(R) Software Guard Extensions Device
+
+  Refer to marketing materials to find out what computer models support which
+  devices.
+
+  If this package has been installed, updating (overwrite-installing) this
+  package will fix problems, add new functions, or expand functions as noted
+  below.
+
+  This program is language independent and can be used with any language system.
+
+
+--------------------------------------------------------------------------------
+CHANGES IN THIS RELEASE
+  Versions  2.3.100.49777 (Software)
+            2.3.100.49813 (Device)
+
+[Important updates]
+ Nothing.
+[New functions or enhancements]
+ - Added suppor to the following products:
+                   ThinkPad L390                     (Machine types: 20NR, 20NS)
+                   ThinkPad L390 Yoga                (Machine types: 20NT, 20NU)
+                   ThinkPad S2 Gen 4                 (Machine types: 20NV)
+                   ThinkPad S2 Yoga Gen 4            (Machine types: 20NW)
+
+[Problem fixes]
+ Nothing.
+
+
+--------------------------------------------------------------------------------
+DETERMINING WHICH VERSION IS INSTALLED
+
+
+  1. Hold down the Windows logo key and press X to open a menu at the lower-left
+     area of the screen.
+  2. Select Device Manager from the menu.
+3.1. Double-click Software components category.
+3.2. Double-click Intel Software Guard Extensions Software.
+3.3. Select Driver tab.
+4.1. Double-click Systems devices category.
+4.2. Double-click Intel Software Guard Extensions Device.
+4.3. Select Driver tab.
+  6. Check Driver Version.
+
+
+--------------------------------------------------------------------------------
+NOTES
+
+  User may need to manually change the Intel(R) SGX status in BIOS to [Enabled] 
+  if the system's image is not created by standard manufacturing preload process.
+
+
+--------------------------------------------------------------------------------
+LIMITATIONS
+
+  Nothing.
+
+
+--------------------------------------------------------------------------------
+INSTALLATION INSTRUCTIONS
+
+
+Notes:
+- If your computer runs satisfactorily now, it may not be necessary to update
+  the software. To determine if you should update the software, refer to the
+  Version Information section.
+
+Manual Install
+
+  This section assumes to use Internet Explorer and Windows Explorer.
+
+  Downloading file
+  1. Select the underlined file name. Once this is done, some pop-up windows
+     will appear.
+  2. Follow the instructions on the screen.
+  3. When the selection message of the Run or Save on the window, select Save.
+  4. Once the download has completed, there may or may not be a message stating
+     that the download completed successfully.
+
+  Extracting files
+  5. Make sure to be logged on with an administrator account.
+  6. Locate the folder where the file was downloaded.
+  7. Locate the file that was downloaded and double-click it.
+  8. Follow the instructions on the screen.
+  9. In the Select Destination Location window, select Next. If you would like
+     to select a different folder, select Browse.
+ 10. In the Ready to Install window, select Install. All the necessary files
+     will be extracted to the folder selected in the step 9.
+
+  Installing files
+ 11. Make sure the checkbox next to "Install ..... now" is checked and select
+     Finish.
+ 12. Follow the instructions on the screen to complete installation and restart
+     the computer.
+     IMPORTANT: Make sure to restart the computer after installation.
+
+  Finally delete the file saved in the step 4.
+
+Unattended Install
+
+  This is for system administrator's use only.
+
+  1. Refer to the Manual Install section, and download and extract the file.
+  2. In the step 11 of the Installing files section, uncheck the checkbox next
+     to "Install ..... now", and then select Finish to cancel installation.
+  3. At the command line, execute pnputil.exe with the following options:
+     /add-driver *.inf /install
+     Example:
+     [Path where files were extracted]\pnputil.exe /add-driver *.inf /install
+
+
+--------------------------------------------------------------------------------
+UNINSTALLATION INSTRUCTIONS
+
+
+Manual Uninstall
+
+  1. Start Windows and logon with an administrator account.
+  2. Hold down the Windows logo key and press X to open a menu at the lower-left
+     area of the screen.
+  3. Select Device Manager from the menu.
+  4. Select Biometric devices.
+  5. Right click Synaptics WBDI - SGX and select Uninstall.
+  6. Check 'Delete the driver software for the device' then select Ok.
+  7. Restart the computer.
+
+
+--------------------------------------------------------------------------------
+VERSION INFORMATION
+
+
+  The following versions have been released to date.
+
+  Software         Device           Build ID    Rev.   Issue Date
+  ---------------  ---------------  --------    ----   ----------
+  2.3.100.49777    2.3.100.49813    NZ3GS05W    02     2019/08/23
+  2.3.100.49777    2.3.100.49813    NZ3GS05W    01     2019/08/14
+  2.2.100.47975    2.2.100.48032    NZ3GS04W    04     2019/04/18
+  2.2.100.47975    2.2.100.48032    NZ3GS04W    03     2019/03/06
+  2.2.100.47975    2.2.100.48032    NZ3GS04W    02     2019/02/19
+  2.2.100.47975    2.2.100.48032    NZ3GS04W    01     2019/01/31
+  2.1.100.44269    1.9.105.41752    NZ3GS03W    01     2018/10/05
+  2.0.101.44269    1.9.105.41752    NZ3GS02W    04     2018/08/22
+  2.0.101.44269    1.9.105.41752    NZ3GS02W    03     2018/07/18
+  2.0.101.44269    1.9.105.41752    NZ3GS02W    02     2018/07/02
+  2.0.101.44269    1.9.105.41752    NZ3GS02W    01     2018/06/13
+  1.9.105.42329    1.9.105.41752    NZ3GS01W    02     2018/05/16
+  1.9.105.42329    1.9.105.41752    NZ3GS01W    01     2018/05/07
+
+  Note: Revision number (Rev.) is for administrative purpose of this README
+        document and is not related to software version. There is no need to
+        upgrade this software when the revision number changes.
+
+  To check the version of software, refer to the Determining which version is
+  installed section.
+
+  Summary of Changes
+
+ Where: <   >        Version number
+        [Important]  Important update
+        (New)        New function or enhancement
+        (Fix)        Correction to existing function
+
+<2.3.100.49777/2.3.100.49813> (NZ3GS05W)
+-(New) Added suppor to the following products:
+                   ThinkPad L390                     (Machine types: 20NR, 20NS)
+                   ThinkPad L390 Yoga                (Machine types: 20NT, 20NU)
+                   ThinkPad S2 Gen 4                 (Machine types: 20NV)
+                   ThinkPad S2 Yoga Gen 4            (Machine types: 20NW)
+
+<2.3.100.49777/2.3.100.49813> (NZ3GS05W)
+-[Important] Maintenance update.
+
+<2.2.100.47975/2.2.100.48032> (NZ3GS04W)
+-(New) Added support for ThinkPad X390 Yoga (Machine types: 20NN, 20NQ).
+
+<2.2.100.47975/2.2.100.48032> (NZ3GS04W)
+-(New) Added support to the following products:
+                   ThinkPad L460 (Machine types: 20FU, 20FV)
+                   ThinkPad L470 (Machine types: 20J4, 20J5, 20JU, 20JV)
+
+<2.2.100.47975/2.2.100.48032> (NZ3GS04W)
+-(New) Added support to the following products:
+                   ThinkPad L380          (Machine types: 20M5, 20M6)
+                   ThinkPad L380 Yoga     (Machine types: 20M7, 20M8)
+                   ThinkPad S2 Gen 3      (Machine types: 20L1)
+                   ThinkPad S2 Yoga Gen 3 (Machine types: 20L2)
+                   ThinkPad T460          (Machine types: 20FM, 20FN)
+
+<2.2.100.47975/2.2.100.48032> (NZ3GS04W)
+-[Important] Updated Intel® Architecture Enclaves to use the Intel® Integrated 
+             Performance Primitives (Intel® IPP) Cryptography 2019 Update 1 
+             library.
+       
+<2.1.100.46245/1.9.105.41752> (NZ3GS03W)
+-[Important] Maintenance update.
+
+<2.0.101.44269/1.9.105.41752> (NZ3GS02W)
+-(New) Added support for ThinkPad P1 (Machine types: 20MD, 20ME)
+-(New) Added support for ThinkPad X1 Extreme (Machine types: 20MF, 20MG)
+
+<2.0.101.44269/1.9.105.41752> (NZ3GS02W)
+-[Important] Updated operating system version support.
+-[Important] Updated unattended installation command.
+
+<2.0.101.44269/1.9.105.41752> (NZ3GS02W)
+-(New) Added support for ThinkPad X1 Tablet Gen 3 (Machine types: 20KJ, 20KK)
+
+<2.0.101.44269/1.9.105.41752> (NZ3GS02W)
+-[Important] Updated the cryptography lib to Intel Integrated Performance
+             Primitives Cryptography 2018 Update 2.1.
+-[Important] Updated Intel SGX platform service Dal applet.
+-(Fix) Fixed a security issue CVE-2017-5736.
+
+<1.9.105.42329/1.9.105.41752> (NZ3GS01W)
+-(New) Added support for ThinkPad P51 (Machine types: 20MN, 20MM)
+
+<1.9.105.42329/1.9.105.41752> (NZ3GS01W)
+-(New) Initial release for following products.
+                   ThinkPad X280      (Machine types: 20KE, 20KF)
+                   ThinkPad T480      (Machine types: 20L5, 20L6)
+                   ThinkPad T480s     (Machine types: 20L7, 20L8)
+                   ThinkPad X1 Carbon (Machine types: 20KH, 20KG)
+                   ThinkPad P52s      (Machine types: 20LB, 20LC)
+                   ThinkPad T580      (Machine types: 20L9, 20LA)
+                   ThinkPad X1 Yoga   (Machine types: 20LD, 20LE, 20LF, 20LG)
+                   ThinkPad X380 Yoga
+                   ThinkPad S1 Gen 4
+                   ThinkPad S1 (PRC)
+                   ThinkPad Yoga 370 (WW)
+                   ThinkPad T470      (Machine types: 20JM, 20JN, 20HD, 20HE)
+                   ThinkPad T470p     (Machine types: 20J6,20J7)
+                   ThinkPad T470s     (Machine types: 20HF, 20HG, 20JS, 20JT)
+                   ThinkPad X1 Carbon (Machine types: 20HQ, 20HR, 20K3, 20K4)
+                   ThinkPad T570
+                   ThinkPad P51s
+                   ThinkPad X1 Yoga   (Machine types: 20JD, 20JE, 20JF, 20JG)
+                   ThinkPad P71       (Machine types: 20HK, 20HL)
+                   ThinkPad P51       (Machine types: 20MN, 20MM)
+                   ThinkPad X270      (Machine types: 20HM, 20HN, 20K5, 20K6)
+                   ThinkPad 25        (Machine types: 20K7)
+                   Thinkpad P50/P70
+                   Thinkpad Yoga260/Y260/S1
+                   Thinkpad X1 Carbon (Machine types: 20FB, 20FC)
+                   ThinkPad X1 Yoga   (Machine types: 20FQ, 20FR)
+                   ThinkPad T460s
+                   ThinkPad T460p
+                   ThinkPad X1 Tablet Gen 2 (Machine types: 20JB, 20JC)
+
+
+--------------------------------------------------------------------------------
+TRADEMARKS
+
+* Lenovo and ThinkPad are registered trademarks of Lenovo.
+
+* Intel is a registered trademark of Intel Corporation.
+* Microsoft, Internet Explorer and Windows are registered trademarks of
+  Microsoft Corporation.
+* The Synaptics word mark and logos are owned by Synaptics.
+
+Other company, product, and service names may be registered trademarks,
+trademarks or service marks of others.
