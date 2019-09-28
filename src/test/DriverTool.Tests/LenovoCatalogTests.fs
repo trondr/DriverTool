@@ -232,12 +232,14 @@ module LenovoCatalogTests=
         "c6f9044b4f8bef5f21e121a4ae1cff883fe9d9eb1832bee76394e22bfe0107b5",
         "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201812.exe",
         "6c8e3d708de02450fb08df2d06a34753554f466954e3ea01c4b0a18895b7252d",
-        "win10",
+        "WIN10X64",
         "*"
     )>]
+
+    [<TestCase("https://support.lenovo.com/no/en/downloads/ds540208","https://readmeUrl","readmeChecksum","https://installerUrl","installerChecksum","WIN10X64","1809")>]
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum,os,osBuild) =      
         printfn "%s" (System.IntPtr.Size.ToString())
-        let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl "WIN10X64" "*"
+        let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl os osBuild
         let expected = 
             {
                 ReadmeFile=
@@ -438,14 +440,17 @@ module LenovoCatalogTests=
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
-    [<TestCase("ds112090.html","WIN10X64", "1809",true)>]
-    let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool) =
+    [<TestCase("ds112090.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe")>]
+    [<TestCase("ds540208.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe")>]
+    [<TestCase("ds540208.html","WIN10X64", "1903",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1903_201908.exe")>]
+    let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool, expectedInstallerUrlString:string) =
         match(result{
             let! destinationFolderPath = FileSystem.path getTempPath
             let! destinationFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
             Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
             let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
             let! info = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
+            Assert.AreEqual(expectedInstallerUrlString,info.InstallerUrl)
             return destinationFolderPath
         }) with
         |Ok v -> Assert.IsTrue(expectedSucess,sprintf "Expected failure but succeded instead." )
