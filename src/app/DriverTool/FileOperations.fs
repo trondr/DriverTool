@@ -4,6 +4,7 @@ open System
 
 module FileOperations =
     open FileSystem
+    open DriverTool.Logging
 
     let deleteFileUnsafe path  =
         System.IO.File.Delete (FileSystem.pathValue path)
@@ -11,8 +12,8 @@ module FileOperations =
     let deleteFile path = 
         let deleteFileResult = tryCatch deleteFileUnsafe path
         match deleteFileResult with
-        | Ok _ -> Result.Ok path
-        | Error ex -> Result.Error ex
+        | Result.Ok _ -> Result.Ok path
+        | Result.Error ex -> Result.Error ex
 
     type FileExistsException(message : string) =
         inherit Exception(message)    
@@ -47,10 +48,12 @@ module FileOperations =
     let getFileSize filePath =
         (new System.IO.FileInfo(FileSystem.pathValue filePath)).Length
  
-    let writeContentToFile filePath (content:string) =         
+    let writeContentToFile (logger:Common.Logging.ILog) filePath (content:string) =         
         try
             use sw = (new System.IO.StreamWriter(FileSystem.pathValue filePath))
-            (sw.Write(content))
+            logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))|>ignore))
+            (sw.Write(content))            
+            logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Finished writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))|>ignore))
             Result.Ok filePath
         with
         |ex -> Result.Error ex
@@ -135,24 +138,29 @@ module FileOperations =
     
     /// Read file 'fn' in blocks of size 'size'
     /// (returns on-demand asynchronous sequence)
-    let readInBlocks filePath size = async {
-      let stream = File.OpenRead(FileSystem.existingFilePathValue filePath)
-      let buffer = Array.zeroCreate size
+    let readInBlocks (logger:Common.Logging.ILog) filePath size = 
+        logger.Debug(sprintf "Opening stream: %A (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId)
+        let stream = File.OpenRead(FileSystem.existingFilePathValue filePath)
+        let s =
+            async {                            
+                let buffer = Array.zeroCreate size
   
-      /// Returns next block as 'Item' of async seq
-      let rec nextBlock() = async {
-        let! count = stream.AsyncRead(buffer, 0, size)
-        if count = 0 then 
-            stream.Dispose()
-            return Ended
-        else 
-          // Create buffer with the right size
-          let res = 
-            if count = size then buffer
-            else buffer |> Seq.take count |> Array.ofSeq
-          return Item(res, nextBlock()) }
-
-      return! nextBlock() }
+                /// Returns next block as 'Item' of async seq
+                let rec nextBlock() = 
+                    async {
+                        let! count = stream.AsyncRead(buffer, 0, size)
+                        if count = 0 then                                                         
+                            return Ended
+                        else 
+                            // Create buffer with the right size
+                            let res = 
+                                if count = size then buffer
+                                else buffer |> Seq.take count |> Array.ofSeq
+                            return Item(res, nextBlock()) 
+                    }
+                return! nextBlock()
+            }
+        (stream,s)
 
     /// Asynchronous function that compares two asynchronous sequences
     /// item by item. If an item doesn't match, 'false' is returned
@@ -168,16 +176,22 @@ module FileOperations =
       | _ -> return failwith "Size doesn't match" }
 
     /// Compare two files using 1k blocks
-    let compareFileUnsafe (filePath1, filePath2) =
-        let s1 = readInBlocks filePath1 1000
-        let s2 = readInBlocks filePath2 1000
-        compareAsyncSeqs s1 s2
-        |> Async.RunSynchronously
-    
-    let compareFile filePath1 filePath2 =
-        tryCatchWithMessage compareFileUnsafe (filePath1, filePath2) (sprintf "Failed to compare files: '%A' <-> %A. " filePath1 filePath2)
+    let compareFileUnsafe (logger, filePath1, filePath2) =
+        let (stream1,s1) = readInBlocks logger filePath1 1000
+        let (stream2,s2) = readInBlocks logger filePath2 1000
+        let isEqual =
+            compareAsyncSeqs s1 s2
+            |> Async.RunSynchronously
+        logger.Debug(sprintf "Closing stream: %A (TID: %i)" filePath1 System.Threading.Thread.CurrentThread.ManagedThreadId)
+        stream1.Close()
+        logger.Debug(sprintf "Closing stream: %A (TID: %i)" filePath2 System.Threading.Thread.CurrentThread.ManagedThreadId)
+        stream2.Close()
+        isEqual
 
-    let compareDirectory directoryPath1 directoryPath2 =
+    let compareFile logger filePath1 filePath2 =
+        tryCatchWithMessage compareFileUnsafe (logger, filePath1, filePath2) (sprintf "Failed to compare files: '%A' <-> %A. " filePath1 filePath2)
+
+    let compareDirectory logger directoryPath1 directoryPath2 =
         imperative{
             let directories1 = System.IO.Directory.GetDirectories(FileSystem.existingDirectoryPathValue directoryPath1)   
             let directories2 = System.IO.Directory.GetDirectories(FileSystem.existingDirectoryPathValue directoryPath2)                        
