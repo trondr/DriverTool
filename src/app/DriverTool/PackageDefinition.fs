@@ -2,6 +2,8 @@
 open System
 
 module PackageDefinition =
+    open Common.Logging
+    let logger = LogManager.GetLogger("PackageDefinition")
     
     type ApplicationRegistryValue = {Path:string;ValueName:string;Value:string}
 
@@ -80,7 +82,7 @@ RegistryValueIs64Bit={7}
             )
     
     let writePackageDefinitionToFile (filePath:FileSystem.Path) (packageDefinition:PackageDefinition) =
-        match FileOperations.writeContentToFile (filePath) (getPackageDefinitionContent packageDefinition) with
+        match FileOperations.writeContentToFile logger (filePath) (getPackageDefinitionContent packageDefinition) with
         |Ok p -> Result.Ok ()
         |Error ex -> Result.Error ex
     

@@ -9,6 +9,7 @@ module SdpCatalogTests =
     open System
     open DriverTool.SdpCatalog
     type ThisAssembly = { Empty:string;}
+    let logger = Common.Logging.Simple.ConsoleOutLogger("SdpCatalogTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
 
     [<Test>]
@@ -94,11 +95,11 @@ module SdpCatalogTests =
             
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
             let! sdpZipFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)
-            use temporaryFolder = new DirectoryOperations.TemporaryFolder()
+            use temporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! temporaryFolderPath = temporaryFolder.FolderPath            
             let! nonExistingTempCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true temporaryFolderPath
             let! existingTempCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true nonExistingTempCatalogDestinationFolderPath
-            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,existingTempCatalogDestinationFolderPath)
+            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,existingTempCatalogDestinationFolderPath, logger)
             let! sdpCatalogFilePath = PathOperations.combine2Paths ((FileSystem.pathValue existingTempCatalogDestinationFolderPath),sdpFileName)            
             let! actual = SdpCatalog.loadSystemManagementCatalog sdpCatalogFilePath
             return actual
@@ -121,9 +122,9 @@ module SdpCatalogTests =
             
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
             let! sdpZipFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (sdpZipFileName,tempDestinationFolderPath,sdpZipFileName,typeof<ThisAssembly>.Assembly)            
-            use temporaryFolder = new DirectoryOperations.TemporaryFolder()
+            use temporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! temporaryFolderPath = temporaryFolder.FolderPath
-            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,temporaryFolderPath)            
+            let! unZippedSdpFilePath = Compression.unzipFile (sdpZipFilePath,temporaryFolderPath, logger)
             let! actual = SdpCatalog.loadSdps temporaryFolderPath
             return actual
         }) with        

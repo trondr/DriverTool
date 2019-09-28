@@ -112,6 +112,7 @@
     <Compile Include="F0.fs" />
     <Compile Include="Logging.fs" />
     <Compile Include="F.fs" />
+    <Compile Include="Retry.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="Path.fs" />
     <Compile Include="DirectoryOperations.fs" />
@@ -274,7 +275,7 @@
     </ProjectReference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup >    
+  <ItemGroup>
     <Reference Include="FSharp.Data.DesignTime">
       <HintPath>..\..\..\packages\FSharp.Data.3.2.4\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>

@@ -25,7 +25,7 @@ module WebParsing =
                 let! content = getContentFromWebPage url
                 let! filePath = FileSystem.path (getTempFile "ds112090.html")
                 let! writeResult = 
-                    content |> (writeContentToFile filePath)
+                    content |> (writeContentToFile logger filePath)
                 return destinationFilePath
             }
         | true -> Result.Ok destinationFilePath   

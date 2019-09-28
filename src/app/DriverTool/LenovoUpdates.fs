@@ -373,7 +373,7 @@ module LenovoUpdates =
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         loggerl.Info("Extract SccmPackage installer...")        
         let arguments = sprintf "/VERYSILENT /DIR=\"%s\" /EXTRACT=\"YES\"" (FileSystem.pathValue destinationPath)
-        match (FileSystem.existingFilePath downloadedSccmPackage.InstallerPath) with
+        match (FileSystem.existingFilePathString downloadedSccmPackage.InstallerPath) with
         |Ok fp -> 
             match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
             |Ok _ -> Result.Ok destinationPath

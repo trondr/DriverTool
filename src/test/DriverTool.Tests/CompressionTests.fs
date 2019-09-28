@@ -7,28 +7,34 @@ open NUnit.Framework
 module CompressionTests=
     open DriverTool
     open Common.Logging
-    open DriverTool
+    open DriverTool.FileOperations
         
-    let logger = LogManager.GetLogger("CompressionTests")
+    let logger = Common.Logging.Simple.ConsoleOutLogger("CompressionTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
+    let rnd = System.Random()
+
+    let getRandomCount =        
+        rnd.Next (1,20)
+
     let genRandomNumbers count =
         let rnd = System.Random()
-        List.init count (fun _ -> rnd.Next (1,100))
+        List.init count (fun _ -> rnd.Next (1,getRandomCount))
     
-    let createRandomTestFile folderPath =
-        result {
-            let! existingFolderPath = DirectoryOperations.ensureDirectoryExists false folderPath
-            let! randomFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingFolderPath, System.IO.Path.GetRandomFileName()))
-            let! writeResult = FileOperations.writeContentToFile randomFilePath (System.Guid.NewGuid().ToString())
-            return randomFilePath
+    let createNRandomFiles folderPath fileCount =
+        result{
+            let listOfFiles =
+                List.init fileCount (fun _ -> createRandomFile logger folderPath)
+                |>List.map(fun fp -> resultToOption logger fp)
+                |>List.choose (fun fp -> fp)                                
+            return listOfFiles
         }
 
     let createRandomDirectory parentFolderPath =
         result {
             let! existingFolderPath = DirectoryOperations.ensureDirectoryExists false parentFolderPath
-            let! randomDirectoryPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingFolderPath, System.IO.Path.GetRandomFileName()))
+            let! randomDirectoryPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingFolderPath, System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetRandomFileName())))
             let! directoryPath = DirectoryOperations.createDirectory randomDirectoryPath
-            let! randomFile = createRandomTestFile directoryPath
+            let! randomFile = createNRandomFiles directoryPath getRandomCount
             return directoryPath
         }
     
@@ -55,32 +61,62 @@ module CompressionTests=
         }
 
     let createTestFile filePath =
-        FileOperations.writeContentToFile filePath (System.Guid.NewGuid().ToString())
+        FileOperations.writeContentToFile logger filePath (System.Guid.NewGuid().ToString())
 
-    let createTestFolder shouldExist folderName =
-        result{
-            let! testSourceFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(), folderName))
+    let createTestFolder shouldExist folderPath =
+        result {
             let! preparedTestSourceFolderPath =    
                 match shouldExist with
                 |false ->
-                    DirectoryOperations.deleteDirectory true testSourceFolderPath |> ignore
-                    Result.Ok testSourceFolderPath
+                    DirectoryOperations.deleteDirectory true folderPath |> ignore
+                    Result.Ok folderPath
                 |true ->
-                    DirectoryOperations.deleteDirectory true testSourceFolderPath |> ignore
-                    createRandomFolderAndFileStructure testSourceFolderPath
-            return preparedTestSourceFolderPath
+                    DirectoryOperations.deleteDirectory true folderPath |> ignore
+                    createRandomFolderAndFileStructure folderPath
+            return preparedTestSourceFolderPath             
         }
-
-    let getTestZipFilePath zipFileExists =
+    
+    let getTestZipFilePath zipFileExists temporaryFolderPath =
         result{
-            let! testZipFile = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),"CompressionTests_SourceFolder.zip"))                    
+            let! testZipFile = FileSystem.path (System.IO.Path.Combine((FileSystem.pathValue temporaryFolderPath),"CompressionTests_SourceFolder.zip"))
             let! preparedTestZipFile =
                 match zipFileExists with
                 |true -> createTestFile testZipFile
                 |false-> FileOperations.deleteFile testZipFile
             return preparedTestZipFile
         }
-        
+    
+    [<Test>]
+    let temporaryFolderTest () =
+        match(result{
+            use temporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! temporaryFolderPath = temporaryFolder.FolderPath
+            let! testSourceFolderPath = createTestFolder true temporaryFolderPath
+
+            use zipFileTemporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! ziptFileTemporaryFolderPath = zipFileTemporaryFolder.FolderPath
+            let! testZipFile = getTestZipFilePath false ziptFileTemporaryFolderPath                                       
+            
+            let! actual = Compression.zipFolder (testSourceFolderPath, testZipFile, logger)
+            Assert.AreEqual(true, FileOperations.fileExists testZipFile,"Zip file does not exist after zipFolder: " + FileSystem.pathValue testZipFile)
+            use temporaryDestinationFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! temporaryDestinationFolderPath = temporaryDestinationFolder.FolderPath
+
+            let! unzipResult = Compression.unzipFile (testZipFile, temporaryDestinationFolderPath, logger)
+            let! existingSourceFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue testSourceFolderPath)
+            let! existingDestinationFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue temporaryDestinationFolderPath)
+            logger.Debug(sprintf "ExistingDestinationFolderPath: %A" existingDestinationFolderPath)
+
+            Assert.AreEqual(true,FileOperations.compareDirectory logger existingSourceFolderPath existingDestinationFolderPath,"Source and destination folder compare.")
+            return testSourceFolderPath
+        })with
+        |Result.Ok v -> 
+            Assert.IsTrue(true, "Should allways be ok.")
+            ()
+        |Result.Error ex -> 
+            Assert.Fail("Should allways never fail.")
+            ()
+
         
     [<Test>]
     [<TestCase(true,false,true,"<No Error>",false,true,false,"Test1")>]
@@ -92,17 +128,26 @@ module CompressionTests=
     let zipFolderTest (sourceFolderExists:bool, zipFileExists:bool, expectedSuccess:bool, expectedErrorMessage, destinationFolderExists:bool, sourceAndDestiationAreEqual:bool, changeContentOfAFile:bool, testName) =
         let res =
             result{
-                    let! testSourceFolderPath = createTestFolder sourceFolderExists ("CompressionTests_SourceFolder" + testName)
+                    use sourceTemporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! sourceTemporaryFolderPath = sourceTemporaryFolder.FolderPath
+                    let! testSourceFolderPath = createTestFolder sourceFolderExists sourceTemporaryFolderPath
                     Assert.AreEqual(sourceFolderExists, DirectoryOperations.directoryPathExists testSourceFolderPath,"Expected source folder existance zipFolder: " + sourceFolderExists.ToString())
-                    let! testZipFile = getTestZipFilePath zipFileExists                    
+                    
+                    use zipFileTemporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! ziptFileTemporaryFolderPath = zipFileTemporaryFolder.FolderPath
+                    let! testZipFile = getTestZipFilePath zipFileExists ziptFileTemporaryFolderPath                                       
                     Assert.AreEqual(zipFileExists, FileOperations.fileExists testZipFile,"Expected zip file existance before zipFolder: " + zipFileExists.ToString())
-                    let! actual = Compression.zipFolder (testSourceFolderPath, testZipFile)
+
+                    let! actual = Compression.zipFolder (testSourceFolderPath, testZipFile, logger)
                     Assert.AreEqual(true, FileOperations.fileExists testZipFile,"Zip file does not exist after zipFolder: " + FileSystem.pathValue testZipFile)
-                    let! testDestinationFolderPath = createTestFolder destinationFolderExists ("CompressionTests_DestinationFolder" + testName)
-                    let! unzipResult = Compression.unzipFile (testZipFile, testDestinationFolderPath)
+                    use temporaryDestinationFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! temporaryDestinationFolderPath = temporaryDestinationFolder.FolderPath
+                    
+                    let! unzipResult = Compression.unzipFile (testZipFile, temporaryDestinationFolderPath, logger)
                     let! existingSourceFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue testSourceFolderPath)
-                    let! existingDestinationFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue testDestinationFolderPath)
-                    let deletedOrChangedFile =
+                    let! existingDestinationFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue temporaryDestinationFolderPath)
+                    logger.Debug(sprintf "ExistingDestinationFolderPath: %A" existingDestinationFolderPath)
+                    let deletedOrChangedFile () =
                         if(not sourceAndDestiationAreEqual) then                                                        
                             let filePath =
                                 existingDestinationFolderPath
@@ -111,16 +156,20 @@ module CompressionTests=
                                 |> Seq.head
                             if(changeContentOfAFile) then
                                 //Change the first file in the destination, to force an inequality
-                                FileOperations.writeContentToFile (FileSystem.pathUnSafe filePath) "Some change"|>ignore
+                                logger.Debug(sprintf "Changing content of file: '%s' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId)
+                                FileOperations.writeContentToFile logger (FileSystem.pathUnSafe filePath) "Some change"|>ignore
+                                logger.Debug(sprintf "Finished changing content of file: '%s' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId)
                             else                         
                                 //Delete the first file in the destination, to force an inequality
                                 Assert.IsTrue(System.IO.File.Exists(filePath),"File does not exists: " + filePath)
+                                logger.Debug(sprintf "Delete content of file: '%s'" filePath)
                                 System.IO.File.Delete(filePath)|>ignore
                                 Assert.IsFalse(System.IO.File.Exists(filePath),"File exists:" + filePath)
                         else
-                            ()
-                        
-                    Assert.AreEqual(sourceAndDestiationAreEqual,FileOperations.compareDirectory existingSourceFolderPath existingDestinationFolderPath,"Source and destination folder compare.")
+                            ()                 
+                    deletedOrChangedFile()                    
+                    Assert.AreEqual(sourceAndDestiationAreEqual,FileOperations.compareDirectory logger existingSourceFolderPath existingDestinationFolderPath,"Source and destination folder compare.")                    
+                    logger.Debug(sprintf "Returning: %A (TID: %i)" actual System.Threading.Thread.CurrentThread.ManagedThreadId)                    
                     return actual
                 }
         match res with

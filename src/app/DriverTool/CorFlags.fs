@@ -3,7 +3,7 @@
 module CorFlags=
     
     open Common.Logging
-    let logger = LogManager.GetLogger("DriverTool.CorFlags")
+    let logger = LogManager.GetLogger("CorFlags")
 
     let corFlagsExeResourceName =
         match Environment.is64BitProcess with

@@ -1,11 +1,11 @@
 ﻿namespace DriverTool
 
 module BitLockerOperations=
-    let logger = Logging.getLoggerByName("BitLockerOperations")
     open System
     open DriverTool.Environment
     open System.Management
-
+    let logger = Logging.getLoggerByName("BitLockerOperations")
+    
     let isBitLockerEnabled () =
         let nameSpace = @"\\.\root\CIMv2\Security\MicrosoftVolumeEncryption"
         let className = "Win32_EncryptableVolume"
@@ -99,7 +99,7 @@ module BitLockerOperations=
                 FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDestinationFolderPath,resumeBitLockerTaskXmlFileName))
             let! writeResult =             
                 String.Format(xmlFormatString, timeStamp,taskName, resumeBitLockerCmdFilePath)
-                |> FileOperations.writeContentToFile (resumeBitLockerTaskXmlFilePath)
+                |> FileOperations.writeContentToFile logger (resumeBitLockerTaskXmlFilePath)
             return resumeBitLockerTaskXmlFilePath
         }
 

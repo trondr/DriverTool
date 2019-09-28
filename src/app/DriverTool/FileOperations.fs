@@ -222,15 +222,15 @@ module FileOperations =
                 let isEqualResult = 
                     result
                         {
-                            let! existingFile1 = FileSystem.existingFilePath file1
-                            let! existingFile2 = FileSystem.existingFilePath file2
-                            let! filesAreEqual = compareFile existingFile1 existingFile2 
+                            let! existingFile1 = FileSystem.existingFilePathString file1
+                            let! existingFile2 = FileSystem.existingFilePathString file2
+                            let! filesAreEqual = compareFile logger existingFile1 existingFile2 
                             return filesAreEqual
                         }
                 let isEqual =
                     match isEqualResult with 
-                    |Ok b -> b                    
-                    |Error _ -> false
+                    |Result.Ok b -> b                    
+                    |Result.Error _ -> false
                 if(not isEqual) then 
                     return false
                 
@@ -241,3 +241,25 @@ module FileOperations =
         
     let toFileName filePath =
         Path.GetFileName(FileSystem.pathValue filePath)
+
+    let createRandomFile logger folderPath =
+        result {
+            let! existingFolderPath = DirectoryOperations.ensureDirectoryExists false folderPath
+            let! randomFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingFolderPath, System.IO.Path.GetRandomFileName()))
+            let! writeResult = writeContentToFile logger randomFilePath (System.Guid.NewGuid().ToString())
+            return randomFilePath
+        }
+
+    [<AllowNullLiteral>]
+    type TemporaryFile() =
+           let createTestFile =                        
+               match FileSystem.path (System.IO.Path.GetTempFileName()) with
+               | Result.Ok path -> path
+               | Result.Error ex -> raise ex
+           
+           member _this.Path = createTestFile
+           interface IDisposable with
+               member this.Dispose() =
+                   match System.IO.File.Exists(FileSystem.pathValue this.Path) with
+                   | true -> System.IO.File.Delete(FileSystem.pathValue this.Path)
+                   | false -> ()

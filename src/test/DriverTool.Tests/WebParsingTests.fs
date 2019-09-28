@@ -11,6 +11,7 @@ module WebParsingTests  =
     open DriverTool.WebParsing
     open DriverTool.PathOperations
     open DriverTool.FileOperations
+    let logger = Common.Logging.Simple.ConsoleOutLogger("WebParsingTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
@@ -21,7 +22,7 @@ module WebParsingTests  =
             result{
                 let! content = getContentFromWebPage webPageUrl
                 let! filePath = FileSystem.path (getTempFile "ds112090.html")
-                content |> (writeContentToFile filePath)|> ignore
+                content |> (writeContentToFile logger filePath)|> ignore
                 Assert.IsFalse(String.IsNullOrWhiteSpace(content))
                 return content
             }

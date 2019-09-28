@@ -2,7 +2,6 @@
 open System
 open NUnit.Framework
 open DriverTool
-
 open FileOperations
 open DriverTool.DirectoryOperations
 
@@ -10,19 +9,6 @@ open DriverTool.DirectoryOperations
 [<Category(TestCategory.UnitTests)>]
 module FileOperationTests =
 
-    type TemporaryFile() =
-        let createTestFile =                        
-            match FileSystem.path (System.IO.Path.GetTempFileName()) with
-            | Ok path -> path
-            | Error ex -> raise ex
-        
-        member _this.Path = createTestFile
-        interface IDisposable with
-            member this.Dispose() =
-                match System.IO.File.Exists(FileSystem.pathValue this.Path) with
-                | true -> System.IO.File.Delete(FileSystem.pathValue this.Path)
-                | false -> ()
-        
     let logger = Common.Logging.Simple.ConsoleOutLogger("FileOperationTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 
     [<Test>]

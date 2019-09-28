@@ -56,13 +56,19 @@ module FileSystem =
         fileExists
         >> ifTrueThen FilePathExists
 
-    let existingFilePath (pathString:string) =
+    let existingFilePath (filePath:Path) =
+        result{
+            let! existingFilePath =
+                match filePath with
+                |FilePathExists -> Result.Ok (ExistingFilePath (pathValue filePath))
+                |_ -> Result.Error (new FileNotFoundException("File not found: " + pathValue filePath):>Exception)
+            return existingFilePath
+        }
+
+    let existingFilePathString (pathString:string) =
         result{
             let! p = (path pathString)
-            let! existingPath =
-                match p with
-                |FilePathExists -> Result.Ok (ExistingFilePath (pathValue p))
-                | p -> Result.Error (new FileNotFoundException("File not found: " + pathValue p):>Exception)
+            let! existingPath = existingFilePath p
             return existingPath
         }
 

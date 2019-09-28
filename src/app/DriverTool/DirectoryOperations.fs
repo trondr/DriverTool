@@ -125,11 +125,24 @@ module DirectoryOperations =
         |false -> 
             Result.Ok folderPath
 
+
+    let deleteFolderWithRetry folderPath =
+        let deleteFolderWithRetry =
+            retry{                
+                return 
+                    match(deleteDirectoryIfExists folderPath) with
+                    |Result.Ok p -> Result.Ok p
+                    |Result.Error ex -> raise ex                
+            }
+        match ((deleteFolderWithRetry, RetryPolicies.Retry (10, TimeSpan.FromSeconds(5.0)) ) ||> run) with
+        |RetryResult.RetrySuccess p -> p
+        |RetryResult.RetryFailure ex -> Result.Error ex
+
     [<AllowNullLiteral>]
-    type TemporaryFolder()=
+    type TemporaryFolder(logger:Common.Logging.ILog)=
         let temporaryFolderPath = 
             result {
-                let! nonExistingTempFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),(Guid.NewGuid().ToString())))
+                let! nonExistingTempFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),"DT",(Guid.NewGuid().ToString())))
                 let! existingTempFolderPath = ensureDirectoryExists true nonExistingTempFolderPath
                 return existingTempFolderPath
             }
@@ -140,7 +153,7 @@ module DirectoryOperations =
                 logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing folder '%A'" temporaryFolderPath))|>ignore))
                 match (result{
                     let! folderPath = temporaryFolderPath
-                    let! deleted = deleteDirectoryIfExists folderPath
+                    let! deleted = deleteFolderWithRetry folderPath
                     return deleted                                                
                 }) with
                 |Result.Ok v -> ()

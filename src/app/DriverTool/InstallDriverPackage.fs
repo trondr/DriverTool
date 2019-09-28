@@ -82,7 +82,7 @@ module InstallDriverPackage =
                         let! existingSourceDriversZipFilePath = FileOperations.ensureFileExists sourceDriversZipFilePath
                         logger.Info("Unzip Drivers.zip: " + FileSystem.pathValue existingSourceDriversZipFilePath)
                         let! nonExistingDestinationDriversFolderPath = DirectoryOperations.deleteDirectory true destinationDriversFolderPath
-                        let! unzipResult = Compression.unzipFile (existingSourceDriversZipFilePath, destinationDriversFolderPath)
+                        let! unzipResult = Compression.unzipFile (existingSourceDriversZipFilePath, destinationDriversFolderPath, logger)
                         return unzipResult                    
                     }
             return copyResult
