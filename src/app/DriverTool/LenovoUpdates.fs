@@ -298,7 +298,7 @@ module LenovoUpdates =
                 let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
                 let sccmPackages =
                     downloadLinks
-                    |> Seq.filter (fun s -> (s.Os = lenovoOs && osbuild = osbuild))
+                    |> Seq.filter (fun s -> (s.Os = lenovoOs && s.OsBuild = osbuild))
                     |> Seq.toArray
                 let! sccmPackageInfo =
                     match (sccmPackages.Length > 0) with

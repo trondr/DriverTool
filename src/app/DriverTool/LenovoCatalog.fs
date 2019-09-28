@@ -172,6 +172,10 @@ module LenovoCatalog =
         | "WIN7X64" -> "win764"
         | "WIN81X86" -> "win81"
         | "WIN81X64" -> "win81"
+        | "win10" -> "win10"
+        | "win81" -> "win81"
+        | "win732" -> "win732"
+        | "win764" -> "win764"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
     
     open DriverTool.Web
