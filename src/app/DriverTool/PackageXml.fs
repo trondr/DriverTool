@@ -295,7 +295,8 @@ module PackageXml =
         fileName;
 
     let extractInstaller (downloadedPackageInfo, packageFolderPath:FileSystem.Path) =
-        if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine)) then
+        let installCommandLineUseInstaller = downloadedPackageInfo.Package.InstallCommandLine.Contains(downloadedPackageInfo.Package.Installer.Name)
+        if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine) || installCommandLineUseInstaller) then
            logger.Info("Installer does not support extraction, copy the installer directly to package folder...")
            let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Installer.Name)
            match FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath with

@@ -74,6 +74,7 @@
     <Compile Include="WebTests.fs" />
     <Compile Include="WebParsingTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
+    <Compile Include="LenovoUpdateTests.fs" />
     <Compile Include="PackageTemplateTests.fs" />
     <Compile Include="InstallDriverPackageTests.fs" />
     <Compile Include="ProcessOperationsTests.fs" />
@@ -92,6 +93,7 @@
     <Compile Include="SdpCatalogTests.fs" />
     <Compile Include="InstallXmlTests.fs" />
     <Compile Include="RegExpTests.fs" />
+    <Compile Include="CsvOperationTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
@@ -108,13 +110,15 @@
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_n1cx802w_2_.xml" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.txt" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w_2_.xml" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.exe" />
     <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_MissingDownloadsTab.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_Missing_Downloads_Links.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_Invalid_Document.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds540208.html" />
-    <Compile Include="CsvOperationTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
