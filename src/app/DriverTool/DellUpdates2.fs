@@ -169,7 +169,7 @@ module DellUpdates=
             OsBuild="";
         }
 
-    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode)  : Result<SccmPackageInfo,Exception> =
+    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path)  : Result<SccmPackageInfo,Exception> =
         result{
             let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog ()
             let xDocument = XDocument.Load(FileSystem.pathValue driverPackageCatalogXmlPath)            

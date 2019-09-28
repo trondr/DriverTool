@@ -339,10 +339,10 @@ module LenovoUpdates =
             |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = "*"))
             |> Seq.head
 
-    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode)  : Result<SccmPackageInfo,Exception> =
+    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath)  : Result<SccmPackageInfo,Exception> =
         result
             {
-                let! products = DriverTool.LenovoCatalog.getSccmPackageInfos
+                let! products = DriverTool.LenovoCatalog.getSccmPackageInfos cacheFolderPath
                 let product = DriverTool.LenovoCatalog.findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
                 let osBuild = product.Value.OsBuild.Value
                 let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
