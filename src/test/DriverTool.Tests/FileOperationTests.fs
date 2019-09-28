@@ -70,7 +70,7 @@ module FileOperationTests =
             let! temporaryFile2 = createRandomFile logger temporaryFolder2Path
             let! existingTemporaryFile2 = FileSystem.existingFilePath temporaryFile2
 
-            let! actual = compareFile logger existingTemporaryFile1 existingTemporaryFile2
+            let! actual = compareFile existingTemporaryFile1 existingTemporaryFile2
             Assert.IsFalse(actual, sprintf "'%s' != '%s'" (FileSystem.existingFilePathValue existingTemporaryFile1) (FileSystem.existingFilePathValue existingTemporaryFile2))
                                                         
             return temporaryFolder1Path              

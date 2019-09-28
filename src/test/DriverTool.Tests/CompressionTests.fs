@@ -107,7 +107,7 @@ module CompressionTests=
             let! existingDestinationFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue temporaryDestinationFolderPath)
             logger.Debug(sprintf "ExistingDestinationFolderPath: %A" existingDestinationFolderPath)
 
-            Assert.AreEqual(true,FileOperations.compareDirectory logger existingSourceFolderPath existingDestinationFolderPath,"Source and destination folder compare.")
+            Assert.AreEqual(true,FileOperations.compareDirectory existingSourceFolderPath existingDestinationFolderPath,"Source and destination folder compare.")
             return testSourceFolderPath
         })with
         |Result.Ok v -> 
@@ -168,7 +168,7 @@ module CompressionTests=
                         else
                             ()                 
                     deletedOrChangedFile()                    
-                    Assert.AreEqual(sourceAndDestiationAreEqual,FileOperations.compareDirectory logger existingSourceFolderPath existingDestinationFolderPath,"Source and destination folder compare.")                    
+                    Assert.AreEqual(sourceAndDestiationAreEqual,FileOperations.compareDirectory existingSourceFolderPath existingDestinationFolderPath,"Source and destination folder compare.")                    
                     logger.Debug(sprintf "Returning: %A (TID: %i)" actual System.Threading.Thread.CurrentThread.ManagedThreadId)                    
                     return actual
                 }

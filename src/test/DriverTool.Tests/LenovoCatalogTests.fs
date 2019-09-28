@@ -225,35 +225,35 @@ module LenovoCatalogTests=
     [<Category(TestCategory.IntegrationTests)>]
     [<Apartment(ApartmentState.STA)>]
     [<TestCase("https://support.lenovo.com/downloads/ds122238",
-    "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.txt",
-    "297ce1fbe0e0dfe4397c1413fe3850211600274356122b44af7d38fd9fcd5be4",
-    "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe",
-    "6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513",
-    "win10",
-    "*")>]
+        "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.txt",
+        "297ce1fbe0e0dfe4397c1413fe3850211600274356122b44af7d38fd9fcd5be4",
+        "https://download.lenovo.com/pccbbs/thinkcentre_drivers/ts_p320tiny_w1064_201806.exe",
+        "6aca612b0282e6f24de6aa19173e58c04ed9c480791ccb928cc039378c3eb513",
+        "win10",
+        "*")>]
 
     [<TestCase("https://support.lenovo.com/downloads/ds112090",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt",
-    "442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe",
-    "a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1",
-    "win10",
-    "1809")>]
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.txt",
+        "442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe",
+        "a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1",
+        "win10",
+        "1809")>]
 
     [<TestCase("https://support.lenovo.com/downloads/ds112247",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201905.txt",
-    "4c47c813d16baa3dc5b3e3b25a251eb98ab13cf9d069d29d2bcc001be7c29889",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201905.exe",
-    "7144fde1287e6289944ae82342792923021f222cc14312e0febcd752c1ab277d",
-    "WIN10X64",
-    "*"
-    )>]
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201905.txt",
+        "4c47c813d16baa3dc5b3e3b25a251eb98ab13cf9d069d29d2bcc001be7c29889",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_t460p_w1064_201905.exe",
+        "7144fde1287e6289944ae82342792923021f222cc14312e0febcd752c1ab277d",
+        "WIN10X64",
+        "*"
+        )>]
 
     [<TestCase("https://support.lenovo.com/no/en/downloads/ds540208",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.txt",
-    "b0e8fe25ee16800a177a31a49a8ac2827b9f4e92b7d3a827b15707a6b3156f84",
-    "https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe",
-    "b165b8756735dc0e5bab30335a05217d6cce5ca7430821522e83182d1fbf8bab","WIN10X64","1809")>]
+        "https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.txt",
+        "b0e8fe25ee16800a177a31a49a8ac2827b9f4e92b7d3a827b15707a6b3156f84",
+        "https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe",
+        "b165b8756735dc0e5bab30335a05217d6cce5ca7430821522e83182d1fbf8bab","WIN10X64","1809")>]
     let getLenovoSccmPackageDownloadUrlTest_Success(webPageUrl, expectedReadmeUrl, expectedReadmeChecksum, expectedInstallerUrl, expectedInstallerChecksum,os,osBuild) =      
         printfn "%s" (System.IntPtr.Size.ToString())
         let actualResult = getLenovoSccmPackageDownloadInfo webPageUrl os osBuild

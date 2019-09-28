@@ -72,20 +72,6 @@ module FileOperations =
     let copyFile force sourceFilePath destinationFilePath =
         tryCatch3WithMessage copyFileUnsafe force sourceFilePath destinationFilePath (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)
 
-    let copyFiles (destinationFolderPath) (files:seq<string>) =
-        files
-        |>Seq.map(fun fp -> 
-                    result{
-                        let sourceFile = (new System.IO.FileInfo(fp))
-                        let! sourceFilePath = FileSystem.path sourceFile.FullName
-                        let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath, sourceFile.Name))
-                        let! copyResult = copyFile true sourceFilePath destinationFilePath
-                        return copyResult
-                    }
-                 )
-        |>Seq.toArray
-        |>toAccumulatedResult
-    
     let copyFilePaths (destinationFolderPath) (files:seq<Path>) =
         files
         |>Seq.map(fun fp -> 
@@ -138,30 +124,24 @@ module FileOperations =
     
     /// Read file 'fn' in blocks of size 'size'
     /// (returns on-demand asynchronous sequence)
-    let readInBlocks (logger:Common.Logging.ILog) filePath size = 
-        logger.Debug(sprintf "Opening stream: %A (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId)
-        let stream = File.OpenRead(FileSystem.existingFilePathValue filePath)
-        let s =
-            async {                            
-                let buffer = Array.zeroCreate size
-  
-                /// Returns next block as 'Item' of async seq
-                let rec nextBlock() = 
-                    async {
-                        let! count = stream.AsyncRead(buffer, 0, size)
-                        if count = 0 then                                                         
-                            return Ended
-                        else 
-                            // Create buffer with the right size
-                            let res = 
-                                if count = size then buffer
-                                else buffer |> Seq.take count |> Array.ofSeq
-                            return Item(res, nextBlock()) 
-                    }
-                return! nextBlock()
-            }
-        (stream,s)
-
+    let readInBlocks (stream:FileStream) size = 
+        async {                            
+            let buffer = Array.zeroCreate size
+            /// Returns next block as 'Item' of async seq
+            let rec nextBlock() = 
+                async {
+                    let! count = stream.AsyncRead(buffer, 0, size)
+                    if count = 0 then return Ended
+                    else 
+                        // Create buffer with the right size
+                        let res = 
+                            if count = size then buffer
+                            else buffer |> Seq.take count |> Array.ofSeq
+                        return Item(res, nextBlock()) 
+                }
+            return! nextBlock()
+        }
+        
     /// Asynchronous function that compares two asynchronous sequences
     /// item by item. If an item doesn't match, 'false' is returned
     /// immediately without generating the rest of the sequence. If the
@@ -176,22 +156,20 @@ module FileOperations =
       | _ -> return failwith "Size doesn't match" }
 
     /// Compare two files using 1k blocks
-    let compareFileUnsafe (logger, filePath1, filePath2) =
-        let (stream1,s1) = readInBlocks logger filePath1 1000
-        let (stream2,s2) = readInBlocks logger filePath2 1000
+    let compareFileUnsafe (filePath1, filePath2) =
+        use stream1 = File.OpenRead(FileSystem.existingFilePathValue filePath1)
+        use stream2 = File.OpenRead(FileSystem.existingFilePathValue filePath2)
+        let s1 = readInBlocks stream1 1000        
+        let s2 = readInBlocks stream2 1000
         let isEqual =
             compareAsyncSeqs s1 s2
-            |> Async.RunSynchronously
-        logger.Debug(sprintf "Closing stream: %A (TID: %i)" filePath1 System.Threading.Thread.CurrentThread.ManagedThreadId)
-        stream1.Close()
-        logger.Debug(sprintf "Closing stream: %A (TID: %i)" filePath2 System.Threading.Thread.CurrentThread.ManagedThreadId)
-        stream2.Close()
+            |> Async.RunSynchronously                
         isEqual
 
-    let compareFile logger filePath1 filePath2 =
-        tryCatchWithMessage compareFileUnsafe (logger, filePath1, filePath2) (sprintf "Failed to compare files: '%A' <-> %A. " filePath1 filePath2)
+    let compareFile filePath1 filePath2 =
+        tryCatchWithMessage compareFileUnsafe (filePath1, filePath2) (sprintf "Failed to compare files: '%A' <-> %A. " filePath1 filePath2)
 
-    let compareDirectory logger directoryPath1 directoryPath2 =
+    let compareDirectory directoryPath1 directoryPath2 =
         imperative{
             let directories1 = System.IO.Directory.GetDirectories(FileSystem.existingDirectoryPathValue directoryPath1)   
             let directories2 = System.IO.Directory.GetDirectories(FileSystem.existingDirectoryPathValue directoryPath2)                        
@@ -224,7 +202,7 @@ module FileOperations =
                         {
                             let! existingFile1 = FileSystem.existingFilePathString file1
                             let! existingFile2 = FileSystem.existingFilePathString file2
-                            let! filesAreEqual = compareFile logger existingFile1 existingFile2 
+                            let! filesAreEqual = compareFile existingFile1 existingFile2 
                             return filesAreEqual
                         }
                 let isEqual =
