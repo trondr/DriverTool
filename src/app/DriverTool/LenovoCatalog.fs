@@ -1,14 +1,15 @@
 ﻿namespace DriverTool
 
-open FSharp.Data
-open DriverTool.PackageXml
-
 module LenovoCatalog =
-    let logger = Logging.getLoggerByName("LenovoCatalog")
-    
+    open FSharp.Data    
     open System
-    open LenovoCatalogXml
-    open DriverTool.F
+    open DriverTool 
+    open DriverTool.PackageXml
+    open LenovoCatalogXml    
+    open DriverTool.Web
+    open DriverTool.OperatingSystem
+
+    let logger = Logging.getLoggerByName("LenovoCatalog")
 
     let getCacheDirectory =
         DriverTool.Configuration.downloadCacheDirectoryPath
@@ -25,43 +26,43 @@ module LenovoCatalog =
     
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
 
+    let getSccmPackageInfosFromLenovoCatalogProducts (lenovoCatalogProducts:seq<LenovoCatalogProduct>) =
+        let products =
+            lenovoCatalogProducts
+            |>Seq.map(fun p -> 
+                    
+                        let driverPack = (p.DriverPacks|> Seq.tryFind (fun dp-> dp.Id = "sccm"))                                
+                        {
+                            Model=Some p.Model;
+                            Os=p.Os;
+                            OsBuild=Some p.Build;
+                            Name=p.Name;
+                            SccmDriverPackUrl= 
+                                (match driverPack with
+                                |Some v -> Some v.Url
+                                |None -> None
+                                );
+                            ModelCodes = (p.Queries.ModelTypes 
+                                            |> Seq.map (fun m-> 
+                                                        match m with
+                                                        |ModelType modelType -> modelType
+                                                ) 
+                                            |> Seq.toArray
+                                         )
+                        }                            
+                )
+            |>Seq.toArray
+        products
+
     let getSccmPackageInfos cacheFolderPath =
         result
             {
                 let! catalogXmlPath = downloadCatalog cacheFolderPath
                 let! lenovoCatalogProducts = DriverTool.LenovoCatalogXml.loadLenovoCatalog catalogXmlPath
                 let products =
-                    lenovoCatalogProducts
-                    |>Seq.map(fun p -> 
-                            
-                                let driverPack = (p.DriverPacks|> Seq.tryFind (fun dp-> dp.Id = "sccm"))                                
-                                {
-                                    Model=Some p.Model;
-                                    Os=p.Os;
-                                    OsBuild=Some p.Build;
-                                    Name=p.Name;
-                                    SccmDriverPackUrl= 
-                                        (match driverPack with
-                                        |Some v -> Some v.Url
-                                        |None -> None
-                                        );
-                                    ModelCodes = (p.Queries.ModelTypes 
-                                                    |> Seq.map (fun m-> 
-                                                                match m with
-                                                                |ModelType modelType -> modelType
-                                                        ) 
-                                                    |> Seq.toArray
-                                                 )
-                                }                            
-                        )
-                    |>Seq.toArray
+                    getSccmPackageInfosFromLenovoCatalogProducts lenovoCatalogProducts                    
                 return products
             }
-
-    open F    
-    open System
-    open Web          
-    
 
     let getReleaseDateFromUrlBase (url:string)  =
         let fileName = (getFileNameFromUrl url)
@@ -76,8 +77,6 @@ module LenovoCatalog =
         |Ok r -> r
         |Error ex -> raise ex
     
-    open FSharp.Data
-
     type DownloadType = |Unknown = 0|Readme = 1|Installer = 2
 
     type DownloadLinkInfo = {
@@ -142,8 +141,6 @@ module LenovoCatalog =
         | "Windows 7 (32-bit)" -> "WIN7X86"
         | _ -> (raise (new Exception("Unknown OS name: " + osName) ))
 
-    open DriverTool.OperatingSystem
-
     let getDownloadLinkInfo (ulNode:HtmlNode) =
         let liElements = ulNode.Elements() |> Seq.toArray
         let subLiElements = liElements.[0].Elements()        
@@ -178,8 +175,6 @@ module LenovoCatalog =
         | "win764" -> "win764"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
     
-    open DriverTool.Web
-
     let getSccmPackageInfoFromUlNodes ulNodes =
         let infos = 
             ulNodes
@@ -254,8 +249,6 @@ module LenovoCatalog =
     
     type ModelInfo = { Name:string; Os:string ; OsBuild: string}
     
-    open DriverTool
-    
     let getModelName = 
         match (WmiHelper.getWmiPropertyDefault "Win32_ComputerSystemProduct" "Version") with
         |Ok n -> n
@@ -277,7 +270,8 @@ module LenovoCatalog =
             |> Seq.maxBy (fun p -> p.OsBuild)
         maxOsbUildProduct
 
-    let findSccmPackageInfoByModelCode4AndOsAndBuild modelCode4 os osBuild products =
+    let findSccmPackageInfoByModelCode4AndOsAndBuild (logger:Common.Logging.ILog) modelCode4 os osBuild products =
+        logger.Info(sprintf "Finding sccm package info for model '%s', os '%s', osbuild '%s'..." modelCode4 os osBuild )
         let matchedProducts = 
             products
             |> Seq.filter (fun p -> 
@@ -294,7 +288,7 @@ module LenovoCatalog =
         |true -> 
             let matchedOs = matchedProducts |> Seq.filter (fun p -> (p.OsBuild.Value = osBuild)) |> Seq.toArray
             match (matchedOs.Length > 0) with
-            | true -> Some matchedProducts.[0]
+            | true -> Some matchedOs.[0]
             | false ->    
                 match osBuild with
                 | "*" -> 
