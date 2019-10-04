@@ -15,7 +15,10 @@ module LenovoCatalogTests=
     open DriverTool.WebParsing
     open DriverTool.FileOperations
     open DriverTool.PathOperations
-    open System.Threading            
+    open System.Threading    
+    
+    let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+
     type ThisAssembly = { Empty:string;}
 
     [<Test>]
@@ -171,32 +174,44 @@ module LenovoCatalogTests=
                 |> Seq.map (fun p -> 
                                 p.ModelCodes
                                 |> Seq.map (fun m -> 
-                                                let actual = (findSccmPackageInfoByModelCode4AndOsAndBuild m p.Os p.OsBuild.Value products)
+                                                let actual = (findSccmPackageInfoByModelCode4AndOsAndBuild logger m p.Os p.OsBuild.Value products)
                                                 Assert.IsTrue(actual.IsSome) |> ignore
                                             ) |> ignore
                             )|>ignore
 
-                let actual = findSccmPackageInfoByModelCode4AndOsAndBuild "20FA" "win10" "1709" products
+                let actual = findSccmPackageInfoByModelCode4AndOsAndBuild logger "20FA" "win10" "1709" products
                 Assert.IsTrue(actual.IsSome,"Did not find model 20FA win10 *") |> ignore
                 return ""
         } |> ignore
     
     [<Test>]
-    [<Category(TestCategory.IntegrationTests)>]
-    [<TestCase("20L8","win10","1809","1809")>]
-    [<TestCase("20L8","win10","*","1903")>]
-    [<TestCase("20L6","win10","1809","1809")>]
-    [<TestCase("20FA","win10","1709","1709")>]
-    [<TestCase("20HJ","win10","1809","1809")>]    
-    [<TestCase("20HJ","win10","*","1903")>]
-    [<TestCase("20QG","win10","*","1903")>]
-    [<TestCase("20QG","win10","1809","1809")>]
-    let findSccmPackageInfoByModelCode4AndOsAndBuildTest2 (modelCode:string,os:string,osBuild:string, expectedOsBuild) =
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("LenovoCatalog.xml","20L8","win10","1809","1809")>]
+    [<TestCase("LenovoCatalog.xml","20L8","win10","*","1809")>]
+    [<TestCase("LenovoCatalog.xml","20L6","win10","1809","1809")>]
+    [<TestCase("LenovoCatalog.xml","20FA","win10","1709","1709")>]
+    [<TestCase("LenovoCatalog.xml","20HJ","win10","1809","*")>]    
+    [<TestCase("LenovoCatalog.xml","20HJ","win10","*","*")>]
+    
+    [<TestCase("LenovoCatalog_v2.xml","20L8","win10","1809","1809")>]
+    [<TestCase("LenovoCatalog_v2.xml","20L8","win10","*","1903")>]
+    [<TestCase("LenovoCatalog_v2.xml","20L6","win10","1809","1809")>]
+    [<TestCase("LenovoCatalog_v2.xml","20FA","win10","1709","1709")>]
+    [<TestCase("LenovoCatalog_v2.xml","20HJ","win10","1809","1809")>]    
+    [<TestCase("LenovoCatalog_v2.xml","20HJ","win10","*","1903")>]
+    [<TestCase("LenovoCatalog_v2.xml","20QG","win10","*","1903")>]
+    [<TestCase("LenovoCatalog_v2.xml","20QG","win10","1809","1809")>]
+    let findSccmPackageInfoByModelCode4AndOsAndBuildTest2 (fileName:string,modelCode:string,os:string,osBuild:string, expectedOsBuild) =
         match (result{
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
-            let! cacheFolderPath = cacheFolder.FolderPath
-            let! products = getSccmPackageInfos cacheFolderPath
-            let actual = findSccmPackageInfoByModelCode4AndOsAndBuild modelCode os osBuild products
+            let! cacheFolderPath = cacheFolder.FolderPath                        
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,cacheFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
+            let! lenovoCatalogProducts = DriverTool.LenovoCatalogXml.loadLenovoCatalog destinationFilePath
+            let products =
+                getSccmPackageInfosFromLenovoCatalogProducts lenovoCatalogProducts
+            //let! products = getSccmPackageInfos cacheFolderPath
+            let actual = findSccmPackageInfoByModelCode4AndOsAndBuild logger modelCode os osBuild products
             let eval =
                 match actual with
                 |Some p -> 

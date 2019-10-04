@@ -108,6 +108,7 @@
     <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.latest_V2.zip" />
     <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC_V2.zip" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_v2.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_n1cx802w_2_.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.txt" />

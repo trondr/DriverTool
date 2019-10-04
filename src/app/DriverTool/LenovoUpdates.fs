@@ -13,7 +13,7 @@ module LenovoUpdates =
     open DriverTool.FileOperations
     open DriverTool.UpdatesContext
 
-    let loggerl = Logging.getLoggerByName("LenovoUpdates")
+    let logger = Logging.getLoggerByName("LenovoUpdates")
                
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
         operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")
@@ -244,7 +244,7 @@ module LenovoUpdates =
                             match remotePackageInfo with
                             |Some _ -> true
                             |None -> 
-                                loggerl.Warn(sprintf "Remote update not found for local update: %A" p)
+                                logger.Warn(sprintf "Remote update not found for local update: %A" p)
                                 false
                         )            
             //For those local updates that have a corresponding remote update, transfer the BaseUrl and Category information from the remote update to the local update.
@@ -263,18 +263,18 @@ module LenovoUpdates =
 
     let getLocalUpdates (context:UpdatesRetrievalContext) =
         result{
-            loggerl.Info("Checking if Lenovo System Update is installed...")
+            logger.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
-            loggerl.Info(sprintf "Lenovo System Update is installed: %b" lenovoSystemUpdateIsInstalled)
-            loggerl.Info("Getting locally installed updates...")
+            logger.Info(sprintf "Lenovo System Update is installed: %b" lenovoSystemUpdateIsInstalled)
+            logger.Info("Getting locally installed updates...")
             let! packageInfos = DriverTool.LenovoSystemUpdate.getLocalUpdates()
             
             let! actualModelCode = ModelCode.create String.Empty true
             let! modelCodeIsValid = assertThatModelCodeIsValid context.Model actualModelCode
-            loggerl.Info(sprintf "Model code '%s' is valid: %b" context.Model.Value modelCodeIsValid)
+            logger.Info(sprintf "Model code '%s' is valid: %b" context.Model.Value modelCodeIsValid)
             let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
             let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid context.OperatingSystem actualOperatingSystemCode
-            loggerl.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
+            logger.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
 
             let! remotePackageInfos = getRemoteUpdates context
             let localUpdates = 
@@ -283,19 +283,21 @@ module LenovoUpdates =
                 |> updateFromRemote remotePackageInfos
                 |>Seq.filter (filterUpdates context)
                 |>Seq.toArray                
-            loggerl.Info(sprintf "Local updates: %A" localUpdates)
+            logger.Info(sprintf "Local updates: %A" localUpdates)
             return localUpdates
         }
 
     let getLenovoSccmPackageDownloadInfoFromContent (content:string) os osbuild =
             result{
+                let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
+                logger.Info(sprintf "Getting sccm package download links for OS='%s' OsBuild='%s'..." lenovoOs osbuild)
                 let! sccmPackageInfos = DriverTool.LenovoCatalog.getDownloadLinksFromWebPageContent content
                 let downloadLinks = 
                     sccmPackageInfos
                     |>Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
                     |> Seq.toArray
                     |> Array.rev
-                let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
+                logger.Info(sprintf "Found sccm package download links:%s%A" System.Environment.NewLine downloadLinks)
                 let sccmPackages =
                     downloadLinks
                     |> Seq.filter (fun s -> (s.Os = lenovoOs && s.OsBuild = osbuild))
@@ -316,8 +318,9 @@ module LenovoUpdates =
                                 Result.Error (new Exception(sprintf "Sccm package not found OS=%s, OsBuild=%s." os osbuild))
                         |_ ->
                             Result.Error (new Exception(sprintf "Sccm package not found for OS=%s, OsBuild=%s." os osbuild))
+                logger.Info(sprintf "Selected sccm package download link: %A" sccmPackageInfo)
                 return sccmPackageInfo            
-            }            
+            }
    
     let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
         let content = DriverTool.WebParsing.getContentFromWebPage uri
@@ -343,7 +346,11 @@ module LenovoUpdates =
         result
             {
                 let! products = DriverTool.LenovoCatalog.getSccmPackageInfos cacheFolderPath
-                let product = DriverTool.LenovoCatalog.findSccmPackageInfoByModelCode4AndOsAndBuild (modelCode.Value.Substring(0,4)) (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value) OperatingSystem.getOsBuildForCurrentSystem products
+                let modeCode4 = (modelCode.Value.Substring(0,4))
+                let os = (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value)
+                let osBuild = OperatingSystem.getOsBuildForCurrentSystem
+                let product = DriverTool.LenovoCatalog.findSccmPackageInfoByModelCode4AndOsAndBuild logger modeCode4 os osBuild products
+                logger.Info(sprintf "Sccm product info: %A " product)
                 let osBuild = product.Value.OsBuild.Value
                 let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
                 return sccmPackage
@@ -371,7 +378,7 @@ module LenovoUpdates =
         }         
     
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
-        loggerl.Info("Extract SccmPackage installer...")        
+        logger.Info("Extract SccmPackage installer...")        
         let arguments = sprintf "/VERYSILENT /DIR=\"%s\" /EXTRACT=\"YES\"" (FileSystem.pathValue destinationPath)
         match (FileSystem.existingFilePathString downloadedSccmPackage.InstallerPath) with
         |Ok fp -> 
