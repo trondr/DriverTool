@@ -608,6 +608,15 @@
       <NamedTestSelector>
         <TestName>DriverTool.Tests.LenovoCatalogTests.getDownloadLinksFromWebPageContentTest</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getLenovoSccmPackageDownloadUrlTest_Success("https://support.lenovo.com/no/en/downloads/ds540208","https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.txt","b0e8fe25ee16800a177a31a49a8ac2827b9f4e92b7d3a827b15707a6b3156f84","https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe","b165b8756735dc0e5bab30335a05217d6cce5ca7430821522e83182d1fbf8bab","WIN10X64","1809")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoCatalogTests.getSccmPackageDownloadInfosTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoUpdateTests.extractUpdateTest("nz3gs05w.exe","nz3gs05w.txt","nz3gs05w_2_.xml","ISDAS_NZ3GS","Intel® SGX Device and Software (Windows 10 Version 1709 or later) - 10 [64]","2.3.100.49777")</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
