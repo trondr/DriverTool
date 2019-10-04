@@ -288,7 +288,7 @@ module LenovoCatalog =
         |true -> 
             let matchedOs = matchedProducts |> Seq.filter (fun p -> (p.OsBuild.Value = osBuild)) |> Seq.toArray
             match (matchedOs.Length > 0) with
-            | true -> Some matchedProducts.[0]
+            | true -> Some matchedOs.[0]
             | false ->    
                 match osBuild with
                 | "*" -> 
