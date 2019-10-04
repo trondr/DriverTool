@@ -476,12 +476,18 @@ module LenovoCatalogTests=
         |Error ex ->
             Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)       
 
-
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
     [<TestCase("ds112090.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe")>]
     [<TestCase("ds540208.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe")>]
+    [<TestCase("ds540208_v2.html","WIN10X64", "1903",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1903_201908.exe")>]
+    [<TestCase("ds540208_v2.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201909.exe")>]
+    [<TestCase("ds540208_v2.html","WIN10X64", "1803",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1803_201909.exe")>]
+    [<TestCase("ds540208_v2.html","WIN10X64", "1709",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1709_201909.exe")>]    
     [<TestCase("ds540208.html","WIN10X64", "1903",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1903_201908.exe")>]
+    [<TestCase("ds540208.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe")>]
+    [<TestCase("ds540208.html","WIN10X64", "1803",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1803_201908.exe")>]
+    [<TestCase("ds540208.html","WIN10X64", "1709",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1709_201908.exe")>]
     let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool, expectedInstallerUrlString:string) =
         match(result{
             let! destinationFolderPath = FileSystem.path getTempPath

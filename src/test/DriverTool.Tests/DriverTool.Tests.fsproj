@@ -120,6 +120,7 @@
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_Missing_Downloads_Links.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_Invalid_Document.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds540208.html" />
+    <EmbeddedResource Include="TestData\LenovoSccm\ds540208_v2.html" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
