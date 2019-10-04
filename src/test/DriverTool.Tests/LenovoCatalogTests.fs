@@ -183,19 +183,26 @@ module LenovoCatalogTests=
     
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
-    [<TestCase("20L8","win10","1809")>]
-    [<TestCase("20L8","win10","*")>]
-    [<TestCase("20L6","win10","1809")>]
-    [<TestCase("20FA","win10","1709")>]
-    [<TestCase("20HJ","win10","1809")>]    
-    [<TestCase("20HJ","win10","*")>]
-    [<TestCase("20QG","win10","*")>]
-    let findSccmPackageInfoByModelCode4AndOsAndBuildTest2 (modelCode:string,os:string,osBuild:string) =
+    [<TestCase("20L8","win10","1809","1809")>]
+    [<TestCase("20L8","win10","*","1903")>]
+    [<TestCase("20L6","win10","1809","1809")>]
+    [<TestCase("20FA","win10","1709","1709")>]
+    [<TestCase("20HJ","win10","1809","1809")>]    
+    [<TestCase("20HJ","win10","*","1903")>]
+    [<TestCase("20QG","win10","*","1903")>]
+    [<TestCase("20QG","win10","1809","1809")>]
+    let findSccmPackageInfoByModelCode4AndOsAndBuildTest2 (modelCode:string,os:string,osBuild:string, expectedOsBuild) =
         match (result{
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath
             let! products = getSccmPackageInfos cacheFolderPath
             let actual = findSccmPackageInfoByModelCode4AndOsAndBuild modelCode os osBuild products
+            let eval =
+                match actual with
+                |Some p -> 
+                    Assert.AreEqual(os, p.Os,"Os is different")
+                    Assert.AreEqual(expectedOsBuild, optionToString p.OsBuild,"OsBuild is different")
+                |None -> Assert.Fail(sprintf "Did not find sccm info for %s %s" os osBuild)
             Assert.IsTrue(actual.IsSome,sprintf "Did not find model %s %s %s" modelCode os osBuild) |> ignore
             printfn "%A" actual
             return actual

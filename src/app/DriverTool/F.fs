@@ -225,6 +225,11 @@ module F=
         |None -> false
         |Some _ -> true
     
+    let optionToString option =
+        match option with
+        |None -> String.Empty
+        |Some v -> v
+
     let resultToOption (logger:ILog) (result : Result<_,Exception>) =
         match result with
         |Ok s -> Some s
