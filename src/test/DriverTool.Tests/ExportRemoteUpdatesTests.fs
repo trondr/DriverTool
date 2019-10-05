@@ -10,6 +10,8 @@ open CommandProviders
 module ExportRemoteUpdatesTests =
     open DriverTool
 
+    let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+
     [<Test>]
     let exportRemoteUpdatesTest() =
         let readFromLocalMachine = false
@@ -19,7 +21,11 @@ module ExportRemoteUpdatesTests =
                 let! modelCode = ModelCode.create "20FA" readFromLocalMachine
                 let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" readFromLocalMachine
                 let! csvFilePath = FileSystem.path "c:\\temp\\test.csv"                
-                let exportResult = exportRemoteUpdates manufacturer modelCode operatingSystemCode csvFilePath true [||]
+
+                use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                let! cacheFolderPath = cacheFolder.FolderPath
+
+                let exportResult = exportRemoteUpdates cacheFolderPath manufacturer modelCode operatingSystemCode csvFilePath true [||]
                 return! exportResult
             }
         match testResult with

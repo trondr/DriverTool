@@ -37,11 +37,11 @@ module SdpUpdates =
     /// Copy sdp file to the download cache. The sdp file will later be copied from the download cache to the final driver package.
     /// </summary>
     /// <param name="sourceFilePath"></param>
-    let copyFileToDownloadCacheDirectoryPath sourceFilePath =
+    let copyFileToDownloadCacheDirectoryPath cachedFolderPath sourceFilePath =
         result
             {                
                 let fileName = FileOperations.toFileName sourceFilePath
-                let! destinationFilePath = PathOperations.combine2Paths (Configuration.downloadCacheDirectoryPath, fileName)
+                let! destinationFilePath = PathOperations.combinePaths2 cachedFolderPath fileName
                 let! copyResult = FileOperations.copyFile true sourceFilePath destinationFilePath
                 return copyResult
             }
@@ -51,10 +51,10 @@ module SdpUpdates =
     /// </summary>
     /// <param name="packageInfos"></param>
     /// <param name="sourceFilePaths"></param>
-    let copySdpFilesToDownloadCache packageInfos sourceFilePaths =
+    let copySdpFilesToDownloadCache cachedFolderPath packageInfos sourceFilePaths =
         sourceFilePaths
             |>Seq.filter (sdpFileFilter packageInfos)
-            |>Seq.map copyFileToDownloadCacheDirectoryPath
+            |>Seq.map (copyFileToDownloadCacheDirectoryPath cachedFolderPath)
             |>toAccumulatedResult
 
     /// <summary>

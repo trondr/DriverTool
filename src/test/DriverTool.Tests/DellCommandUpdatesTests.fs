@@ -8,7 +8,9 @@ open DriverTool
 [<Category(TestCategory.UnitTests)>]
 module DellCommandUpdatesTests =
     open DriverTool
-        
+       
+    let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+
     type TestAssebly = { Empty:string;}
 
     [<Test>]
@@ -40,6 +42,8 @@ module DellCommandUpdatesTests =
 module DellCommandUpdatesIntegrationTests =
     open DriverTool.UpdatesContext
     open DriverTool
+
+    let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
     [<Test>]
     [<TestCase("07A7","WIN10X64")>]
@@ -52,7 +56,11 @@ module DellCommandUpdatesIntegrationTests =
                 let! logDirectory = FileSystem.path @"c:\temp"
                 let! patterns = (RegExp.toRegexPatterns [||] true)
                 let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
-                let! remoteUpdates = DellUpdates.getRemoteUpdates updatesRetrievalContext
+                
+                use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                let! cacheFolderPath = cacheFolder.FolderPath
+                
+                let! remoteUpdates = DellUpdates.getRemoteUpdates cacheFolderPath updatesRetrievalContext
                 let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode, operatingSystemCode,remoteUpdates)
                 return localUpdates
             }

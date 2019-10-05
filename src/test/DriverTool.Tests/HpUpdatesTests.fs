@@ -25,9 +25,7 @@ module HpUpdatesTests =
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
                     let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode,cacheFolderPath)                
-                    let cacheDirectory =   Configuration.downloadCacheDirectoryPath
-                                        
-                    let! actual = HpUpdates.downloadSccmPackage (cacheDirectory,sccmDriverPackageInfo)
+                    let! actual = HpUpdates.downloadSccmPackage (cacheFolderPath,sccmDriverPackageInfo)
                     Assert.IsFalse(String.IsNullOrWhiteSpace(actual.InstallerPath), "InstallerPath is empty")
                     
                     return actual
@@ -47,8 +45,7 @@ module HpUpdatesTests =
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
                     let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode, cacheFolderPath)                
-                    let cacheDirectory =   Configuration.downloadCacheDirectoryPath             
-                    let! downloadedSccmPackageInfo = HpUpdates.downloadSccmPackage (cacheDirectory,sccmDriverPackageInfo)
+                    let! downloadedSccmPackageInfo = HpUpdates.downloadSccmPackage (cacheFolderPath,sccmDriverPackageInfo)
                     let! destinationFolderPath = PathOperations.combine2Paths (PathOperations.getTempPath,"005 Sccm Package Test")
                     Assert.IsTrue((FileSystem.pathValue destinationFolderPath).EndsWith("\\005 Sccm Package Test"))
                     let deletedDestinationDirectory = DirectoryOperations.deleteDirectory true, FileSystem.pathValue  destinationFolderPath
@@ -89,7 +86,11 @@ module HpUpdatesTests =
                     let! logDirectory = FileSystem.path "%public%\Logs"
                     let! patterns = (RegExp.toRegexPatterns [||] true)
                     let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
-                    let! actual = HpUpdates.getLocalUpdates updatesRetrievalContext
+
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+
+                    let! actual = HpUpdates.getLocalUpdates cacheFolderPath updatesRetrievalContext
                     return actual
                 }) with
         |Result.Ok _ -> Assert.IsTrue(true)
@@ -105,7 +106,11 @@ module HpUpdatesTests =
                     let! logDirectory = FileSystem.path "%public%\Logs"
                     let! patterns = (RegExp.toRegexPatterns [||] true)
                     let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
-                    let! actual = HpUpdates.getRemoteUpdates updatesRetrievalContext
+
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+
+                    let! actual = HpUpdates.getRemoteUpdates cacheFolderPath updatesRetrievalContext
                     return actual
                 }) with
         |Result.Ok _ -> Assert.IsTrue(true)

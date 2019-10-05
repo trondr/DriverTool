@@ -303,17 +303,22 @@ module CreateDriverPackage =
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info(msg (sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled))
-                                
+                
+                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
+                let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
+
                 let getUpdates = DriverTool.Updates.getUpdatesFunc (dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
                 let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.ExcludeUpdateRegexPatterns                
-                let! packageInfos = getUpdates updatesRetrievalContext
+                let! packageInfos = getUpdates cacheFolderPath updatesRetrievalContext
                 let uniquePackageInfos = packageInfos |> Array.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
                 logger.Info("Downloading software and drivers...")
-                let downloadedUpdates = downloadUpdates (DriverTool.Configuration.downloadCacheDirectoryPath) uniqueUpdates
+                
+
+                let downloadedUpdates = downloadUpdates existingCacheFolderPath uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate downloadedUpdates
 
                 logger.Info("Update package info based from downloaded files (such as content in readme file)")
@@ -321,14 +326,13 @@ module CreateDriverPackage =
                 let! updatedInfoDownloadedUpdates = updatePackageInfo downloadedUpdates
 
                 logger.Info("Getting SCCM package info...")
-                let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer
-                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
-                let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem,cacheFolderPath)
+                let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer                
+                let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem,existingCacheFolderPath)
                 logger.Info(msg (sprintf "Sccm packge: %A" sccmPackage))
                 
                 logger.Info("Downloading SCCM package...")
                 let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc dpcc.Manufacturer
-                let! downloadedSccmPackage = downloadSccmPackage ((DriverTool.Configuration.downloadCacheDirectoryPath), sccmPackage)
+                let! downloadedSccmPackage = downloadSccmPackage (existingCacheFolderPath, sccmPackage)
                 
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let manufacturerName = manufacturerToName dpcc.Manufacturer

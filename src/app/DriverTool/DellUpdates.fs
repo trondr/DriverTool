@@ -15,10 +15,10 @@ module DellUpdates=
     type DellUpdates = class end
     let logger = Logging.getLoggerByName(typeof<DellUpdates>.Name)
 
-    let downloadSdpFiles () =
+    let downloadSdpFiles cacheFolderPath =
         result
             {
-                let! dellCatalogForSms = DellCatalog.downloadSmsSdpCatalog()
+                let! dellCatalogForSms = DellCatalog.downloadSmsSdpCatalog cacheFolderPath
                 let! dellCatalogForSmsV2 = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue dellCatalogForSms,"V2"))
                 let! existingDellCatalogForSmsV2 = DirectoryOperations.ensureDirectoryExists false dellCatalogForSmsV2
                 let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingDellCatalogForSmsV2
@@ -60,10 +60,10 @@ module DellUpdates=
                 |>Seq.toArray
             pacakgeInfos
 
-    let getLocalUpdates (context:UpdatesRetrievalContext) =
+    let getLocalUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = DriverTool.SdpUpdates.validateModelAndOs context.Model context.OperatingSystem
-            let! sdpFiles = downloadSdpFiles()
+            let! sdpFiles = downloadSdpFiles cacheFolderPath
             let! sdps = DriverTool.SdpUpdates.loadSdps sdpFiles
             let mutable count = 0
             let packageInfos = 
@@ -76,7 +76,7 @@ module DellUpdates=
                 |>PSeq.filter DriverTool.SdpUpdates.localUpdatesFilter
                 |>PSeq.toArray
                 |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
-            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache packageInfos sdpFiles            
+            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles            
             return packageInfos
         }
 
@@ -84,10 +84,10 @@ module DellUpdates=
         printf "%i of %i\r" count totalCount
         p
         
-    let getRemoteUpdates (context:UpdatesRetrievalContext) =
+    let getRemoteUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = DriverTool.SdpUpdates.validateModelAndOs context.Model context.OperatingSystem
-            let! sdpFiles = downloadSdpFiles()
+            let! sdpFiles = downloadSdpFiles cacheFolderPath
             let! sdps = DriverTool.SdpUpdates.loadSdps sdpFiles            
             let mutable count = 0
             let packageInfos = 
@@ -100,7 +100,7 @@ module DellUpdates=
                 |>PSeq.filter DriverTool.SdpUpdates.remoteUpdatesFilter
                 |>PSeq.toArray
                 |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
-            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache packageInfos sdpFiles
+            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles
             return packageInfos
         }
 
@@ -171,7 +171,7 @@ module DellUpdates=
 
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path)  : Result<SccmPackageInfo,Exception> =
         result{
-            let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog ()
+            let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath
             let xDocument = XDocument.Load(FileSystem.pathValue driverPackageCatalogXmlPath)            
             let! (dellOsCode, dellOsArchitecture) = osCodeToDellOsCodeAndArchitecture operatingSystemCode            
             let driverPackage = 
@@ -190,7 +190,7 @@ module DellUpdates=
     
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        
-            let! installerdestinationFilePath = FileSystem.path (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFileName
             let! installerUri = toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)

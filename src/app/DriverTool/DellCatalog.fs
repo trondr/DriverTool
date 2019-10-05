@@ -18,13 +18,13 @@ module DellCatalog =
             return expandResult
         }
 
-    let downloadSmsSdpCatalog () =
+    let downloadSmsSdpCatalog cachedFolderPath =
         result{
-            let! destinationFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
-            let! hpCatalogDestinationFolderPath = FileSystem.path (System.IO.Path.Combine(DriverTool.Configuration.downloadCacheDirectoryPath,DriverTool.DellSettings.smsSdpCatalogFolderName))
+            
+            let! hpCatalogDestinationFolderPath = PathOperations.combinePaths2 cachedFolderPath DriverTool.DellSettings.smsSdpCatalogFolderName
             let! nonExistingHpCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true hpCatalogDestinationFolderPath
             let! existingHpCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (nonExistingHpCatalogDestinationFolderPath,true) 
-            let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,DriverTool.DellSettings.smsSdpCatalogCabFileName)
+            let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue cachedFolderPath,DriverTool.DellSettings.smsSdpCatalogCabFileName)
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(DriverTool.DellSettings.smsSdpCatalog), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            
@@ -32,21 +32,20 @@ module DellCatalog =
             return existingHpCatalogDestinationFolderPath
         }
 
-    let getLocalDriverPackageCatalogCabFilePath =
-        FileSystem.path (System.IO.Path.Combine(DriverTool.Configuration.downloadCacheDirectoryPath,"DriverPackCatalog.cab"))
+    let getLocalDriverPackageCatalogCabFilePath cachedFolderPath =
+        PathOperations.combinePaths2 cachedFolderPath "DriverPackCatalog.cab"
 
-    let getLocalDriverPackageXmlFilePath =
-        FileSystem.path (System.IO.Path.Combine(DriverTool.Configuration.downloadCacheDirectoryPath,"DriverPackCatalog.xml"))
+    let getLocalDriverPackageXmlFilePath cachedFolderPath =
+        PathOperations.combinePaths2 cachedFolderPath "DriverPackCatalog.xml"
 
-    let downloadDriverPackageCatalog () =
+    let downloadDriverPackageCatalog cachedFolderPath =
         result {
-            let! destinationCabFile = getLocalDriverPackageCatalogCabFilePath
+            let! destinationCabFile = getLocalDriverPackageCatalogCabFilePath cachedFolderPath
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(DriverTool.DellSettings.driverPackageCatalogCab), true, nonExistingDestinationCabFile)
-            let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
-            let! destinationFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
-            let! expandResult = expandCabFile (existingDestinationCabFile, destinationFolderPath)
-            let! driverPackageCatalogXmlPath = getLocalDriverPackageXmlFilePath
+            let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            
+            let! expandResult = expandCabFile (existingDestinationCabFile, cachedFolderPath)
+            let! driverPackageCatalogXmlPath = getLocalDriverPackageXmlFilePath cachedFolderPath
             let! existingDriverPackageCatalogXmlPath = FileOperations.ensureFileExists driverPackageCatalogXmlPath            
             return existingDriverPackageCatalogXmlPath
         }

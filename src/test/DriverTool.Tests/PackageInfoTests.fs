@@ -28,7 +28,7 @@ module PackageInfoTests  =
             }
         
         let actual = 
-            packageInfosToDownloadJobs @"c:\temp" packageInfos
+            packageInfosToDownloadJobs (DriverTool.FileSystem.pathUnSafe @"c:\temp") packageInfos
             |>Seq.toArray
         Assert.AreEqual(3,actual.Length,"Number of download jobs was not expected")
 
@@ -42,7 +42,7 @@ module PackageInfoTests  =
             }
         
         let actual = 
-            packageInfosToDownloadJobs @"c:\temp" packageInfos
+            packageInfosToDownloadJobs (DriverTool.FileSystem.pathUnSafe @"c:\temp") packageInfos
             |>Seq.toArray
         Assert.AreEqual(4,actual.Length,"Number of download jobs was not expected")
         

@@ -73,7 +73,7 @@ module CreateDriverPackageTests =
         ()
         let expectedCount = 4
         let actual = 
-            packageInfosToDownloadedPackageInfos @"c:\temp\test" packageInfos downloadInfos
+            packageInfosToDownloadedPackageInfos (FileSystem.pathUnSafe @"c:\temp\test") packageInfos downloadInfos
             |>Seq.toArray
         let actualCount =
             actual

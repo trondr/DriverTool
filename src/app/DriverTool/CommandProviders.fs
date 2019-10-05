@@ -11,7 +11,9 @@ module CommandProviders =
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! csvFilePath = FileSystem.path csvFilePathString
-                let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates manufacturer modelCode operatingSystemCode csvFilePath overwrite excludeUpdatePatterns
+                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
+                let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
+                let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates existingCacheFolderPath manufacturer modelCode operatingSystemCode csvFilePath overwrite excludeUpdatePatterns
                 return result
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
@@ -19,13 +21,15 @@ module CommandProviders =
 
     let exportRemoteUdateInfo (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) =
         Logging.genericLogger Logging.LogLevel.Debug exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns)
-    
 
     let exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result{
                 let! csvFilePath = FileSystem.path csvFilePathString
                 let! nonExistingCsvFilePath = FileOperations.ensureFileDoesNotExist overwrite csvFilePath
-                let! exportResult = DriverTool.ExportLocalUpdates.exportLocalUpdates nonExistingCsvFilePath excludeUpdatePatterns
+                let! csvFilePath = FileSystem.path csvFilePathString
+                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
+                let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
+                let! exportResult = DriverTool.ExportLocalUpdates.exportLocalUpdates existingCacheFolderPath nonExistingCsvFilePath excludeUpdatePatterns
                 return exportResult        
         }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)

@@ -21,26 +21,24 @@ module HpCatalog =
             return expandResult
         }
 
-    let downloadDriverPackCatalog () =
-        result{
-            let! destinationFolderPath = FileSystem.path downloadCacheDirectoryPath
-            let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HPClientDriverPackCatalog.cab")
+    let downloadDriverPackCatalog cachedFolderPath =
+        result{            
+            let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue cachedFolderPath,"HPClientDriverPackCatalog.cab")
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(soruceDriverPackCatalogCab), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
-            let! destinationFilePath = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HPClientDriverPackCatalog.xml")
-            let! expandResult = expandCabFile (existingDestinationCabFile, destinationFolderPath,destinationFilePath)
+            let! destinationFilePath = PathOperations.combine2Paths (FileSystem.pathValue cachedFolderPath,"HPClientDriverPackCatalog.xml")
+            let! expandResult = expandCabFile (existingDestinationCabFile, cachedFolderPath,destinationFilePath)
             let! existingDriverPackageCatalogXmlPath = FileOperations.ensureFileExists destinationFilePath            
             return existingDriverPackageCatalogXmlPath
         }
     
-    let downloadSmsSdpCatalog () =
-        result{
-            let! destinationFolderPath = FileSystem.path downloadCacheDirectoryPath
-            let! hpCatalogDestinationFolderPath = FileSystem.path (System.IO.Path.Combine(downloadCacheDirectoryPath,"HpCatalogForSms.latest"))
+    let downloadSmsSdpCatalog cachedFolderPath =
+        result{            
+            let! hpCatalogDestinationFolderPath = PathOperations.combinePaths2 cachedFolderPath "HpCatalogForSms.latest"
             let! nonExistingHpCatalogDestinationFolderPath = DirectoryOperations.deleteDirectory true hpCatalogDestinationFolderPath
             let! existingHpCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (nonExistingHpCatalogDestinationFolderPath,true) 
-            let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue destinationFolderPath,"HpCatalogForSms.latest.cab")
+            let! destinationCabFile = PathOperations.combinePaths2 cachedFolderPath "HpCatalogForSms.latest.cab"
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
             let! downloadResult = Web.downloadFile (new Uri(smsSdpCatalog), true, nonExistingDestinationCabFile)
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            

@@ -35,8 +35,7 @@ module Configuration =
     
     let getDownloadCacheDirectoryPathUnsafe =
         let expandedPath = getExpandedValue "DownloadCacheDirectoryPath"
-        let path = System.IO.Path.GetFullPath(expandedPath)
-        System.IO.Directory.CreateDirectory(path) |> ignore
+        let path = System.IO.Path.GetFullPath(expandedPath)        
         path
 
     let downloadCacheDirectoryPath =

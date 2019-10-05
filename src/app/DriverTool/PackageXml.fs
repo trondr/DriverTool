@@ -90,16 +90,16 @@ module PackageXml =
         if(String.IsNullOrWhiteSpace(packageInfo.Readme.Name)) then
             String.Empty
         else
-            System.IO.Path.Combine(destinationDirectory, packageInfo.Readme.Name)
+            System.IO.Path.Combine(FileSystem.pathValue destinationDirectory, packageInfo.Readme.Name)
 
     let getDestinationInstallerPath destinationDirectory packageInfo =
         if(String.IsNullOrWhiteSpace(packageInfo.Installer.Name)) then
             String.Empty
         else
-            System.IO.Path.Combine(destinationDirectory, packageInfo.Installer.Name)
+            System.IO.Path.Combine(FileSystem.pathValue destinationDirectory, packageInfo.Installer.Name)
 
     let getDestinationPackageXmlPath destinationDirectory packageInfo =
-        System.IO.Path.Combine(destinationDirectory, packageInfo.PackageXmlName)
+        System.IO.Path.Combine(FileSystem.pathValue destinationDirectory, packageInfo.PackageXmlName)
     
     open DriverTool.Web
 

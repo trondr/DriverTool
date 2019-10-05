@@ -218,7 +218,7 @@ module LenovoUpdates =
                 |>Seq.toArray
         }
 
-    let getRemoteUpdates (context:UpdatesRetrievalContext) =
+    let getRemoteUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
         Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase context
     
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
@@ -261,7 +261,7 @@ module LenovoUpdates =
                         )
         updatedPacageInfos
 
-    let getLocalUpdates (context:UpdatesRetrievalContext) =
+    let getLocalUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             logger.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
@@ -276,7 +276,7 @@ module LenovoUpdates =
             let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid context.OperatingSystem actualOperatingSystemCode
             logger.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
 
-            let! remotePackageInfos = getRemoteUpdates context
+            let! remotePackageInfos = getRemoteUpdates cacheFolderPath context
             let localUpdates = 
                 packageInfos
                 |> Seq.distinct
@@ -358,13 +358,13 @@ module LenovoUpdates =
 
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{
-            let! installerdestinationFilePath = FileSystem.path (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFileName
             let! installerUri = toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
-            let! readmeDestinationFilePath = FileSystem.path (System.IO.Path.Combine(cacheDirectory,sccmPackage.ReadmeFile.FileName))
+            let! readmeDestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.ReadmeFile.FileName
             let! readmeUri = toUri sccmPackage.ReadmeFile.Url
             let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeFile.Checksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
             let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)

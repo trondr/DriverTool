@@ -48,34 +48,34 @@ module HpUpdates =
                 |>Seq.toArray
             pacakgeInfos
 
-    let downloadSdpFiles () =
+    let downloadSdpFiles cacheFolderPath =
         result
             {
-                let! hpCatalogForSmsLatest = HpCatalog.downloadSmsSdpCatalog()
+                let! hpCatalogForSmsLatest = HpCatalog.downloadSmsSdpCatalog cacheFolderPath
                 let! hpCatalogForSmsLatestV2 = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue hpCatalogForSmsLatest,"V2"))
                 let! existingHpCatalogForSmsLatestV2 = DirectoryOperations.ensureDirectoryExists false hpCatalogForSmsLatestV2
                 let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2
                 return sdpFiles
             }
 
-    let getLocalUpdates (context:UpdatesRetrievalContext) =
+    let getLocalUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = validateModelAndOs context.Model context.OperatingSystem
-            let! sdpFiles = downloadSdpFiles()
+            let! sdpFiles = downloadSdpFiles cacheFolderPath
             let! sdps = loadSdps sdpFiles
             let packageInfos = 
                 sdps                
                 |>Seq.filter localUpdatesFilter
                 |>Seq.toArray
                 |>(sdpsToPacakgeInfos context toPackageInfos)
-            let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles            
+            let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles            
             return packageInfos
         }        
 
-    let getRemoteUpdates (context:UpdatesRetrievalContext) =
+    let getRemoteUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = validateModelAndOs context.Model context.OperatingSystem
-            let! sdpFiles = downloadSdpFiles()
+            let! sdpFiles = downloadSdpFiles cacheFolderPath
             let! sdps = loadSdps sdpFiles
             let packageInfos = 
                 sdps                
@@ -83,20 +83,20 @@ module HpUpdates =
                 |>Seq.toArray
                 |>(sdpsToPacakgeInfos context toPackageInfos)
             
-            let! copyResult =  copySdpFilesToDownloadCache packageInfos sdpFiles
+            let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles
             return packageInfos
         }
 
     let getSccmDriverPackageInfo (modelCode: ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path) =
         result{
-            let! driverPackCatalogXmlFilePath = downloadDriverPackCatalog()
+            let! driverPackCatalogXmlFilePath = downloadDriverPackCatalog cacheFolderPath
             let! sccmPackageInfo = getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath, modelCode, operatingSystemCode)
             return sccmPackageInfo
         }
 
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        
-            let! installerdestinationFilePath = FileSystem.path (System.IO.Path.Combine(cacheDirectory,sccmPackage.InstallerFileName))
+            let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFileName
             let! installerUri = DriverTool.Web.toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)

@@ -27,7 +27,11 @@ module DellUpdatesTests =
             let! logDirectory = FileSystem.path "%public%\Logs"
             let! patterns = (RegExp.toRegexPatterns [||] true)
             let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
-            let! actual = DriverTool.DellUpdates.getRemoteUpdates updatesRetrievalContext
+            
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            
+            let! actual = DriverTool.DellUpdates.getRemoteUpdates cacheFolderPath updatesRetrievalContext
             printfn "Packages: %A" actual
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())

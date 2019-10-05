@@ -8,14 +8,19 @@ open System
 module HpCatalogTests =
     open Init
     open DriverTool
+
+    let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
     let downloadDriverPackCatalogTest () = 
         let actual = 
             result
-                {
-                    let! xmlPath = HpCatalog.downloadDriverPackCatalog()
+                {      
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    
+                    let! xmlPath = HpCatalog.downloadDriverPackCatalog cacheFolderPath
                     return xmlPath
                 }
         match actual with
@@ -93,7 +98,11 @@ module HpCatalogTests =
     [<Category(TestCategory.ManualTests)>]
     let downloadSmsSdpCatalogTest () =
         let res = result{
-            let! actual = HpCatalog.downloadSmsSdpCatalog()
+            
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+
+            let! actual = HpCatalog.downloadSmsSdpCatalog cacheFolderPath
             Assert.IsTrue(FileOperations.directoryExists actual)
             return actual
         }
