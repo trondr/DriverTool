@@ -201,19 +201,21 @@ module DellUpdates=
                 ReadmePath = String.Empty
                 SccmPackage = sccmPackage;
             }
-        }       
+        }   
         
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         logger.Info("Extract Sccm Driver Package CAB...")
-        match(result{
+        result{
             let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
             let! cabFilepath = FileOperations.ensureFileExtension ".cab" installerPath
             let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath            
             let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,destinationPath)
-            return destinationPath
-        }) with
-        |Ok _ -> Result.Ok destinationPath
-        |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))        
+
+            let! copiedReadmeFilePath = 
+                FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
+
+            return (destinationPath,copiedReadmeFilePath)
+        }
 
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{

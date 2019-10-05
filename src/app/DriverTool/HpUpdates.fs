@@ -110,17 +110,19 @@ module HpUpdates =
         } 
 
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
-        logger.Info("Extract Sccm Driver Package ...")
-        match(result{
+        logger.Info("Extracting Sccm Driver Package ...")
+        result{
             let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
             let! exeFilepath = FileOperations.ensureFileExtension ".exe" installerPath
             let! existingExeFilePath = FileOperations.ensureFileExists exeFilepath  
             let arguments = sprintf "-PDF -F \"%s\" -S -E" (FileSystem.pathValue destinationPath)
             let! exitCode = ProcessOperations.startConsoleProcess (installerPath,arguments,FileSystem.pathValue destinationPath,-1,null,null,false)
-            return destinationPath
-        }) with
-        |Ok _ -> Result.Ok destinationPath
-        |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
+            
+            let! copiedReadmeFilePath = 
+                FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
+
+            return (destinationPath,copiedReadmeFilePath)
+        }
 
     let toReleaseId downloadedPackageInfo =
         sprintf "%s-%s" (downloadedPackageInfo.Package.Installer.Name.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate

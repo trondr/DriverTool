@@ -53,7 +53,7 @@ module HpUpdatesTests =
                     Assert.IsTrue((FileSystem.pathValue destinationFolderPath).EndsWith("\\005 Sccm Package Test"))
                     let deletedDestinationDirectory = DirectoryOperations.deleteDirectory true, FileSystem.pathValue  destinationFolderPath
                     let! existingDestinationPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath,true)
-                    let! actual = HpUpdates.extractSccmPackage (downloadedSccmPackageInfo, existingDestinationPath)
+                    let! (actual,_) = HpUpdates.extractSccmPackage (downloadedSccmPackageInfo, existingDestinationPath)
                     Assert.IsFalse(String.IsNullOrWhiteSpace(FileSystem.pathValue  actual), "Destination path is empty")
                     
                     return actual

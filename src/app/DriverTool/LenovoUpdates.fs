@@ -378,14 +378,22 @@ module LenovoUpdates =
         }         
     
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
-        logger.Info("Extract SccmPackage installer...")        
-        let arguments = sprintf "/VERYSILENT /DIR=\"%s\" /EXTRACT=\"YES\"" (FileSystem.pathValue destinationPath)
-        match (FileSystem.existingFilePathString downloadedSccmPackage.InstallerPath) with
-        |Ok fp -> 
-            match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
-            |Ok _ -> Result.Ok destinationPath
-            |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
-        |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
+        result{
+            logger.Info("Extract SccmPackage installer...")        
+            let arguments = sprintf "/VERYSILENT /DIR=\"%s\" /EXTRACT=\"YES\"" (FileSystem.pathValue destinationPath)
+            let! installerExtractedFolder =
+                match (FileSystem.existingFilePathString downloadedSccmPackage.InstallerPath) with
+                |Ok fp -> 
+                    match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
+                    |Ok _ -> Result.Ok destinationPath
+                    |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
+                |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
+            let! copiedReadmeFilePath = 
+                FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
+
+            return (installerExtractedFolder,copiedReadmeFilePath)
+        }
+        
     
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{

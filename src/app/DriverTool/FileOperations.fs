@@ -241,3 +241,18 @@ module FileOperations =
                    match System.IO.File.Exists(FileSystem.pathValue this.Path) with
                    | true -> System.IO.File.Delete(FileSystem.pathValue this.Path)
                    | false -> ()
+    
+    let copyFileIfExists sourceFile destinationFolderPath = 
+        match(result{
+            let! sourceFilePath = FileSystem.path sourceFile
+            let! existingSourceFilePath = FileSystem.existingFilePath sourceFilePath
+            let! verifiedSourceFilePath = FileSystem.path (FileSystem.existingFilePathValue existingSourceFilePath)
+            let fileName = PathOperations.getFileNameFromPath sourceFilePath
+            let! destinationFilePath = PathOperations.combinePaths2 destinationFolderPath fileName    
+            let! copiedFilePath = copyFile true verifiedSourceFilePath destinationFilePath
+            return copiedFilePath
+        }) with
+        |Result.Ok p -> Result.Ok p
+        |Result.Error _ ->            
+            Result.Ok destinationFolderPath
+
