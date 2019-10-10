@@ -66,7 +66,7 @@ module HpUpdatesTests =
     let toPackageInfoTests (sdpXmlFile) =
         match(result
                 {
-                    let! sdp = SdpCatalog.loadSdpFromFile (FileSystem.pathUnSafe sdpXmlFile)
+                    let! sdp = sdpeval.fsharp.Sdp.loadSdpFromFile (sdpXmlFile)
                     let actual = HpUpdates.toPackageInfos sdp                
                     Assert.IsTrue(actual.Length > 0)
                     return sdp

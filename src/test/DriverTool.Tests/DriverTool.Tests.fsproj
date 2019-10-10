@@ -90,7 +90,6 @@
     <Compile Include="CompressionTests.fs" />
     <Compile Include="XmlToolKitTests.fs" />
     <Compile Include="PackageXmlTests.fs" />
-    <Compile Include="SdpCatalogTests.fs" />
     <Compile Include="InstallXmlTests.fs" />
     <Compile Include="RegExpTests.fs" />
     <Compile Include="CsvOperationTests.fs" />
@@ -101,12 +100,6 @@
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95015.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
-    <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC.zip" />
-    <EmbeddedResource Include="TestData\SdpCatalog\0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp" />
-    <EmbeddedResource Include="TestData\SdpCatalog\dc718411-a5f1-4b15-966a-63a77cbb156e.sdp" />
-    <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.zip" />
-    <EmbeddedResource Include="TestData\SdpCatalog\HpCatalogForSms.latest_V2.zip" />
-    <EmbeddedResource Include="TestData\SdpCatalog\DellSDPCatalogPC_V2.zip" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_v2.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
@@ -136,17 +129,24 @@
       <HintPath>..\..\..\packages\FSharp.Core.4.7.0\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.3.2.4\lib\net45\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.3.2\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.UpdateServices.Administration">
+      <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Rhino.Mocks">
       <HintPath>..\..\..\packages\RhinoMocks.3.6.1\lib\net\Rhino.Mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="sdpeval">
+      <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj">
@@ -155,14 +155,17 @@
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>..\..\..\packages\FSharp.Data.3.2.4\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.3.2\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />

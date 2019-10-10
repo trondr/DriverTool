@@ -2,7 +2,7 @@
 
 module SdpUpdates =    
     open System
-    open DriverTool.SdpCatalog
+    open sdpeval.fsharp.Sdp
     open DriverTool.PackageXml    
     open DriverTool.UpdatesContext
     open DriverTool.Logging
@@ -17,7 +17,7 @@ module SdpUpdates =
             {
                 let! sdps =
                     sdpFiles
-                    |>Seq.map DriverTool.SdpCatalog.loadSdpFromFile                        
+                    |>Seq.map sdpeval.fsharp.Sdp.loadSdpFromFile                        
                     |>toAccumulatedResult
                 return sdps
             }

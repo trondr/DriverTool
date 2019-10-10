@@ -9,7 +9,7 @@ module DellUpdates=
     open DriverTool.DellSettings
     open DriverTool.Web    
     open DriverTool.UpdatesContext
-    open DriverTool.SdpCatalog    
+    open sdpeval.fsharp.Sdp    
     open FSharp.Collections.ParallelSeq
 
     type DellUpdates = class end
@@ -23,6 +23,8 @@ module DellUpdates=
                 let! existingDellCatalogForSmsV2 = DirectoryOperations.ensureDirectoryExists false dellCatalogForSmsV2
                 let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingDellCatalogForSmsV2
                 return sdpFiles
+                            |> Seq.map (fun p -> FileSystem.pathValue p)
+                            |> Seq.toArray
             }
 
     let toPackageInfos sdp  =
@@ -76,7 +78,9 @@ module DellUpdates=
                 |>PSeq.filter DriverTool.SdpUpdates.localUpdatesFilter
                 |>PSeq.toArray
                 |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
-            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles            
+
+            let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
+            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths            
             return packageInfos
         }
 
@@ -100,7 +104,8 @@ module DellUpdates=
                 |>PSeq.filter DriverTool.SdpUpdates.remoteUpdatesFilter
                 |>PSeq.toArray
                 |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
-            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles
+            let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
+            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths
             return packageInfos
         }
 

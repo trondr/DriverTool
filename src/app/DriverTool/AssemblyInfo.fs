@@ -9,8 +9,8 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyProductAttribute("DriverTool")>]
 [<assembly: AssemblyCompanyAttribute("github/trondr")>]
 [<assembly: AssemblyCopyrightAttribute("Copyright © github/trondr 2018-2019")>]
-[<assembly: AssemblyVersionAttribute("1.0.19278.32")>]
-[<assembly: AssemblyFileVersionAttribute("1.0.19278.32")>]
+[<assembly: AssemblyVersionAttribute("1.0.19284.32")>]
+[<assembly: AssemblyFileVersionAttribute("1.0.19284.32")>]
 [<assembly: ComVisibleAttribute(false)>]
 [<assembly: GuidAttribute("19822aea-c088-455d-b5a5-4738a3a9dba7")>]
 [<assembly: InternalsVisibleToAttribute("DriverTool.Tests")>]
@@ -22,8 +22,8 @@ module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyProduct = "DriverTool"
     let [<Literal>] AssemblyCompany = "github/trondr"
     let [<Literal>] AssemblyCopyright = "Copyright © github/trondr 2018-2019"
-    let [<Literal>] AssemblyVersion = "1.0.19278.32"
-    let [<Literal>] AssemblyFileVersion = "1.0.19278.32"
+    let [<Literal>] AssemblyVersion = "1.0.19284.32"
+    let [<Literal>] AssemblyFileVersion = "1.0.19284.32"
     let [<Literal>] ComVisible = false
     let [<Literal>] Guid = "19822aea-c088-455d-b5a5-4738a3a9dba7"
     let [<Literal>] InternalsVisibleTo = "DriverTool.Tests"

@@ -6,7 +6,7 @@ module HpUpdates =
     open DriverTool.Web
     open DriverTool.HpCatalog
     open System.Xml.Linq
-    open DriverTool.SdpCatalog
+    open sdpeval.fsharp.Sdp
     open DriverTool.SdpUpdates
     open FileSystem
     open FSharp.Data
@@ -56,6 +56,8 @@ module HpUpdates =
                 let! existingHpCatalogForSmsLatestV2 = DirectoryOperations.ensureDirectoryExists false hpCatalogForSmsLatestV2
                 let! sdpFiles = DirectoryOperations.findFiles false "*.sdp" existingHpCatalogForSmsLatestV2
                 return sdpFiles
+                            |> Seq.map (fun p -> FileSystem.pathValue p)
+                            |> Seq.toArray
             }
 
     let getLocalUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
@@ -68,7 +70,8 @@ module HpUpdates =
                 |>Seq.filter localUpdatesFilter
                 |>Seq.toArray
                 |>(sdpsToPacakgeInfos context toPackageInfos)
-            let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles            
+            let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
+            let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths            
             return packageInfos
         }        
 
@@ -82,8 +85,8 @@ module HpUpdates =
                 |>Seq.filter remoteUpdatesFilter
                 |>Seq.toArray
                 |>(sdpsToPacakgeInfos context toPackageInfos)
-            
-            let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFiles
+            let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
+            let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths
             return packageInfos
         }
 
