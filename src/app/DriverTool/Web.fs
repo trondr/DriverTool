@@ -19,6 +19,14 @@ module Web =
             DestinationFile:FileSystem.Path;            
         }
 
+    let toDownloadInfo sourceUri sourceChecksum sourceFileSize destinationFilePath =
+        {
+            SourceUri = sourceUri
+            SourceChecksum = sourceChecksum
+            SourceFileSize = sourceFileSize
+            DestinationFile = destinationFilePath        
+        }
+
     let (|TextFile|_|) (input:string) = if input.ToLower().EndsWith(".txt") then Some(input) else None
     let (|XmlFile|_|) (input:string) = if input.ToLower().EndsWith(".xml") then Some(input) else None
 
@@ -85,8 +93,23 @@ module Web =
     let hasSameFileHash downloadInfo =
         (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
 
-    let downloadIsRequired downloadInfo =
-        (String.IsNullOrEmpty(downloadInfo.SourceChecksum))||(not (hasSameFileHash downloadInfo))
+    let useCachedVersionBase (logger:Common.Logging.ILog) (fileExists:string->bool) (downloadInfo:DownloadInfo) = 
+        let useCachedVersionFilePath =((FileSystem.pathValue downloadInfo.DestinationFile) + ".usecachedversion")
+        let useCachedVersionFileExists = (fileExists useCachedVersionFilePath) 
+        let destinationFileExists = (fileExists (FileSystem.pathValue downloadInfo.DestinationFile))
+        let useCachedVersion = useCachedVersionFileExists && destinationFileExists          
+        match useCachedVersion with
+        |true -> 
+            logger.Warn(sprintf "Using cached version of '%A'. Skipping download." downloadInfo.DestinationFile)
+            true
+        |false -> 
+            false   
+
+    let useCachedVersion (logger:Common.Logging.ILog) (downloadInfo:DownloadInfo) =        
+        useCachedVersionBase logger System.IO.File.Exists downloadInfo
+
+    let downloadIsRequired logger downloadInfo =
+        ((String.IsNullOrEmpty(downloadInfo.SourceChecksum))||(not (hasSameFileHash downloadInfo))) && (not (useCachedVersion logger downloadInfo))
     
     type HasSameFileHashFunc = (DownloadInfo) -> bool
     type IsTrustedFunc = FileSystem.Path -> bool
@@ -115,8 +138,8 @@ module Web =
     let verifyDownload downloadInfo ignoreVerificationErrors =
         verifyDownloadBase (hasSameFileHash,Cryptography.isTrusted,Logging.getLoggerByName("verifyDownload"),downloadInfo,ignoreVerificationErrors)
 
-    let downloadIfDifferent (downloadInfo, ignoreVerificationErrors) =        
-        match (downloadIsRequired downloadInfo) with
+    let downloadIfDifferent (logger, downloadInfo, ignoreVerificationErrors) =        
+        match (downloadIsRequired logger downloadInfo) with
         |true -> 
             match (downloadFile (downloadInfo.SourceUri, true, downloadInfo.DestinationFile)) with
             |Ok s -> 
@@ -137,7 +160,7 @@ module Web =
             let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,webFile.FileName))
             let! sourceUri = toUri webFile.Url
             let downloadInfo = { SourceUri = sourceUri;SourceChecksum = webFile.Checksum;SourceFileSize = webFile.Size;DestinationFile = destinationFilePath}
-            let! downloadedInfo = downloadIfDifferent (downloadInfo,false)            
+            let! downloadedInfo = downloadIfDifferent (logger,downloadInfo,false)            
             return downloadedInfo
         }
 
