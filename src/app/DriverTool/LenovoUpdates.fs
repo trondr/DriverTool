@@ -201,14 +201,14 @@ module LenovoUpdates =
         &&                             
         (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Title))
 
-    let getRemoteUpdatesBase (context:UpdatesRetrievalContext) =
+    let getRemoteUpdatesBase (logger, cacheFolderPath, (context:UpdatesRetrievalContext)) =
         result{
             let modelInfoUri = getModelInfoUri context.Model context.OperatingSystem
-            let! path = getModelInfoXmlFilePath context.Model context.OperatingSystem
-            let! modelInfoXmlFilePath = ensureFileDoesNotExist context.Overwrite path
-            let! downloadedFile = downloadFile (modelInfoUri, context.Overwrite, modelInfoXmlFilePath)            
-            let! packageXmlInfos = loadPackagesXml downloadedFile
-            let! downloadedPackageXmls = downloadPackageXmls packageXmlInfos
+            let! modelInfoXmlFilePath = getModelInfoXmlFilePath cacheFolderPath context.Model context.OperatingSystem            
+            let downloadInfo = DriverTool.Web.toDownloadInfo modelInfoUri String.Empty 0L modelInfoXmlFilePath                
+            let! downloadedInfo = DriverTool.Web.downloadIfDifferent (logger, downloadInfo,true)
+            let! packageXmlInfos = loadPackagesXml downloadedInfo.DestinationFile
+            let! downloadedPackageXmls = downloadPackageXmls cacheFolderPath packageXmlInfos
             let! packageInfos = 
                 (parsePackageXmls downloadedPackageXmls)
                 |>toAccumulatedResult
