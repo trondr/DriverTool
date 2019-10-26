@@ -102,7 +102,7 @@ module HpUpdates =
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFileName
             let! installerUri = DriverTool.Web.toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
+            let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             return {

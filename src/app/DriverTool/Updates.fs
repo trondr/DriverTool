@@ -5,7 +5,7 @@ open DriverTool.ManufacturerTypes
 
 module Updates =
 
-    let getUpdatesFunc (manufacturer:Manufacturer,baseOnLocallyInstalledUpdates:bool) =
+    let getUpdatesFunc (logger, manufacturer:Manufacturer,baseOnLocallyInstalledUpdates:bool) =
         match manufacturer with
         |Manufacturer.Dell _ -> 
             match baseOnLocallyInstalledUpdates with
@@ -17,8 +17,8 @@ module Updates =
             |false -> HpUpdates.getRemoteUpdates
         |Manufacturer.Lenovo _ ->        
             match baseOnLocallyInstalledUpdates with
-            |true -> LenovoUpdates.getLocalUpdates
-            |false -> LenovoUpdates.getRemoteUpdates
+            |true -> LenovoUpdates.getLocalUpdates logger
+            |false -> LenovoUpdates.getRemoteUpdates logger
 
     let updateDownloadedPackageInfoFunc (manufacturer:Manufacturer) =
         match manufacturer with

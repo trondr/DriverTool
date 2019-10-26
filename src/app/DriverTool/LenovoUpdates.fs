@@ -64,12 +64,12 @@ module LenovoUpdates =
         with
         | ex -> Result.Error ex
 
-    let getTempXmlFilePathFromUri uri : Result<FileSystem.Path,Exception> = 
+    let getTempXmlFilePathFromUri cacheFolderPath uri : Result<FileSystem.Path,Exception> = 
         let xmlFileName = getXmlFileNameFromUri uri
         match xmlFileName with
         |Result.Ok f -> 
             let tempXmlFilePathString = 
-                getDownloadCacheFilePath f
+                getDownloadCacheFilePath (FileSystem.pathValue cacheFolderPath) f
             FileSystem.path tempXmlFilePathString
         |Result.Error ex -> Result.Error ex
 
@@ -99,12 +99,12 @@ module LenovoUpdates =
                 Result.Ok destinationFile
             |false->Result.Error (new Exception(msg))
 
-    let downloadPackageInfo (packageXmlInfo:PackageXmlInfo) = 
+    let downloadPackageInfo cacheFolderPath (packageXmlInfo:PackageXmlInfo) = 
             result {
                 let sourceUri = new Uri(packageXmlInfo.Location)
-                let! destinationFilePath = getTempXmlFilePathFromUri sourceUri
+                let! destinationFilePath = getTempXmlFilePathFromUri cacheFolderPath sourceUri
                 let downloadInfo = {SourceUri=sourceUri;SourceChecksum=packageXmlInfo.CheckSum;SourceFileSize=0L;DestinationFile=destinationFilePath;}                
-                let! downloadInfo2 = downloadIfDifferent (downloadInfo, (ignoreVerificationErrors downloadInfo))
+                let! downloadInfo2 = downloadIfDifferent (logger, downloadInfo, (ignoreVerificationErrors downloadInfo))
                 let dpi = packageXmlInfo2downloadedPackageXmlInfo (packageXmlInfo, downloadInfo2.DestinationFile)
                 return dpi
             }
@@ -132,10 +132,10 @@ module LenovoUpdates =
                             |Ok pi -> pi
                             | _ -> failwith "Failed to get all successes due to a bug in the success filter.")
 
-    let downloadPackageXmls packageXmlInfos : Result<seq<DownloadedPackageXmlInfo>,Exception> = 
+    let downloadPackageXmls cacheFolderPath packageXmlInfos : Result<seq<DownloadedPackageXmlInfo>,Exception> = 
         let downloadedPackageXmlInfos = 
             packageXmlInfos
-            |> Seq.map (fun pi -> downloadPackageInfo pi)
+            |> Seq.map (fun pi -> downloadPackageInfo cacheFolderPath pi)
 
         let objectResults = 
                     downloadedPackageXmlInfos
@@ -154,15 +154,15 @@ module LenovoUpdates =
             let msg = sprintf "Failed to download all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
      
-    let downloadPackageXmlsR (packageXmlInfos: Result<seq<PackageXmlInfo>,Exception>) = 
+    let downloadPackageXmlsR cacheFolderPath (packageXmlInfos: Result<seq<PackageXmlInfo>,Exception>) = 
         match packageXmlInfos with
-        |Ok pis -> downloadPackageXmls pis
+        |Ok pis -> downloadPackageXmls cacheFolderPath pis
         |Error ex -> Result.Error ex     
 
-    let getModelInfoXmlFilePath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
+    let getModelInfoXmlFilePath cacheFolderPath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         let fileName = sprintf "%s_%s.xml" modelCode.Value operatingSystemCode.Value
-        let filePathString = getDownloadCacheFilePath fileName        
-        FileSystem.path filePathString
+        let filePathString = DriverTool.PathOperations.combinePaths2 cacheFolderPath fileName
+        filePathString
 
     let getPackageInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         try
@@ -218,8 +218,8 @@ module LenovoUpdates =
                 |>Seq.toArray
         }
 
-    let getRemoteUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase context
+    let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
+        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase (logger, cacheFolderPath, context)
     
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
         if(actualModel.Value.StartsWith(model.Value)) then
@@ -261,7 +261,7 @@ module LenovoUpdates =
                         )
         updatedPacageInfos
 
-    let getLocalUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
+    let getLocalUpdates (logger:Common.Logging.ILog) cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             logger.Info("Checking if Lenovo System Update is installed...")
             let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
@@ -276,7 +276,7 @@ module LenovoUpdates =
             let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid context.OperatingSystem actualOperatingSystemCode
             logger.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
 
-            let! remotePackageInfos = getRemoteUpdates cacheFolderPath context
+            let! remotePackageInfos = getRemoteUpdates logger cacheFolderPath context
             let localUpdates = 
                 packageInfos
                 |> Seq.distinct
@@ -361,13 +361,13 @@ module LenovoUpdates =
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFileName
             let! installerUri = toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
+            let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             let! readmeDestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.ReadmeFile.FileName
             let! readmeUri = toUri sccmPackage.ReadmeFile.Url
             let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeFile.Checksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
-            let! readmeInfo = Web.downloadIfDifferent (readmeDownloadInfo,false)
+            let! readmeInfo = Web.downloadIfDifferent (logger,readmeDownloadInfo,false)
             let readmePath = FileSystem.pathValue readmeInfo.DestinationFile
 
             return {

@@ -25,7 +25,7 @@ module ExportRemoteUpdatesTests =
                 use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                 let! cacheFolderPath = cacheFolder.FolderPath
 
-                let exportResult = exportRemoteUpdates cacheFolderPath manufacturer modelCode operatingSystemCode csvFilePath true [||]
+                let exportResult = exportRemoteUpdates cacheFolderPath logger manufacturer modelCode operatingSystemCode csvFilePath true [||]
                 return! exportResult
             }
         match testResult with
