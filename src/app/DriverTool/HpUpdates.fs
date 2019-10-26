@@ -60,7 +60,7 @@ module HpUpdates =
                             |> Seq.toArray
             }
 
-    let getLocalUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
+    let getLocalUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles cacheFolderPath
@@ -75,7 +75,7 @@ module HpUpdates =
             return packageInfos
         }        
 
-    let getRemoteUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
+    let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles cacheFolderPath

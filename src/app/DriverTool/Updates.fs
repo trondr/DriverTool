@@ -9,12 +9,12 @@ module Updates =
         match manufacturer with
         |Manufacturer.Dell _ -> 
             match baseOnLocallyInstalledUpdates with
-            |true -> DellUpdates.getLocalUpdates
-            |false -> DellUpdates.getRemoteUpdates
+            |true -> DellUpdates.getLocalUpdates logger
+            |false -> DellUpdates.getRemoteUpdates logger
         |Manufacturer.HP _ -> 
             match baseOnLocallyInstalledUpdates with
-            |true -> HpUpdates.getLocalUpdates
-            |false -> HpUpdates.getRemoteUpdates
+            |true -> HpUpdates.getLocalUpdates logger
+            |false -> HpUpdates.getRemoteUpdates logger
         |Manufacturer.Lenovo _ ->        
             match baseOnLocallyInstalledUpdates with
             |true -> LenovoUpdates.getLocalUpdates logger

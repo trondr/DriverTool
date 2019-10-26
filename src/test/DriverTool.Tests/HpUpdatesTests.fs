@@ -90,7 +90,7 @@ module HpUpdatesTests =
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
 
-                    let! actual = HpUpdates.getLocalUpdates cacheFolderPath updatesRetrievalContext
+                    let! actual = HpUpdates.getLocalUpdates logger cacheFolderPath updatesRetrievalContext
                     return actual
                 }) with
         |Result.Ok _ -> Assert.IsTrue(true)
@@ -110,7 +110,7 @@ module HpUpdatesTests =
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
 
-                    let! actual = HpUpdates.getRemoteUpdates cacheFolderPath updatesRetrievalContext
+                    let! actual = HpUpdates.getRemoteUpdates logger cacheFolderPath updatesRetrievalContext
                     return actual
                 }) with
         |Result.Ok _ -> Assert.IsTrue(true)
