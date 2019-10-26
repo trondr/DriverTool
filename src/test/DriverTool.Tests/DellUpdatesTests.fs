@@ -31,7 +31,7 @@ module DellUpdatesTests =
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath
             
-            let! actual = DriverTool.DellUpdates.getRemoteUpdates cacheFolderPath updatesRetrievalContext
+            let! actual = DriverTool.DellUpdates.getRemoteUpdates logger cacheFolderPath updatesRetrievalContext
             printfn "Packages: %A" actual
             Assert.IsTrue(actual.Length > 0,"PackageInfo array is empty")
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())

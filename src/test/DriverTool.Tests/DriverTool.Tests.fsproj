@@ -92,7 +92,7 @@
     <Compile Include="PackageXmlTests.fs" />
     <Compile Include="InstallXmlTests.fs" />
     <Compile Include="RegExpTests.fs" />
-    <Compile Include="CsvOperationTests.fs" />
+    <Compile Include="CsvOperationTests.fs" />    
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
@@ -104,6 +104,8 @@
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_v2.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_n1cx802w_2_.xml" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_WithError_20QG_win10.xml" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_WithErrorCorrected_20QG_win10.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.txt" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w_2_.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.exe" />

@@ -46,8 +46,8 @@ module Configuration =
             printfn "Failed to get download cache directory due to: %s. Using TEMP path instead." ex.Message
             System.IO.Path.GetTempPath()
 
-    let getDownloadCacheFilePath fileName = 
-        System.IO.Path.Combine(downloadCacheDirectoryPath , fileName)
+    let getDownloadCacheFilePath cacheFolder fileName = 
+        System.IO.Path.Combine(cacheFolder , fileName)
 
     type Settings = AppSettings<"App.config">
 

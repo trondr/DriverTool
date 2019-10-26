@@ -617,6 +617,9 @@
       <NamedTestSelector>
         <TestName>DriverTool.Tests.LenovoUpdateTests.extractUpdateTest("nz3gs05w.exe","nz3gs05w.txt","nz3gs05w_2_.xml","ISDAS_NZ3GS","Intel® SGX Device and Software (Windows 10 Version 1709 or later) - 10 [64]","2.3.100.49777")</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoUpdateTests.getRemoteUpdatesTests</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

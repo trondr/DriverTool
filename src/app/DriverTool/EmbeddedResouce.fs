@@ -139,7 +139,8 @@ module EmbeddedResource =
         match resourceNames.Length > 0 with
         | true -> 
             extractEmbeddedResourceBase (resourceNames.[0],destinationFolderPath,destinationFileName, assembly)
-        | false -> raise (new Exception("File not found in embedded resource: " + fileName))
+        | false ->             
+            raise (new Exception(sprintf "File '%s' not found in embedded resource. All embedded resources: %A" fileName (getAllEmbeddedResourceNames)))
 
     let extractEmbeddedResouceByFileName (fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =
         let assembly = typeof<ThisAssembly>.Assembly

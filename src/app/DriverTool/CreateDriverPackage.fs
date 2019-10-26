@@ -42,7 +42,7 @@ module CreateDriverPackage =
             |false->Result.Error (new Exception(msg))
     
     let downloadUpdateBase (downloadInfo:DownloadInfo, ignoreVerificationErrors) =
-        downloadIfDifferent (downloadInfo, ignoreVerificationErrors)         
+        downloadIfDifferent (logger,downloadInfo, ignoreVerificationErrors)         
 
     let downloadUpdate (downloadJob, ignoreVerificationErrors) =
         Logging.genericLoggerResult Logging.LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
@@ -307,7 +307,7 @@ module CreateDriverPackage =
                 let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
 
-                let getUpdates = DriverTool.Updates.getUpdatesFunc (dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 
+                let getUpdates = DriverTool.Updates.getUpdatesFunc (logger, dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
                 let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.ExcludeUpdateRegexPatterns                

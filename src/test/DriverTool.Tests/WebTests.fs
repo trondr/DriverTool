@@ -76,6 +76,44 @@ module WebTests =
         let actual = Web.getFolderNameFromUrl url
         Assert.AreEqual(expected,actual)
 
+    module FileExists = 
+      [<Literal>]
+      let True = true
+      [<Literal>]
+      let False = false
+
+    module UseCacheFileExists = 
+        [<Literal>]
+        let True = true
+        [<Literal>]
+        let False = false
+
+    module Expected = 
+        [<Literal>]
+        let True = true
+        [<Literal>]
+        let False = false
+
+    [<Test>]
+    [<TestCase("c:\\temp\\file1.txt",FileExists.True, UseCacheFileExists.True, Expected.True)>]
+    [<TestCase("c:\\temp\\file1.txt",FileExists.False, UseCacheFileExists.True, Expected.False)>]
+    [<TestCase("c:\\temp\\file1.txt",FileExists.True, UseCacheFileExists.False, Expected.False)>]
+    [<TestCase("c:\\temp\\file1.txt",FileExists.False, UseCacheFileExists.False, Expected.False)>]
+    let useCachedVersionBaseTests(destinationFileName:string,fileExists,useCachedFileExists, expected) =        
+        let useCacheVersionFileName = destinationFileName + ".usecachedversion"
+        let stubFileExists (destinationFileName:string) (useCacheVersionFileName:string) (fileName:string) =
+            match fileName with
+            |fileName when (fileName.Equals(destinationFileName)) ->
+                fileExists
+            |fileName when (fileName.Equals(useCacheVersionFileName)) ->            
+                useCachedFileExists
+            |_ -> 
+                Assert.Fail(sprintf "File name not expected: '%s'" fileName)
+                false
+        let downloadInfo = DriverTool.Web.toDownloadInfo (new Uri("http://dummy")) String.Empty 0L (FileSystem.pathUnSafe destinationFileName)
+        let actual =  DriverTool.Web.useCachedVersionBase logger (stubFileExists destinationFileName useCacheVersionFileName) downloadInfo
+        Assert.AreEqual(expected,actual,"")
+
 [<TestFixture>]
 module ManualWebTest =
     open DriverTool

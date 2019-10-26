@@ -60,7 +60,7 @@ module DellCommandUpdatesIntegrationTests =
                 use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                 let! cacheFolderPath = cacheFolder.FolderPath
                 
-                let! remoteUpdates = DellUpdates.getRemoteUpdates cacheFolderPath updatesRetrievalContext
+                let! remoteUpdates = DellUpdates.getRemoteUpdates logger cacheFolderPath updatesRetrievalContext
                 let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode, operatingSystemCode,remoteUpdates)
                 return localUpdates
             }

@@ -76,3 +76,36 @@ module LenovoUpdateTests =
         |Result.Ok v -> Assert.IsTrue(true)
         |Result.Error ex -> Assert.Fail(ex.Message)
 
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
+    let loadPackagesXmlTest () =
+        match(result{
+            use temporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! temporaryFolderPath = temporaryFolder.FolderPath
+            let! xmlFilePath = DriverTool.EmbeddedResource.extractEmbeddedResouceByFileNameBase ("LenovoCatalog_WithError_20QG_win10.xml",temporaryFolderPath,"LenovoCatalog_WithError_20QG_win10.xml",typeof<ThisTestAssembly>.Assembly)
+            let! packages = DriverTool.LenovoUpdates.loadPackagesXml xmlFilePath 
+            let! downloadedPackages = DriverTool.LenovoUpdates.downloadPackageXmls temporaryFolderPath packages
+            let! packageInfos = 
+                (DriverTool.LenovoUpdates.parsePackageXmls downloadedPackages)
+                |>toAccumulatedResult
+            return packageInfos
+        })with
+        |Result.Ok v -> Assert.IsTrue(false,"Did not fail as expected.")
+        |Result.Error ex -> Assert.AreEqual("Failed to download all package infos due to the following 1 error messages:\r\nUri 'https://download.lenovo.com/pccbbs/mobiles/n2hwe01w.txt' does not represent a xml file.",ex.Message)        
+
+
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let getRemoteUpdatesTests () =
+        match(result{
+            let! cacheFolderPath = FileSystem.path @"C:\Temp\DriverToolCache"
+            let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
+            let! model = ModelCode.create "20QG" false
+            let! osCode = OperatingSystemCode.create "WIN10X64" false
+            let! logDirectory = FileSystem.path @"C:\Temp\DriverToolLogs"
+            let context = DriverTool.UpdatesContext.toUpdatesRetrievalContext model osCode false logDirectory [||]                                
+            let! packageInfos = DriverTool.LenovoUpdates.getRemoteUpdates logger existingCacheFolderPath context
+            return packageInfos        
+        })with
+        |Result.Ok v -> Assert.IsTrue(true)
+        |Result.Error ex -> Assert.Fail(ex.Message)

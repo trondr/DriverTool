@@ -13,7 +13,8 @@ module CommandProviders =
                 let! csvFilePath = FileSystem.path csvFilePathString
                 let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
-                let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates existingCacheFolderPath manufacturer modelCode operatingSystemCode csvFilePath overwrite excludeUpdatePatterns
+                let logger = DriverTool.Logging.getLoggerByName "exportRemoteUdateInfo"
+                let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates existingCacheFolderPath logger manufacturer modelCode operatingSystemCode csvFilePath overwrite excludeUpdatePatterns
                 return result
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)

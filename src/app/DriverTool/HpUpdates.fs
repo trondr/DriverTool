@@ -60,7 +60,7 @@ module HpUpdates =
                             |> Seq.toArray
             }
 
-    let getLocalUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
+    let getLocalUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles cacheFolderPath
@@ -75,7 +75,7 @@ module HpUpdates =
             return packageInfos
         }        
 
-    let getRemoteUpdates cacheFolderPath (context:UpdatesRetrievalContext) =
+    let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = validateModelAndOs context.Model context.OperatingSystem
             let! sdpFiles = downloadSdpFiles cacheFolderPath
@@ -102,7 +102,7 @@ module HpUpdates =
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFileName
             let! installerUri = DriverTool.Web.toUri sccmPackage.InstallerUrl
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (installerDownloadInfo,false)
+            let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             return {
