@@ -317,7 +317,7 @@ module CreateDriverPackage =
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let manufacturerName = manufacturerToName dpcc.Manufacturer
                 let systemFamilyName = dpcc.SystemFamily.Value.Replace(manufacturerName,"").Trim()                
-                let packageName = sprintf "%s %s %s %s %s %s %s" dpcc.PackagePublisher manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value dpcc.PackageTypeName releaseDate
+                let packageName = sprintf "%s %s %s %s %s %s" manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value dpcc.PackageTypeName releaseDate
                 let! versionedPackagePath = combine3Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value + "-" + dpcc.PackageTypeName, releaseDate)
 
                 logger.Info(msg (sprintf "Extracting package template to '%A'" versionedPackagePath))
@@ -331,16 +331,18 @@ module CreateDriverPackage =
                 let installScriptResults = createInstallScripts (extractedUpdates,dpcc.Manufacturer,dpcc.LogDirectory)
                 let packageSmsResults = createPackageDefinitionFiles (extractedUpdates, dpcc.LogDirectory, dpcc.PackagePublisher)
 
-                let! sccmPackageExtractResult =
+                let sccmPackageFolderName = "005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")
+                let! sccmPackageDestinationPath =
                     if (not dpcc.ExcludeSccmPackage) then               
                         result{
-                            let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath,"005_Sccm_Package_" + downloadedSccmPackage.SccmPackage.Released.ToString("yyyy_MM_dd")))
+                            let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath, sccmPackageFolderName))
                             let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists true sccmPackageDestinationPath
                             logger.Info(msg (sprintf "Extracting Sccm Package to folder '%A'..." existingSccmPackageDestinationPath))                
                             let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (dpcc.Manufacturer)                
                             let! (extractedSccmPackagePath,_) = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
-                            let! sccmPackageInstallScriptResult = createSccmPackageInstallScript extractedSccmPackagePath
-                            return sccmPackageInstallScriptResult                    
+                            let! sccmPackageInstallScriptPath = createSccmPackageInstallScript extractedSccmPackagePath
+                            logger.Info(sprintf "Created sccm package install script: %A" sccmPackageInstallScriptPath)
+                            return sccmPackageDestinationPath
                         }
                     else
                         Result.Ok existingDriversPath
@@ -366,10 +368,21 @@ module CreateDriverPackage =
                 logger.Info(msg (sprintf  "Saved install configuration to '%s'. Value: %A" (FileSystem.pathValue existingInstallXmlPath) savedInstallConfiguration))
                 logger.Info("Create PackageDefinition.sms")
                 let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"PackageDefinition.sms"))                
+                let packageDefinition = getPackageDefinitionFromInstallConfiguration updatedInstallConfiguration
                 let! packageDefintionWriteResult = 
-                    getPackageDefinitionFromInstallConfiguration updatedInstallConfiguration
+                    packageDefinition
                     |> writePackageDefinitionToFile packageDefinitionSmsPath
-                logger.Info("Created PackageDefinition.sms")
+                logger.Info(sprintf "Created PackageDefinition.sms: %A" packageDefintionWriteResult)
+
+                logger.Info("Create PackageDefinition-DISM.sms")
+                let! packageDefinitionDimsSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"PackageDefinition-DISM.sms"))
+                let packageDefintionDism = {packageDefinition with InstallCommandLine = "DISM.exe /Image:%OSDisk%\\ /Add-Driver /Driver:.\\Drivers\\" + sccmPackageFolderName + "\\ /Recurse"; }
+                let! packageDefintionDismWriteResult = 
+                    packageDefintionDism
+                    |> writePackageDefinitionDismToFile packageDefinitionDimsSmsPath
+                                        
+                logger.Info(sprintf "Created PackageDefinition-DISM.sms: %A" packageDefintionDismWriteResult)
+
                 let res = 
                     match ([|installScriptResults;packageSmsResults|] |> toAccumulatedResult) with
                     |Ok _ -> Result.Ok ()

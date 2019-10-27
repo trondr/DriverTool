@@ -7,9 +7,9 @@ module PackageDefinition =
     
     type ApplicationRegistryValue = {Path:string;ValueName:string;Value:string}
 
-    let getApplicationRegistryValueBase companyName applicationName installRevision =
+    let getApplicationRegistryValueBase companyName applicationName applicationVersion installRevision =
         {
-            Path=sprintf "HKLM\\SOFTWARE\\%s\\Applications\\%s" companyName applicationName
+            Path=sprintf "HKLM\\SOFTWARE\\%s\\Applications\\%s %s" companyName applicationName applicationVersion
             ValueName="InstallRevision"
             Value=installRevision
         }
@@ -17,7 +17,7 @@ module PackageDefinition =
     open DriverTool.InstallXml
 
     let getApplicationRegistryValue (installConfiguration:InstallConfigurationData) =
-        getApplicationRegistryValueBase installConfiguration.Publisher installConfiguration.PackageName installConfiguration.PackageRevision
+        getApplicationRegistryValueBase installConfiguration.Publisher installConfiguration.PackageName installConfiguration.PackageVersion installConfiguration.PackageRevision
 
     type PackageDefinition =
         {
@@ -37,7 +37,7 @@ module PackageDefinition =
 Version=2.0
 
 [Package Definition]
-Name={0}
+Name={0} {1}
 Version={1}
 Publisher={2}
 Language={3}
@@ -81,11 +81,50 @@ RegistryValueIs64Bit={7}
             packageDefinition.RegistryValueIs64Bit
             )
     
+    let getPackageDefinitionDismContent (packageDefinition:PackageDefinition) =
+        let contentFormatString = 
+            """[PDF]
+Version=2.0
+
+[Package Definition]
+Name={0} {1} DISM
+Version={1}
+Publisher={2}
+Language={3}
+Comment=Insert Drivers into the offline
+Programs=INSTALL-DISM
+
+[INSTALL-DISM]
+Name=INSTALL-DISM
+CommandLine={4}
+CanRunWhen=AnyUserStatus
+UserInputRequired=False
+AdminRightsRequired=True
+UseInstallAccount=True
+Run=Minimized
+Icon=App.ico
+Comment=Insert drivers into the off line operating system in the Windows PE phase using DISM.exe
+
+            """
+        String.Format(contentFormatString,
+            packageDefinition.Name,
+            packageDefinition.Version,
+            packageDefinition.Publisher,
+            packageDefinition.Language,
+            packageDefinition.InstallCommandLine            
+            )
+
+
     let writePackageDefinitionToFile (filePath:FileSystem.Path) (packageDefinition:PackageDefinition) =
         match FileOperations.writeContentToFile logger (filePath) (getPackageDefinitionContent packageDefinition) with
-        |Ok p -> Result.Ok ()
+        |Ok p -> Result.Ok p
         |Error ex -> Result.Error ex
     
+    let writePackageDefinitionDismToFile (filePath:FileSystem.Path) (packageDefinition:PackageDefinition) =
+        match FileOperations.writeContentToFile logger (filePath) (getPackageDefinitionDismContent packageDefinition) with
+        |Ok p -> Result.Ok p
+        |Error ex -> Result.Error ex
+
     let getPackageDefinitionFromInstallConfiguration (installConfiguration:InstallConfigurationData) =
         let applicationRegistryValue = getApplicationRegistryValue installConfiguration
         {
