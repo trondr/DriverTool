@@ -5,13 +5,10 @@ module HpUpdates =
     open PackageXml
     open DriverTool.Web
     open DriverTool.HpCatalog
-    open System.Xml.Linq
     open sdpeval.fsharp.Sdp
     open DriverTool.SdpUpdates
-    open FileSystem
     open FSharp.Data
     open DriverTool.UpdatesContext
-    open DriverTool.PackageXml
         
     let toPackageInfos sdp  =
             let pacakgeInfos =

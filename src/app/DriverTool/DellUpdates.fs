@@ -83,11 +83,7 @@ module DellUpdates=
             let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths            
             return packageInfos
         }
-
-    let printCount count totalCount p =        
-        printf "%i of %i\r" count totalCount
-        p
-        
+       
     let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let! supported = DriverTool.SdpUpdates.validateModelAndOs context.Model context.OperatingSystem

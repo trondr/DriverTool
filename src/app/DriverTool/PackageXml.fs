@@ -242,10 +242,6 @@ module PackageXml =
             PackageXmlName = ((new System.IO.FileInfo(FileSystem.pathValue downloadedPackageInfo.FilePath)).Name)
         }        
         
-    open System.Linq
-    open System.Text.RegularExpressions
-    open NCmdLiner.Exceptions
-    
     let getPackageFolderName category releaseDate =         
         let postfix = releaseDate
         let prefix = (category |? "Unknown_Category")
@@ -263,18 +259,11 @@ module PackageXml =
             DownloadedPackage = downloadedPackageInfo;
         }
 
-    let copyFile (sourceFilePath, destinationFilePath) =
-        try
-            System.IO.File.Copy(sourceFilePath, destinationFilePath, true)
-            Result.Ok destinationFilePath
-        with
-        | ex -> Result.Error (new Exception(sprintf "Failed to copy file '%s'->'%s'." sourceFilePath destinationFilePath, ex))
-    
     let extractPackageXml (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
         let destinationFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.PackageXmlName)
         match FileSystem.existingFilePathString downloadedPackageInfo.PackageXmlPath with
         |Ok filePath -> 
-            match (copyFile (FileSystem.existingFilePathValue filePath, destinationFilePath)) with
+            match (FileOperations.copyFileS (FileSystem.existingFilePathValue filePath, destinationFilePath)) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
@@ -284,7 +273,7 @@ module PackageXml =
         let destinationReadmeFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Readme.Name)
         match FileSystem.existingFilePathString downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
-            match (copyFile (FileSystem.existingFilePathValue readmeFilePath, destinationReadmeFilePath)) with
+            match (FileOperations.copyFileS (FileSystem.existingFilePathValue readmeFilePath, destinationReadmeFilePath)) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
@@ -301,7 +290,7 @@ module PackageXml =
            let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Installer.Name)
            match FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
-                match copyFile (FileSystem.existingFilePathValue installerPath, destinationInstallerFilePath) with
+                match FileOperations.copyFileS (FileSystem.existingFilePathValue installerPath, destinationInstallerFilePath) with
                 |Ok _ -> 
                     Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex

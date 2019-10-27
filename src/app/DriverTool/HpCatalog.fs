@@ -7,8 +7,6 @@ module HpCatalog =
     let smsSdpCatalog = "https://ftp.hp.com/pub/softlib/software/sms_catalog/HpCatalogForSms.latest.cab"
 
     open System
-    open DriverTool.Configuration
-
     open DriverTool.Cab
 
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path, destinationFilePath:FileSystem.Path) =
