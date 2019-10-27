@@ -12,8 +12,7 @@ module CreateDriverPackage =
     open DriverTool.PackageXml
     open FSharp.Collections.ParallelSeq    
     open DriverTool.ManufacturerTypes
-    open DriverTool.Web
-    open EmbeddedResource
+    open DriverTool.Web    
     open DriverTool.PathOperations
     open PackageDefinition
     open DriverTool.Requirements
@@ -30,17 +29,6 @@ module CreateDriverPackage =
             |> Array.map (fun (k,v) -> v |>Array.head)
         uniqueUpdates
 
-    let verifyDownload downloadJob verificationWarningOnly =
-        match (hasSameFileHash downloadJob) with
-        |true  -> Result.Ok downloadJob
-        |false -> 
-            let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash." (FileSystem.pathValue downloadJob.DestinationFile) downloadJob.SourceUri.OriginalString
-            match verificationWarningOnly with
-            |true ->
-                logger.Warn(msg)
-                Result.Ok downloadJob
-            |false->Result.Error (new Exception(msg))
-    
     let downloadUpdateBase (downloadInfo:DownloadInfo, ignoreVerificationErrors) =
         downloadIfDifferent (logger,downloadInfo, ignoreVerificationErrors)         
 
@@ -199,14 +187,6 @@ module CreateDriverPackage =
             |> Seq.ofArray
             |> toAccumulatedResult
         installScripts
-    
-    let extractDpInstExitCodeToExitCodeExe (toolsPath:FileSystem.Path) =
-        let exeResult = 
-            extractEmbeddedResource ("DriverTool.Tools.DpInstExitCode2ExitCode.exe", toolsPath,"DpInstExitCode2ExitCode.exe")
-        let configResult =
-            extractEmbeddedResource ("DriverTool.Tools.DpInstExitCode2ExitCode.exe.config",toolsPath,"DpInstExitCode2ExitCode.exe.config")
-        [|exeResult;configResult|]
-        |> toAccumulatedResult
     
     let getLastestReleaseDate (updates:seq<DownloadedPackageInfo>) =
         match (Seq.isEmpty updates) with
