@@ -123,7 +123,7 @@ module Web =
             let msg1 = (sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue downloadInfo.DestinationFile) downloadInfo.SourceUri.OriginalString)
             match ignoreVerificationErrors with
             |true ->
-                logger.Warn(msg)
+                logger.Warn(msg1)
                 Result.Ok downloadInfo
             |false->
                 let isTrusted = isTrustedFunc downloadInfo.DestinationFile
