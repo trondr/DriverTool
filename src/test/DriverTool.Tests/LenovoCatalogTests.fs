@@ -187,7 +187,7 @@ module LenovoCatalogTests=
         match (result{
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath                        
-            let! destinationFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,cacheFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,cacheFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
             Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
             let! lenovoCatalogProducts = DriverTool.LenovoCatalogXml.loadLenovoCatalog destinationFilePath
             let products =
@@ -445,7 +445,7 @@ module LenovoCatalogTests=
         let testData = (testDataObject:?>TestData)
         match(result {              
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)
-            let! catalogXmlPath = EmbeddedResource.extractEmbeddedResouceByFileNameBase ("LenovoCatalog.xml", tempDestinationFolderPath,"LenovoCatalog.xml",typeof<ThisAssembly>.Assembly)
+            let! catalogXmlPath = EmbeddedResource.extractEmbeddedResourceByFileNameBase ("LenovoCatalog.xml", tempDestinationFolderPath,"LenovoCatalog.xml",typeof<ThisAssembly>.Assembly)
             let! existingCatalogXmlPath = ensureFileExists catalogXmlPath
             let! catalogProducts = loadLenovoCatalog existingCatalogXmlPath
             return catalogProducts
@@ -473,7 +473,7 @@ module LenovoCatalogTests=
     let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool, expectedInstallerUrlString:string) =
         match(result{
             let! destinationFolderPath = FileSystem.path getTempPath
-            let! destinationFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
             Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
             let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
             let! info = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
@@ -495,7 +495,7 @@ module LenovoCatalogTests=
     let getDownloadLinksFromWebPageContentTests (fileName:string, expectedCount:int, expectedSuccess:bool,expectedErrorMessage:string,source:string) =
         match(result{
             let! destinationFolderPath = FileSystem.path getTempPath
-            let! destinationFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
             Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
             let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
             let! actual = getDownloadLinksFromWebPageContent content

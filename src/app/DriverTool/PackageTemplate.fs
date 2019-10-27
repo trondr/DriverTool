@@ -35,7 +35,7 @@ module PackageTemplate =
                             let assembly = typeof<ThisAssembly>.Assembly
                             let fileName = getFileName filePath
                             let parentDirectory = getParentDirectory filePath
-                            let! extractedFilePath = extractEmbeddedResouceByFileNameBase (fileName, parentDirectory, fileName, assembly)
+                            let! extractedFilePath = extractEmbeddedResourceByFileNameBase (fileName, parentDirectory, fileName, assembly)
                             return extractedFilePath
                         }
                     |true -> Result.Ok filePath

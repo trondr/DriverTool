@@ -27,9 +27,9 @@ module LenovoUpdateTests =
             use temporaryCacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! temproaryCacheFolderPath = temporaryCacheFolder.FolderPath                        
             logger.Info(sprintf "Extract from embeded resource: %s, %s, %s" installerFileName readmeFileName packageXmlFileName)
-            let! installerFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (installerFileName,temproaryCacheFolderPath,installerFileName,typeof<ThisTestAssembly>.Assembly)
-            let! readmeFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (readmeFileName,temproaryCacheFolderPath,readmeFileName,typeof<ThisTestAssembly>.Assembly)
-            let! packageXmlFilePath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (packageXmlFileName,temproaryCacheFolderPath,packageXmlFileName,typeof<ThisTestAssembly>.Assembly)
+            let! installerFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (installerFileName,temproaryCacheFolderPath,installerFileName,typeof<ThisTestAssembly>.Assembly)
+            let! readmeFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (readmeFileName,temproaryCacheFolderPath,readmeFileName,typeof<ThisTestAssembly>.Assembly)
+            let! packageXmlFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (packageXmlFileName,temproaryCacheFolderPath,packageXmlFileName,typeof<ThisTestAssembly>.Assembly)
             logger.Info(sprintf "Construct downloaded package info...")
             let downloadedPackageInfo: DownloadedPackageInfo =
                 {
@@ -82,7 +82,7 @@ module LenovoUpdateTests =
         match(result{
             use temporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! temporaryFolderPath = temporaryFolder.FolderPath
-            let! xmlFilePath = DriverTool.EmbeddedResource.extractEmbeddedResouceByFileNameBase ("LenovoCatalog_WithError_20QG_win10.xml",temporaryFolderPath,"LenovoCatalog_WithError_20QG_win10.xml",typeof<ThisTestAssembly>.Assembly)
+            let! xmlFilePath = DriverTool.EmbeddedResource.extractEmbeddedResourceByFileNameBase ("LenovoCatalog_WithError_20QG_win10.xml",temporaryFolderPath,"LenovoCatalog_WithError_20QG_win10.xml",typeof<ThisTestAssembly>.Assembly)
             let! packages = DriverTool.LenovoUpdates.loadPackagesXml xmlFilePath 
             let! downloadedPackages = DriverTool.LenovoUpdates.downloadPackageXmls temporaryFolderPath packages
             let! packageInfos = 

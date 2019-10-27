@@ -18,7 +18,7 @@ module DellCommandUpdatesTests =
         let downloadedFiles =
             result{
                 let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
-                let! extractedActivityLogPath = EmbeddedResource.extractEmbeddedResouceByFileNameBase ("ActivityLog.xml",destinationFolderPath,"ActivityLog.xml",typeof<TestAssebly>.Assembly)
+                let! extractedActivityLogPath = EmbeddedResource.extractEmbeddedResourceByFileNameBase ("ActivityLog.xml",destinationFolderPath,"ActivityLog.xml",typeof<TestAssebly>.Assembly)
                 let! downloadedFiles = DellCommandUpdate.getDownloadedFilesBase extractedActivityLogPath
                 let! fileDeleted = FileOperations.deleteFile extractedActivityLogPath
                 return downloadedFiles

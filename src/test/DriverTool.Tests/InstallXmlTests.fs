@@ -41,7 +41,7 @@
             let testData = (testDataObject:?>TestData)
             match(result {              
                 let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)
-                let! installXmlPath = EmbeddedResource.extractEmbeddedResouceByFileNameBase ("InstallXmlInstall.xml", tempDestinationFolderPath,"InstallXmlInstall.xml",typeof<ThisAssembly>.Assembly)
+                let! installXmlPath = EmbeddedResource.extractEmbeddedResourceByFileNameBase ("InstallXmlInstall.xml", tempDestinationFolderPath,"InstallXmlInstall.xml",typeof<ThisAssembly>.Assembly)
                 let! existingInstallXmlPath = DriverTool.FileOperations.ensureFileExists installXmlPath
                 let! installConfiguration = loadInstallXml existingInstallXmlPath
                 return installConfiguration

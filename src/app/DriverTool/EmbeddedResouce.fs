@@ -130,7 +130,7 @@ module EmbeddedResource =
         let assembly = typeof<ThisAssembly>.Assembly
         extractEmbeddedResourceBase (resourceName, destinationFolderPath, destinationFileName, assembly)
     
-    let extractEmbeddedResouceByFileNameBase (fileName, destinationFolderPath:FileSystem.Path, destinationFileName, assembly:Assembly) =
+    let extractEmbeddedResourceByFileNameBase (fileName, destinationFolderPath:FileSystem.Path, destinationFileName, assembly:Assembly) =
         let resourceNames = 
             getAllEmbeddedResourceNamesBase assembly
             |>Seq.filter (fun rn -> rn.EndsWith(fileName))
@@ -142,9 +142,9 @@ module EmbeddedResource =
         | false ->             
             raise (new Exception(sprintf "File '%s' not found in embedded resource. All embedded resources: %A" fileName (getAllEmbeddedResourceNames)))
 
-    let extractEmbeddedResouceByFileName (fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =
+    let extractEmbeddedResourceByFileName (fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =
         let assembly = typeof<ThisAssembly>.Assembly
-        extractEmbeddedResouceByFileNameBase (fileName, destinationFolderPath, destinationFileName, assembly)
+        extractEmbeddedResourceByFileNameBase (fileName, destinationFolderPath, destinationFileName, assembly)
 
     let mapResourceNamesToFileNames (destinationFolderPath:FileSystem.Path, resourceNames:seq<string>,resourceNameToDirectoryDictionary)=
         let directoryLookDictionary = resourceNameToDirectoryDictionary destinationFolderPath
@@ -169,7 +169,7 @@ module EmbeddedResource =
         let tempFilePath =
             result{
                 let! folderPath = tempFolderPath                
-                let! extractedFile = extractEmbeddedResouceByFileNameBase (fileName,folderPath,fileName,typeof<ThisAssembly>.Assembly)
+                let! extractedFile = extractEmbeddedResourceByFileNameBase (fileName,folderPath,fileName,typeof<ThisAssembly>.Assembly)
                 return extractedFile
             }
 
