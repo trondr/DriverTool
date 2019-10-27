@@ -8,9 +8,7 @@ module LenovoUpdates =
     open System.Linq
     open System.Xml.Linq
     open F
-    open DriverTool.Web
-    open DriverTool.Checksum
-    open DriverTool.FileOperations
+    open DriverTool.Web    
     open DriverTool.UpdatesContext
 
     let logger = Logging.getLoggerByName("LenovoUpdates")
@@ -97,29 +95,6 @@ module LenovoUpdates =
                 return dpi
             }
     
-    let getAllErrorMessages (results:seq<Result<'T,Exception>>) =         
-        results
-        |> Seq.filter (fun dpi -> 
-                            match dpi with
-                            |Error _ -> true
-                            | _ -> false)
-        |> Seq.map (fun dpi -> 
-                        match dpi with
-                        |Error ex -> getAccumulatedExceptionMessages ex
-                        | _ -> String.Empty)
-
-    let getAllSuccesses (results:seq<Result<'T,Exception>>) =
-        results
-        |> Seq.filter (fun dpi -> 
-                                match dpi with
-                                |Ok _ -> true
-                                | _ -> false
-                           )
-            |> Seq.map (fun dpi -> 
-                            match dpi with
-                            |Ok pi -> pi
-                            | _ -> failwith "Failed to get all successes due to a bug in the success filter.")
-
     let downloadPackageXmls cacheFolderPath packageXmlInfos : Result<seq<DownloadedPackageXmlInfo>,Exception> = 
         let downloadedPackageXmlInfos = 
             packageXmlInfos

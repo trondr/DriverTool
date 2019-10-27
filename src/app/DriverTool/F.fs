@@ -129,6 +129,30 @@ module F=
                 toErrorResult (String.Join<string>(" ", allExceptionMessages)) None
         accumulatedResult
 
+
+    let getAllErrorMessages (results:seq<Result<'T,Exception>>) =         
+        results
+        |> Seq.filter (fun dpi -> 
+                            match dpi with
+                            |Error _ -> true
+                            | _ -> false)
+        |> Seq.map (fun dpi -> 
+                        match dpi with
+                        |Error ex -> getAccumulatedExceptionMessages ex
+                        | _ -> String.Empty)
+
+    let getAllSuccesses (results:seq<Result<'T,Exception>>) =
+        results
+        |> Seq.filter (fun dpi -> 
+                                match dpi with
+                                |Ok _ -> true
+                                | _ -> false
+                           )
+        |> Seq.map (fun dpi -> 
+                        match dpi with
+                        |Ok pi -> pi
+                        | _ -> failwith "Failed to get all successes due to a bug in the success filter.")
+
     open System.IO
 
     let toValidDirectoryName (name:string) =    
