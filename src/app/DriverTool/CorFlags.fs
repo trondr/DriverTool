@@ -13,9 +13,6 @@ module CorFlags=
     let corFlagsExe = 
         System.IO.Path.Combine(System.IO.Path.GetTempPath(),"CorFlags.exe")
 
-    let extractCorFlagsExe () =        
-        EmbeddedResource.extractEmbededResouceToFile (corFlagsExeResourceName, corFlagsExe)
-    
     let prefer32BitSet (assemblyFilePath:FileSystem.Path) =
         result{
             use corFlagsExe = new EmbeddedResource.ExtractedEmbeddedResource("CorFlags.exe", logger)
