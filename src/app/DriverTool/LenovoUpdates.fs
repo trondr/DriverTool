@@ -117,11 +117,6 @@ module LenovoUpdates =
             let msg = sprintf "Failed to download all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
             Result.Error (new Exception(msg))
      
-    let downloadPackageXmlsR cacheFolderPath (packageXmlInfos: Result<seq<PackageXmlInfo>,Exception>) = 
-        match packageXmlInfos with
-        |Ok pis -> downloadPackageXmls cacheFolderPath pis
-        |Error ex -> Result.Error ex     
-
     let getModelInfoXmlFilePath cacheFolderPath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         let fileName = sprintf "%s_%s.xml" modelCode.Value operatingSystemCode.Value
         let filePathString = DriverTool.PathOperations.combinePaths2 cacheFolderPath fileName
@@ -137,28 +132,6 @@ module LenovoUpdates =
         downloadedPackageXmls
         |> Seq.map (fun pi -> (getPackageInfo pi))        
 
-    let parsePackageXmlsR (downloadedPackageXmls: Result<seq<DownloadedPackageXmlInfo>,Exception>) : Result<seq<PackageInfo>,Exception> =
-        let parsedUpdates = 
-            match downloadedPackageXmls with
-            |Ok pis -> (parsePackageXmls pis)
-            |Error ex -> seq{yield Result.Error ex}
-        
-        let objectResults = 
-                    parsedUpdates
-                    //|> Seq.cast<Result<System.Object,Exception>>
-
-        let allErrorMessages = getAllErrorMessages objectResults
-
-        match allErrorMessages.Count() with
-        | 0 ->  
-                let allSuccesses = 
-                    (getAllSuccesses objectResults)
-                    |> Seq.cast<PackageInfo>                 
-                Result.Ok allSuccesses
-        | _ -> 
-            let msg = sprintf "Failed to parse all package infos due to the following %i error messages:%s%s" (allErrorMessages.Count()) Environment.NewLine (String.Join(Environment.NewLine,allErrorMessages))
-            Result.Error (new Exception(msg))
-    
     let filterUpdates context packageInfo =
         (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Category)) 
         &&                             
@@ -291,19 +264,6 @@ module LenovoUpdates =
         |Ok downloadPageContent -> 
             getLenovoSccmPackageDownloadInfoFromContent downloadPageContent os osbuild
         |Error ex -> Result.Error (toException (sprintf "Failed to get content from url '%s', OS=%s, OsBuild=%s." uri os osbuild) (Some ex))
-
-    let findSccmPackageInfoByNameAndOsAndBuild name os osbuild (products:seq<DriverTool.LenovoCatalog.Product>) =
-        let sccmPackageInfos = 
-            products
-            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = osbuild))
-            |> Seq.toArray
-        match sccmPackageInfos.Length > 0 with
-        | true -> 
-            sccmPackageInfos |> Seq.head
-        | false -> 
-            products
-            |> Seq.filter (fun p -> p.Name = name && p.Os = os && (p.OsBuild.Value = "*"))
-            |> Seq.head
 
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath)  : Result<SccmPackageInfo,Exception> =
         result

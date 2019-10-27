@@ -144,24 +144,6 @@ module LenovoCatalogTests=
 
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
-    [<TestCase("ThinkPad P50","win10","*","P50","ThinkPad P50","win10","*")>]
-    let findSccmPackageInfoByNameAndOsAndBuildTest (name,os,osbuild,expectedmodel,expectedname,expectedos,expectedosbuild) =
-        result{
-            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
-            let! cacheFolderPath = cacheFolder.FolderPath
-            let! products = getSccmPackageInfos cacheFolderPath
-            let actual = findSccmPackageInfoByNameAndOsAndBuild name os osbuild products
-            Assert.AreEqual(actual.Model.Value,expectedmodel)
-            Assert.AreEqual(actual.Name,expectedname)
-            Assert.AreEqual(actual.Os,expectedos)
-            Assert.AreEqual(actual.OsBuild.Value,expectedosbuild)
-            Assert.AreEqual(actual.Name,expectedname)
-
-            return actual            
-        } |> ignore
-           
-    [<Test>]
-    [<Category(TestCategory.IntegrationTests)>]
     let findSccmPackageInfoByModelCode4AndOsAndBuildTest () =
         result{
                 use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
