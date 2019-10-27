@@ -135,15 +135,15 @@ module Web =
                     Result.Error (new Exception(msg1 + "Additionally the file is not trusted (not signed or signature has been invalidated.)"))
 
 
-    let verifyDownload downloadInfo ignoreVerificationErrors =
-        verifyDownloadBase (hasSameFileHash,Cryptography.isTrusted,Logging.getLoggerByName("verifyDownload"),downloadInfo,ignoreVerificationErrors)
+    let verifyDownload logger downloadInfo ignoreVerificationErrors =
+        verifyDownloadBase (hasSameFileHash,Cryptography.isTrusted,logger,downloadInfo,ignoreVerificationErrors)
 
     let downloadIfDifferent (logger, downloadInfo, ignoreVerificationErrors) =        
         match (downloadIsRequired logger downloadInfo) with
         |true -> 
             match (downloadFile (downloadInfo.SourceUri, true, downloadInfo.DestinationFile)) with
             |Ok s -> 
-                verifyDownload downloadInfo ignoreVerificationErrors
+                verifyDownload logger downloadInfo ignoreVerificationErrors
             |Result.Error ex -> Result.Error (new Exception(sprintf "Failed to download '%A' due to: %s " downloadInfo.SourceUri ex.Message, ex))
         |false -> 
             logger.Info(msg (sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile)))
@@ -155,7 +155,7 @@ module Web =
     let toUri url =
         tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
 
-    let downloadWebFile (destinationFolderPath:FileSystem.Path) (webFile:WebFile) =
+    let downloadWebFile (logger,destinationFolderPath:FileSystem.Path) (webFile:WebFile) =
         result{
             let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,webFile.FileName))
             let! sourceUri = toUri webFile.Url
