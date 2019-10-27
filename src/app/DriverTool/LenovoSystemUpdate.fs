@@ -8,12 +8,6 @@ module LenovoSystemUpdate =
     
     let logger = Logging.getLoggerByName("LenovoSystemUpdate")
 
-    let listToSequence (list:System.Collections.IList) =
-        seq{
-            for item in list do
-                yield item
-        }
-
     let getLocalUpdatesUnsafe () =
         logger.Info("Getting update info from Lenovo System Update database...");
         let database = DataBase.Instance

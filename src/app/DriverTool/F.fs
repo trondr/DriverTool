@@ -365,3 +365,8 @@ module F=
                 | Some result -> result
                 | None -> RetryFailure !lastExceptionCell )
     
+    let listToSequence (list:System.Collections.IList) =
+        seq{
+            for item in list do
+                yield item
+        }
