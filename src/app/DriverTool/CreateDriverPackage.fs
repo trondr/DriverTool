@@ -317,8 +317,9 @@ module CreateDriverPackage =
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let manufacturerName = manufacturerToName dpcc.Manufacturer
                 let systemFamilyName = dpcc.SystemFamily.Value.Replace(manufacturerName,"").Trim()                
-                let packageName = sprintf "%s %s %s %s %s %s" manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value dpcc.PackageTypeName releaseDate
-                let! versionedPackagePath = combine3Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value + "-" + dpcc.PackageTypeName, releaseDate)
+                let osBuild = OperatingSystem.getOsBuildForCurrentSystem
+                let packageName = sprintf "%s %s %s %s %s %s %s" manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value osBuild dpcc.PackageTypeName releaseDate
+                let! versionedPackagePath = combine4Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value, releaseDate + "-1.0", "Script")
 
                 logger.Info(msg (sprintf "Extracting package template to '%A'" versionedPackagePath))
                 let! extractedPackagePaths = extractPackageTemplate versionedPackagePath
