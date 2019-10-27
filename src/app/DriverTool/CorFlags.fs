@@ -6,7 +6,7 @@ module CorFlags=
     let logger = LogManager.GetLogger("CorFlags")
 
     let corFlagsExeResourceName =
-        match Environment.is64BitProcess with
+        match Environment.is64BitOperatingSystem with
         |true -> "DriverTool.Tools.CorFlags.x64.CorFlags.exe"
         |false -> "DriverTool.Tools.CorFlags.x86.CorFlags.exe"
     
@@ -15,7 +15,7 @@ module CorFlags=
 
     let prefer32BitSet (assemblyFilePath:FileSystem.Path) =
         result{
-            use corFlagsExe = new EmbeddedResource.ExtractedEmbeddedResource("CorFlags.exe", logger)
+            use corFlagsExe = new EmbeddedResource.ExtractedEmbeddedResource(corFlagsExeResourceName, "CorFlags.exe", logger)
             let! coreFlagsExePath = corFlagsExe.FilePath            
             let! exitCodeResult = ProcessOperations.startConsoleProcess (coreFlagsExePath,sprintf "\"%s\" /32BITPREF+" (FileSystem.pathValue assemblyFilePath),null,-1,null,null,false)            
             return exitCodeResult
@@ -23,7 +23,7 @@ module CorFlags=
         
     let prefer32BitClear (assemblyFilePath:FileSystem.Path) =
         result{
-            use corFlagsExe = new EmbeddedResource.ExtractedEmbeddedResource("CorFlags.exe", logger)
+            use corFlagsExe = new EmbeddedResource.ExtractedEmbeddedResource(corFlagsExeResourceName,"CorFlags.exe", logger)
             let! coreFlagsExePath = corFlagsExe.FilePath            
             let! exitCodeResult = ProcessOperations.startConsoleProcess (coreFlagsExePath,sprintf "\"%s\" /32BITPREF-" (FileSystem.pathValue assemblyFilePath),null,-1,null,null,false)            
             return exitCodeResult
