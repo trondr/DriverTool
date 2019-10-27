@@ -244,23 +244,6 @@ module LenovoCatalog =
             return sccmPackageInfos
         }
     
-    type ModelInfo = { Name:string; Os:string ; OsBuild: string}
-    
-    let getModelName = 
-        match (WmiHelper.getWmiPropertyDefault "Win32_ComputerSystemProduct" "Version") with
-        |Ok n -> n
-        |Error ex -> raise (new System.Exception("Failed to model name for current system due to: " + ex.Message))        
-
-    let getModelInfo =
-        let name = getModelName
-        let os = osShortNameToLenovoOs (OperatingSystem.getOsShortName)
-        let osBuild = getOsBuildForCurrentSystem
-        {
-            Name = name;
-            Os = os;
-            OsBuild = osBuild
-        }
-
     let getHighestOsBuildProduct (products:seq<Product>) =
         let maxOsbUildProduct =
             products

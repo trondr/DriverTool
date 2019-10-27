@@ -79,11 +79,6 @@ module LenovoCatalogXml =
              return driverPacks
         }
 
-    let toResult (value:string) errorMessage =
-        match value with
-        | null -> Result.Error (new Exception(errorMessage))
-        | _ -> Result.Ok value
-
     let toModelType (typeXElement:XElement) =
         result
             {
