@@ -87,18 +87,6 @@ module LenovoUpdates =
             CheckSum = packageXmlInfo.CheckSum;
         }
     
-
-    let verifyDownload (sourceUri:Uri, destinationFile, checksum, fileSize, verificationWarningOnly) =
-        match (hasSameFileHash (destinationFile, checksum, fileSize)) with
-        |true  -> Result.Ok destinationFile
-        |false -> 
-            let msg = sprintf "Destination file ('%s') hash does not match source file ('%s') hash." (FileSystem.pathValue destinationFile) sourceUri.OriginalString
-            match verificationWarningOnly with
-            |true ->
-                Logging.getLoggerByName("verifyDownload").Warn(msg)
-                Result.Ok destinationFile
-            |false->Result.Error (new Exception(msg))
-
     let downloadPackageInfo cacheFolderPath (packageXmlInfo:PackageXmlInfo) = 
             result {
                 let sourceUri = new Uri(packageXmlInfo.Location)
