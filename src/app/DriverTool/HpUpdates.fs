@@ -145,7 +145,7 @@ module HpUpdates =
         }
 
     let getCategoryFromReadmeHtml readmeHtmlPath defaultCategory = 
-        result
+        match(result
             {
                 let! htmlDocument = HtmlHelper.loadHtmlDocument readmeHtmlPath
                 let category =
@@ -160,7 +160,10 @@ module HpUpdates =
                     match category with
                     |None -> defaultCategory
                     |Some n -> n.InnerText().Replace("CATEGORY:","").Trim()
-            }
+            })
+            with
+            |Result.Ok c -> c
+            |Result.Error _ -> defaultCategory
         
     /// <summary>
     /// HP. Get and update category info from the update readme html file as the "category" from the SDPs product name ('Driver') is not giving info about type of driver.
@@ -176,7 +179,7 @@ module HpUpdates =
                                 result
                                     {
                                         let! readmeHtmlPath = FileSystem.path d.ReadmePath
-                                        let! category = getCategoryFromReadmeHtml readmeHtmlPath d.Package.Category
+                                        let category = getCategoryFromReadmeHtml readmeHtmlPath d.Package.Category
                                         let up = {d.Package with Category = category}
                                         let ud = {d with Package = up}
                                         return ud
