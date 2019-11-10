@@ -121,6 +121,7 @@ module HpUpdatesTests =
     [<TestCase("HP_sp92489.html","Driver-Keyboard,Mouse and Input Devices", true)>]
     [<TestCase("HP_sp95015.html","Driver-Audio", true)>]
     [<TestCase("HP_sp95xxx.html","N/A",false)>]
+    [<TestCase("HP_sp99341.html","Default",true)>]
     let getCategoryFromReadmeHtmlTest (htmlFileName, expectedCategory,isSuccess:bool) =
         match(result{
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
