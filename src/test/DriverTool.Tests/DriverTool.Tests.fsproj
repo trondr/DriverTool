@@ -99,6 +99,7 @@
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp92489.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95015.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
+	<EmbeddedResource Include="TestData\HPCatalog\HP_sp99341.html" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_v2.xml" />
