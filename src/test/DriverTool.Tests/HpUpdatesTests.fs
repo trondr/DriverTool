@@ -120,13 +120,13 @@ module HpUpdatesTests =
     [<Category(TestCategory.UnitTests)>]
     [<TestCase("HP_sp92489.html","Driver-Keyboard,Mouse and Input Devices", true)>]
     [<TestCase("HP_sp95015.html","Driver-Audio", true)>]
-    [<TestCase("HP_sp95xxx.html","N/A",false)>]
+    [<TestCase("HP_sp95xxx.html","Default",true)>]
     [<TestCase("HP_sp99341.html","Default",true)>]
     let getCategoryFromReadmeHtmlTest (htmlFileName, expectedCategory,isSuccess:bool) =
         match(result{
             let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)            
             let! readmeHtmlPath = EmbeddedResource.extractEmbeddedResouceByFileNameBase (htmlFileName,tempDestinationFolderPath,htmlFileName,typeof<ThisAssembly>.Assembly)
-            let! actual = HpUpdates.getCategoryFromReadmeHtml readmeHtmlPath "Default"
+            let actual = HpUpdates.getCategoryFromReadmeHtml readmeHtmlPath "Default"
             return actual
         })with
         |Result.Ok a -> 
