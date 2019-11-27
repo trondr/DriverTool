@@ -24,3 +24,6 @@ CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePubli
 CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Driver";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="BIOS"
 
 CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns=["Driver";"Software";"Diagnostic";"Operating System-Enhancements";"Utility"] /packageTypeName="BIOS" /excludeSccmPackage="True"
+
+
+"%~dp0Tools\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\DI" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /doNotDownloadSccmPackage="False" /sccmPackageInstaller="tp_p50-p70_w1064_1903_201904.exe" /sccmPackageReadme="tp_p50-p70_w1064_1903_201904.txt" /sccmPackageReleased="2019-10-01"

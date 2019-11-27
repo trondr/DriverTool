@@ -259,10 +259,14 @@ module CreateDriverPackage =
             LogDirectory:Path
             ExcludeUpdateRegexPatterns: System.Text.RegularExpressions.Regex[]
             PackageTypeName:string
-            ExcludeSccmPackage:bool
+            ExcludeSccmPackage:bool            
+            DoNotDownloadSccmPackage:bool
+            SccmPackageInstaller:string
+            SccmPackageReadme:string
+            SccmPackageReleased:DateTime
         }
 
-    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage =
+    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage doNotDownloadSccmPackage sccmPackageInstaller sccmPackageReadme sccmPackageReleased =
         {
             PackagePublisher=packagePublisher
             Manufacturer=manufacturer
@@ -275,9 +279,45 @@ module CreateDriverPackage =
             ExcludeUpdateRegexPatterns=excludeUpdateRegexPatterns
             PackageTypeName=packageTypeName
             ExcludeSccmPackage=excludeSccmPackage
+            DoNotDownloadSccmPackage = doNotDownloadSccmPackage
+            SccmPackageInstaller = sccmPackageInstaller
+            SccmPackageReadme = sccmPackageReadme
+            SccmPackageReleased = sccmPackageReleased
         }
 
     open DriverTool.UpdatesContext
+
+    let toDownloadedSccmPackageInfo cacheFolderPath intallerName readmeName releasedDate =
+        result{
+            let! installerPath = PathOperations.combinePaths2 cacheFolderPath intallerName
+            let! existingInstallerPath = FileOperations.ensureFileExists installerPath
+            let! readmePath = PathOperations.combinePaths2 cacheFolderPath readmeName
+            let! existingReadmePath = FileOperations.ensureFileExists readmePath
+            let downloadedSccmPackageInfo =
+                {
+                    InstallerPath=FileSystem.pathValue existingInstallerPath; 
+                    ReadmePath=FileSystem.pathValue existingReadmePath;                     
+                    SccmPackage=
+                        {
+                            ReadmeFile=
+                                {
+                                    Url=String.Empty;
+                                    Checksum=String.Empty; 
+                                    FileName=readmeName;
+                                    Size=0L
+                                }
+                            InstallerUrl=String.Empty;
+                            InstallerChecksum=String.Empty;
+                            InstallerFileName=intallerName;
+                            Released=releasedDate;
+                            Os=String.Empty;
+                            OsBuild=String.Empty;
+                        }                
+                }
+            return downloadedSccmPackageInfo
+        }
+        
+
         
     let createDriverPackageBase (dpcc:DriverPackageCreationContext) =             
             result {
@@ -295,9 +335,7 @@ module CreateDriverPackage =
                 let uniquePackageInfos = packageInfos |> Array.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
                 
-                logger.Info("Downloading software and drivers...")
-                
-
+                logger.Info("Downloading software and drivers...")                
                 let downloadedUpdates = downloadUpdates existingCacheFolderPath uniqueUpdates
                 let latestRelaseDate = getLastestReleaseDate downloadedUpdates
 
@@ -305,15 +343,24 @@ module CreateDriverPackage =
                 let updatePackageInfo = DriverTool.Updates.updateDownloadedPackageInfoFunc (dpcc.Manufacturer)
                 let! updatedInfoDownloadedUpdates = updatePackageInfo downloadedUpdates
 
-                logger.Info("Getting SCCM package info...")
-                let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer                
-                let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem,existingCacheFolderPath)
-                logger.Info(msg (sprintf "Sccm packge: %A" sccmPackage))
+                logger.Info("Find and download SCCM package...")
+                let! downloadedSccmPackage =
+                    if(not dpcc.DoNotDownloadSccmPackage) then
+                        result{
+                            logger.Info("Getting SCCM package info...")
+                            let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer                
+                            let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem,existingCacheFolderPath)
+                            logger.Info(msg (sprintf "Sccm packge: %A" sccmPackage))
                 
-                logger.Info("Downloading SCCM package...")
-                let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc dpcc.Manufacturer
-                let! downloadedSccmPackage = downloadSccmPackage (existingCacheFolderPath, sccmPackage)
-                
+                            logger.Info("Downloading SCCM package...")
+                            let downloadSccmPackage = DriverTool.Updates.downloadSccmPackageFunc dpcc.Manufacturer
+                            let! downloadedSccmPackage = downloadSccmPackage (existingCacheFolderPath, sccmPackage)
+                            return downloadedSccmPackage
+                        }
+                    else
+                        logger.Info("Attempting to use manually downloaded sccm package...")
+                        toDownloadedSccmPackageInfo cacheFolderPath dpcc.SccmPackageInstaller dpcc.SccmPackageReadme dpcc.SccmPackageReleased
+                    
                 let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
                 let manufacturerName = manufacturerToName dpcc.Manufacturer
                 let systemFamilyName = dpcc.SystemFamily.Value.Replace(manufacturerName,"").Trim()                

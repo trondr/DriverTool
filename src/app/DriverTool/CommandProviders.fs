@@ -39,7 +39,13 @@ module CommandProviders =
     let exportLocalUdateInfo (csvFilePathString, overwrite, excludeUpdatePatterns) =
         Logging.genericLogger Logging.LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns)
     
-    let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns, packageTypeName,excludeSccmPackage) =
+    let toDateTime dateString = 
+        try
+            Result.Ok (System.DateTime.Parse(dateString))
+        with
+            | ex -> Result.Error (toException (sprintf "Failed to convert date string '%s' to DateTime" dateString) (Some ex))
+
+    let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns, packageTypeName,excludeSccmPackage,doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased) =
         match (result {
                 let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString,true)
                 let! systemFamily = SystemFamily.create systemFamilyString true
@@ -48,15 +54,16 @@ module CommandProviders =
                 let! destinationFolderPath = FileSystem.path destinationFolder
                 let! logDirectory = FileSystem.path DriverTool.Configuration.getDriverPackageLogDirectoryPath
                 let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
-                let driverPackageCreationContext = DriverTool.CreateDriverPackage.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage
+                let! released = toDateTime sccmPackageReleased
+                let driverPackageCreationContext = DriverTool.CreateDriverPackage.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage doNotDownloadSccmPackage sccmPackageInstaller sccmPackageReadme released
                 let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage driverPackageCreationContext
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
-    let createDriverPackage (packagePublisher, manufacturer, systemFamily,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns,packageTypeName,excludeSccmPackage) =
-        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns,packageTypeName,excludeSccmPackage)
+    let createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCodeString, operatingSystemString, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage, sccmPackageInstaller, sccmPackageReadme, sccmPackageReleased) =
+        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased)
     
     let installDriverPackageBase (driverPackagePathString) =
         match( result {

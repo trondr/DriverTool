@@ -56,9 +56,17 @@ module Commands =
                                          [<OptionalCommandParameter(Description = "A short name describing the content of the package. Example: 'Software', 'Firmware', 'BIOS'. The package type name will be used in the package name.", ExampleValue = @"Drivers", AlternativeName = "ptn", DefaultValue = "Drivers")>] 
                                             packageTypeName : string,
                                          [<OptionalCommandParameter(Description = "Exclude Sccm package from the created package. Typically you set this to true if you want only non-driver related updates, such as BIOS or firmware, to be part of the package.", ExampleValue = false, AlternativeName = "exs", DefaultValue = false)>] 
-                                            excludeSccmPackage : bool
+                                            excludeSccmPackage : bool,
+                                         [<OptionalCommandParameter(Description = "Do not download Sccm Package. Used as a workaround for web scraping gone wrong when Lenovo has changed the web design. Both the /sccmPackageInstaller and the /sccmPackageReadme parameters must be defined if /doNotDownloadSccmPackage=True.", ExampleValue = false, AlternativeName = "dnd", DefaultValue = false)>] 
+                                         doNotDownloadSccmPackage : bool,
+                                         [<OptionalCommandParameter(Description = "Specify sccm package installer to override automatic download of Sccm package. Used as a workaround for web scraping gone wrong when Lenovo has changed the web design. The sccm package installer spesified must be be downloaded manually and saved to the DriverToolCache as specified in the application configuration file (DownloadCacheDirectoryPath).", ExampleValue = "tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.exe", AlternativeName = "spi", DefaultValue = false)>] 
+                                            sccmPackageInstaller : string,
+                                         [<OptionalCommandParameter(Description = "Specify sccm package readme to override automatic download of Sccm package. Used as a workaround for web scraping gone wrong when Lenovo has changed the web design. The sccm package readme spesified must be be downloaded manually and saved to the DriverToolCache as specified in the application configuration file (DownloadCacheDirectoryPath).", ExampleValue = "tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.txt", AlternativeName = "spr", DefaultValue = false)>] 
+                                            sccmPackageReadme : string,
+                                         [<OptionalCommandParameter(Description = "Specify sccm package relase date.", ExampleValue = "2019-10-01", AlternativeName = "sprd", DefaultValue = false)>] 
+                                            sccmPackageReleased : string
                                          ) : NCmdLiner.Result<int> = 
-            CommandProviders.createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage)
+            CommandProviders.createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCode, operatingSystemCode, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme,sccmPackageReleased)
         
         [<Command(Description="Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.",Summary="Install driver package")>]
         static member InstallDriverPackage(
