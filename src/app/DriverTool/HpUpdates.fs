@@ -142,8 +142,7 @@ module HpUpdates =
         }
 
     let getCategoryFromReadmeHtml readmeHtmlPath defaultCategory = 
-        match(result
-            {
+        match(result{
                 let! htmlDocument = HtmlHelper.loadHtmlDocument readmeHtmlPath
                 let category =
                     (htmlDocument.Elements()|>Seq.head).Elements()
