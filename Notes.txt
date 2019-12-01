@@ -21,8 +21,9 @@ ftp://ftp.dell.com/catalog/DellSDPCatalogPC.cab
 
 
 
-Lenovo Update Catalog?
-----------------------
+Lenovo Update Catalog
+----------------------
+https://download.lenovo.com/luc/v2/LenovoUpdatesCatalog2v2.cab
 
 
 
