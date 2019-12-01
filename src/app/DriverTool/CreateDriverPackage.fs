@@ -306,9 +306,13 @@ module CreateDriverPackage =
                                     FileName=readmeName;
                                     Size=0L
                                 }
-                            InstallerUrl=String.Empty;
-                            InstallerChecksum=String.Empty;
-                            InstallerFileName=intallerName;
+                            InstallerFile=
+                                {
+                                    Url=String.Empty;
+                                    Checksum=String.Empty;
+                                    FileName=intallerName;
+                                    Size=0L
+                                }
                             Released=releasedDate;
                             Os=String.Empty;
                             OsBuild=String.Empty;

@@ -189,9 +189,13 @@ module LenovoCatalog =
                                         FileName = readme.FileName;
                                         Size=0L;
                                         }
-                                    InstallerUrl= installer.Url;
-                                    InstallerChecksum=installer.Checksum;
-                                    InstallerFileName = installer.FileName;
+                                    InstallerFile=
+                                        {
+                                            Url=installer.Url;
+                                            Checksum=installer.Checksum
+                                            FileName=installer.FileName
+                                            Size=0L
+                                        }
                                     Released=(getReleaseDateFromUrl installer.Url);
                                     Os= (osShortNameToLenovoOs installer.Os);
                                     OsBuild=installer.OsBuild

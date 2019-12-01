@@ -153,7 +153,7 @@ module DellUpdates=
 
     let toSccmPackageInfo (dp:XElement) (operatingSystemCode:OperatingSystemCode) : SccmPackageInfo =
         let path = getAttribute(dp,"path")        
-        let (directory, installerName) = pathToDirectoryAndFile path
+        let (_, installerName) = pathToDirectoryAndFile path
         {
             ReadmeFile =
                 {
@@ -162,9 +162,13 @@ module DellUpdates=
                     FileName="";
                     Size=0L;
                 }
-            InstallerUrl=downloadsBaseUrl + "/" + path;
-            InstallerChecksum=getAttribute (dp,"hashMD5");
-            InstallerFileName=installerName;
+            InstallerFile=
+                {
+                    Url=downloadsBaseUrl + "/" + path;
+                    Checksum=getAttribute (dp,"hashMD5");
+                    FileName=installerName;
+                    Size=0L;                
+                }
             Released=(getAttribute (dp,"dateTime"))|>DateTime.Parse;
             Os=operatingSystemCode.Value;
             OsBuild="";
@@ -191,9 +195,9 @@ module DellUpdates=
     
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        
-            let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFileName
-            let! installerUri = toUri sccmPackage.InstallerUrl
-            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerChecksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
+            let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
+            let! installerUri = toUri sccmPackage.InstallerFile.Url
+            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (logger, installerDownloadInfo,false)
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 

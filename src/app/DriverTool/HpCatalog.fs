@@ -163,9 +163,13 @@ module HpCatalog =
                     FileName="";
                     Size=0L;
                 }
-            InstallerUrl=softPaq.Url
-            InstallerChecksum=softPaq.MD5
-            InstallerFileName=Web.getFileNameFromUrl softPaq.Url
+            InstallerFile =
+                {
+                    Url=softPaq.Url;
+                    Checksum=softPaq.MD5;
+                    FileName=Web.getFileNameFromUrl softPaq.Url;
+                    Size=softPaq.Size;
+                }
             Released=softPaq.DateReleased|>DateTime.Parse;
             Os=osCode;
             OsBuild=osBuild;

@@ -64,7 +64,7 @@ module LenovoCatalogTests=
                     match downloadInfosResult with
                     |Ok dis -> 
                         dis 
-                        |> Seq.map(fun di -> System.Console.WriteLine("{0};{1}",di.InstallerUrl,di.InstallerChecksum))
+                        |> Seq.map(fun di -> System.Console.WriteLine("{0};{1}",di.InstallerFile.Url,di.InstallerFile.Checksum))
                         |> Seq.iter (fun p -> p)
                         //|> ignore
                     |Error ex -> 
@@ -270,9 +270,14 @@ module LenovoCatalogTests=
                         FileName=(getFileNameFromUrl expectedReadmeUrl);
                         Size=0L;
                     };
-                InstallerUrl = expectedInstallerUrl;
-                InstallerChecksum = expectedInstallerChecksum; 
-                InstallerFileName=(getFileNameFromUrl expectedInstallerUrl);
+                InstallerFile=
+                    {
+                        Url = expectedInstallerUrl;
+                        Checksum = expectedInstallerChecksum; 
+                        FileName=(getFileNameFromUrl expectedInstallerUrl);
+                        Size=0L
+                    }
+                
                 Released=(getReleaseDateFromUrl expectedInstallerUrl);
                 Os=osShortNameToLenovoOs os;
                 OsBuild=osBuild
@@ -297,10 +302,16 @@ module LenovoCatalogTests=
                             Checksum = "25444b51d04288ac041a6b21a318cb88f3fa58c6c049a294e0e8bcfbe060ec8c"; 
                             FileName = (getFileNameFromUrl readmeUrl1);
                             Size=0L;
-                        }                    
-                    InstallerUrl= installerUrl1; 
-                    InstallerChecksum="9ae55aa67c48809cb845957e32df5894cbdff0ab2933a75e3daef5ae895774c7"; 
-                    InstallerFileName = (getFileNameFromUrl installerUrl1);
+                        }
+                    InstallerFile=
+                        {
+                            Url= installerUrl1; 
+                            Checksum="9ae55aa67c48809cb845957e32df5894cbdff0ab2933a75e3daef5ae895774c7"; 
+                            FileName = (getFileNameFromUrl installerUrl1);
+                            Size=0L
+                        }
+                        
+                    
                     Released=(getReleaseDateFromUrl installerUrl1);
                     Os="win10";
                     OsBuild="1709"
@@ -314,10 +325,14 @@ module LenovoCatalogTests=
                             Checksum = "1bc74a7d91b5dc45585d92d03c14fee59e4d8055cb27374211c462a2b362d6f7"; 
                             FileName = (getFileNameFromUrl readmeUrl2);
                             Size=0L;
+                        }
+                    InstallerFile=
+                        {
+                            Url= installerUrl2; 
+                            Checksum="d424c27eae77e2ec1df973dc25ffa60854bc833e2b11df007d8f5985add4ea1d"; 
+                            FileName = (getFileNameFromUrl installerUrl2);
+                            Size=0L
                         }                    
-                    InstallerUrl= installerUrl2; 
-                    InstallerChecksum="d424c27eae77e2ec1df973dc25ffa60854bc833e2b11df007d8f5985add4ea1d"; 
-                    InstallerFileName = (getFileNameFromUrl installerUrl2);
                     Released=(getReleaseDateFromUrl installerUrl2);
                     Os="win10";
                     OsBuild="1803"
@@ -331,10 +346,14 @@ module LenovoCatalogTests=
                             Checksum = "442fa90fb21d02716b1ca755af3249271557016e08283efe67dda747f892f8d1"; 
                             FileName = (getFileNameFromUrl readmeUrl3);
                             Size=0L;
+                        }
+                    InstallerFile=
+                        {
+                            Url= installerUrl3; 
+                            Checksum="a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1"; 
+                            FileName = (getFileNameFromUrl installerUrl3);    
+                            Size=0L
                         }                    
-                    InstallerUrl= installerUrl3; 
-                    InstallerChecksum="a0e86800445f919cb9a94c0b5ae26fbc3c0c9c1ed3d2feda7a33131f71d512d1"; 
-                    InstallerFileName = (getFileNameFromUrl installerUrl3);
                     Released=(getReleaseDateFromUrl installerUrl3);
                     Os="win10";
                     OsBuild="1809"
@@ -351,9 +370,9 @@ module LenovoCatalogTests=
                 System.Console.Write(actual.ToString())
                 let expectedArray = (expectedSccmPacakages |> Seq.toArray)
                 for i in 0..2 do
-                    Assert.AreEqual(expectedArray.[i].InstallerChecksum,actual.[i].InstallerChecksum,"InstallerChecksum"  + i.ToString())
-                    Assert.AreEqual(expectedArray.[i].InstallerFileName,actual.[i].InstallerFileName,"InstallerFileName"  + i.ToString())
-                    Assert.AreEqual(expectedArray.[i].InstallerUrl,actual.[i].InstallerUrl,"InstallerUrl" + i.ToString())
+                    Assert.AreEqual(expectedArray.[i].InstallerFile.Checksum,actual.[i].InstallerFile.Checksum,"InstallerChecksum"  + i.ToString())
+                    Assert.AreEqual(expectedArray.[i].InstallerFile.FileName,actual.[i].InstallerFile.FileName,"InstallerFileName"  + i.ToString())
+                    Assert.AreEqual(expectedArray.[i].InstallerFile.Url,actual.[i].InstallerFile.Url,"InstallerUrl" + i.ToString())
                     Assert.AreEqual(expectedArray.[i].ReadmeFile.Checksum,actual.[i].ReadmeFile.Checksum,"ReadmeChecksum" + i.ToString())
                     Assert.AreEqual(expectedArray.[i].ReadmeFile.FileName,actual.[i].ReadmeFile.FileName,"ReadmeFileName" + i.ToString())
                     Assert.AreEqual(expectedArray.[i].ReadmeFile.Url,actual.[i].ReadmeFile.Url,"ReadmeUrl" + i.ToString())
@@ -477,7 +496,7 @@ module LenovoCatalogTests=
             Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
             let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
             let! info = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
-            Assert.AreEqual(expectedInstallerUrlString,info.InstallerUrl)
+            Assert.AreEqual(expectedInstallerUrlString,info.InstallerFile.Url)
             return destinationFolderPath
         }) with
         |Ok v -> Assert.IsTrue(expectedSucess,sprintf "Expected failure but succeded instead." )

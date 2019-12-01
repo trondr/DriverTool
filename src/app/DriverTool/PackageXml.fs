@@ -76,9 +76,7 @@ module PackageXml =
     
     type SccmPackageInfo = {        
         ReadmeFile:DriverTool.Web.WebFile
-        InstallerUrl:string;
-        InstallerChecksum:string;
-        InstallerFileName:string;
+        InstallerFile:DriverTool.Web.WebFile        
         Released:DateTime;
         Os:string;
         OsBuild:string

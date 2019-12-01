@@ -87,7 +87,7 @@ module HpCatalogTests =
                     let assembly = typeof<ThisTestAssembly>.Assembly
                     let! extractedFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
                     let! actual = HpCatalog.getSccmDriverPackageInfoBase (extractedFilePath,modelCode,operatingSystemCode)
-                    Assert.IsFalse(String.IsNullOrWhiteSpace( actual.InstallerFileName), "InstallerFileName is empty")
+                    Assert.IsFalse(String.IsNullOrWhiteSpace( actual.InstallerFile.FileName), "InstallerFileName is empty")
                     
                     return actual
                 }) with
