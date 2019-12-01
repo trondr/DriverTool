@@ -117,6 +117,7 @@
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_Invalid_Document.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds540208.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds540208_v2.html" />
+    <EmbeddedResource Include="TestData\LenovoSccm\ds112090_new_2019-12-01.html" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
