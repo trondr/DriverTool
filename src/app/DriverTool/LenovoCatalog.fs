@@ -172,7 +172,7 @@ module LenovoCatalog =
         | "win764" -> "win764"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
     
-    let getSccmPackageInfoFromUlNodes ulNodes =
+    let getSccmPackageInfoFromUlNodesUnsafe ulNodes =
         let infos = 
             ulNodes
             |> Seq.map (fun ul -> getDownloadLinkInfo ul)
@@ -204,7 +204,9 @@ module LenovoCatalog =
                         )
         infos
 
-
+    let getSccmPackageInfoFromUlNodes ulNodes =
+        tryCatch getSccmPackageInfoFromUlNodesUnsafe ulNodes
+        
     let getDownloadsTabHtmlNode (htmlDocument:HtmlDocument) = 
         let downloadsTab =
             htmlDocument.Descendants["div"]
@@ -244,7 +246,7 @@ module LenovoCatalog =
             let! htmlDocument = loadHtmlDocument content
             let! downloadsTabHtmlNode = getDownloadsTabHtmlNode htmlDocument
             let! unorderedLists = getUnorderdLists downloadsTabHtmlNode
-            let sccmPackageInfos = getSccmPackageInfoFromUlNodes unorderedLists
+            let! sccmPackageInfos = getSccmPackageInfoFromUlNodes unorderedLists
             return sccmPackageInfos
         }
     
