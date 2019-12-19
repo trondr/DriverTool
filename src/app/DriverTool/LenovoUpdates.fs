@@ -263,7 +263,7 @@ module LenovoUpdates =
         match content with
         |Ok downloadPageContent -> 
             getLenovoSccmPackageDownloadInfoFromContent downloadPageContent os osbuild
-        |Error ex -> Result.Error (toException (sprintf "Failed to get content from url '%s', OS=%s, OsBuild=%s." uri os osbuild) (Some ex))
+        |Error ex -> Result.Error (toException (sprintf "Failed to get sccm package info from url '%s' for OS=%s and OsBuild=%s due to error '%s'. It seems that Lenovo has changed the web page design making the algorithm for automatically scraping the information from the web page obsolete. To workaround the issue, manually browse to the web page '%s' and download the sccm pacakge installer (*.exe) and the sccm package readme (*.txt) and save the files to the driver tool cache  folder '%s'. Then modify the DriverTool.exe command line to skip download of Sccm package and specify the name of the installer and readme and relase date. Switches that needs to be added (example): /doNotDownloadSccmPackage=\"True\" /sccmPackageInstaller=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.exe\" /sccmPackageReadme=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.txt\" /sccmPackageReleased=\"2019-10-01\"" uri os osbuild ex.Message uri (downloadCacheDirectoryPath)) (Some ex))
 
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath)  : Result<SccmPackageInfo,Exception> =
         result
