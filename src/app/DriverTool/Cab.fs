@@ -3,12 +3,13 @@
 module Cab = 
 
     open System
+    open DriverTool.Library.Environment
 
     /// <summary>
     /// Path to expand.exe
     /// </summary>
     let expandExe =
-        System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
+        System.IO.Path.Combine(nativeSystemFolder,"expand.exe")
 
     let expandExeExitCodeToResult cabFilePath exitCode =
         let expandResult =

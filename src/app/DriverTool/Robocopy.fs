@@ -2,7 +2,7 @@
 
 module Robocopy=
     open System    
-    open DriverTool.Environment
+    open DriverTool.Library.Environment
 
     let logger = DriverTool.Library.Logging.getLoggerByName("Robocopy")
     open DriverTool.Library.F

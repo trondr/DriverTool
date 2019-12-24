@@ -2,7 +2,7 @@
 
 module BitLockerOperations=
     open System
-    open DriverTool.Environment
+    open DriverTool.Library.Environment
     open System.Management
     let logger = DriverTool.Library.Logging.getLoggerByName("BitLockerOperations")
     open DriverTool.Library.F

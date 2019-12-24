@@ -20,6 +20,7 @@ module CreateDriverPackage =
     open DriverTool.Library.F
     open DriverTool.Library
     open DriverTool.UpdatesContext
+    open DriverTool.Library.Environment
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 
@@ -404,7 +405,7 @@ module CreateDriverPackage =
                 
                 let updatedInstallConfiguration = 
                     { installConfiguration with 
-                        LogDirectory = (DriverTool.Environment.unExpandEnironmentVariables (FileSystem.pathValue dpcc.LogDirectory));
+                        LogDirectory = (unExpandEnironmentVariables (FileSystem.pathValue dpcc.LogDirectory));
                         LogFileName = toValidDirectoryName (sprintf "%s.log" packageName);
                         PackageName = packageName;
                         PackageVersion = "1.0"

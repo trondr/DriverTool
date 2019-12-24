@@ -2,6 +2,8 @@
 
 module Requirements =
     
+    open DriverTool.Library.Environment
+
     let isAdministrator () =
         let windowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent()
         let windowsPrincipal= new System.Security.Principal.WindowsPrincipal(windowsIdentity)
@@ -15,6 +17,6 @@ module Requirements =
         |false-> Result.Error (new System.Exception(message))
 
     let assertIsRunningNativeProcess message =
-        match(Environment.isNativeProcessBit) with
+        match(isNativeProcessBit) with
         |true -> Result.Ok true
         |false -> Result.Error (new System.Exception(message))
