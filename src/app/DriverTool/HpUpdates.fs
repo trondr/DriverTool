@@ -10,6 +10,7 @@ module HpUpdates =
     open FSharp.Data
     open DriverTool.UpdatesContext
     open DriverTool.Library.F
+    open DriverTool.Library
         
     let toPackageInfos sdp  =
             let pacakgeInfos =

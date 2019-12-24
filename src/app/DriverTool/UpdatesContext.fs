@@ -2,12 +2,13 @@
 
 module UpdatesContext =
     open System.Text.RegularExpressions
+    open DriverTool.Library
     
     type UpdatesRetrievalContext = {
         Model:DriverTool.ModelCode
         OperatingSystem: DriverTool.OperatingSystemCode
         Overwrite: bool
-        LogDirectory:DriverTool.FileSystem.Path
+        LogDirectory:FileSystem.Path
         ExcludeUpdateRegexPatterns: Regex[]
     }
 

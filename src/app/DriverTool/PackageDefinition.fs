@@ -2,8 +2,8 @@
 open System
 
 module PackageDefinition =
-    open Common.Logging
-    let logger = LogManager.GetLogger("PackageDefinition")
+    let logger = DriverTool.Library.Logging.getLoggerByName "PackageDefinition"
+    open DriverTool.Library
     
     type ApplicationRegistryValue = {Path:string;ValueName:string;Value:string}
 

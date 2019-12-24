@@ -6,6 +6,7 @@ module ExportRemoteUpdates =
     open DriverTool.ManufacturerTypes
     open DriverTool.UpdatesContext
     open DriverTool.Library.F
+    open DriverTool.Library
        
     let exportRemoteUpdates cacheFolderPath logger (manufacturer:Manufacturer) (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite excludeUpdatePatterns =         
         result {

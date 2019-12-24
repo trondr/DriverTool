@@ -4,6 +4,7 @@ open NUnit.Framework
 open DriverTool
 open FileOperations
 open DriverTool.DirectoryOperations
+open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]

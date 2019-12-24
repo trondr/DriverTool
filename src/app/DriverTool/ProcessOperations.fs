@@ -9,6 +9,7 @@ module ProcessOperations =
     open System    
     open DriverTool.Library.Logging
     open DriverTool.Library.F
+    open DriverTool.Library
     
     type ProcessExitData = {FileName:FileSystem.Path;Arguments:string;ExitCode:int;StdOutput:string;StdError:string}
 

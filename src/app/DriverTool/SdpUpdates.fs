@@ -7,6 +7,7 @@ module SdpUpdates =
     open DriverTool.UpdatesContext
     open DriverTool.Library.Logging
     open DriverTool.Library.F
+    open DriverTool.Library
     let logger = getLoggerByName("SdpUpdates")
 
     /// <summary>

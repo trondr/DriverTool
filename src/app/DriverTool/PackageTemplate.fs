@@ -1,11 +1,10 @@
 ﻿namespace DriverTool
 
 module PackageTemplate =
-    open DriverTool.Library.F0
-    open DriverTool.EmbeddedResource
-    open DriverTool.Library.Logging
+    open DriverTool.EmbeddedResource    
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageTemplate"
     open DriverTool.Library.F
+    open DriverTool.Library
         
     let isDriverPackageEmbeddedResourceName (resourceName:string) =
         resourceName.StartsWith("DriverTool.PackageTemplate")

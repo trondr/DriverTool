@@ -2,12 +2,11 @@
 
 open NUnit.Framework
 open DriverTool
+open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module ProcessOperationsTests =
-    open System.Security.Principal
-    open DriverTool.Library.F
     open DriverTool.Library.Logging
 
     [<Test>]

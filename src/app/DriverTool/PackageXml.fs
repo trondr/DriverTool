@@ -6,6 +6,7 @@ module PackageXml =
     open System.Xml.Linq
     open DriverTool.Library.F0
     open DriverTool.Library.F
+    open DriverTool.Library
     open System
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageXml"
         

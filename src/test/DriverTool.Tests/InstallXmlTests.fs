@@ -3,7 +3,7 @@
     open NUnit.Framework
     open DriverTool
     open DriverTool.Library.F
-    
+    open DriverTool.Library
 
     [<TestFixture>]
     module InstallXmlTests =         

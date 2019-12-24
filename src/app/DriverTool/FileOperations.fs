@@ -2,10 +2,10 @@
 open DriverTool.Library.F
 open System
 
-module FileOperations =
-    open FileSystem
+module FileOperations =    
     open DriverTool.Library.Logging
     open DriverTool.Library.F
+    open DriverTool.Library
 
     let deleteFileUnsafe path  =
         System.IO.File.Delete (FileSystem.pathValue path)
@@ -73,7 +73,7 @@ module FileOperations =
     let copyFile force sourceFilePath destinationFilePath =
         tryCatch3WithMessage copyFileUnsafe force sourceFilePath destinationFilePath (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)
 
-    let copyFilePaths (destinationFolderPath) (files:seq<Path>) =
+    let copyFilePaths (destinationFolderPath) (files:seq<FileSystem.Path>) =
         files
         |>Seq.map(fun fp -> 
                     result{

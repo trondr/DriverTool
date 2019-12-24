@@ -14,6 +14,7 @@ module WebTests =
     open System
     open NUnit.Framework
     open DriverTool.Library.F
+    open DriverTool.Library
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]

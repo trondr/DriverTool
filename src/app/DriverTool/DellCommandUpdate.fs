@@ -6,6 +6,7 @@ module DellCommandUpdate =
     open System.Xml.Linq
     open DellSettings
     open DriverTool.Library.F
+    open DriverTool.Library
 
     let dellCommandUpdateProgramDataFolder =
         System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData),"Dell","CommandUpdate")

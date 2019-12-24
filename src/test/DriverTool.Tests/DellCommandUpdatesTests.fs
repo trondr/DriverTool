@@ -3,6 +3,7 @@
 open NUnit.Framework
 open DriverTool.Library.F
 open DriverTool
+open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]

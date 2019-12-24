@@ -1,6 +1,7 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
 open DriverTool
+open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
@@ -19,7 +20,7 @@ module EmbeddedResourceTest  =
             result {
                 let! testPath = FileSystem.path destinationFilePathString;
                 let! testResourceName = ResourceName.create "DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe"
-                let! resultPath = EmbeddedResource.extractEmbeddedResourceInAssemblyToFile (testResourceName, testResourceName.GetType().Assembly,testPath) 
+                let! resultPath = DriverTool.EmbeddedResource.extractEmbeddedResourceInAssemblyToFile (testResourceName, testResourceName.GetType().Assembly,testPath) 
                 return resultPath
             }
         match res with
@@ -102,7 +103,7 @@ module EmbeddedResourceTest  =
     [<Test>]
     let getAllEmbeddedResourceNamesTest () =
         let actual = 
-            EmbeddedResource.getAllEmbeddedResourceNames
+            DriverTool.EmbeddedResource.getAllEmbeddedResourceNames
         let allResourceNames = String.concat Environment.NewLine actual                
         Assert.AreEqual(60,actual.Length,allResourceNames)
 

@@ -4,6 +4,7 @@ module CorFlags=
     
     open Common.Logging
     open DriverTool.Library.F
+    open DriverTool.Library
 
     let logger = LogManager.GetLogger("CorFlags")
 

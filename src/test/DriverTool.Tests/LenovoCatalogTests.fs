@@ -2,6 +2,7 @@
 
 open NUnit.Framework
 open DriverTool
+open DriverTool.Library
 
 [<TestFixture>]
 module LenovoCatalogTests=

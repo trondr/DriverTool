@@ -15,10 +15,10 @@ module CreateDriverPackage =
     open DriverTool.PathOperations
     open PackageDefinition
     open DriverTool.Requirements
-    open DriverTool.PackageTemplate    
-    open FileSystem
+    open DriverTool.PackageTemplate        
     open DriverTool.Library.Logging
     open DriverTool.Library.F
+    open DriverTool.Library
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 
@@ -254,9 +254,9 @@ module CreateDriverPackage =
             SystemFamily:SystemFamily
             Model:ModelCode
             OperatingSystem:OperatingSystemCode
-            DestinationFolderPath:Path
+            DestinationFolderPath:FileSystem.Path
             BaseOnLocallyInstalledUpdates:bool
-            LogDirectory:Path
+            LogDirectory:FileSystem.Path
             ExcludeUpdateRegexPatterns: System.Text.RegularExpressions.Regex[]
             PackageTypeName:string
             ExcludeSccmPackage:bool            

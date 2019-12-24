@@ -9,6 +9,7 @@ module CompressionTests=
     open Common.Logging
     open DriverTool.FileOperations
     open DriverTool.Library.F
+    open DriverTool.Library
         
     let logger = Common.Logging.Simple.ConsoleOutLogger("CompressionTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     

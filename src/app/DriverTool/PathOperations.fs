@@ -1,5 +1,7 @@
 ﻿namespace DriverTool
 module PathOperations =
+    open DriverTool.Library
+
     let combinePaths2 path1 path2 =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue path1, path2))
     

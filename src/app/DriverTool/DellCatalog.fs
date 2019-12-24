@@ -6,6 +6,7 @@ module DellCatalog =
     open DriverTool.SdpUpdates
     open System
     open DriverTool.Library.F
+    open DriverTool.Library
     
     let expandExe =
         System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")

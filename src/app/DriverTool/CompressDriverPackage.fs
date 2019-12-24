@@ -5,6 +5,7 @@ module CompressDriverPackage =
     let logger = getLoggerByName("InstallDriverPackage")
     open System
     open DriverTool.Library.F
+    open DriverTool.Library
 
     let compressDriverPackage (driverPackagePath:FileSystem.Path) =
         result{

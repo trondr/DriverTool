@@ -3,7 +3,7 @@ namespace DriverTool.Tests
 open NUnit.Framework
 open DriverTool
 open DriverTool.ExportRemoteUpdates
-open CommandProviders
+open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.IntegrationTests)>]

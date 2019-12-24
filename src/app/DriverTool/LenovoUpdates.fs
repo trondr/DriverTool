@@ -12,8 +12,9 @@ module LenovoUpdates =
     open DriverTool.Library.F0
     open DriverTool.Library.Logging
     open DriverTool.Library.F
+    open DriverTool.Library
     
-    let logger = DriverTool.Library.Logging.getLoggerByName("LenovoUpdates")
+    let logger = DriverTool.Library.Logging.getLoggerByName "LenovoUpdates"
                
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
         operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")

@@ -2,9 +2,9 @@
 
 module LenovoCatalogXml =
     open System
-    open System.Xml.Linq
-    open DriverTool.FileSystem
+    open System.Xml.Linq    
     open DriverTool.Library.F
+    open DriverTool.Library
     
     type ModelType = ModelType of string
 
@@ -126,7 +126,7 @@ module LenovoCatalogXml =
         |>Seq.map(fun p -> toProduct p)
         |>toAccumulatedResult
             
-    let loadLenovoCatalog (lenovoCatalogXlmFilePath:Path) =
+    let loadLenovoCatalog (lenovoCatalogXlmFilePath:FileSystem.Path) =
         result{
             let! existingCatalogXmlPath = FileOperations.ensureFileExistsWithMessage (sprintf "Lenovo catalog xml file '%A' not found." lenovoCatalogXlmFilePath) lenovoCatalogXlmFilePath
             let xDocument = XDocument.Load(FileSystem.pathValue existingCatalogXmlPath)

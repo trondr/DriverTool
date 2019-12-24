@@ -6,6 +6,7 @@ module EmbeddedResource =
     open System
     open DriverTool.Library.F0
     open DriverTool.Library.F
+    open DriverTool.Library
         
     type ResourceName private (resourceName:string) =
         member x.Value = resourceName
@@ -103,17 +104,13 @@ module EmbeddedResource =
     let extractEmbededResouceToFile (resourceName:string , destinationFileName:string) = 
         result {
                 
-                let! resourceNameObject = 
-                    ResourceName.create resourceName
-                let! destinationFilePath = 
-                    FileSystem.path destinationFileName
+                let! resourceNameObject = ResourceName.create resourceName
+                let! destinationFilePath = FileSystem.path destinationFileName
                 let! parentDirectoryPath = (FileSystem.path (System.IO.Path.GetDirectoryName(FileSystem.pathValue destinationFilePath)))
                 let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists true parentDirectoryPath
-                logger.Info("Verified that directory exists:" + FileSystem.pathValue existingParentDirectoryPath)
-                let assembly = destinationFilePath.GetType().Assembly
+                logger.Info("Verified that directory exists:" + FileSystem.pathValue existingParentDirectoryPath)                
                 logger.Info(msg (sprintf "Extracting resource '%s' -> '%s'" resourceName (FileSystem.pathValue destinationFilePath)))
-                let! fileResult = 
-                    extractEmbeddedResourceInAssemblyToFile (resourceNameObject,assembly, destinationFilePath)
+                let! fileResult = extractEmbeddedResourceInAssemblyToFile (resourceNameObject,typeof<ThisAssembly>.Assembly, destinationFilePath)
                 return fileResult
             }
 

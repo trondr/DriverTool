@@ -7,6 +7,7 @@ module RunCommand =
     open DriverTool.Library.Logging
     open System
     open System.IO
+    open DriverTool.Library
     
     type NotepadMessenger () =
         let tempFileName = 

@@ -4,6 +4,7 @@ open System
 open System.Net
 open DriverTool.Library.F0
 open DriverTool.Library.F
+open DriverTool.Library
 
 module Web =
     open Common.Logging

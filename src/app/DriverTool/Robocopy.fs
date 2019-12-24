@@ -6,6 +6,7 @@ module Robocopy=
 
     let logger = DriverTool.Library.Logging.getLoggerByName("Robocopy")
     open DriverTool.Library.F
+    open DriverTool.Library
 
     let roboCopyExitCode2ExitCode roboCopyExitCode =
         match roboCopyExitCode with

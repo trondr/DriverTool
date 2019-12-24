@@ -9,6 +9,7 @@ module InstallDriverPackage =
     open DriverTool.Library.Logging
     let logger = getLoggerByName "InstallDriverPackage"
     open DriverTool.Library.F
+    open DriverTool.Library
 
     let getInstallXmlPath (driverPackagePath:FileSystem.Path) =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Install.xml"))

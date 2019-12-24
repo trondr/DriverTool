@@ -11,6 +11,7 @@ module DellUpdatesTests =
     let logger = Common.Logging.Simple.ConsoleOutLogger("DellUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     open DriverTool.Library.F
     open DriverTool.Library.Logging
+    open DriverTool.Library
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]

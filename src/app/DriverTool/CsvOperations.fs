@@ -2,6 +2,7 @@
 
 module CsvOperations =
     open DriverTool.Library.F
+    open DriverTool.Library
 
     let exportToCsvUnsafe (csvFilePath:FileSystem.Path, records) =
         use sw = new System.IO.StreamWriter(FileSystem.pathValue csvFilePath)

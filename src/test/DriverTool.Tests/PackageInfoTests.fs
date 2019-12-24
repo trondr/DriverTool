@@ -6,6 +6,7 @@ open DriverTool.PackageXml
 [<Category(TestCategory.UnitTests)>]
 module PackageInfoTests  =
     open System
+    open DriverTool.Library
 
     [<Test>]
     let packageInfosToDownloadJobs_Duplicate_Readme() =        
@@ -28,7 +29,7 @@ module PackageInfoTests  =
             }
         
         let actual = 
-            packageInfosToDownloadJobs (DriverTool.FileSystem.pathUnSafe @"c:\temp") packageInfos
+            packageInfosToDownloadJobs (FileSystem.pathUnSafe @"c:\temp") packageInfos
             |>Seq.toArray
         Assert.AreEqual(3,actual.Length,"Number of download jobs was not expected")
 
@@ -42,7 +43,7 @@ module PackageInfoTests  =
             }
         
         let actual = 
-            packageInfosToDownloadJobs (DriverTool.FileSystem.pathUnSafe @"c:\temp") packageInfos
+            packageInfosToDownloadJobs (FileSystem.pathUnSafe @"c:\temp") packageInfos
             |>Seq.toArray
         Assert.AreEqual(4,actual.Length,"Number of download jobs was not expected")
         

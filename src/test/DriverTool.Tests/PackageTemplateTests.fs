@@ -7,6 +7,7 @@ open NUnit.Framework
 module PackageTemplateTests =
     open DriverTool
     open DriverTool.Library.F
+    open DriverTool.Library
     
     let expectedPackageTemplateFiles =
         [|

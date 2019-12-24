@@ -1,11 +1,11 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
-open DriverTool.Checksum
 
 [<TestFixture>]
-module ChecksumTests =
-    open DriverTool
+module ChecksumTests =    
     open System
+    open DriverTool.Checksum
+    open DriverTool.Library
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
