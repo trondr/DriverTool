@@ -1,6 +1,8 @@
 ﻿namespace DriverTool
 
 module CsvOperations =
+    open DriverTool.Library.F
+
     let exportToCsvUnsafe (csvFilePath:FileSystem.Path, records) =
         use sw = new System.IO.StreamWriter(FileSystem.pathValue csvFilePath)
         use csv = new CsvHelper.CsvWriter(sw)

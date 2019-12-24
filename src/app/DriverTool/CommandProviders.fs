@@ -1,11 +1,11 @@
 ﻿namespace DriverTool
-open F
 
 module CommandProviders =
     open ManufacturerTypes
     open FileSystem
     open DriverTool.Library.F0
     open DriverTool.Library.Logging
+    open DriverTool.Library.F
 
     let exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result {

@@ -5,6 +5,7 @@ module BitLockerOperations=
     open DriverTool.Environment
     open System.Management
     let logger = DriverTool.Library.Logging.getLoggerByName("BitLockerOperations")
+    open DriverTool.Library.F
     
     let isBitLockerEnabled () =
         let nameSpace = @"\\.\root\CIMv2\Security\MicrosoftVolumeEncryption"

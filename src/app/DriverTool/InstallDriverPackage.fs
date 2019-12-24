@@ -8,7 +8,8 @@ module InstallDriverPackage =
     open Microsoft.FSharp.Core.Operators
     open DriverTool.Library.Logging
     let logger = getLoggerByName "InstallDriverPackage"
-        
+    open DriverTool.Library.F
+
     let getInstallXmlPath (driverPackagePath:FileSystem.Path) =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Install.xml"))
 

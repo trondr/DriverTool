@@ -2,6 +2,7 @@
 
 open System    
 open Paths
+open DriverTool.Library.F
 
 type InvalidPathException(path:string, message : string) =
         inherit Exception(

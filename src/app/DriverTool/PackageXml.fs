@@ -1,12 +1,14 @@
 ﻿namespace DriverTool
 
-open System.Xml.Linq
-open DriverTool.Library.F0
+
 
 module PackageXml = 
-    let logger = DriverTool.Library.Logging.getLoggerByName("PackageXml")
+    open System.Xml.Linq
+    open DriverTool.Library.F0
+    open DriverTool.Library.F
     open System
-    
+    let logger = DriverTool.Library.Logging.getLoggerByName "PackageXml"
+        
     type PackageXmlInfo = 
         {
             Location:string;

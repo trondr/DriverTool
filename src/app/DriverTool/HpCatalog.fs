@@ -8,6 +8,7 @@ module HpCatalog =
 
     open System
     open DriverTool.Cab
+    open DriverTool.Library.F
 
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path, destinationFilePath:FileSystem.Path) =
         result{

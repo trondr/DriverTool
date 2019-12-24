@@ -3,6 +3,7 @@
 module HtmlHelper =
     open FSharp.Data
     open DriverTool.Library.F0
+    open DriverTool.Library.F
     
     let loadHtmlDocument htmlFilePath =
         result

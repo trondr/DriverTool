@@ -1,6 +1,5 @@
 ﻿namespace DriverTool
 open Microsoft.FSharp.Collections
-open F
 
 module CreateDriverPackage =
         
@@ -19,6 +18,7 @@ module CreateDriverPackage =
     open DriverTool.PackageTemplate    
     open FileSystem
     open DriverTool.Library.Logging
+    open DriverTool.Library.F
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 

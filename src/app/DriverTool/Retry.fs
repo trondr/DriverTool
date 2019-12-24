@@ -2,6 +2,8 @@
 
 [<AutoOpen>]
 module Retry = 
+    open DriverTool.Library.F
+
     let retry = new RetryBuilder()
     let retryWithPolicy (retryPolicy : RetryPolicy) (retry : Retry<'T>) = 
         Retry (fun _ -> let (Retry retryFunc) = retry in retryFunc retryPolicy)

@@ -1,10 +1,11 @@
 ﻿namespace DriverTool
-open F
+open DriverTool.Library.F
 open System
 
 module FileOperations =
     open FileSystem
     open DriverTool.Library.Logging
+    open DriverTool.Library.F
 
     let deleteFileUnsafe path  =
         System.IO.File.Delete (FileSystem.pathValue path)

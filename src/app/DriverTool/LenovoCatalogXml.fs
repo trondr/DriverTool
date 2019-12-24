@@ -4,6 +4,7 @@ module LenovoCatalogXml =
     open System
     open System.Xml.Linq
     open DriverTool.FileSystem
+    open DriverTool.Library.F
     
     type ModelType = ModelType of string
 

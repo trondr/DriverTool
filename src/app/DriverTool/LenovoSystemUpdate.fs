@@ -5,6 +5,7 @@ module LenovoSystemUpdate =
     open Tvsu.Engine
     open Tvsu.Beans
     open DriverTool.PackageXml
+    open DriverTool.Library.F
     
     
     let logger = DriverTool.Library.Logging.getLoggerByName("LenovoSystemUpdate")

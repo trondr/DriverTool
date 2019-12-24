@@ -1,9 +1,8 @@
 ﻿namespace DriverTool
 
 module WebParsing =
-    let logger = 
-        DriverTool.Library.Logging.getLoggerByName("WebParsing")
-    open System    
+    let logger = DriverTool.Library.Logging.getLoggerByName "WebParsing"    
+    open DriverTool.Library.F
 
     let getContentFromWebPage (uri:string)  =  
         try

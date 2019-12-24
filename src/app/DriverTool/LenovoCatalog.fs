@@ -9,6 +9,7 @@ module LenovoCatalog =
     open DriverTool.Web
     open DriverTool.OperatingSystem
     open DriverTool.Library.F0
+    open DriverTool.Library.F
 
     let logger = DriverTool.Library.Logging.getLoggerByName "LenovoCatalog"
 

@@ -2,6 +2,7 @@
 
 module OperatingSystem =
     open System
+    open DriverTool.Library.F
     
     let getOperatingSystemSku : Result<UInt32,Exception> =
         let operatingSystemSku = 
@@ -194,8 +195,6 @@ module OperatingSystem =
             |_ -> raise (new Exception(sprintf "Unsupported Operating System versjon '%i.%i'. " osMajorVersion osMinorVersion))
         |_ -> raise (new Exception(sprintf "Unsupported Operating System major versjon '%i'. " osMajorVersion))
     
-    open F    
-
     let versionToMajorMinorVersion (version:string) =
         match version with
         |Regex @"^(\d+)\.(\d+)" [majorVersion;minorVersion] -> (Convert.ToInt32(majorVersion),Convert.ToInt32(minorVersion))

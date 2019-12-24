@@ -1,5 +1,4 @@
 ﻿namespace DriverTool
-open F
 
 module ProcessOperations =    
     let logger = DriverTool.Library.Logging.getLoggerByName("ProcessOperations")
@@ -9,6 +8,7 @@ module ProcessOperations =
     open System.Text    
     open System    
     open DriverTool.Library.Logging
+    open DriverTool.Library.F
     
     type ProcessExitData = {FileName:FileSystem.Path;Arguments:string;ExitCode:int;StdOutput:string;StdError:string}
 

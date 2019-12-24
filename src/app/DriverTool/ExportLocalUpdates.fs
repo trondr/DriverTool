@@ -6,6 +6,7 @@ module ExportLocalUpdates =
 
     open System
     open DriverTool.UpdatesContext
+    open DriverTool.Library.F
 
     let exportLocalUpdates cacheFolderPath (csvFilePath:FileSystem.Path) excludeUpdatePatterns =
         result{       

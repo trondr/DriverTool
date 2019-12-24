@@ -1,11 +1,9 @@
 ﻿namespace DriverTool
 
 module SystemInfo=
-
-    open F
     open System
-
     open DriverTool.ManufacturerTypes
+    open DriverTool.Library.F
 
     let getModelCodeForCurrentSystem () : Result<string,Exception> =
         result{

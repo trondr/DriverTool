@@ -5,6 +5,7 @@ module RegistryOperations =
     let logger = DriverTool.Library.Logging.getLoggerByName("RegistryOperations")
     open System
     open Microsoft.Win32;
+    open DriverTool.Library.F
         
     let toRegHive regHiveName =
         match regHiveName with

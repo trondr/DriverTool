@@ -5,6 +5,7 @@ module ManufacturerTypes =
     open System
     open Microsoft.FSharp.Reflection
     open System.Text.RegularExpressions
+    open DriverTool.Library.F
 
     type Manufacturer =
         |Dell of name:string

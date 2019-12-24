@@ -4,6 +4,7 @@ module InstallXml =
     
     open System.Xml.Linq
     open DriverTool.Library.XmlToolKit
+    open DriverTool.Library.F
     
     type InstallConfigurationData = {
         LogDirectory:string;

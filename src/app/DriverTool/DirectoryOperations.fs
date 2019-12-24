@@ -4,6 +4,7 @@ module DirectoryOperations =
     open System
     open System.IO
     open DriverTool.Library.Logging
+    open DriverTool.Library.F
     
     let logger = DriverTool.Library.Logging.getLoggerByName("DirectoryOperations")
 

@@ -11,6 +11,7 @@ module DellUpdates=
     open DriverTool.UpdatesContext
     open sdpeval.fsharp.Sdp    
     open FSharp.Collections.ParallelSeq
+    open DriverTool.Library.F
 
     type DellUpdates = class end
     let logger = DriverTool.Library.Logging.getLoggerByName(typeof<DellUpdates>.Name)

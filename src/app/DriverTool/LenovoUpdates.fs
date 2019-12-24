@@ -6,13 +6,13 @@ module LenovoUpdates =
     open DriverTool.Library.Configuration
     open System.Text.RegularExpressions
     open System.Linq
-    open System.Xml.Linq
-    open F
+    open System.Xml.Linq    
     open DriverTool.Web    
     open DriverTool.UpdatesContext
     open DriverTool.Library.F0
     open DriverTool.Library.Logging
-
+    open DriverTool.Library.F
+    
     let logger = DriverTool.Library.Logging.getLoggerByName("LenovoUpdates")
                
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =

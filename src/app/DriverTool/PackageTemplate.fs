@@ -5,6 +5,7 @@ module PackageTemplate =
     open DriverTool.EmbeddedResource
     open DriverTool.Library.Logging
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageTemplate"
+    open DriverTool.Library.F
         
     let isDriverPackageEmbeddedResourceName (resourceName:string) =
         resourceName.StartsWith("DriverTool.PackageTemplate")

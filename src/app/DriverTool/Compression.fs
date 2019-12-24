@@ -4,6 +4,7 @@ module Compression =
     open System
     open DriverTool.Library.Logging
     let logger = getLoggerByName "Compression"
+    open DriverTool.Library.F
 
     let unzipFile (zipFile, destinationFolderPath, logger:Common.Logging.ILog) =
         result{            
