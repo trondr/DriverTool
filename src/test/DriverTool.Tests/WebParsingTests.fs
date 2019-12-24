@@ -6,7 +6,7 @@ open DriverTool
 [<TestFixture>]
 module WebParsingTests  =    
    
-    open F    
+    open DriverTool.Library.F  
     open System.Threading
     open DriverTool.WebParsing
     open DriverTool.PathOperations

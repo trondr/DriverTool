@@ -6,7 +6,7 @@
     [<Category(TestCategory.UnitTests)>]
     module CryptographyTests =
         open DriverTool
-        open DriverTool
+        open DriverTool.Library.F
         open Init
                 
         [<Test>]

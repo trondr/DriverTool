@@ -3,11 +3,14 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module DellUpdatesTests =
     open DriverTool
     open DriverTool.UpdatesContext
     open Common.Logging
     let logger = Common.Logging.Simple.ConsoleOutLogger("DellUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+    open DriverTool.Library.F
+    open DriverTool.Library.Logging
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
@@ -37,13 +40,13 @@ module DellUpdatesTests =
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())
             actual
             |>Seq.sortBy(fun p -> p.Name)
-            |>Seq.map (fun p -> System.Console.WriteLine((DriverTool.Logging.valueToString p)))
+            |>Seq.map (fun p -> System.Console.WriteLine((valueToString p)))
             |>Seq.toArray
             |>ignore
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)
-        |Error ex ->Assert.Fail(ex.Message)
+        |Result.Error ex ->Assert.Fail(ex.Message)
 
     open DriverTool.PackageXml
     open DriverTool
@@ -100,4 +103,4 @@ module DellUpdatesTests =
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)
-        |Error ex ->Assert.Fail(ex.Message)
+        |Result.Error ex ->Assert.Fail(ex.Message)

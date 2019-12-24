@@ -5,6 +5,7 @@ open DriverTool.PackageXml
 open DriverTool.Web
 open DriverTool.CreateDriverPackage
 open DriverTool
+open DriverTool.Library.F
 
 [<TestFixture>]
 module CreateDriverPackageTests =

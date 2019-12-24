@@ -6,6 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.UnitTests)>]
 module PackageTemplateTests =
     open DriverTool
+    open DriverTool.Library.F
     
     let expectedPackageTemplateFiles =
         [|

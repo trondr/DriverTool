@@ -8,6 +8,7 @@ module ManufacturerTests =
     open DriverTool
     open DriverTool.ManufacturerTypes
     open System
+    open DriverTool.Library.F
 
     [<Test>]
     [<TestCase("Dell","Acer",false,true,"Dell \"Dell\"","")>]

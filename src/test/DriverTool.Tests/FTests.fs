@@ -1,11 +1,11 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
-open DriverTool.F
 open System
 
 [<TestFixture>]
-module FTests =    
-    open DriverTool
+module FTests =        
+    open DriverTool.Library.F0
+    open DriverTool.Library.F
 
     [<Test>]   
     [<Category(TestCategory.UnitTests)>]
@@ -39,8 +39,8 @@ module FTests =
         match res with
         |Ok v -> Assert.AreEqual(11,v)
         |Error ex -> 
-            Assert.IsTrue((F0.getAccumulatedExceptionMessages ex).Contains(errorMessage),ex.Message)
-            Assert.IsTrue((ex.Message).Contains("Dummy message"),F0.getAccumulatedExceptionMessages ex)
+            Assert.IsTrue((getAccumulatedExceptionMessages ex).Contains(errorMessage),ex.Message)
+            Assert.IsTrue((ex.Message).Contains("Dummy message"),getAccumulatedExceptionMessages ex)
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -74,7 +74,7 @@ module FTests =
                 yield Result.Error(new Exception("Test Exception 1"))
             }
         let actual = 
-            DriverTool.F.getAllExceptions sequence
+            getAllExceptions sequence
             |> Seq.toArray
         Assert.AreEqual(1,actual.Length)
         Assert.AreEqual("Test Exception 1",actual.[0])
@@ -84,7 +84,7 @@ module FTests =
     let getAllExceptionsTests_Empty_Sequence() =
         let sequence = Seq.empty<Result<int,Exception>>            
         let actual = 
-            DriverTool.F.getAllExceptions sequence
+            getAllExceptions sequence
             |> Seq.toArray
         Assert.AreEqual(0,actual.Length)        
 
@@ -98,7 +98,7 @@ module FTests =
                 yield Result.Error(new Exception("Test Exception 1"))
             }
         let actual = 
-            DriverTool.F.toAccumulatedResult sequence 
+            toAccumulatedResult sequence 
         match actual with
         |Error ex -> 
             Assert.False(expectedSuccess,"Expected result to be Ok but was Error.")
@@ -115,7 +115,7 @@ module FTests =
                 yield Result.Ok(234)
             }
         let actual = 
-            DriverTool.F.toAccumulatedResult sequence 
+            toAccumulatedResult sequence 
         match actual with
         |Error ex -> Assert.False(expectedSuccess,"Expected result to be Ok but was Error.")
         |Ok v -> 
@@ -128,7 +128,7 @@ module FTests =
         let expectedSuccess = true
         let sequence = Seq.empty<Result<string,Exception>>
         let actual = 
-            DriverTool.F.toAccumulatedResult sequence   
+            toAccumulatedResult sequence   
         match actual with
         |Error ex -> Assert.False(expectedSuccess,"Expected result to be Ok but was Error.")
         |Ok v -> 

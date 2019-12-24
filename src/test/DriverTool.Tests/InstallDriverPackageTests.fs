@@ -3,6 +3,7 @@
 open NUnit.Framework
 open DriverTool.InstallDriverPackage
 open DriverTool.InstallXml
+open DriverTool.Library.F
 
 [<TestFixture>]
 module InstallDriverPackageTests =
@@ -59,7 +60,7 @@ module InstallDriverPackageTests =
     [<Category(TestCategory.ManualTests)>]
     let copyDriversTest () =
         let result = 
-            F.result{
+            result{
                 let! driverPackagePath = FileSystem.path @"C:\Temp\Drivers\SomeModel\2018-12-29"
                 let! destinationDriversFolderPath = FileSystem.path @"C:\Windows\Drivers\_tst_"
                 let! copyResult = copyDrivers (driverPackagePath, destinationDriversFolderPath)

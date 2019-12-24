@@ -3,6 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
 module WebTests =
 
     
@@ -12,6 +13,7 @@ module WebTests =
     open DriverTool
     open System
     open NUnit.Framework
+    open DriverTool.Library.F
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -116,7 +118,8 @@ module WebTests =
 
 [<TestFixture>]
 module ManualWebTest =
-    open DriverTool
+    open DriverTool.Library.F
+    open DriverTool.Library
     open DriverTool
     
     [<Test>]

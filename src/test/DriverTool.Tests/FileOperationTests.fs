@@ -10,6 +10,7 @@ open DriverTool.DirectoryOperations
 module FileOperationTests =
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("FileOperationTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+    open DriverTool.Library.F
 
     [<Test>]
     let ensureFileDoesNotExistTest_FileExists() =

@@ -8,7 +8,8 @@ open CommandProviders
 [<TestFixture>]
 [<Category(TestCategory.IntegrationTests)>]
 module ExportRemoteUpdatesTests =
-    open DriverTool
+    
+    open DriverTool.Library.F
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 

@@ -9,9 +9,9 @@ module HpUpdatesTests =
     open Init
     open DriverTool
     type ThisAssembly = { Empty:string;}
-    open DriverTool.Logging
+    open DriverTool.Library.Logging
     let logger = Common.Logging.Simple.ConsoleOutLogger("HpUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
-    
+    open DriverTool.Library.F
     
     [<Test>]
     [<TestCase("WIN10X64","83B3")>]

@@ -16,6 +16,7 @@ module LenovoCatalogTests=
     open DriverTool.FileOperations
     open DriverTool.PathOperations
     open System.Threading    
+    open DriverTool.Library.F
     
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 
@@ -56,11 +57,11 @@ module LenovoCatalogTests=
                 |Ok products ->
                     let downloadInfosResult = 
                         products
-                        |> F.getNRandomItems 4
+                        |> getNRandomItems 4
                         |> Seq.map (fun p -> 
                                         getLenovoSccmPackageDownloadInfo  p.SccmDriverPackUrl.Value "WIN10X64" "*"
                                         )
-                        |> F.toAccumulatedResult                
+                        |> toAccumulatedResult                
                     match downloadInfosResult with
                     |Ok dis -> 
                         dis 

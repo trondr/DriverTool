@@ -3,6 +3,7 @@
 module RegExpTests =
     open NUnit.Framework
     open DriverTool
+    open DriverTool.Library.F
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
