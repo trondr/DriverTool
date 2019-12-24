@@ -10,6 +10,7 @@ module F=
     #endif
 
     open System
+    open DriverTool.Library.F0
 
     /// <summary>
     /// Null coalescing operator

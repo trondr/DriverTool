@@ -11,8 +11,8 @@ module RunCommand =
     let runCommandBase args =        
         configureLogging ()
         let logger = getLoggerByName "DriverTool.x86.Host"
-        let version = 
-            typeof<F0.ThisAssembly>.Assembly.GetName().Version.ToString()
+        let assembly = System.Reflection.Assembly.GetExecutingAssembly()
+        let version = assembly.GetName().Version.ToString()
         logger.Info(msg (sprintf "Start: DriverTool.x86.Host.%s. Command Line: %s" version System.Environment.CommandLine))
         logger.Info("ComputerName: " + System.Environment.MachineName)
         logger.Info("UserName: " + System.Environment.UserName)

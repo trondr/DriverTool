@@ -4,6 +4,7 @@ module EmbeddedResource =
     open DriverTool.Logging
     let logger = Logging.getLoggerByName "EmbeddedResouce"
     open System
+    open DriverTool.Library.F0
         
     type ResourceName private (resourceName:string) =
         member x.Value = resourceName

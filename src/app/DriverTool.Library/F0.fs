@@ -3,8 +3,6 @@ namespace DriverTool.Library
 [<AutoOpen>]
 module F0=
 
-    type ThisAssembly = { Empty:string;}
-
     //Source: https://stackoverflow.com/questions/2920094/how-can-i-convert-between-f-list-and-f-tuple
     let tupleToArray t = 
         if Microsoft.FSharp.Reflection.FSharpType.IsTuple(t.GetType()) 

@@ -108,8 +108,7 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
-    <Compile Include="Configuration.fs" />
-    <Compile Include="F0.fs" />
+    <Compile Include="Init.fs" />
     <Compile Include="Logging.fs" />
     <Compile Include="F.fs" />
     <Compile Include="Retry.fs" />

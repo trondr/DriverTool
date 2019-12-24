@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
 
 open System.Xml.Linq
+open DriverTool.Library.F0
 
 module PackageXml = 
     let logger = Logging.getLoggerByName("PackageXml")

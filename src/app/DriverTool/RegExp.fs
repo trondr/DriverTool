@@ -2,6 +2,7 @@
 
 module RegExp =
     open System.Text.RegularExpressions
+    open DriverTool.Library.F0
 
     let toRegexOptions ignoreCase =
         match ignoreCase with

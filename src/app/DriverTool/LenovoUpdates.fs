@@ -3,13 +3,14 @@
 module LenovoUpdates =    
     open System
     open DriverTool.PackageXml
-    open DriverTool.Configuration
+    open DriverTool.Library.Configuration
     open System.Text.RegularExpressions
     open System.Linq
     open System.Xml.Linq
     open F
     open DriverTool.Web    
     open DriverTool.UpdatesContext
+    open DriverTool.Library.F0
 
     let logger = Logging.getLoggerByName("LenovoUpdates")
                

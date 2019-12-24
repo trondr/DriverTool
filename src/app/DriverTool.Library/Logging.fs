@@ -11,8 +11,9 @@ namespace DriverTool.Library
                 
         let configureLogging () =
             log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
-            let appConfigFile = new FileInfo(getAppConfigFilePath)            
-            let loggerRepository = log4net.LogManager.GetRepository(typeof<F0.ThisAssembly>.Assembly)
+            let appConfigFile = new FileInfo(getAppConfigFilePath)
+            let assembly = System.Reflection.Assembly.GetExecutingAssembly()
+            let loggerRepository = log4net.LogManager.GetRepository(assembly)
             log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
             |>ignore
 

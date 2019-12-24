@@ -4,6 +4,7 @@ open F
 module CommandProviders =
     open ManufacturerTypes
     open FileSystem
+    open DriverTool.Library.F0
 
     let exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result {
@@ -11,7 +12,7 @@ module CommandProviders =
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! csvFilePath = FileSystem.path csvFilePathString
-                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
+                let! cacheFolderPath = FileSystem.path DriverTool.Library.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
                 let logger = DriverTool.Logging.getLoggerByName "exportRemoteUdateInfo"
                 let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates existingCacheFolderPath logger manufacturer modelCode operatingSystemCode csvFilePath overwrite excludeUpdatePatterns
@@ -28,7 +29,7 @@ module CommandProviders =
                 let! csvFilePath = FileSystem.path csvFilePathString
                 let! nonExistingCsvFilePath = FileOperations.ensureFileDoesNotExist overwrite csvFilePath
                 let! csvFilePath = FileSystem.path csvFilePathString
-                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
+                let! cacheFolderPath = FileSystem.path DriverTool.Library.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
                 let! exportResult = DriverTool.ExportLocalUpdates.exportLocalUpdates existingCacheFolderPath nonExistingCsvFilePath excludeUpdatePatterns
                 return exportResult        
@@ -52,7 +53,7 @@ module CommandProviders =
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! destinationFolderPath = FileSystem.path destinationFolder
-                let! logDirectory = FileSystem.path DriverTool.Configuration.getDriverPackageLogDirectoryPath
+                let! logDirectory = FileSystem.path DriverTool.Library.Configuration.getDriverPackageLogDirectoryPath
                 let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
                 let! released = toDateTime sccmPackageReleased
                 let driverPackageCreationContext = DriverTool.CreateDriverPackage.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage doNotDownloadSccmPackage sccmPackageInstaller sccmPackageReadme released

@@ -328,7 +328,7 @@ module CreateDriverPackage =
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info(msg (sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled))
                 
-                let! cacheFolderPath = FileSystem.path DriverTool.Configuration.downloadCacheDirectoryPath
+                let! cacheFolderPath = FileSystem.path DriverTool.Library.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
 
                 let getUpdates = DriverTool.Updates.getUpdatesFunc (logger, dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 

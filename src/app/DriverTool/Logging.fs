@@ -1,6 +1,7 @@
 ﻿namespace DriverTool
         
-    open DriverTool.Configuration
+    open DriverTool.Library.Configuration
+    open DriverTool.Library.F0
     
     module Logging =
         open System
@@ -11,8 +12,9 @@
                 
         let configureLogging () =
             log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
-            let appConfigFile = new FileInfo(getAppConfigFilePath)            
-            let loggerRepository = log4net.LogManager.GetRepository(typeof<F0.ThisAssembly>.Assembly)
+            let appConfigFile = new FileInfo(getAppConfigFilePath)  
+            let assembly = System.Reflection.Assembly.GetExecutingAssembly()
+            let loggerRepository = log4net.LogManager.GetRepository(assembly)
             log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
             |>ignore
 

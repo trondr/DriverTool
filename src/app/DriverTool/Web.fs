@@ -2,6 +2,7 @@
 
 open System
 open System.Net
+open DriverTool.Library.F0
 
 module Web =
     open Common.Logging
@@ -70,7 +71,7 @@ module Web =
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
-            let webProxy = getWebProxy Configuration.getWebProxyUrl Configuration.getWebProxyByPassOnLocal Configuration.getWebProxyByPassList
+            let webProxy = getWebProxy DriverTool.Library.Configuration.getWebProxyUrl DriverTool.Library.Configuration.getWebProxyByPassOnLocal DriverTool.Library.Configuration.getWebProxyByPassList
             webClient.Proxy <- webProxy
             use disposable = 
                 webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri.OriginalString progress)

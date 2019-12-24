@@ -4,6 +4,7 @@ module WmiHelper =
     open System.Management
     open Microsoft.FSharp.Collections    
     open System
+    open DriverTool.Library.F0
 
     let getWmiPropertyDefault (className : string) (propertyName : string) : Result<'T, Exception> = 
         try
