@@ -1,10 +1,7 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 module HtmlHelper =
     open FSharp.Data
-    open DriverTool.Library.F0
-    open DriverTool.Library.F
-    open DriverTool.Library
     
     let loadHtmlDocument htmlFilePath =
         result

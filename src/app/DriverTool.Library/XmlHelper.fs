@@ -1,9 +1,9 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
     
     module XmlHelper =
         open System
         open System.Xml.Linq
-        open DriverTool.Library
+        open DriverTool.Library.FileSystem
 
         let getOptionalAttribute (xElement:XElement) (attributeName:string) =        
             match xElement with
@@ -32,7 +32,7 @@
                 |null -> Result.Error (new Exception(sprintf "Element '%s' not found on parent element: %A" elementName parentXElement))
                 |_ -> Result.Ok xElemement.Value
         
-        let loadXDocument (xmlFilePath:FileSystem.Path) =
+        let loadXDocument (xmlFilePath:Path) =
             try
                 Result.Ok (XDocument.Load(FileSystem.pathValue xmlFilePath))
             with
