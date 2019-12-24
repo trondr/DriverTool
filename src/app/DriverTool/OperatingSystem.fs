@@ -3,6 +3,7 @@
 module OperatingSystem =
     open System
     open DriverTool.Library.F
+    open DriverTool.Library
     
     let getOperatingSystemSku : Result<UInt32,Exception> =
         let operatingSystemSku = 

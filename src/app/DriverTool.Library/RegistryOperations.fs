@@ -1,8 +1,8 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 module RegistryOperations =
     open DriverTool.Library.Logging
-    let logger = DriverTool.Library.Logging.getLoggerByName("RegistryOperations")
+    let logger = DriverTool.Library.Logging.getLoggerByName "RegistryOperations"
     open System
     open Microsoft.Win32;
     open DriverTool.Library.F

@@ -4,7 +4,7 @@ open NUnit.Framework
 [<TestFixture>]
 module ChecksumTests =    
     open System
-    open DriverTool.Checksum
+    open DriverTool.Library.Checksum
     open DriverTool.Library
     
     [<Test>]

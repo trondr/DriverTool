@@ -47,14 +47,14 @@ module InstallDriverPackage =
     let unRegisterSccmApplication (installConfiguration:InstallConfigurationData) =        
         let applicationRegistryValue = (getApplicationRegistryValue installConfiguration)
         logger.Info("Unregister application: " + applicationRegistryValue.Path)
-        match (DriverTool.RegistryOperations.regKeyExists applicationRegistryValue.Path) with
-        | true -> DriverTool.RegistryOperations.deleteRegKey applicationRegistryValue.Path
+        match (DriverTool.Library.RegistryOperations.regKeyExists applicationRegistryValue.Path) with
+        | true -> DriverTool.Library.RegistryOperations.deleteRegKey applicationRegistryValue.Path
         | _ -> ()
 
     let registerSccmApplication (installConfiguration:InstallConfigurationData) =        
         let applicationRegistryValue = (getApplicationRegistryValue installConfiguration)
         logger.Info("Register application: " + applicationRegistryValue.Path)
-        use regKey = DriverTool.RegistryOperations.createRegKey applicationRegistryValue.Path
+        use regKey = DriverTool.Library.RegistryOperations.createRegKey applicationRegistryValue.Path
         regKey.SetValue(applicationRegistryValue.ValueName,applicationRegistryValue.Value)
     
     let getDriverPackageName (installConfiguration:InstallConfigurationData) =
@@ -188,14 +188,14 @@ module InstallDriverPackage =
     let resetConfigFlagsUnsafe (_:unit) =
         logger.Info("Reset all ConfigFlag's having value 131072 to 0. This will avoid UAC prompts due driver initialization at standard user logon.")
         let regKeyPath = @"HKLM\SYSTEM\CurrentControlSet\Enum"
-        DriverTool.RegistryOperations.getRegistrySubKeyPaths regKeyPath true
-        |> Seq.filter(fun p -> (DriverTool.RegistryOperations.regValueExists p "ConfigFlags"))
-        |> Seq.filter(fun p -> (DriverTool.RegistryOperations.regValueIs p "ConfigFlags" 131072))
+        DriverTool.Library.RegistryOperations.getRegistrySubKeyPaths regKeyPath true
+        |> Seq.filter(fun p -> (DriverTool.Library.RegistryOperations.regValueExists p "ConfigFlags"))
+        |> Seq.filter(fun p -> (DriverTool.Library.RegistryOperations.regValueIs p "ConfigFlags" 131072))
         |> Seq.map (fun p ->
                         //The ConfigFlag value 131072 signals a driver initialization, 
                         //which we do not want for a standard user user at logon, so set 
                         //ConfigFlags to 0                        
-                        (DriverTool.RegistryOperations.setRegValue p "ConfigFlags" 0) |> ignore
+                        (DriverTool.Library.RegistryOperations.setRegValue p "ConfigFlags" 0) |> ignore
                         logger.Info(msg (sprintf  "ConfigFlag value in '[%s]' was reset to 0." p))
                     )
         |>Seq.toArray

@@ -64,6 +64,10 @@
     <Compile Include="AssemblyResolver.fs" />
     <Compile Include="NCmdLinerMessenger.fs" />
     <Compile Include="Retry.fs" />
+    <Compile Include="Cryptography.fs" />
+    <Compile Include="Checksum.fs" />
+    <Compile Include="ProcessOperations.fs" />
+    <Compile Include="RegistryOperations.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">

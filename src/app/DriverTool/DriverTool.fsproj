@@ -109,10 +109,6 @@
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
     <Compile Include="Init.fs" />
-    <Compile Include="Cryptography.fs" />
-    <Compile Include="Checksum.fs" />
-    <Compile Include="ProcessOperations.fs" />
-    <Compile Include="RegistryOperations.fs" />
     <Compile Include="WmiHelper.fs" />
     <Compile Include="OperatingSystem.fs" />
     <Compile Include="OperatingSystemOperations.fs" />

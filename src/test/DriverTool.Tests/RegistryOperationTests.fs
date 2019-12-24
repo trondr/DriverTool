@@ -8,14 +8,14 @@ module RegistryOperationTests =
     open DriverTool
     open Microsoft.Win32
     open System.IO
-    open DriverTool.RegistryOperations
+    open DriverTool.Library.RegistryOperations
 
     [<Test>]
     [<TestCase(@"HKLM\Software","HKEY_LOCAL_MACHINE","Software")>]
     [<TestCase(@"HKLM\Software\Test","HKEY_LOCAL_MACHINE","Software\Test")>]
     [<TestCase(@"HKCU\Software\Test","HKEY_CURRENT_USER","Software\Test")>]
     let parseRegKeyPathTests (regKeypath,expectedHive,expectedSubKeyPath) =
-        let (hive, subKeyPath) = RegistryOperations.parseRegKeyPath regKeypath
+        let (hive, subKeyPath) = parseRegKeyPath regKeypath
         Assert.AreEqual(expectedHive,hive.ToString(),"Hive not equal.")
         Assert.AreEqual(expectedSubKeyPath,subKeyPath,"Sub key path not equal.")
 
@@ -24,7 +24,7 @@ module RegistryOperationTests =
     [<TestCase(@"HKLM\Software\TestGurba123",false)>]
     [<TestCase(@"HKCU\Software\Microsoft",true)>]
     let regKeyExistsTests (regKeyPath, expectedExists) =
-        let actual = RegistryOperations.regKeyExists regKeyPath
+        let actual = regKeyExists regKeyPath
         Assert.AreEqual(expectedExists,actual)
     [<Test>]
     [<TestCase(@"HKCU\Software\MyTestCompany123")>]
@@ -58,7 +58,7 @@ module RegistryOperationTests =
     let regKeyExistsBaseTest (regKeyPath,outCome:RegKeyExistsOutCome,errorMessage,expected) =
         let regKeyOpenStub (regKeyPath, writeable) =
             match outCome with
-            |RegKeyExistsOutCome.True -> Result.Ok (RegistryOperations.openRegKeyUnsafe (regKeyPath,writeable))
+            |RegKeyExistsOutCome.True -> Result.Ok (openRegKeyUnsafe (regKeyPath,writeable))
             |RegKeyExistsOutCome.False -> Result.Ok null
             |RegKeyExistsOutCome.Error -> Result.Error (new System.Exception(errorMessage))
             | _ -> raise(new System.Exception("Invalid test input. Only one of the values [True|False|Error] are supported"))
@@ -84,7 +84,7 @@ module RegistryOperationTests =
     let regKeyValueExistsBaseTest (regKeyPath,valueName,regKeyExistsOutCome:RegKeyExistsOutCome,regValueExistsOutCome:RegValueExistsOutCome,errorMessage,expected) =
         let regKeyOpenStub (regKeyPath, writeable) =
             match regKeyExistsOutCome with
-            |RegKeyExistsOutCome.True -> Result.Ok (RegistryOperations.openRegKeyUnsafe (regKeyPath,writeable))
+            |RegKeyExistsOutCome.True -> Result.Ok (openRegKeyUnsafe (regKeyPath,writeable))
             |RegKeyExistsOutCome.False -> Result.Ok null
             |RegKeyExistsOutCome.Error -> Result.Error (new System.Exception(errorMessage))
             | _ -> raise(new System.Exception("Invalid test input. Only one of the values [True|False|Error] are supported"))
@@ -112,16 +112,16 @@ module RegistryOperationTests =
     [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value1","Value2",false,TestName="ValueIsUnEqual")>]
     [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName",null,"Value2",false,TestName="ValueIsNull")>]
 
-    let regValueIsTest(regKeyPath:string,regKeyExists,valueName,value1,value2,expected) =
+    let regValueIsTest(regKeyPath:string,expectedRegKeyExists,valueName,value1,value2,expected) =
         let openRegKeyStub (regKeyPath,writeable) = 
             Assert.AreEqual(false,writeable,"writeable should be false")
-            if(regKeyExists) then
+            if(expectedRegKeyExists) then
                 let regKey = createRegKey regKeyPath
-                Assert.IsTrue(RegistryOperations.regKeyExists regKeyPath, "Registry key does not exist: " + regKeyPath)
+                Assert.IsTrue(regKeyExists regKeyPath, "Registry key does not exist: " + regKeyPath)
                 Some regKey
             else
                 deleteRegKey regKeyPath
-                Assert.IsFalse(RegistryOperations.regKeyExists regKeyPath, "Registry key exists: " + regKeyPath)
+                Assert.IsFalse(regKeyExists regKeyPath, "Registry key exists: " + regKeyPath)
                 None
         
         let getRegKeyValueStub (regKey, valueN) =
@@ -133,7 +133,7 @@ module RegistryOperationTests =
 
         let actual = regValueIsBase openRegKeyStub getRegKeyValueStub regKeyPath valueName value2 
         Assert.AreEqual(expected,actual)
-        if(RegistryOperations.regKeyExists regKeyPath) then
+        if(regKeyExists regKeyPath) then
             deleteRegKey regKeyPath
         ()
     
@@ -146,16 +146,16 @@ module RegistryOperationTests =
     [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value1",null,TestName="getRegValueTest5")>]
     [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value2",null,TestName="getRegValueTest6")>]
     [<TestCase(@"HKEY_CURRENT_USER\TestKey123",false,"TestValueName","Value2",null,TestName="getRegValueTest7")>]
-    let getRegValueTest (regKeyPath:string,regKeyExists,valueName,value1:obj,expected:obj) =
+    let getRegValueTest (regKeyPath:string,expectedRegKeyExists,valueName,value1:obj,expected:obj) =
         let openRegKeyStub (regKeyPath,writeable) = 
             Assert.AreEqual(false,writeable,"writeable should be false")
-            if(regKeyExists) then
+            if(expectedRegKeyExists) then
                 let regKey = createRegKey regKeyPath
-                Assert.IsTrue(RegistryOperations.regKeyExists regKeyPath, "Registry key does not exist: " + regKeyPath)
+                Assert.IsTrue(regKeyExists regKeyPath, "Registry key does not exist: " + regKeyPath)
                 Some regKey
             else
                 deleteRegKey regKeyPath
-                Assert.IsFalse(RegistryOperations.regKeyExists regKeyPath, "Registry key exists: " + regKeyPath)
+                Assert.IsFalse(regKeyExists regKeyPath, "Registry key exists: " + regKeyPath)
                 None
         
         let getRegKeyValueStub (regKey, valueN) =

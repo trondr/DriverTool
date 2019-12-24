@@ -312,7 +312,7 @@ module LenovoUpdates =
             let! installerExtractedFolder =
                 match (FileSystem.existingFilePathString downloadedSccmPackage.InstallerPath) with
                 |Ok fp -> 
-                    match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
+                    match DriverTool.Library.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
                     |Ok _ -> Result.Ok destinationPath
                     |Result.Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
                 |Result.Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))

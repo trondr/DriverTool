@@ -1,12 +1,11 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 module Checksum=
     open System
     open System.IO
     open System.Security.Cryptography    
     open DriverTool.Library.FileOperations
-    open DriverTool.Library.Logging
-    open DriverTool.Library
+    open DriverTool.Library.Logging    
     let logger = DriverTool.Library.Logging.getLoggerByName "Checksum"
 
     let getHashAlgorithmFromHashStringLength hashStringLength = 

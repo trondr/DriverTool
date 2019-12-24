@@ -305,7 +305,7 @@ module PackageXml =
             let arguments = extractCommandLine.Replace(fileName,"")
             match (FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath) with
             |Ok fp -> 
-                match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments,FileSystem.pathValue packageFolderPath,-1,null,null,false) with
+                match DriverTool.Library.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments,FileSystem.pathValue packageFolderPath,-1,null,null,false) with
                 |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex

@@ -28,7 +28,7 @@ module LenovoSystemUpdate =
                                         Category="Unknown Category" 
                                         FilePath=updateFilePath
                                         BaseUrl=""
-                                        CheckSum=DriverTool.Checksum.computeFileHashSha256String updateFilePath
+                                        CheckSum=DriverTool.Library.Checksum.computeFileHashSha256String updateFilePath
                                     }                            
                                 let packageInfo = getPackageInfoUnsafe(downloadedPackageInfo)
                                 return packageInfo

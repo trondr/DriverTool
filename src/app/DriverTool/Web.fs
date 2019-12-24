@@ -94,7 +94,7 @@ module Web =
         genericLoggerResult LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
 
     let hasSameFileHash downloadInfo =
-        (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
+        (DriverTool.Library.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
 
     let useCachedVersionBase (logger:Common.Logging.ILog) (fileExists:string->bool) (downloadInfo:DownloadInfo) = 
         let useCachedVersionFilePath =((FileSystem.pathValue downloadInfo.DestinationFile) + ".usecachedversion")
