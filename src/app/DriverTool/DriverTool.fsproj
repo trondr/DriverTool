@@ -206,7 +206,7 @@
       <HintPath>..\..\..\packages\Common.Logging.Log4Net208.3.4.1\lib\net40\Common.Logging.Log4Net208.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper">
-      <HintPath>..\..\..\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll</HintPath>
+      <HintPath>..\..\..\packages\CsvHelper.12.2.2\lib\net47\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="Dynamitey">
       <HintPath>..\..\..\packages\Dynamitey.2.0.10.189\lib\net40\Dynamitey.dll</HintPath>
@@ -241,7 +241,7 @@
       <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net452\NCmdLiner.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="sdpeval">
       <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\sdpeval.dll</HintPath>
@@ -255,10 +255,10 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive">
-      <HintPath>..\..\..\packages\System.Reactive.4.2.0\lib\net46\System.Reactive.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Reactive.4.3.1\lib\net46\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>

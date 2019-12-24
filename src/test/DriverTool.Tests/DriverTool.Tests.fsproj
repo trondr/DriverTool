@@ -92,14 +92,14 @@
     <Compile Include="PackageXmlTests.fs" />
     <Compile Include="InstallXmlTests.fs" />
     <Compile Include="RegExpTests.fs" />
-    <Compile Include="CsvOperationTests.fs" />    
+    <Compile Include="CsvOperationTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp92489.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95015.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
-	<EmbeddedResource Include="TestData\HPCatalog\HP_sp99341.html" />
+    <EmbeddedResource Include="TestData\HPCatalog\HP_sp99341.html" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_v2.xml" />
@@ -163,7 +163,7 @@
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
