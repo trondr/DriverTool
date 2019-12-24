@@ -88,16 +88,14 @@ module EmbeddedResource =
     let getAllEmbeddedResourceNamesBase (assembly:Assembly) =        
         assembly.GetManifestResourceNames()    
     
-    let getAllEmbeddedResourceNames =
-        let resourceAssembly = typeof<ThisAssembly>.Assembly
+    let getAllEmbeddedResourceNames resourceAssembly =        
         getAllEmbeddedResourceNamesBase resourceAssembly
 
     let embeddedResourceExistsBase resourceName resourceAssembly =
         (getAllEmbeddedResourceNamesBase resourceAssembly)
         |> Seq.exists (fun rn -> rn = resourceName)
 
-    let embeddedResourceExists resourceName =
-        let resourceAssembly = typeof<ThisAssembly>.Assembly
+    let embeddedResourceExists resourceAssembly resourceName =        
         embeddedResourceExistsBase resourceName resourceAssembly
 
     let extractEmbededResouceToFile (resourceName:string , destinationFileName:string) = 
@@ -128,9 +126,8 @@ module EmbeddedResource =
                 return fileResult
             }
 
-    let extractEmbeddedResource (resourceName, destinationFolderPath:FileSystem.Path, destinationFileName) =
-        let assembly = typeof<ThisAssembly>.Assembly
-        extractEmbeddedResourceBase (resourceName, destinationFolderPath, destinationFileName, assembly)
+    let extractEmbeddedResource (resourceAssembly ,resourceName, destinationFolderPath:FileSystem.Path, destinationFileName) =        
+        extractEmbeddedResourceBase (resourceName, destinationFolderPath, destinationFileName, resourceAssembly)
     
     let extractEmbeddedResouceByFileNameBase (fileName, destinationFolderPath:FileSystem.Path, destinationFileName, assembly:Assembly) =
         let resourceNames = 
@@ -143,9 +140,8 @@ module EmbeddedResource =
             extractEmbeddedResourceBase (resourceNames.[0],destinationFolderPath,destinationFileName, assembly)
         | false -> raise (new Exception("File not found in embedded resource: " + fileName))
 
-    let extractEmbeddedResouceByFileName (fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =
-        let assembly = typeof<ThisAssembly>.Assembly
-        extractEmbeddedResouceByFileNameBase (fileName, destinationFolderPath, destinationFileName, assembly)
+    let extractEmbeddedResouceByFileName (resourceAssembly,fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =        
+        extractEmbeddedResouceByFileNameBase (fileName, destinationFolderPath, destinationFileName, resourceAssembly)
 
     let mapResourceNamesToFileNames (destinationFolderPath:FileSystem.Path, resourceNames:seq<string>,resourceNameToDirectoryDictionary)=
         let directoryLookDictionary = resourceNameToDirectoryDictionary destinationFolderPath
@@ -159,7 +155,7 @@ module EmbeddedResource =
         |> Seq.choose id
 
     [<AllowNullLiteral>]
-    type ExtractedEmbeddedResource(fileName, logger:Common.Logging.ILog) =
+    type ExtractedEmbeddedResource(resourceAssembly,fileName, logger:Common.Logging.ILog) =
         let tempFolderPath = 
             result {
                 let! nonExistingTempFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),(Guid.NewGuid().ToString())))
@@ -170,7 +166,7 @@ module EmbeddedResource =
         let tempFilePath =
             result{
                 let! folderPath = tempFolderPath                
-                let! extractedFile = extractEmbeddedResouceByFileNameBase (fileName,folderPath,fileName,typeof<ThisAssembly>.Assembly)
+                let! extractedFile = extractEmbeddedResouceByFileNameBase (fileName,folderPath,fileName,resourceAssembly)
                 return extractedFile
             }
 

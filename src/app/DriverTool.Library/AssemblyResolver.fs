@@ -87,16 +87,14 @@ module AssemblyResolver=
     let loadAssemblyFromSearchPath (assemblySearchPaths:string[], assemblyName:AssemblyName) =
         loadAssemblyFromSearchPathBase (Assembly.LoadFile,System.IO.File.Exists,assemblySearchPaths,assemblyName)
 
-    let assemblyResolveHandler (sender:obj, resolveEventArgs:ResolveEventArgs) : Assembly =
+    let assemblyResolveHandlerPartial (resourceAssembly:Assembly) (resourceNameSpace:string) (assemblySearchPaths:string array) (sender:obj, resolveEventArgs:ResolveEventArgs) : Assembly =
         let assemblyName = (new AssemblyName(resolveEventArgs.Name))
         let assembly =            
-            let resourceAssembly = typeof<ThisAssembly>.Assembly
-            let resourceNameSpace = typeof<ThisAssembly>.Namespace
             let resourceName = sprintf "%s.Libs.%s.dll" resourceNameSpace assemblyName.Name
             if(resourceName.EndsWith("XmlSerializers.dll")) then
                 null
             else
-                let resourceNameExists = EmbeddedResource.embeddedResourceExists resourceName
+                let resourceNameExists = EmbeddedResource.embeddedResourceExists resourceAssembly resourceName
                 if(resourceNameExists) then
                     loadAssemblyFromEmbeddedResource (assemblyName, resourceName, resourceAssembly)                    
                 else
