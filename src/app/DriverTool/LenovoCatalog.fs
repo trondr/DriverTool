@@ -7,7 +7,7 @@ module LenovoCatalog =
     open DriverTool.PackageXml
     open LenovoCatalogXml    
     open DriverTool.Web
-    open DriverTool.OperatingSystem
+    open DriverTool.Library.OperatingSystem
     open DriverTool.Library.F0
     open DriverTool.Library.F
     open DriverTool.Library

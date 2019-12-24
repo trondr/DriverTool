@@ -4,9 +4,8 @@ open NUnit.Framework
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
-module ManufacturerTests =
-    open DriverTool
-    open DriverTool.ManufacturerTypes
+module ManufacturerTests =    
+    open DriverTool.Library.ManufacturerTypes
     open System
     open DriverTool.Library.F
 
@@ -55,7 +54,7 @@ module ManufacturerTests =
                         |true -> Result.Ok wmiManufacturer
                         |false-> Result.Error (new Exception("Failed to get Manufacturer from WMI."))
 
-                    let! actual = DriverTool.ManufacturerTypes.manufacturerStringToManufacturerBase ( wmiManufacturerFuncStub,wmiManufacturer,true)
+                    let! actual = DriverTool.Library.ManufacturerTypes.manufacturerStringToManufacturerBase ( wmiManufacturerFuncStub,wmiManufacturer,true)
             return actual
         }) with
         |Ok _-> Assert.IsTrue(true)

@@ -1,4 +1,4 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 module RegExp =
     open System.Text.RegularExpressions

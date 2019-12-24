@@ -7,6 +7,7 @@ open DriverTool.CreateDriverPackage
 open DriverTool
 open DriverTool.Library.F
 open DriverTool.Library
+open DriverTool.Library.ManufacturerTypes
 
 [<TestFixture>]
 module CreateDriverPackageTests =
@@ -99,8 +100,6 @@ module CreateDriverPackageTests =
         |Ok p -> Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
     
-    open DriverTool.ManufacturerTypes
-
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
     [<TestCase(false,"setup.exe /s", "Dell", @"c:\temp",true)>]

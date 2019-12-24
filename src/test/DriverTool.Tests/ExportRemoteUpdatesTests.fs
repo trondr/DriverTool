@@ -18,7 +18,7 @@ module ExportRemoteUpdatesTests =
         let readFromLocalMachine = false
         let testResult = 
             result  {
-                let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer ("Lenovo", false)
+                let! manufacturer = DriverTool.Library.ManufacturerTypes.manufacturerStringToManufacturer ("Lenovo", false)
                 let! modelCode = ModelCode.create "20FA" readFromLocalMachine
                 let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" readFromLocalMachine
                 let! csvFilePath = FileSystem.path "c:\\temp\\test.csv"                

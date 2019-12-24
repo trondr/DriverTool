@@ -1,7 +1,6 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 open System
-open DriverTool
-open DriverTool.SystemInfo
+open DriverTool.Library.SystemInfo
 
 type InvalidSystemFamilyException(systemFamily:string, message : string) =
         inherit Exception(

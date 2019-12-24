@@ -68,6 +68,15 @@
     <Compile Include="Checksum.fs" />
     <Compile Include="ProcessOperations.fs" />
     <Compile Include="RegistryOperations.fs" />
+    <Compile Include="WmiHelper.fs" />
+    <Compile Include="OperatingSystem.fs" />
+    <Compile Include="OperatingSystemOperations.fs" />
+    <Compile Include="Manufacturer.fs" />
+    <Compile Include="SystemInfo.fs" />
+    <Compile Include="SystemFamily.fs" />
+    <Compile Include="ModelCode.fs" />
+    <Compile Include="OperatingSystemCode.fs" />
+    <Compile Include="RegExp.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
@@ -108,6 +117,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.ValueTuple">
       <Private>True</Private>

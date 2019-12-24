@@ -1,6 +1,5 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 open System
-open DriverTool
 
 type InvalidOperatingSystemCodeException(operatingSytemCode:string, message : string) =
         inherit Exception(
@@ -23,7 +22,7 @@ type OperatingSystemCode private (operatingSystemCode : string) =
         let validateOperatingSystemCode (operatingSystemCode:string) =
             match operatingSystemCode with
             | operatingSystemCode when System.String.IsNullOrWhiteSpace(operatingSystemCode) -> failure (new InvalidOperatingSystemCodeException(operatingSystemCode,"OperatingSystemCode cannot be null or empty.") :> Exception)
-            | operatingSytemCode when (DriverTool.OperatingSystem.isValidOsShortName operatingSytemCode) -> 
+            | operatingSytemCode when (DriverTool.Library.OperatingSystem.isValidOsShortName operatingSytemCode) -> 
                 success (OperatingSystemCode (operatingSystemCode))
             | _ ->
                 failure (new InvalidOperatingSystemCodeException(operatingSystemCode,String.Empty) :> Exception)

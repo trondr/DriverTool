@@ -5,8 +5,8 @@ module UpdatesContext =
     open DriverTool.Library
     
     type UpdatesRetrievalContext = {
-        Model:DriverTool.ModelCode
-        OperatingSystem: DriverTool.OperatingSystemCode
+        Model:DriverTool.Library.ModelCode
+        OperatingSystem: DriverTool.Library.OperatingSystemCode
         Overwrite: bool
         LogDirectory:FileSystem.Path
         ExcludeUpdateRegexPatterns: Regex[]

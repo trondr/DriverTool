@@ -11,7 +11,7 @@ module ExportLocalUpdates =
 
     let exportLocalUpdates cacheFolderPath (csvFilePath:FileSystem.Path) excludeUpdatePatterns =
         result{       
-            let! localManufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer ("",true) 
+            let! localManufacturer = DriverTool.Library.ManufacturerTypes.manufacturerStringToManufacturer ("",true) 
             let! localModelCode = ModelCode.create String.Empty true
             let! localOperatingSystemCode = OperatingSystemCode.create String.Empty true
             let getUpdates = DriverTool.Updates.getUpdatesFunc (logger,localManufacturer, true)

@@ -1,13 +1,13 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 module SystemInfo=
     open System
-    open DriverTool.ManufacturerTypes
+    open DriverTool.Library.ManufacturerTypes
     open DriverTool.Library.F
 
     let getModelCodeForCurrentSystem () : Result<string,Exception> =
         result{
-            let! manufacturer = DriverTool.ManufacturerTypes.getManufacturerForCurrentSystem ()
+            let! manufacturer = DriverTool.Library.ManufacturerTypes.getManufacturerForCurrentSystem ()
             let! modelCode = 
                 match manufacturer with
                 |Manufacturer.Dell _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "SystemSKUNumber"
@@ -18,7 +18,7 @@ module SystemInfo=
 
     let getSystemFamilyForCurrentSystem () : Result<string,Exception> =
         result{
-            let! manufacturer = DriverTool.ManufacturerTypes.getManufacturerForCurrentSystem ()
+            let! manufacturer = DriverTool.Library.ManufacturerTypes.getManufacturerForCurrentSystem ()
             let! systemFamily = 
                 match manufacturer with
                 |Manufacturer.Dell _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Model"

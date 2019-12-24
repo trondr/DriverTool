@@ -1,7 +1,6 @@
 ﻿namespace DriverTool
 
-module CommandProviders =
-    open ManufacturerTypes    
+module CommandProviders =       
     open DriverTool.Library.F0
     open DriverTool.Library.Logging
     open DriverTool.Library.F
@@ -9,7 +8,7 @@ module CommandProviders =
 
     let exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result {
-                let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString, true)
+                let! manufacturer = DriverTool.Library.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString, true)
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! csvFilePath = FileSystem.path csvFilePathString
@@ -49,7 +48,7 @@ module CommandProviders =
 
     let createDriverPackageBase (packagePublisher,manufacturerString, systemFamilyString,modelCodeString,operatingSystemString,destinationFolder,baseOnLocallyInstalledUpdates,excludeUpdatePatterns, packageTypeName,excludeSccmPackage,doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased) =
         match (result {
-                let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString,true)
+                let! manufacturer = DriverTool.Library.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerString,true)
                 let! systemFamily = SystemFamily.create systemFamilyString true
                 let! modelCode = ModelCode.create modelCodeString true
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true

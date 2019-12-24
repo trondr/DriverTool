@@ -1,6 +1,6 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 open System
-open DriverTool.SystemInfo
+open DriverTool.Library.SystemInfo
 
 type InvalidModelCodeException(modelCode:string, message : string) =
         inherit Exception(

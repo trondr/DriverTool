@@ -1,7 +1,7 @@
 ﻿namespace DriverTool
 
 open System
-open DriverTool.ManufacturerTypes
+open DriverTool.Library.ManufacturerTypes
 
 module Updates =
 

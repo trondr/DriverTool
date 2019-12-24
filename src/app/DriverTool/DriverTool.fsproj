@@ -109,15 +109,6 @@
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
     <Compile Include="Init.fs" />
-    <Compile Include="WmiHelper.fs" />
-    <Compile Include="OperatingSystem.fs" />
-    <Compile Include="OperatingSystemOperations.fs" />
-    <Compile Include="Manufacturer.fs" />
-    <Compile Include="SystemInfo.fs" />
-    <Compile Include="SystemFamily.fs" />
-    <Compile Include="ModelCode.fs" />
-    <Compile Include="OperatingSystemCode.fs" />
-    <Compile Include="RegExp.fs" />
     <Compile Include="LenovoSystemUpdateCheck.fs" />
     <Compile Include="Web.fs" />
     <Compile Include="UpdatesContext.fs" />

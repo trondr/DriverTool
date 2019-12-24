@@ -10,7 +10,7 @@ module CreateDriverPackage =
     open DriverTool
     open DriverTool.PackageXml
     open FSharp.Collections.ParallelSeq    
-    open DriverTool.ManufacturerTypes
+    open DriverTool.Library.ManufacturerTypes
     open DriverTool.Web    
     open DriverTool.Library.PathOperations
     open PackageDefinition
@@ -412,7 +412,7 @@ module CreateDriverPackage =
                         PackageRevision = "000"
                         ComputerModel = dpcc.Model.Value;
                         ComputerSystemFamiliy = dpcc.SystemFamily.Value;
-                        ComputerVendor = DriverTool.ManufacturerTypes.manufacturerToName dpcc.Manufacturer;
+                        ComputerVendor = DriverTool.Library.ManufacturerTypes.manufacturerToName dpcc.Manufacturer;
                         OsShortName = dpcc.OperatingSystem.Value;
                         Publisher = dpcc.PackagePublisher
                     }
