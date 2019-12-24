@@ -6,7 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.UnitTests)>]
 module XmlToolKitTests = 
 
-    open DriverTool.XmlToolKit
+    open DriverTool.Library.XmlToolKit
     open System.IO
 
     [<Test>]

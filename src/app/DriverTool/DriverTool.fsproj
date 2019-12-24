@@ -120,7 +120,6 @@
     <Compile Include="FileOperations.fs" />
     <Compile Include="CsvOperations.fs" />
     <Compile Include="Environment.fs" />
-    <Compile Include="XmlToolKit.fs" />
     <Compile Include="XmlHelper.fs" />
     <Compile Include="HtmlHelper.fs" />
     <Compile Include="Cryptography.fs" />

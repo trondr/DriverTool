@@ -3,6 +3,7 @@
 module InstallXml =
     
     open System.Xml.Linq
+    open DriverTool.Library.XmlToolKit
     
     type InstallConfigurationData = {
         LogDirectory:string;
@@ -52,8 +53,6 @@ module InstallXml =
             return installDataConfiguration
         }
 
-    open DriverTool.XmlToolKit
-    
     let saveInstallXml (installXmlPath:FileSystem.Path, installConfigurationData:InstallConfigurationData) =
         try
 

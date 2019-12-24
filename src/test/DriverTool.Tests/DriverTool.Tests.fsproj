@@ -153,6 +153,11 @@
       <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <ProjectReference Include="..\..\app\DriverTool.Library\DriverTool.Library.fsproj">
+      <Name>DriverTool.Library</Name>
+      <Project>{5c9696b4-d386-463d-8bde-1ec35901614a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj">
       <Name>DriverTool</Name>
       <Project>{19822aea-c088-455d-b5a5-4738a3a9dba7}</Project>

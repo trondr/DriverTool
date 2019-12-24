@@ -1,4 +1,4 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 //Source: https://nbevans.wordpress.com/2015/04/15/super-skinny-xml-document-generation-with-f/
 
