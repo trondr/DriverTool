@@ -109,7 +109,6 @@
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
     <Compile Include="Init.fs" />
-    <Compile Include="Retry.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="Path.fs" />
     <Compile Include="DirectoryOperations.fs" />
