@@ -5,9 +5,8 @@ open NUnit.Framework
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module CompressionTests=
-    open DriverTool
-    open Common.Logging
-    open DriverTool.FileOperations
+    open DriverTool    
+    open DriverTool.Library.FileOperations
     open DriverTool.Library.F
     open DriverTool.Library
         

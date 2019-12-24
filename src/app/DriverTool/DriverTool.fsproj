@@ -109,10 +109,6 @@
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
     <Compile Include="Init.fs" />
-    <Compile Include="DirectoryOperations.fs" />
-    <Compile Include="PathOperations.fs" />
-    <Compile Include="FileOperations.fs" />
-    <Compile Include="CsvOperations.fs" />
     <Compile Include="Environment.fs" />
     <Compile Include="XmlHelper.fs" />
     <Compile Include="HtmlHelper.fs" />

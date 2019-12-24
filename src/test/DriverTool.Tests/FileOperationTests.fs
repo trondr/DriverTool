@@ -1,18 +1,15 @@
 ﻿namespace DriverTool.Tests
-open System
 open NUnit.Framework
-open DriverTool
-open FileOperations
-open DriverTool.DirectoryOperations
+open DriverTool.Library.DirectoryOperations
 open DriverTool.Library
+open DriverTool.Library.FileOperations
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module FileOperationTests =
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("FileOperationTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
-    open DriverTool.Library.F
-
+    
     [<Test>]
     let ensureFileDoesNotExistTest_FileExists() =
         use temporaryFile = new TemporaryFile()

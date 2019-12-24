@@ -122,7 +122,7 @@ module LenovoUpdates =
      
     let getModelInfoXmlFilePath cacheFolderPath (modelCode: ModelCode) (operatingSystemCode: OperatingSystemCode) = 
         let fileName = sprintf "%s_%s.xml" modelCode.Value operatingSystemCode.Value
-        let filePathString = DriverTool.PathOperations.combinePaths2 cacheFolderPath fileName
+        let filePathString = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath fileName
         filePathString
 
     let getPackageInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
@@ -328,7 +328,7 @@ module LenovoUpdates =
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package.Category (toReleaseId downloadedPackageInfo)
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
+            let! packageFolderPath = DriverTool.Library.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)
             let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
             let extractPackageXmlResult = extractPackageXml (downloadedPackageInfo, existingPackageFolderPath)

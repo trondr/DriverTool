@@ -1,5 +1,4 @@
 ﻿namespace DriverTool
-open Microsoft.FSharp.Collections
 
 module CreateDriverPackage =
         
@@ -7,18 +6,20 @@ module CreateDriverPackage =
     open System.Linq
     open System.Text.RegularExpressions
     open System.Text
+    open Microsoft.FSharp.Collections
     open DriverTool
     open DriverTool.PackageXml
     open FSharp.Collections.ParallelSeq    
     open DriverTool.ManufacturerTypes
     open DriverTool.Web    
-    open DriverTool.PathOperations
+    open DriverTool.Library.PathOperations
     open PackageDefinition
     open DriverTool.Requirements
     open DriverTool.PackageTemplate        
     open DriverTool.Library.Logging
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.UpdatesContext
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 
@@ -284,8 +285,6 @@ module CreateDriverPackage =
             SccmPackageReadme = sccmPackageReadme
             SccmPackageReleased = sccmPackageReleased
         }
-
-    open DriverTool.UpdatesContext
 
     let toDownloadedSccmPackageInfo cacheFolderPath intallerName readmeName releasedDate =
         result{

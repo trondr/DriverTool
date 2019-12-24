@@ -10,14 +10,12 @@ module LenovoCatalogTests=
     open DriverTool.LenovoCatalog
     open DriverTool.LenovoUpdates
     open DriverTool.PackageXml
-    open Microsoft.FSharp.Core
-    open DriverTool
+    open Microsoft.FSharp.Core    
     open DriverTool.Web
     open DriverTool.WebParsing
-    open DriverTool.FileOperations
-    open DriverTool.PathOperations
+    open DriverTool.Library.FileOperations
+    open DriverTool.Library.PathOperations
     open System.Threading    
-    open DriverTool.Library.F
     
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 

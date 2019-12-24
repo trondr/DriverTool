@@ -9,8 +9,8 @@ module WebParsingTests  =
     open DriverTool.Library.F  
     open System.Threading
     open DriverTool.WebParsing
-    open DriverTool.PathOperations
-    open DriverTool.FileOperations
+    open DriverTool.Library.PathOperations
+    open DriverTool.Library.FileOperations
     let logger = Common.Logging.Simple.ConsoleOutLogger("WebParsingTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 
     [<Test>]

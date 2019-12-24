@@ -4,7 +4,7 @@ module Checksum=
     open System
     open System.IO
     open System.Security.Cryptography    
-    open DriverTool.FileOperations
+    open DriverTool.Library.FileOperations
     open DriverTool.Library.Logging
     open DriverTool.Library
     let logger = DriverTool.Library.Logging.getLoggerByName "Checksum"

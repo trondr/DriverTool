@@ -4,11 +4,10 @@ open NUnit.Framework
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
-module CsvOperationTests =
-    open DriverTool    
-    open DriverTool.FileOperations    
-    open DriverTool.PathOperations
-    open DriverTool.DirectoryOperations
+module CsvOperationTests =    
+    open DriverTool.Library.FileOperations    
+    open DriverTool.Library.PathOperations
+    open DriverTool.Library.DirectoryOperations
     open DriverTool.Library.F
     open DriverTool.Library
     

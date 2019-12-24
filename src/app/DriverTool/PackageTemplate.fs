@@ -76,11 +76,11 @@ module PackageTemplate =
         result{
             logger.Info("Copy DriverTool.exe to driver package so that it can handle install and uninstall of the driver package.")
             let! driverToolFolderPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,"DriverTool"))
-            let! existingDriverToolDirectoryPath = DriverTool.DirectoryOperations.ensureDirectoryExists true driverToolFolderPath
+            let! existingDriverToolDirectoryPath = DriverTool.Library.DirectoryOperations.ensureDirectoryExists true driverToolFolderPath
             let! driverToolFiles = getDriverToolFiles ()
             let! driverToolFilesCopied = 
                 driverToolFiles
-                |> (DriverTool.FileOperations.copyFilePaths existingDriverToolDirectoryPath)
+                |> (DriverTool.Library.FileOperations.copyFilePaths existingDriverToolDirectoryPath)
             logger.Info("Adjust corflags on the copied DriverTool.exe so that the version of DriverTool.exe in the driver package will prefer to run in 64 bit process on a 64 bit operating system. This is required when installing and uninstalling the driver package.")
             let! adjustCorFlagResult =
                 driverToolFilesCopied
@@ -95,7 +95,7 @@ module PackageTemplate =
 
     let extractPackageTemplate (destinationFolderPath:FileSystem.Path) =
         result {
-            let! emptyDestinationFolderPath = DriverTool.DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath, true)
+            let! emptyDestinationFolderPath = DriverTool.Library.DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath, true)
             let resourceNamesVsDestinationFilesMap = mapResourceNamesToFileNames (emptyDestinationFolderPath,getPackageTemplateEmbeddedResourceNames(),resourceNameToDirectoryDictionary)
             let! extractedFiles =
                 resourceNamesVsDestinationFilesMap

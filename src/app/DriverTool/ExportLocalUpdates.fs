@@ -19,7 +19,7 @@ module ExportLocalUpdates =
             let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
             let updatesRetrievalContext = toUpdatesRetrievalContext localModelCode localOperatingSystemCode true logDirectory excludeUpdateRegexPatterns
             let! localUpdates = getUpdates cacheFolderPath updatesRetrievalContext
-            let! exportResult = DriverTool.CsvOperations.exportToCsv (csvFilePath, localUpdates)
+            let! exportResult = DriverTool.Library.CsvOperations.exportToCsv (csvFilePath, localUpdates)
             logger.Info("Locally installed updates have been exported to file: " + FileSystem.pathValue csvFilePath)
             return exportResult            
         }

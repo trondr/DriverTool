@@ -1,7 +1,6 @@
 ﻿namespace DriverTool.Tests
+
 open NUnit.Framework
-open DriverTool
-open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
@@ -11,6 +10,8 @@ module EmbeddedResourceTest  =
     open System.IO
     let logger = Common.Logging.Simple.ConsoleOutLogger("EmbeddedResourceTest",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     open DriverTool.Library.F
+    open DriverTool.Library
+    open DriverTool
 
     [<Test>]
     [<TestCase(@"c:\temp\DpInstExitCode2ExitCode_tst.exe",true,"NotUsed",TestName="extractEmbeddedResourceToFile - Expect success")>]

@@ -90,6 +90,13 @@ module FileOperations =
         |>Seq.toArray
         |>toAccumulatedResult
 
+    let copyFileS (sourceFilePath, destinationFilePath) =
+        try
+            System.IO.File.Copy(sourceFilePath, destinationFilePath, true)
+            Result.Ok destinationFilePath
+        with
+        | ex -> Result.Error (new Exception(sprintf "Failed to copy file '%s'->'%s'." sourceFilePath destinationFilePath, ex))
+
     /// <summary>
     /// Prepend a period to a file extension if necessary
     /// </summary>

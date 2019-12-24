@@ -3,6 +3,7 @@
 module WebParsing =
     let logger = DriverTool.Library.Logging.getLoggerByName "WebParsing"    
     open DriverTool.Library.F
+    open DriverTool.Library.FileOperations
 
     let getContentFromWebPage (uri:string)  =  
         try
@@ -14,8 +15,6 @@ module WebParsing =
             let msg = sprintf "Failed to get web content for web page '%s' due to %s" uri ex.Message
             Result.Error (new System.Exception(msg,ex))
     
-    open DriverTool.FileOperations
-
     let downloadWebContent url destinationFilePath refresh =
         match (fileExists destinationFilePath) && (not refresh) with
         |false -> 
