@@ -6,9 +6,9 @@ open DriverTool.Library.F0
 
 module Web =
     open Common.Logging
-    open DriverTool.Logging
+    open DriverTool.Library.Logging
     type Web = class end
-    let logger = Logging.getLoggerByName(typeof<Web>.Name)
+    let logger = getLoggerByName(typeof<Web>.Name)
 
     type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
 
@@ -89,7 +89,7 @@ module Web =
         | ex -> Result.Error (new Exception(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (getAccumulatedExceptionMessages ex), ex))
     
     let downloadFile (sourceUri:Uri, force, destinationFilePath) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
+        genericLoggerResult LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
 
     let hasSameFileHash downloadInfo =
         (DriverTool.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))

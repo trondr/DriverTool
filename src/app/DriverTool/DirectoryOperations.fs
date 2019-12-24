@@ -3,9 +3,9 @@ module DirectoryOperations =
     type DirectoryOperations = class end
     open System
     open System.IO
-    open DriverTool.Logging
+    open DriverTool.Library.Logging
     
-    let logger = Logging.getLoggerByName("DirectoryOperations")
+    let logger = DriverTool.Library.Logging.getLoggerByName("DirectoryOperations")
 
     let createDirectoryUnsafe (directoryPath:FileSystem.Path) =
         System.IO.Directory.CreateDirectory(FileSystem.pathValue directoryPath) |> ignore

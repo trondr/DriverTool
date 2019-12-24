@@ -18,9 +18,9 @@ module CreateDriverPackage =
     open DriverTool.Requirements
     open DriverTool.PackageTemplate    
     open FileSystem
-    open DriverTool.Logging
+    open DriverTool.Library.Logging
     
-    let logger = Logging.getLoggerByName("CreateDriverPackage")
+    let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 
     let getUniqueUpdatesByInstallerName packageInfos = 
         let uniqueUpdates = 
@@ -33,7 +33,7 @@ module CreateDriverPackage =
         downloadIfDifferent (logger,downloadInfo, ignoreVerificationErrors)         
 
     let downloadUpdate (downloadJob, ignoreVerificationErrors) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
+        genericLoggerResult LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
 
     let toFileName (filePath:FileSystem.Path) =
         System.IO.Path.GetFileName(FileSystem.pathValue filePath)
@@ -443,6 +443,6 @@ module CreateDriverPackage =
             }
     
     let createDriverPackage driverPackageCreationContext =
-        Logging.genericLoggerResult Logging.LogLevel.Debug createDriverPackageBase driverPackageCreationContext
+        DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug createDriverPackageBase driverPackageCreationContext
 
         

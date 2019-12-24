@@ -10,7 +10,7 @@ module LenovoCatalog =
     open DriverTool.OperatingSystem
     open DriverTool.Library.F0
 
-    let logger = Logging.getLoggerByName("LenovoCatalog")
+    let logger = DriverTool.Library.Logging.getLoggerByName "LenovoCatalog"
 
     let getLocalLenvoCatalogXmlFilePath cacheFolderPath =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue cacheFolderPath ,"LenovoCatalog.xml"))

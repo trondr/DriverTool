@@ -6,8 +6,8 @@ module InstallDriverPackage =
     open DriverTool.PackageDefinition
     open DriverTool.Requirements
     open Microsoft.FSharp.Core.Operators
-    open DriverTool.Logging
-    let logger = Logging.getLoggerByName("InstallDriverPackage")
+    open DriverTool.Library.Logging
+    let logger = getLoggerByName "InstallDriverPackage"
         
     let getInstallXmlPath (driverPackagePath:FileSystem.Path) =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Install.xml"))
@@ -152,19 +152,19 @@ module InstallDriverPackage =
             
             logger.Info("Getting active drivers...")
             let! activeDriverFolders = getGetActiveDriverFolders existingLocalDriversFolderPath    
-            activeDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Will be processed: %s")|>ignore
+            activeDriverFolders |> logSeqWithFormatString logger (sprintf "Will be processed: %s")|>ignore
             
             logger.Info("Getting inactive drivers...")
             let! inactiveDriverFolders = getGetInActiveDriverFolders existingLocalDriversFolderPath
-            inactiveDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger  (sprintf "Will NOT be processed: %s")|>ignore
+            inactiveDriverFolders |> logSeqWithFormatString logger  (sprintf "Will NOT be processed: %s")|>ignore
             
             logger.Info("Verifying that active scripts exists...")
             let! existingInstallScripts = getExistingScripts (activeDriverFolders, installScriptName)
-            existingInstallScripts |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Script verified: %s")|>Seq.toArray|>ignore
+            existingInstallScripts |> logSeqWithFormatString logger (sprintf "Script verified: %s")|>Seq.toArray|>ignore
 
             logger.Info(msg (sprintf  "Executing '%s' for each driver folder..." installScriptName))
             let! installedDriverExitCodes = executeScripts (existingInstallScripts,installScriptName,installConfiguration,driverPackageName)
-            existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Script execution result: %s") |> ignore
+            existingInstallScripts |>Seq.zip installedDriverExitCodes |> logSeqWithFormatString logger (sprintf "Script execution result: %s") |> ignore
             logger.Info(msg (sprintf "Finished executing '%s' for each driver folder!" installScriptName))
             let adjustedExitCode = getAdjustedExitCode installedDriverExitCodes
             logger.Info(msg (sprintf "Adjusted exit code: %i" adjustedExitCode))

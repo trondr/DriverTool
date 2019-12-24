@@ -4,7 +4,7 @@ module RunCommand =
     open DriverTool.Commands
     open NCmdLiner
     
-    open DriverTool.Logging
+    open DriverTool.Library.Logging
     open System
     open System.IO
     
@@ -70,5 +70,5 @@ module RunCommand =
         exitCode
     
     let runCommand (args)=
-        Logging.genericLogger Logging.LogLevel.Debug runCommandBase (args)
+        genericLogger LogLevel.Debug runCommandBase (args)
 

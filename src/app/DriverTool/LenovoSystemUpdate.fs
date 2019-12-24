@@ -6,7 +6,8 @@ module LenovoSystemUpdate =
     open Tvsu.Beans
     open DriverTool.PackageXml
     
-    let logger = Logging.getLoggerByName("LenovoSystemUpdate")
+    
+    let logger = DriverTool.Library.Logging.getLoggerByName("LenovoSystemUpdate")
 
     let getLocalUpdatesUnsafe () =
         logger.Info("Getting update info from Lenovo System Update database...");

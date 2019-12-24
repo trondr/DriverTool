@@ -3,6 +3,8 @@
 module PackageTemplate =
     open DriverTool.Library.F0
     open DriverTool.EmbeddedResource
+    open DriverTool.Library.Logging
+    let logger = DriverTool.Library.Logging.getLoggerByName "PackageTemplate"
         
     let isDriverPackageEmbeddedResourceName (resourceName:string) =
         resourceName.StartsWith("DriverTool.PackageTemplate")
@@ -67,7 +69,7 @@ module PackageTemplate =
     let toResult toValue fromValue  =
         match fromValue with
         |Ok _ -> Result.Ok toValue
-        |Error ex -> Result.Error ex
+        |Result.Error ex -> Result.Error ex
         
 
     let copyDriverToolToDriverPackage (destinationFolderPath:FileSystem.Path) =

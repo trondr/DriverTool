@@ -1,14 +1,14 @@
 ﻿namespace DriverTool
 open F
 
-module ProcessOperations =
-    open DriverTool.Logging
-    let logger = Logging.getLoggerByName("ProcessOperations")
+module ProcessOperations =    
+    let logger = DriverTool.Library.Logging.getLoggerByName("ProcessOperations")
 
     type ProcessOperations = class end
     open System.Diagnostics
     open System.Text    
     open System    
+    open DriverTool.Library.Logging
     
     type ProcessExitData = {FileName:FileSystem.Path;Arguments:string;ExitCode:int;StdOutput:string;StdError:string}
 
@@ -112,6 +112,6 @@ module ProcessOperations =
         tryCatchWithMessage startConsoleProcessUnsafe (filePath, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments)
     
     let startConsoleProcess (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) = 
-        Logging.genericLoggerResult Logging.LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile)
+        DriverTool.Library.Logging.genericLoggerResult LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile)
     
     

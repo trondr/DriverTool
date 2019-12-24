@@ -5,6 +5,7 @@ module CommandProviders =
     open ManufacturerTypes
     open FileSystem
     open DriverTool.Library.F0
+    open DriverTool.Library.Logging
 
     let exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result {
@@ -14,15 +15,15 @@ module CommandProviders =
                 let! csvFilePath = FileSystem.path csvFilePathString
                 let! cacheFolderPath = FileSystem.path DriverTool.Library.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
-                let logger = DriverTool.Logging.getLoggerByName "exportRemoteUdateInfo"
+                let logger = getLoggerByName "exportRemoteUdateInfo"
                 let! result = DriverTool.ExportRemoteUpdates.exportRemoteUpdates existingCacheFolderPath logger manufacturer modelCode operatingSystemCode csvFilePath overwrite excludeUpdatePatterns
                 return result
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
-        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let exportRemoteUdateInfo (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) =
-        Logging.genericLogger Logging.LogLevel.Debug exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns)
+        genericLogger LogLevel.Debug exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns)
 
     let exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result{
@@ -35,10 +36,10 @@ module CommandProviders =
                 return exportResult        
         }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
-        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let exportLocalUdateInfo (csvFilePathString, overwrite, excludeUpdatePatterns) =
-        Logging.genericLogger Logging.LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns)
+        genericLogger LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns)
     
     let toDateTime dateString = 
         try
@@ -61,10 +62,10 @@ module CommandProviders =
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
-        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCodeString, operatingSystemString, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage, sccmPackageInstaller, sccmPackageReadme, sccmPackageReleased) =
-        Logging.genericLogger Logging.LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased)
+        genericLogger LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased)
     
     let installDriverPackageBase (driverPackagePathString) =
         match( result {
@@ -73,10 +74,10 @@ module CommandProviders =
                     return installDriverPackageResult
         }) with        
         | Ok exitCode -> NCmdLiner.Result.Ok(exitCode)
-        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let installDriverPackage(driverPackagePath) =
-        Logging.genericLogger Logging.LogLevel.Debug installDriverPackageBase (driverPackagePath)
+        genericLogger LogLevel.Debug installDriverPackageBase (driverPackagePath)
     
     let unInstallDriverPackageBase (driverPackagePathString) =
         match( result {
@@ -85,10 +86,10 @@ module CommandProviders =
                     return unInstallDriverPackageResult
         }) with        
         | Ok exitCode -> NCmdLiner.Result.Ok(exitCode)
-        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let unInstallDriverPackage(driverPackagePath) =
-        Logging.genericLogger Logging.LogLevel.Debug unInstallDriverPackageBase (driverPackagePath)
+        genericLogger LogLevel.Debug unInstallDriverPackageBase (driverPackagePath)
     
     let compressDriverPackageBase  (driverPackagePathString) =
         match( result {
@@ -97,10 +98,10 @@ module CommandProviders =
                     return compressDriverPackageResult
         }) with        
         | Ok _ -> NCmdLiner.Result.Ok(0)
-        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
     
     let compressDriverPackage(driverPackagePath) =
-        Logging.genericLogger Logging.LogLevel.Debug compressDriverPackageBase (driverPackagePath)
+        genericLogger LogLevel.Debug compressDriverPackageBase (driverPackagePath)
 
     let decompressDriverPackageBase  (driverPackagePathString) =
         match( result {
@@ -109,7 +110,7 @@ module CommandProviders =
                     return decompressDriverPackageResult
         }) with        
         | Ok _ -> NCmdLiner.Result.Ok(0)
-        | Error ex -> NCmdLiner.Result.Fail<int>(ex)
+        | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
     
     let decompressDriverPackage(driverPackagePath) =
-        Logging.genericLogger Logging.LogLevel.Debug decompressDriverPackageBase (driverPackagePath)
+        genericLogger LogLevel.Debug decompressDriverPackageBase (driverPackagePath)

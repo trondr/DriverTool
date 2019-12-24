@@ -13,7 +13,7 @@ module DellUpdates=
     open FSharp.Collections.ParallelSeq
 
     type DellUpdates = class end
-    let logger = Logging.getLoggerByName(typeof<DellUpdates>.Name)
+    let logger = DriverTool.Library.Logging.getLoggerByName(typeof<DellUpdates>.Name)
 
     let downloadSdpFiles cacheFolderPath =
         result

@@ -5,8 +5,8 @@ module SdpUpdates =
     open sdpeval.fsharp.Sdp
     open DriverTool.PackageXml    
     open DriverTool.UpdatesContext
-    open DriverTool.Logging
-    let logger = Logging.getLoggerByName("SdpUpdates")
+    open DriverTool.Library.Logging
+    let logger = getLoggerByName("SdpUpdates")
 
     /// <summary>
     /// Load sdp files

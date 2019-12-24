@@ -6,8 +6,8 @@ module Checksum=
     open System.Security.Cryptography
     open DriverTool
     open DriverTool.FileOperations
-    open DriverTool.Logging
-    let logger = Logging.getLoggerByName("Checksum")
+    open DriverTool.Library.Logging
+    let logger = DriverTool.Library.Logging.getLoggerByName "Checksum"
 
     let getHashAlgorithmFromHashStringLength hashStringLength = 
         match hashStringLength with
@@ -43,7 +43,7 @@ module Checksum=
         |> toLower
 
     let computeFileHashFromHashLength filePath hashLength =
-        Logging.genericLogger Logging.LogLevel.Debug computeFileHashFromHashLengthBase filePath hashLength
+        genericLogger LogLevel.Debug computeFileHashFromHashLengthBase filePath hashLength
  
     let hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (destinationFilePath:FileSystem.Path, sourceFileHash:string, sourceFileSize:Int64) =
             match(fileExists destinationFilePath) with
@@ -64,7 +64,7 @@ module Checksum=
         hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (filePath, sourceFileHash, fileSize)
 
     let hasSameFileHash (filePath:FileSystem.Path, crc:string, fileSize:Int64) =
-        Logging.genericLogger Logging.LogLevel.Debug hasSameFileHashBase (filePath, crc, fileSize)
+        DriverTool.Library.Logging.genericLogger LogLevel.Debug hasSameFileHashBase (filePath, crc, fileSize)
 
     let fileHashToBase64String fileHash = 
         Convert.ToBase64String(fileHash)

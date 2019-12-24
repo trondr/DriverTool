@@ -4,7 +4,7 @@ open System
 
 module FileOperations =
     open FileSystem
-    open DriverTool.Logging
+    open DriverTool.Library.Logging
 
     let deleteFileUnsafe path  =
         System.IO.File.Delete (FileSystem.pathValue path)

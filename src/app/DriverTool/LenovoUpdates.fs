@@ -11,8 +11,9 @@ module LenovoUpdates =
     open DriverTool.Web    
     open DriverTool.UpdatesContext
     open DriverTool.Library.F0
+    open DriverTool.Library.Logging
 
-    let logger = Logging.getLoggerByName("LenovoUpdates")
+    let logger = DriverTool.Library.Logging.getLoggerByName("LenovoUpdates")
                
     let operatingSystemCode2DownloadableCode (operatingSystemCode: OperatingSystemCode) =
         operatingSystemCode.Value.Replace("X86","").Replace("x86","").Replace("X64","").Replace("x64","")
@@ -156,7 +157,7 @@ module LenovoUpdates =
         }
 
     let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
-        Logging.genericLoggerResult Logging.LogLevel.Debug getRemoteUpdatesBase (logger, cacheFolderPath, context)
+        DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug getRemoteUpdatesBase (logger, cacheFolderPath, context)
     
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
         if(actualModel.Value.StartsWith(model.Value)) then
@@ -266,7 +267,7 @@ module LenovoUpdates =
             return sccmPackageInfo        
         }) with
         |Result.Ok sccmPackageInfo -> Result.Ok sccmPackageInfo
-        |Error ex -> Result.Error (toException (sprintf "Failed to get sccm package info from url '%s' for OS=%s and OsBuild=%s due to error '%s'. It seems that Lenovo has changed the web page design making the algorithm for automatically scraping the information from the web page obsolete. To workaround the issue, manually browse to the web page '%s' and download the sccm pacakge installer (*.exe) and the sccm package readme (*.txt) and save the files to the driver tool cache  folder '%s'. Then modify the DriverTool.exe command line to skip download of Sccm package and specify the name of the installer and readme and relase date. Switches that needs to be added (example): /doNotDownloadSccmPackage=\"True\" /sccmPackageInstaller=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.exe\" /sccmPackageReadme=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.txt\" /sccmPackageReleased=\"2019-10-01\"" uri os osbuild ex.Message uri (downloadCacheDirectoryPath)) (Some ex))
+        |Result.Error ex -> Result.Error (toException (sprintf "Failed to get sccm package info from url '%s' for OS=%s and OsBuild=%s due to error '%s'. It seems that Lenovo has changed the web page design making the algorithm for automatically scraping the information from the web page obsolete. To workaround the issue, manually browse to the web page '%s' and download the sccm pacakge installer (*.exe) and the sccm package readme (*.txt) and save the files to the driver tool cache  folder '%s'. Then modify the DriverTool.exe command line to skip download of Sccm package and specify the name of the installer and readme and relase date. Switches that needs to be added (example): /doNotDownloadSccmPackage=\"True\" /sccmPackageInstaller=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.exe\" /sccmPackageReadme=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.txt\" /sccmPackageReleased=\"2019-10-01\"" uri os osbuild ex.Message uri (downloadCacheDirectoryPath)) (Some ex))
 
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath)  : Result<SccmPackageInfo,Exception> =
         result
@@ -312,8 +313,8 @@ module LenovoUpdates =
                 |Ok fp -> 
                     match DriverTool.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
                     |Ok _ -> Result.Ok destinationPath
-                    |Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
-                |Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
+                    |Result.Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
+                |Result.Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
             let! copiedReadmeFilePath = 
                 FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
 
@@ -337,7 +338,7 @@ module LenovoUpdates =
             let res = 
                 match result with 
                 | Ok r -> extractInstallerResult
-                | Error ex -> Result.Error ex
+                | Result.Error ex -> Result.Error ex
             return! res
         }
 
