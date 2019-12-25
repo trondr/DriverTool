@@ -106,13 +106,13 @@ module EmbeddedResourceTest  =
         let actual = 
             DriverTool.EmbeddedResource.getAllEmbeddedResourceNames
         let allResourceNames = String.concat Environment.NewLine actual                
-        Assert.AreEqual(60,actual.Length,allResourceNames)
+        Assert.AreEqual(56,actual.Length,allResourceNames)
 
 
     [<Test>]
     let extractedEmbeddedResourceTest () =
         let extractAndDispose =            
-            use extractedEmbeddedResource = new ExtractedEmbeddedResourceByFileName("7za.exe",logger)
+            use extractedEmbeddedResource = new ExtractedEmbeddedResourceByFileName("CorFlags.exe",logger)
             match(result{
                 let! filePath1 = extractedEmbeddedResource.FilePath
                 Assert.IsTrue(System.IO.File.Exists(FileSystem.pathValue filePath1),sprintf "File does not exist: '%A'" filePath1)

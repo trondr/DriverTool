@@ -42,6 +42,10 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <EmbeddedResource Include="Tools\7Zip\7za.exe" />
+    <EmbeddedResource Include="Tools\7Zip\7zip.chm" />
+    <EmbeddedResource Include="Tools\7Zip\License.txt" />
+    <EmbeddedResource Include="Tools\7Zip\readme.txt" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
     <Compile Include="AssemblyInfo.fs" />
@@ -86,6 +90,7 @@
     <Compile Include="WebParsing.fs" />
     <Compile Include="Robocopy.fs" />
     <Compile Include="Requirements.fs" />
+    <Compile Include="Compression.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
