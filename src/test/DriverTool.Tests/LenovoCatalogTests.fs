@@ -9,9 +9,9 @@ module LenovoCatalogTests=
     
     open DriverTool.LenovoCatalog
     open DriverTool.LenovoUpdates
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open Microsoft.FSharp.Core    
-    open DriverTool.Web
+    open DriverTool.Library.Web
     open DriverTool.WebParsing
     open DriverTool.Library.FileOperations
     open DriverTool.Library.PathOperations

@@ -5,7 +5,7 @@ module ExportLocalUpdates =
     let logger = DriverTool.Library.Logging.getLoggerByName "ExportLocalUpdates"
 
     open System
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.UpdatesContext
     open DriverTool.Library.F
     open DriverTool.Library
 

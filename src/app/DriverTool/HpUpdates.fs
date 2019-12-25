@@ -2,13 +2,13 @@
 
 module HpUpdates =
     open System
-    open PackageXml
-    open DriverTool.Web
+    open DriverTool.Library.PackageXml
+    open DriverTool.Library.Web
     open DriverTool.HpCatalog
     open sdpeval.fsharp.Sdp
     open DriverTool.SdpUpdates
     open FSharp.Data
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.UpdatesContext
     open DriverTool.Library.F
     open DriverTool.Library
         
@@ -99,7 +99,7 @@ module HpUpdates =
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
-            let! installerUri = DriverTool.Web.toUri sccmPackage.InstallerFile.Url
+            let! installerUri = DriverTool.Library.Web.toUri sccmPackage.InstallerFile.Url
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile

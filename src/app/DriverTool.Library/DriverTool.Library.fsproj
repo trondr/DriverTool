@@ -77,6 +77,12 @@
     <Compile Include="ModelCode.fs" />
     <Compile Include="OperatingSystemCode.fs" />
     <Compile Include="RegExp.fs" />
+    <Compile Include="LenovoSystemUpdateCheck.fs" />
+    <Compile Include="Web.fs" />
+    <Compile Include="UpdatesContext.fs" />
+    <Compile Include="InstallXml.fs" />
+    <Compile Include="PackageXml.fs" />
+    <Compile Include="Cab.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
@@ -93,6 +99,9 @@
     </Reference>
     <Reference Include="FSharp.Configuration">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Control.Reactive">
+      <HintPath>..\..\..\packages\FSharp.Control.Reactive.4.2.0\lib\net46\FSharp.Control.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\..\..\packages\FSharp.Core.4.7.0\lib\net45\FSharp.Core.dll</HintPath>
@@ -119,11 +128,17 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Reactive">
+      <HintPath>..\..\..\packages\System.Reactive.4.0.0\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
     <Reference Include="System.ValueTuple">
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj">

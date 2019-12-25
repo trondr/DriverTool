@@ -4,9 +4,9 @@ module LenovoCatalog =
     open FSharp.Data    
     open System
     open DriverTool 
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open LenovoCatalogXml    
-    open DriverTool.Web
+    open DriverTool.Library.Web
     open DriverTool.Library.OperatingSystem
     open DriverTool.Library.F0
     open DriverTool.Library.F

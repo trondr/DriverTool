@@ -2,7 +2,7 @@
 
 module DellCommandUpdate =
     open System
-    open PackageXml
+    open DriverTool.Library.PackageXml
     open System.Xml.Linq
     open DellSettings
     open DriverTool.Library.F

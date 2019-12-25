@@ -3,7 +3,7 @@
 module ExportRemoteUpdates = 
     open DriverTool
     open DriverTool.Library.ManufacturerTypes
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.UpdatesContext
     open DriverTool.Library.F
     open DriverTool.Library
     open DriverTool.Library.FileOperations

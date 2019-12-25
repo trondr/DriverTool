@@ -7,7 +7,7 @@
 
     [<TestFixture>]
     module InstallXmlTests =         
-        open DriverTool.InstallXml
+        open DriverTool.Library.InstallXml
         type ThisAssembly = { Empty:string;}
 
         type internal TestData ={IsSuccess:bool;Expected:InstallConfigurationData;ExpectedErrorMessage:string}

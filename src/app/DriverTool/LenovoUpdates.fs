@@ -2,13 +2,13 @@
 
 module LenovoUpdates =    
     open System
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open DriverTool.Library.Configuration
     open System.Text.RegularExpressions
     open System.Linq
     open System.Xml.Linq    
-    open DriverTool.Web    
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.Web    
+    open DriverTool.Library.UpdatesContext
     open DriverTool.Library.F0
     open DriverTool.Library.Logging
     open DriverTool.Library.F
@@ -144,8 +144,8 @@ module LenovoUpdates =
         result{
             let modelInfoUri = getModelInfoUri context.Model context.OperatingSystem
             let! modelInfoXmlFilePath = getModelInfoXmlFilePath cacheFolderPath context.Model context.OperatingSystem            
-            let downloadInfo = DriverTool.Web.toDownloadInfo modelInfoUri String.Empty 0L modelInfoXmlFilePath                
-            let! downloadedInfo = DriverTool.Web.downloadIfDifferent (logger, downloadInfo,true)
+            let downloadInfo = DriverTool.Library.Web.toDownloadInfo modelInfoUri String.Empty 0L modelInfoXmlFilePath                
+            let! downloadedInfo = DriverTool.Library.Web.downloadIfDifferent (logger, downloadInfo,true)
             let! packageXmlInfos = loadPackagesXml downloadedInfo.DestinationFile
             let! downloadedPackageXmls = downloadPackageXmls cacheFolderPath packageXmlInfos
             let! packageInfos = 
@@ -203,7 +203,7 @@ module LenovoUpdates =
     let getLocalUpdates (logger:Common.Logging.ILog) cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             logger.Info("Checking if Lenovo System Update is installed...")
-            let! lenovoSystemUpdateIsInstalled = DriverTool.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
+            let! lenovoSystemUpdateIsInstalled = DriverTool.Library.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
             logger.Info(sprintf "Lenovo System Update is installed: %b" lenovoSystemUpdateIsInstalled)
             logger.Info("Getting locally installed updates...")
             let! packageInfos = DriverTool.LenovoSystemUpdate.getLocalUpdates()

@@ -14,7 +14,7 @@ module PackageDefinition =
             Value=installRevision
         }
     
-    open DriverTool.InstallXml
+    open DriverTool.Library.InstallXml
 
     let getApplicationRegistryValue (installConfiguration:InstallConfigurationData) =
         getApplicationRegistryValueBase installConfiguration.Publisher installConfiguration.PackageName installConfiguration.PackageVersion installConfiguration.PackageRevision

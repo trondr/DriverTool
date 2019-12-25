@@ -1,12 +1,11 @@
-﻿namespace DriverTool
-
-
+﻿namespace DriverTool.Library
 
 module PackageXml = 
     open System.Xml.Linq
     open DriverTool.Library.F0
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Web
     open System
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageXml"
         
@@ -79,8 +78,8 @@ module PackageXml =
         }    
     
     type SccmPackageInfo = {        
-        ReadmeFile:DriverTool.Web.WebFile
-        InstallerFile:DriverTool.Web.WebFile        
+        ReadmeFile:DriverTool.Library.Web.WebFile
+        InstallerFile:DriverTool.Library.Web.WebFile        
         Released:DateTime;
         Os:string;
         OsBuild:string
@@ -103,8 +102,6 @@ module PackageXml =
     let getDestinationPackageXmlPath destinationDirectory packageInfo =
         System.IO.Path.Combine(FileSystem.pathValue destinationDirectory, packageInfo.PackageXmlName)
     
-    open DriverTool.Web
-
     let toDownloadUriUnsafe optionUri : Uri =
         match optionUri with
         |None -> raise (toException "Download Url not defined." None)

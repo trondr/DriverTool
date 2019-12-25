@@ -3,7 +3,7 @@
 module LenovoUpdateTests =
     open DriverTool.Tests.Init
     open DriverTool    
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open NUnit.Framework    
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     open DriverTool.Library.F
@@ -105,7 +105,7 @@ module LenovoUpdateTests =
             let! model = ModelCode.create "20QG" false
             let! osCode = OperatingSystemCode.create "WIN10X64" false
             let! logDirectory = FileSystem.path @"C:\Temp\DriverToolLogs"
-            let context = DriverTool.UpdatesContext.toUpdatesRetrievalContext model osCode false logDirectory [||]                                
+            let context = DriverTool.Library.UpdatesContext.toUpdatesRetrievalContext model osCode false logDirectory [||]                                
             let! packageInfos = DriverTool.LenovoUpdates.getRemoteUpdates logger existingCacheFolderPath context
             return packageInfos        
         })with

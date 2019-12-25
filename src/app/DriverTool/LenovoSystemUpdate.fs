@@ -4,7 +4,7 @@ module LenovoSystemUpdate =
     open System
     open Tvsu.Engine
     open Tvsu.Beans
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open DriverTool.Library.F
     open DriverTool.Library    
     

@@ -5,9 +5,7 @@ open NUnit.Framework
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module DellUpdatesTests =
-    open DriverTool
-    open DriverTool.UpdatesContext
-    open Common.Logging
+    open DriverTool.Library.UpdatesContext    
     let logger = Common.Logging.Simple.ConsoleOutLogger("DellUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     open DriverTool.Library.F
     open DriverTool.Library.Logging
@@ -49,7 +47,7 @@ module DellUpdatesTests =
         |Ok _->Assert.IsTrue(true)
         |Result.Error ex ->Assert.Fail(ex.Message)
 
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open DriverTool
     open System
 

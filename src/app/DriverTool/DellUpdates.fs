@@ -4,11 +4,11 @@ module DellUpdates=
     
     open System
     open System.Xml.Linq
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open DriverTool.DellCatalog
     open DriverTool.DellSettings
-    open DriverTool.Web    
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.Web    
+    open DriverTool.Library.UpdatesContext
     open sdpeval.fsharp.Sdp    
     open FSharp.Collections.ParallelSeq
     open DriverTool.Library.F

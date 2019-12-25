@@ -2,7 +2,7 @@
 
 open NUnit.Framework
 open DriverTool.InstallDriverPackage
-open DriverTool.InstallXml
+open DriverTool.Library.InstallXml
 open DriverTool.Library.F
 
 [<TestFixture>]

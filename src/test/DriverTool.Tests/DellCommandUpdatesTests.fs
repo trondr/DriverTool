@@ -41,7 +41,7 @@ module DellCommandUpdatesTests =
 [<TestFixture>]
 [<Category(TestCategory.IntegrationTests)>]
 module DellCommandUpdatesIntegrationTests =
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.UpdatesContext
     open DriverTool
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")

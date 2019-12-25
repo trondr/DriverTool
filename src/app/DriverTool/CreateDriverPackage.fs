@@ -8,10 +8,10 @@ module CreateDriverPackage =
     open System.Text
     open Microsoft.FSharp.Collections
     open DriverTool
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open FSharp.Collections.ParallelSeq    
     open DriverTool.Library.ManufacturerTypes
-    open DriverTool.Web    
+    open DriverTool.Library.Web    
     open DriverTool.Library.PathOperations
     open PackageDefinition
     open DriverTool.Requirements
@@ -19,7 +19,7 @@ module CreateDriverPackage =
     open DriverTool.Library.Logging
     open DriverTool.Library.F
     open DriverTool.Library
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.UpdatesContext
     open DriverTool.Library.Environment
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
@@ -401,7 +401,7 @@ module CreateDriverPackage =
 
                 let! installXmlPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"Install.xml"))
                 let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
-                let! installConfiguration = DriverTool.InstallXml.loadInstallXml existingInstallXmlPath
+                let! installConfiguration = DriverTool.Library.InstallXml.loadInstallXml existingInstallXmlPath
                 
                 let updatedInstallConfiguration = 
                     { installConfiguration with 
@@ -416,7 +416,7 @@ module CreateDriverPackage =
                         OsShortName = dpcc.OperatingSystem.Value;
                         Publisher = dpcc.PackagePublisher
                     }
-                let! savedInstallConfiguration = DriverTool.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
+                let! savedInstallConfiguration = DriverTool.Library.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
                 logger.Info(msg (sprintf  "Saved install configuration to '%s'. Value: %A" (FileSystem.pathValue existingInstallXmlPath) savedInstallConfiguration))
                 logger.Info("Create PackageDefinition.sms")
                 let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue versionedPackagePath,"PackageDefinition.sms"))                

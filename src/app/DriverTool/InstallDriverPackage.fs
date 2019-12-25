@@ -2,7 +2,7 @@
 
 module InstallDriverPackage =
     open System
-    open InstallXml
+    open DriverTool.Library.InstallXml
     open DriverTool.PackageDefinition
     open DriverTool.Requirements
     open Microsoft.FSharp.Core.Operators

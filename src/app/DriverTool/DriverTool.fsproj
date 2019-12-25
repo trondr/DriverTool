@@ -109,12 +109,6 @@
     <Content Include="packages.config" />
     <None Include="Script.fsx" />
     <Compile Include="Init.fs" />
-    <Compile Include="LenovoSystemUpdateCheck.fs" />
-    <Compile Include="Web.fs" />
-    <Compile Include="UpdatesContext.fs" />
-    <Compile Include="InstallXml.fs" />
-    <Compile Include="PackageXml.fs" />
-    <Compile Include="Cab.fs" />
     <Compile Include="SdpUpdates.fs" />
     <Compile Include="HpCatalog.fs" />
     <Compile Include="HpUpdates.fs" />

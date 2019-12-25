@@ -5,14 +5,10 @@ open NUnit.Framework
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module WebTests =
-
-    
     open Common.Logging
     open Rhino.Mocks
-    open DriverTool.Web
-    open DriverTool
+    open DriverTool.Library.Web
     open System
-    open NUnit.Framework
     open DriverTool.Library.F
     open DriverTool.Library
 
@@ -43,7 +39,7 @@ module WebTests =
                             DestinationFile=destinationFilePath       
                         }
 
-                    let actual = DriverTool.Web.verifyDownloadBase (hasSameFileHasStub,isTrustedStub,loggerStub,downloadInfo,ignoreVerificationErrors)
+                    let actual = DriverTool.Library.Web.verifyDownloadBase (hasSameFileHasStub,isTrustedStub,loggerStub,downloadInfo,ignoreVerificationErrors)
                     let result = 
                         match actual with
                         |Ok _ ->
@@ -113,8 +109,8 @@ module WebTests =
             |_ -> 
                 Assert.Fail(sprintf "File name not expected: '%s'" fileName)
                 false
-        let downloadInfo = DriverTool.Web.toDownloadInfo (new Uri("http://dummy")) String.Empty 0L (FileSystem.pathUnSafe destinationFileName)
-        let actual =  DriverTool.Web.useCachedVersionBase logger (stubFileExists destinationFileName useCacheVersionFileName) downloadInfo
+        let downloadInfo = DriverTool.Library.Web.toDownloadInfo (new Uri("http://dummy")) String.Empty 0L (FileSystem.pathUnSafe destinationFileName)
+        let actual =  DriverTool.Library.Web.useCachedVersionBase logger (stubFileExists destinationFileName useCacheVersionFileName) downloadInfo
         Assert.AreEqual(expected,actual,"")
 
 [<TestFixture>]

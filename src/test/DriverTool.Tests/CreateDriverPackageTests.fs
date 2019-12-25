@@ -1,8 +1,8 @@
 ﻿namespace DriverTool.Tests
 
 open NUnit.Framework
-open DriverTool.PackageXml
-open DriverTool.Web
+open DriverTool.Library.PackageXml
+open DriverTool.Library.Web
 open DriverTool.CreateDriverPackage
 open DriverTool
 open DriverTool.Library.F

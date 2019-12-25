@@ -2,7 +2,7 @@
 
 module DellCatalog =
 
-    open DriverTool.Cab
+    open DriverTool.Library.Cab
     open DriverTool.SdpUpdates
     open System
     open DriverTool.Library.F

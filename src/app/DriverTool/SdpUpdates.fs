@@ -3,8 +3,8 @@
 module SdpUpdates =    
     open System
     open sdpeval.fsharp.Sdp
-    open DriverTool.PackageXml    
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.PackageXml    
+    open DriverTool.Library.UpdatesContext
     open DriverTool.Library.Logging
     open DriverTool.Library.F
     open DriverTool.Library
@@ -154,11 +154,11 @@ module SdpUpdates =
     /// <param name="destinationFolderPath"></param>
     let expandSmsSdpCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path) =
         result{
-            let! expandExePath = FileSystem.path DriverTool.Cab.expandExe
+            let! expandExePath = FileSystem.path DriverTool.Library.Cab.expandExe
             let arguments = sprintf "\"%s\" -F:* \"%s\"" (FileSystem.pathValue cabFilePath) (FileSystem.pathValue destinationFolderPath)
             let workingDirectory =  FileSystem.pathValue destinationFolderPath
             let! expandExitCode = ProcessOperations.startConsoleProcess (expandExePath, arguments, workingDirectory,-1,null,null,false)
-            let! expandResult = DriverTool.Cab.expandExeExitCodeToResult cabFilePath expandExitCode
+            let! expandResult = DriverTool.Library.Cab.expandExeExitCodeToResult cabFilePath expandExitCode
             return expandResult
         }
 
