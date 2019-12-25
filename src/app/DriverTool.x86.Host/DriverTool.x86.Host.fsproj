@@ -49,13 +49,13 @@
     <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
-    <EmbeddedResource Include="Libs\CsvHelper.dll" />    
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
-    <EmbeddedResource Include="Libs\DriverTool.Library.dll" />    
-    <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />    
+    <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />
     <EmbeddedResource Include="Libs\FSharp.Core.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Data.dll" />            
-    <EmbeddedResource Include="Libs\log4net.dll" />    
+    <EmbeddedResource Include="Libs\FSharp.Data.dll" />
+    <EmbeddedResource Include="Libs\log4net.dll" />
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
@@ -123,6 +123,10 @@
   <PropertyGroup>
     <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
 exit /b 0</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>robocopy "$(ProjectDir)..\DriverTool.Library\bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
+exit /b 0</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
