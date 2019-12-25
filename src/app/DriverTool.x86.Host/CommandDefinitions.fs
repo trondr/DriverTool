@@ -3,17 +3,21 @@ namespace DriverTool.x86.Host
     module CommandDefinitions =
 
         open NCmdLiner.Attributes
+        open DriverTool.x86.Host.RunHost
 
         [<Commands()>]
         type CommandDefinitions =        
             
-            [<Command(Description = "Example command 1", Summary = "Export remote update information for specified model to csv file.")>]
-            static member ExampleExportCommand1 (
-                                                [<RequiredCommandParameter(Description = "Path to csv file.", ExampleValue = @"c:\temp\updates.csv", AlternativeName = "f")>] 
-                                                csvFileName: string,
-                                                [<OptionalCommandParameter(Description = "Overwrite csv file if it allready exists.", ExampleValue = false,DefaultValue = false, AlternativeName = "o")>] 
-                                                overWrite : bool                                            
+            [<Command(Description = "Run DriverTool x86 host, listening for requests from main DriverTool process.", Summary = "Run DriverTool x86 host.")>]
+            static member RunHost (
+                                                [<RequiredCommandParameter(Description = "Tcp port to listen on.", ExampleValue = @"8081", AlternativeName = "f")>] 
+                                                port: string                                                
                                                 ) : NCmdLiner.Result<int> =                
-                    printfn "ExampleExportCommand 1 exporting file '%s' with overwrite=%b" csvFileName overWrite
-                    NCmdLiner.Result.Ok 0
+                    
+
+
+
+
+
+                    NCmdLiner.Result.Ok (runHost port)
         
