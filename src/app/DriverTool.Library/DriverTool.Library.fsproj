@@ -91,6 +91,7 @@
     <Compile Include="Robocopy.fs" />
     <Compile Include="Requirements.fs" />
     <Compile Include="Compression.fs" />
+    <Compile Include="Run.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">

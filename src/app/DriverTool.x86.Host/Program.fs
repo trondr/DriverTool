@@ -27,5 +27,7 @@ let teardown() =
 
 [<EntryPoint>]
 let main argv = 
+    setup()
     let exitCode = DriverTool.x86.Host.RunCommand.runCommand argv
+    teardown()
     exitCode
