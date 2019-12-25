@@ -46,6 +46,21 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />    
+    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
+    <EmbeddedResource Include="Libs\DriverTool.Library.dll" />    
+    <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />    
+    <EmbeddedResource Include="Libs\FSharp.Core.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.dll" />            
+    <EmbeddedResource Include="Libs\log4net.dll" />    
+    <EmbeddedResource Include="Libs\NCmdLiner.dll" />
+    <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Libs\SharpYaml.dll" />
+    <EmbeddedResource Include="Libs\System.Reactive.dll" />
+    <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
@@ -105,6 +120,10 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
+exit /b 0</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
