@@ -83,6 +83,7 @@
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="Cab.fs" />
+    <Compile Include="WebParsing.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">

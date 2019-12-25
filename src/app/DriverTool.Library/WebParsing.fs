@@ -1,4 +1,4 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 module WebParsing =
     let logger = DriverTool.Library.Logging.getLoggerByName "WebParsing"    

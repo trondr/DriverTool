@@ -263,7 +263,7 @@ module LenovoUpdates =
    
     let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
         match(result{
-            let! content = DriverTool.WebParsing.getContentFromWebPage uri
+            let! content = DriverTool.Library.WebParsing.getContentFromWebPage uri
             let! sccmPackageInfo = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
             return sccmPackageInfo        
         }) with
