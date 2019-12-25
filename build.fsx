@@ -63,6 +63,35 @@ Target.create "BuildApp" (fun _ ->
             AssemblyInfo.Guid "19822aea-c088-455d-b5a5-4738a3a9dba7"
             AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
         ]
+    
+    AssemblyInfoFile.createFSharp "./src/app/DriverTool.Library/AssemblyInfo.fs"
+        [
+            AssemblyInfo.Title "DriverTool.Library"
+            AssemblyInfo.Description "Library providing common DriverTool functionality."
+            AssemblyInfo.Product "DriverTool.Library"
+            AssemblyInfo.Company "github/trondr"
+            AssemblyInfo.Copyright "Copyright \u00A9 github/trondr 2018-2019"
+            AssemblyInfo.Version assemblyVersion
+            AssemblyInfo.FileVersion assemblyVersion                        
+            AssemblyInfo.ComVisible false
+            AssemblyInfo.Guid "19822aea-c088-455d-b5a5-4738a3a9dba8"
+            AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
+        ]
+
+    AssemblyInfoFile.createFSharp "./src/app/DriverTool.x86.Host/AssemblyInfo.fs"
+        [
+            AssemblyInfo.Title "DriverTool.x86.Host"
+            AssemblyInfo.Description "Host process providing DriverTool with 32-bit services."
+            AssemblyInfo.Product "DriverTool.x86.Host"
+            AssemblyInfo.Company "github/trondr"
+            AssemblyInfo.Copyright "Copyright \u00A9 github/trondr 2018-2019"
+            AssemblyInfo.Version assemblyVersion
+            AssemblyInfo.FileVersion assemblyVersion                        
+            AssemblyInfo.ComVisible false
+            AssemblyInfo.Guid "19822aea-c088-455d-b5a5-4738a3a9dba9"
+            AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
+        ]
+
     !! "src/app/**/*.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
@@ -97,6 +126,11 @@ Target.create "Publish" (fun _ ->
             System.IO.Path.Combine(buildAppFolder,"DriverTool.exe")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.pdb")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.exe.config")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Host.exe")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Host.pdb")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Host.exe.config")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.dll")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.pdb")            
             System.IO.Path.Combine(buildAppFolder,"FSharp.Core.dll")
             System.IO.Path.Combine(buildAppFolder,"Common.Logging.dll")            
         |]

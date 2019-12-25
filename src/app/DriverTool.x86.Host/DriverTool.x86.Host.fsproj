@@ -60,6 +60,8 @@
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
     <EmbeddedResource Include="Libs\System.Reactive.dll" />
+    <EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
+    <EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
     <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
@@ -122,6 +124,8 @@
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
+robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).exe
+robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).pdb
 exit /b 0</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
