@@ -3,7 +3,6 @@
 open NUnit.Framework
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
 module DellUpdatesTests =
     open DriverTool.Library.UpdatesContext    
     let logger = Common.Logging.Simple.ConsoleOutLogger("DellUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
@@ -14,6 +13,7 @@ module DellUpdatesTests =
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
     [<TestCase("FOLDER01766254M/1/9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE","FOLDER01766254M/1","9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE")>]
+    [<Category(TestCategory.UnitTests)>]
     let pathToDirectoryAndFileTests (path:string,expectedDirectory,expectedFileName) =
        let (actualDirectory,actualFileName) = DriverTool.DellUpdates.pathToDirectoryAndFile path
        Assert.AreEqual(expectedDirectory,actualDirectory,"Directory not expected")
