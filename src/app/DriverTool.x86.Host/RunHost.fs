@@ -4,6 +4,9 @@ module RunHost =
     
     open DriverTool.x86.Host.HostActors
     open Akka.FSharp
+    open DriverTool.Library.HostMessages
+    open DriverTool.Library.Logging
+    let logger = getLoggerByName "RunHost"
 
     let hoconConfig port = 
         let configString = """
@@ -36,6 +39,9 @@ akka {
         let config = Akka.FSharp.Configuration.parse (hoconConfig port)
         use system = Akka.FSharp.System.create "HostSystem" config
         let hostActor = Akka.FSharp.Spawn.spawn system "HostActor" hostActor
-        hostActor <! "DriverTool x86 host actor is listening for requests." //Example message
+        hostActor <! "DriverTool x86 host actor is listening for requests." //Example message        
+        hostActor <! {LenovoSccmPackageInfoRequestMessage.SourceUri="http://example123.com/ds1234567"}
+        hostActor <! (new QuitHostMessage())
         system.WhenTerminated.Wait()
+        logger.Info("DriverTool host has been terminated.")
         0
