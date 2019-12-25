@@ -4,7 +4,7 @@ module InstallDriverPackage =
     open System
     open DriverTool.Library.InstallXml
     open DriverTool.PackageDefinition
-    open DriverTool.Requirements
+    open DriverTool.Library.Requirements
     open Microsoft.FSharp.Core.Operators
     open DriverTool.Library.Logging
     let logger = getLoggerByName "InstallDriverPackage"

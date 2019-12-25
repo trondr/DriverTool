@@ -25,7 +25,7 @@ module LenovoUpdateTests =
                             packageVersion
                             ) =
         match(result{
-            let! isAdministrator = DriverTool.Requirements.assertIsAdministrator "Administrative privileges are required to run this integration test."
+            let! isAdministrator = DriverTool.Library.Requirements.assertIsAdministrator "Administrative privileges are required to run this integration test."
             use temporaryCacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! temproaryCacheFolderPath = temporaryCacheFolder.FolderPath                        
             logger.Info(sprintf "Extract from embeded resource: %s, %s, %s" installerFileName readmeFileName packageXmlFileName)

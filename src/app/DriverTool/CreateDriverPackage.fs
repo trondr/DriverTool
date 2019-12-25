@@ -14,7 +14,7 @@ module CreateDriverPackage =
     open DriverTool.Library.Web    
     open DriverTool.Library.PathOperations
     open PackageDefinition
-    open DriverTool.Requirements
+    open DriverTool.Library.Requirements
     open DriverTool.PackageTemplate        
     open DriverTool.Library.Logging
     open DriverTool.Library.F

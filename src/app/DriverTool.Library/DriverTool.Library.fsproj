@@ -84,6 +84,8 @@
     <Compile Include="PackageXml.fs" />
     <Compile Include="Cab.fs" />
     <Compile Include="WebParsing.fs" />
+    <Compile Include="Robocopy.fs" />
+    <Compile Include="Requirements.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
