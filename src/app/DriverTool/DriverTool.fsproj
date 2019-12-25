@@ -119,7 +119,6 @@
     <Compile Include="Updates.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />
     <Compile Include="ExportLocalUpdates.fs" />
-    <Compile Include="EmbeddedResouce.fs" />
     <Compile Include="PackageDefinition.fs" />
     <Compile Include="CorFlags.fs" />
     <Compile Include="PackageTemplate.fs" />

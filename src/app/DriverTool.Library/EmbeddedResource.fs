@@ -2,9 +2,8 @@ namespace DriverTool.Library
 
 module EmbeddedResource =
     open DriverTool.Library.Logging
-    open DriverTool.Library.F
-    open DriverTool.Library.FileSystem
-    let logger = Logging.getLoggerByName "EmbeddedResouce"
+    open DriverTool.Library.F    
+    let logger = Logging.getLoggerByName "EmbeddedResource"
     open System
         
     type ResourceName private (resourceName:string) =
@@ -98,20 +97,17 @@ module EmbeddedResource =
     let embeddedResourceExists resourceAssembly resourceName =        
         embeddedResourceExistsBase resourceName resourceAssembly
 
-    let extractEmbededResouceToFile (resourceName:string , destinationFileName:string) = 
+    let extractEmbededResouceToFile (resourceAssembly, resourceName:string , destinationFileName:string) = 
         result {
-                
-                let! resourceNameObject = 
-                    ResourceName.create resourceName
-                let! destinationFilePath = 
-                    FileSystem.path destinationFileName
+                let! resourceNameObject = ResourceName.create resourceName
+                let! destinationFilePath = FileSystem.path destinationFileName
                 let! parentDirectoryPath = (FileSystem.path (System.IO.Path.GetDirectoryName(FileSystem.pathValue destinationFilePath)))
                 let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists true parentDirectoryPath
                 logger.Info("Verified that directory exists:" + FileSystem.pathValue existingParentDirectoryPath)
-                let assembly = destinationFilePath.GetType().Assembly
+                
                 logger.Info(msg (sprintf "Extracting resource '%s' -> '%s'" resourceName (FileSystem.pathValue destinationFilePath)))
                 let! fileResult = 
-                    extractEmbeddedResourceInAssemblyToFile (resourceNameObject,assembly, destinationFilePath)
+                    extractEmbeddedResourceInAssemblyToFile (resourceNameObject,resourceAssembly, destinationFilePath)
                 return fileResult
             }
 
@@ -140,7 +136,7 @@ module EmbeddedResource =
             extractEmbeddedResourceBase (resourceNames.[0],destinationFolderPath,destinationFileName, assembly)
         | false -> raise (new Exception("File not found in embedded resource: " + fileName))
 
-    let extractEmbeddedResouceByFileName (resourceAssembly,fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =        
+    let extractEmbeddedResourceByFileName (resourceAssembly,fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =        
         extractEmbeddedResourceByFileNameBase (fileName, destinationFolderPath, destinationFileName, resourceAssembly)
 
     let mapResourceNamesToFileNames (destinationFolderPath:FileSystem.Path, resourceNames:seq<string>,resourceNameToDirectoryDictionary)=
@@ -183,7 +179,7 @@ module EmbeddedResource =
                 |Result.Error ex -> raise ex           
 
     [<AllowNullLiteral>]
-    type ExtractedEmbeddedResource(resourceAssembly,fileName, logger:Common.Logging.ILog) =
+    type ExtractedEmbeddedResource(resourceAssebly,resourceName,fileName, logger:Common.Logging.ILog) =
         let tempFolderPath = 
             result {
                 let! nonExistingTempFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),(Guid.NewGuid().ToString())))
@@ -194,7 +190,7 @@ module EmbeddedResource =
         let tempFilePath =
             result{
                 let! folderPath = tempFolderPath                
-                let! extractedFile = extractEmbeddedResourceByFileNameBase (fileName,folderPath,fileName,resourceAssembly)
+                let! extractedFile = extractEmbeddedResourceBase (resourceName,folderPath,fileName,resourceAssebly)
                 return extractedFile
             }
 

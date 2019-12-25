@@ -84,7 +84,7 @@ module LenovoUpdateTests =
         match(result{
             use temporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! temporaryFolderPath = temporaryFolder.FolderPath
-            let! xmlFilePath = DriverTool.EmbeddedResource.extractEmbeddedResourceByFileNameBase ("LenovoCatalog_WithError_20QG_win10.xml",temporaryFolderPath,"LenovoCatalog_WithError_20QG_win10.xml",typeof<ThisTestAssembly>.Assembly)
+            let! xmlFilePath = DriverTool.Library.EmbeddedResource.extractEmbeddedResourceByFileNameBase ("LenovoCatalog_WithError_20QG_win10.xml",temporaryFolderPath,"LenovoCatalog_WithError_20QG_win10.xml",typeof<ThisTestAssembly>.Assembly)
             let! packages = DriverTool.LenovoUpdates.loadPackagesXml xmlFilePath 
             let! downloadedPackages = DriverTool.LenovoUpdates.downloadPackageXmls temporaryFolderPath packages
             let! packageInfos = 

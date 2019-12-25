@@ -1,7 +1,7 @@
 ﻿namespace DriverTool
 
 module PackageTemplate =
-    open DriverTool.EmbeddedResource    
+    open DriverTool.Library.EmbeddedResource
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageTemplate"
     open DriverTool.Library.F
     open DriverTool.Library
@@ -10,8 +10,8 @@ module PackageTemplate =
         resourceName.StartsWith("DriverTool.PackageTemplate")
 
     let getPackageTemplateEmbeddedResourceNames () =
-        let embeddedResourceNames = 
-                getAllEmbeddedResourceNames
+        let embeddedResourceNames =                 
+                getAllEmbeddedResourceNames resourceAssembly
                 |> Seq.filter (fun x -> (isDriverPackageEmbeddedResourceName x))
         embeddedResourceNames
     
@@ -34,11 +34,10 @@ module PackageTemplate =
                 let! extractedFilepath =
                     match System.IO.File.Exists(filePathValue) with
                     |false ->
-                        result{
-                            let assembly = typeof<ThisAssembly>.Assembly
+                        result{                            
                             let fileName = getFileName filePath
                             let parentDirectory = getParentDirectory filePath
-                            let! extractedFilePath = extractEmbeddedResourceByFileNameBase (fileName, parentDirectory, fileName, assembly)
+                            let! extractedFilePath = extractEmbeddedResourceByFileNameBase (fileName, parentDirectory, fileName, resourceAssembly)
                             return extractedFilePath
                         }
                     |true -> Result.Ok filePath
@@ -47,10 +46,9 @@ module PackageTemplate =
 
     let getDriverToolFiles () =
         result
-            {
-                let assembly = typeof<ThisAssembly>.Assembly
-                let! exeFilePath = FileSystem.path assembly.Location
-                let! exeFileConfigPath = FileSystem.path (assembly.Location + ".config")
+            {                
+                let! exeFilePath = FileSystem.path resourceAssembly.Location
+                let! exeFileConfigPath = FileSystem.path (resourceAssembly.Location + ".config")
                 let! exeFileDirectoryPath = FileSystem.path ((new System.IO.FileInfo(FileSystem.pathValue exeFilePath))).Directory.FullName
                 let! fsharpCoreDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"FSharp.Core.dll"))
                 let! extractedFSharpCoreDllPath = extractIfNotExists fsharpCoreDllPath
@@ -94,13 +92,13 @@ module PackageTemplate =
         }
 
     let extractPackageTemplate (destinationFolderPath:FileSystem.Path) =
-        result {
+        result {             
             let! emptyDestinationFolderPath = DriverTool.Library.DirectoryOperations.ensureDirectoryExistsAndIsEmpty (destinationFolderPath, true)
             let resourceNamesVsDestinationFilesMap = mapResourceNamesToFileNames (emptyDestinationFolderPath,getPackageTemplateEmbeddedResourceNames(),resourceNameToDirectoryDictionary)
             let! extractedFiles =
                 resourceNamesVsDestinationFilesMap
                 |> Seq.map (fun (resourceName, fileName) ->
-                        extractEmbededResouceToFile (resourceName, fileName)
+                        extractEmbededResouceToFile (resourceAssembly,resourceName, fileName)
                     )
                 |> toAccumulatedResult
             let! copiedFiles = copyDriverToolToDriverPackage destinationFolderPath
