@@ -68,3 +68,5 @@ src/app/DriverTool/Libs/Lenovo.QualityStats.Repo3.dll
 src/app/DriverTool/Libs/Core.dll
 _NCrunch_DriverTool/StoredText/52160a6257ee4c35b54bcefb3823c135
 _NCrunch_DriverTool/
+src/app/DriverTool.x86.Host/Libs/Client.dll
+src/app/DriverTool.x86.Host/Libs/Common.dll
