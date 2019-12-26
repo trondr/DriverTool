@@ -12,12 +12,13 @@ module HostActors =
                 let (actorSystem, sender, self) = mailbox.Context.System,mailbox.Context.Sender, mailbox.Context.Self
                 let hostMessage = toHostMessage message
                 match hostMessage with
-                |Info s ->
+                |HostMessage.Information s ->
                     logger.Info(sprintf "%s" s)
-                |Quit _ ->
+                |HostMessage.Quit _ ->
                     logger.Info("Terminating DriverTool host...")
+                    sender <! "Request for termination of host has been received. Terminating DriverTool host..."
                     actorSystem.Terminate() |> ignore
-                |LenovoSccmPackageInfoRequest r ->
+                |HostMessage.LenovoSccmPackageInfoRequest r ->
                     logger.Info(sprintf "Processing %A" r)
                 return! loop()
         }

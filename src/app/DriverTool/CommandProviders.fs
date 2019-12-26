@@ -57,7 +57,7 @@ module CommandProviders =
                 let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
                 let! released = toDateTime sccmPackageReleased
                 let driverPackageCreationContext = DriverTool.CreateDriverPackage.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage doNotDownloadSccmPackage sccmPackageInstaller sccmPackageReadme released
-                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage driverPackageCreationContext
+                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage2 driverPackageCreationContext
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)

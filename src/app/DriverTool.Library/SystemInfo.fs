@@ -13,6 +13,9 @@ module SystemInfo=
                 |Manufacturer.Dell _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "SystemSKUNumber"
                 |Manufacturer.Lenovo _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Model"
                 |Manufacturer.HP _ -> WmiHelper.getWmiProperty "root\WMI" "MS_SystemInformation" "BaseBoardProduct"
+#if DEBUG
+                |Manufacturer.Unknown _ -> WmiHelper.getWmiProperty "root\WMI" "MS_SystemInformation" "BaseBoardProduct"
+#endif
             return modelCode            
         } 
 
@@ -24,5 +27,8 @@ module SystemInfo=
                 |Manufacturer.Dell _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Model"
                 |Manufacturer.Lenovo _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "SystemFamily"
                 |Manufacturer.HP _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Model"
+#if DEBUG
+                |Manufacturer.Unknown _ -> WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Model"
+#endif
             return systemFamily            
         } 

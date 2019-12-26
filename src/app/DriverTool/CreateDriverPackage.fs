@@ -21,6 +21,8 @@ module CreateDriverPackage =
     open DriverTool.Library
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.Environment
+    open DriverTool.Library.HostMessages
+    open Akka.FSharp
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 
@@ -445,4 +447,21 @@ module CreateDriverPackage =
     let createDriverPackage driverPackageCreationContext =
         DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug createDriverPackageBase driverPackageCreationContext
 
-        
+    let createDriverPackageBase2 (dpcc:DriverPackageCreationContext) = 
+        result{
+            let (clientActorSystem, clientActor) = DriverTool.RunHost.startClientActorSystem()
+            clientActor <! "Starting client actor communicating with DriverTool x86 host."
+            System.Threading.Thread.Sleep(2000)
+            clientActor <! "Terminating host actor and client actor."
+            clientActor <! (new QuitHostMessage())
+            System.Threading.Thread.Sleep(2000)
+            logger.Info("Terminating client actor system")
+            clientActorSystem.Terminate() |> ignore
+            clientActorSystem.WhenTerminated.Wait()
+            clientActorSystem.Dispose()
+            logger.Info("Client actor system and host has been terminated.")
+            return ()
+        }
+
+    let createDriverPackage2 driverPackageCreationContext =
+        DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug createDriverPackageBase2 driverPackageCreationContext

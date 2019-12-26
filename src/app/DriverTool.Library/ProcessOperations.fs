@@ -113,5 +113,22 @@ module ProcessOperations =
     
     let startConsoleProcess (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) = 
         DriverTool.Library.Logging.genericLoggerResult LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile)
+
+    let startProcess fileName arguments (workingDirectory: FileSystem.Path option) waitForExit =
+        try
+            let startInfo = new ProcessStartInfo()            
+            startInfo.UseShellExecute <- true
+            startInfo.FileName <- FileSystem.pathValue fileName
+            startInfo.Arguments <- arguments
+            match workingDirectory with
+            |Some wd -> startInfo.WorkingDirectory <- FileSystem.pathValue wd
+            |None -> startInfo.WorkingDirectory <- null
+            let proc = (System.Diagnostics.Process.Start(startInfo))
+            match waitForExit with
+            |true -> proc.WaitForExit()
+            |false -> ()
+            Result.Ok proc
+        with
+        |ex -> Result.Error ex
     
     

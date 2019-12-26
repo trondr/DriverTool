@@ -26,6 +26,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
+    <StartArguments>RunHost /port=8081</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -301,6 +302,7 @@
     <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
 robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).exe
 robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).pdb
+robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).exe.config
 exit /b 0</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
