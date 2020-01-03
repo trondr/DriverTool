@@ -3,7 +3,7 @@
 module HostActors =
     open Akka.FSharp
     open DriverTool.Library.Logging
-    open DriverTool.Library.HostMessages
+    open DriverTool.Library.Messages
     let logger = getLoggerByName "HostActors"
 
     let hostActor (mailbox:Actor<_>) =        

@@ -4,7 +4,7 @@ module RunHost =
     
     open DriverTool.x86.Host.HostActors
     open Akka.FSharp
-    open DriverTool.Library.HostMessages
+    open DriverTool.Library.Messages
     open DriverTool.Library.Logging
     let logger = getLoggerByName "RunHost"
 

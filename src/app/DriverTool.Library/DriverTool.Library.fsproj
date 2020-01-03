@@ -54,8 +54,7 @@
     <Compile Include="F0.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="Logging.fs" />
-    <Compile Include="F.fs" />
-    <Compile Include="HostMessages.fs" />
+    <Compile Include="F.fs" />    
     <Compile Include="Paths.fs" />
     <Compile Include="FileSystem.fs" />
     <Compile Include="PathOperations.fs" />
@@ -94,6 +93,7 @@
     <Compile Include="Requirements.fs" />
     <Compile Include="Compression.fs" />
     <Compile Include="Run.fs" />
+	<Compile Include="HostMessages.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">

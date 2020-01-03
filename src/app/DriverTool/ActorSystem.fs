@@ -1,10 +1,10 @@
 ﻿namespace DriverTool
 
-module RunHost =
+module ActorSystem =
 
     open Akka.FSharp
     open DriverTool.Library
-    open DriverTool.Library.HostMessages
+    open DriverTool.Library.Messages
     open DriverTool.Library.Logging
     let logger = getLoggerByName "RunHost"
 
@@ -35,12 +35,11 @@ module RunHost =
             return existingx86HostPath
         }
 
-    let startx86Host (context:Akka.Actor.IActorContext) =
+    let startx86HostProcess (context:Akka.Actor.IActorContext) =
         match(result{
             let! exePath = x86HostPath()
             let! existingExePath = FileOperations.ensureFileExists exePath
-            ProcessOperations.startProcess existingExePath "RunHost /port=8081" None false |> ignore
-            //Async.Sleep(5000) |> Async.RunSynchronously //Wait for actor system and host actor to start.            
+            ProcessOperations.startProcess existingExePath "RunHost /port=8081" None false |> ignore            
             return ()
         })with
         |Result.Ok _ -> logger.Info("Successfully started x86 host.")
@@ -51,11 +50,11 @@ module RunHost =
         hostActor <! "DriverTool x86 host is now listening for requests."
         hostActor
 
-    let stopx86Host hostActor = 
+    let stopx86HostProcess hostActor = 
         hostActor <! (new QuitHostMessage())
     
     let clientActor (mailbox:Actor<_>) =
-        let hostActor =startx86Host mailbox.Context        
+        let hostActor = startx86HostProcess mailbox.Context        
         let rec loop () = 
             actor {                                                
                 let! message = mailbox.Receive()
@@ -98,5 +97,5 @@ module RunHost =
     let startClientActorSystem () =
         let config = Akka.FSharp.Configuration.parse hoconConfig
         let system = Akka.FSharp.System.create "ClientSystem" config
-        let actor = Akka.FSharp.Spawn.spawn system "ClientActor" clientActor
+        let actor = Akka.FSharp.Spawn.spawn system "ClientActor" clientActor        
         (system,actor)
