@@ -227,3 +227,6 @@ namespace DriverTool.Library
             printfn "%s" (valueToString record)
             record
         
+        let throwExceptionWithLogging (logger:Common.Logging.ILog) (errorMessage:string) =
+            logger.Error(errorMessage)
+            failwith errorMessage

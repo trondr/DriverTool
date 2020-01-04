@@ -3,6 +3,7 @@
 module ActorSystem =
 
     open Akka.FSharp
+    open Akka.Actor
     open DriverTool.Library
     open DriverTool.Library.HostMessages
     open DriverTool.Library.Logging
@@ -66,7 +67,9 @@ module ActorSystem =
                     hostActor <! s
                 |Quit q -> 
                     logger.Info("Sending termination request to x86 host.")
-                    hostActor <! q                    
+                    hostActor <! q
+                    logger.Info("Sending termination request to x86 client.")
+                    self <! PoisonPill.Instance
                 return! loop ()
             }
         loop()

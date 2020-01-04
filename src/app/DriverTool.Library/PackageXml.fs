@@ -87,6 +87,8 @@ module PackageXml =
 
     type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
 
+    type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
+    
     let getDestinationReadmePath destinationDirectory packageInfo =
         if(String.IsNullOrWhiteSpace(packageInfo.Readme.Name)) then
             String.Empty

@@ -24,7 +24,12 @@ module CreateDriverPackage =
     open DriverTool.Library.HostMessages
     open DriverTool.Library.Messages
     open Akka.FSharp
+    open DriverTool.Actors
+    open DriverTool.DownloadActor
+    open DriverTool.PackagingActor
+    open DriverTool.ExtractActor
     open DriverTool.CreateDriverPackageActor
+
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 

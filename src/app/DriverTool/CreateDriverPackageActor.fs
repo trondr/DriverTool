@@ -10,6 +10,8 @@ module CreateDriverPackageActor =
     open DriverTool.Library.PackageXml
     open DriverTool.Library.UpdatesContext
     open DriverTool.Actors
+    open DriverTool.DownloadActor
+    open DriverTool.PackagingActor
     open Akka.FSharp    
     open Akka.Actor
     open Akka.Routing
@@ -104,35 +106,35 @@ module CreateDriverPackageActor =
         System.Threading.Tasks.Task.Run(fun () -> retrieveSccmPackageInfo context)
         |> Async.AwaitTask
 
+    let intializePackagingFromResult result =
+        match result with
+        |Result.Error ex -> CreateDriverPackageMessage.Error ex
+        |Result.Ok context -> CreateDriverPackageMessage.InitializePackaging context
+
     let createDriverPackageActor (dpcc:DriverPackageCreationContext) (clientActor:IActorRef) (mailbox:Actor<_>) =
         
-        let downloadActor = spawnOpt mailbox.Context "DownloadActor" downloadActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]        
+        let self = mailbox.Context.Self
+        let downloadActor = spawnOpt mailbox.Context "DownloadActor" downloadActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]
+        let packagingActor = spawnOpt mailbox.Context "PackagingActor" (packagingActor self) [ SpawnOption.Router(SmallestMailboxPool(10)) ]
 
-        let throwExceptionWithLogging (logger:Common.Logging.ILog) (errorMessage:string) =
-            logger.Error(errorMessage)
-            failwith errorMessage
-
-        let throwNotInitializedException actorMessage =            
-            throwExceptionWithLogging logger (sprintf "Create Driver Package actor has not been initialized. Cannot process message %A" actorMessage)
-            
-        let throwAllreadyInitializedException actorMessage =            
-            throwExceptionWithLogging logger (sprintf "Create Driver Package actor has allready been initialized. Cannot process message %A" actorMessage)
-
-        let throwNotImplementedException actorMessage =            
-            throwExceptionWithLogging logger (sprintf "Not implemented. Cannot process message %A" actorMessage) 
-        
         let rec loop () = 
             actor {                                                
                 let! message = mailbox.Receive()
-                let (sender, self) = (mailbox.Context.Sender, mailbox.Context.Self)                
+                let (system, sender, self) = (mailbox.Context.System, mailbox.Context.Sender, mailbox.Context.Self)                
                 match message with
                 |Start -> 
+                    logger.Info(sprintf "Initialize packaging for context: %A...." dpcc)
+                    let packagingContext = createPackagingContext dpcc.SccmPackageReleased dpcc
+                    packagingActor <! (intializePackagingFromResult packagingContext)
+                    
                     logger.Info(sprintf "Retrieving update infos for context: %A...." dpcc)
                     let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Manufacturer dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.CacheFolderPath dpcc.BaseOnLocallyInstalledUpdates dpcc.ExcludeUpdateRegexPatterns
                     self <! CreateDriverPackageMessage.RetrieveUpdateInfos updatesRetrievalContext                    
+                    
                     logger.Info(sprintf "Retrieving sccm package info for context: %A...." dpcc)
                     let sccmPackageInfoRetrievalContext = toSccmPackageInfoRetrievalContext dpcc.Manufacturer dpcc.Model dpcc.OperatingSystem dpcc.CacheFolderPath dpcc.DoNotDownloadSccmPackage dpcc.SccmPackageInstaller dpcc.SccmPackageReadme dpcc.SccmPackageReleased
                     self <! (CreateDriverPackageMessage.RetrieveSccmPackageInfo sccmPackageInfoRetrievalContext)
+
                 |RetrieveUpdateInfos updatesRetrievalContext ->
                     logger.Info(sprintf "Retrieving update infos for context: %A...." updatesRetrievalContext)
                     (retriveUpdatesAsync updatesRetrievalContext)                    
@@ -147,23 +149,34 @@ module CreateDriverPackageActor =
                 |SccmPackageInfoRetrieved sccmPackageInfo ->
                     logger.Info(sprintf "Sccm package info has been retrived: %A. Start download." sccmPackageInfo)
                     let sccmPackageDownloadContext = toSccmPackageInfoDownloadContext dpcc.Manufacturer dpcc.CacheFolderPath sccmPackageInfo
-                    downloadActor <! DownloadMessage.DownloadSccmPackage sccmPackageDownloadContext
+                    downloadActor <! DownloadSccmPackage sccmPackageDownloadContext
                 |DownloadPackage package ->
                     logger.Info(sprintf "Request download of package: %A." package)
-                    downloadActor <! DownloadMessage.DownloadPackage package
-                |DownloadedPackage _ ->
-                    throwNotImplementedException message
+                    downloadActor <! DownloadPackage package
+                |DownloadedPackage downloadedPackage ->
+                    logger.Info(sprintf "Request extraction of downloaded package: %A." downloadedPackage)
+                    packagingActor <! ExtractPackage downloadedPackage
                 |DownloadSccmPackage sccmPackageDownloadContext ->
-                    logger.Info(sprintf "Request download of sccm package: %A." sccmPackageDownloadContext)                    
-                    downloadActor <! DownloadMessage.DownloadSccmPackage sccmPackageDownloadContext
-                |DownloadedSccmPackage _ ->
-                    throwNotImplementedException message
+                    logger.Info(sprintf "Request download of sccm package: %A." sccmPackageDownloadContext)
+                    downloadActor <! DownloadSccmPackage sccmPackageDownloadContext
+                |DownloadedSccmPackage downloadedSccmPackage ->
+                    logger.Info(sprintf "Request extraction of downloaded sccm package: %A." downloadedSccmPackage)
+                    packagingActor <! ExtractSccmPackage downloadedSccmPackage
+                //|PackageExtracted extractedPackageInfo  ->
+                //    throwNotImplementedException logger message
+                //|SccmPackageExtracted extractedSccmPackageInfo  ->
+                //    throwNotImplementedException logger message
                 |Finished ->
                     clientActor <! (new QuitHostMessage())
                     self <! (Akka.Actor.PoisonPill.Instance)
-                |CreateDriverPackageMessage.Error ex -> 
+                    system.Terminate() |> ignore
+                |CreateDriverPackageMessage.Error ex ->                     
                     logger.Error(getAccumulatedExceptionMessages ex)
-                    self <! (Finished)                    
+                    logger.Error("Fatal error occured. Terminating application.")
+                    self <! (Finished)
+                | _ ->
+                    logger.Warn(sprintf "Message not handled by CreateDriverPackageActor: %A" message)
+                    return! loop()
                 return! loop ()
             }
 

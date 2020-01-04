@@ -130,6 +130,12 @@ module DirectoryOperations =
         |false -> 
             Result.Ok folderPath
 
+    let moveDirectoryUnsafe sourceFolderPath destinationFolderPath =
+        System.IO.Directory.Move(FileSystem.pathValue sourceFolderPath,FileSystem.pathValue destinationFolderPath)
+
+    let moveDirectory sourceFolderPath destinationFolderPath =
+        tryCatch2 moveDirectoryUnsafe sourceFolderPath destinationFolderPath
+        
     [<AllowNullLiteral>]
     type TemporaryFolder(logger:Common.Logging.ILog)=
         let temporaryFolderPath = 
