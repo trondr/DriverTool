@@ -42,7 +42,7 @@ module DellCommandUpdatesTests =
 [<Category(TestCategory.IntegrationTests)>]
 module DellCommandUpdatesIntegrationTests =
     open DriverTool.Library.UpdatesContext
-    open DriverTool
+    open DriverTool.Library.ManufacturerTypes
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
@@ -52,14 +52,14 @@ module DellCommandUpdatesIntegrationTests =
     let getLocalUpdatesBaseTest (modelCodeString,operatingSystemCodeString) =
         let localUpdates =
             result{
+                let! manufacturer = getManufacturerForCurrentSystem()
                 let! modelCode = ModelCode.create modelCodeString false
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
                 let! logDirectory = FileSystem.path @"c:\temp"
                 let! patterns = (RegExp.toRegexPatterns [||] true)
-                let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
-                
                 use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                 let! cacheFolderPath = cacheFolder.FolderPath
+                let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
                 
                 let! remoteUpdates = DellUpdates.getRemoteUpdates logger cacheFolderPath updatesRetrievalContext
                 let! localUpdates = DellCommandUpdate.getLocalUpdates (modelCode, operatingSystemCode,remoteUpdates)

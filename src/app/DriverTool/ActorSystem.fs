@@ -4,7 +4,7 @@ module ActorSystem =
 
     open Akka.FSharp
     open DriverTool.Library
-    open DriverTool.Library.Messages
+    open DriverTool.Library.HostMessages
     open DriverTool.Library.Logging
     let logger = getLoggerByName "RunHost"
 

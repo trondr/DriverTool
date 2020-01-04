@@ -21,6 +21,7 @@ module CreateDriverPackage =
     open DriverTool.Library
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.Environment
+    open DriverTool.Library.HostMessages
     open DriverTool.Library.Messages
     open Akka.FSharp
     open DriverTool.CreateDriverPackageActor
@@ -267,42 +268,6 @@ module CreateDriverPackage =
             SccmPackageReleased = sccmPackageReleased
         }
 
-    let toDownloadedSccmPackageInfo cacheFolderPath intallerName readmeName releasedDate =
-        result{
-            let! installerPath = PathOperations.combinePaths2 cacheFolderPath intallerName
-            let! existingInstallerPath = FileOperations.ensureFileExists installerPath
-            let! readmePath = PathOperations.combinePaths2 cacheFolderPath readmeName
-            let! existingReadmePath = FileOperations.ensureFileExists readmePath
-            let downloadedSccmPackageInfo =
-                {
-                    InstallerPath=FileSystem.pathValue existingInstallerPath; 
-                    ReadmePath=FileSystem.pathValue existingReadmePath;                     
-                    SccmPackage=
-                        {
-                            ReadmeFile=
-                                {
-                                    Url=String.Empty;
-                                    Checksum=String.Empty; 
-                                    FileName=readmeName;
-                                    Size=0L
-                                }
-                            InstallerFile=
-                                {
-                                    Url=String.Empty;
-                                    Checksum=String.Empty;
-                                    FileName=intallerName;
-                                    Size=0L
-                                }
-                            Released=releasedDate;
-                            Os=String.Empty;
-                            OsBuild=String.Empty;
-                        }                
-                }
-            return downloadedSccmPackageInfo
-        }
-        
-
-        
     let createDriverPackageBase (dpcc:DriverPackageCreationContext) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
@@ -311,7 +276,7 @@ module CreateDriverPackage =
                 let getUpdates = DriverTool.Updates.getUpdatesFunc (logger, dpcc.Manufacturer,dpcc.BaseOnLocallyInstalledUpdates) 
 
                 logger.Info("Getting update infos...")
-                let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.ExcludeUpdateRegexPatterns                
+                let updatesRetrievalContext = toUpdatesRetrievalContext dpcc.Manufacturer dpcc.Model dpcc.OperatingSystem true dpcc.LogDirectory dpcc.CacheFolderPath dpcc.BaseOnLocallyInstalledUpdates dpcc.ExcludeUpdateRegexPatterns                
                 let! packageInfos = getUpdates dpcc.CacheFolderPath updatesRetrievalContext
                 let uniquePackageInfos = packageInfos |> Array.distinct
                 let uniqueUpdates = uniquePackageInfos |> getUniqueUpdatesByInstallerName
@@ -430,9 +395,9 @@ module CreateDriverPackage =
             let (clientActorSystem, clientActorRef) = DriverTool.ActorSystem.startClientActorSystem()            
             clientActorRef <! "Starting client actor communicating with DriverTool x86 host."
             logger.Info("Starting CreateDriverPackage actor.")
-            let createDriverPackageActorRef = spawn clientActorSystem "CreateDriverPackageActor" (createDriverPackageActor clientActorRef)
+            let createDriverPackageActorRef = spawn clientActorSystem "CreateDriverPackageActor" (createDriverPackageActor dpcc clientActorRef)
             logger.Info(sprintf "Initializing CreateDriverPackage actor with driver package creation context: %A" dpcc)
-            createDriverPackageActorRef <! CreateDriverPackageMessage.Initialize dpcc
+            createDriverPackageActorRef <! CreateDriverPackageMessage.Start
             clientActorSystem.WhenTerminated.Wait()
             clientActorSystem.Dispose()
             logger.Info("Client actor system and host has been terminated.")

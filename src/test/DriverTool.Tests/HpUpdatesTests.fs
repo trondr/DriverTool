@@ -73,17 +73,21 @@ module HpUpdatesTests =
         |Result.Error e -> Assert.Fail(String.Format("{0}", e.Message))
         
     open DriverTool.Library.UpdatesContext    
+    open DriverTool.Library.ManufacturerTypes
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
     let getLocalUpdatesTests () =
         match(result
                 {
-                    let! currentModelCode = ModelCode.create "" true
-                    let! currentOperatingSystem = OperatingSystemCode.create "" true
-                    let! logDirectory = FileSystem.path "%public%\Logs"
+                    let! manufacturer = getManufacturerForCurrentSystem()
+                    let! modelCode = ModelCode.create "" true
+                    let! operatingSystemCode = OperatingSystemCode.create "" true
+                    let! logDirectory = FileSystem.path @"c:\temp"
                     let! patterns = (RegExp.toRegexPatterns [||] true)
-                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
 
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
@@ -99,11 +103,14 @@ module HpUpdatesTests =
     let getRemoteUpdatesTests () =
         match(result
                 {
-                    let! currentModelCode = ModelCode.create "" true
-                    let! currentOperatingSystem = OperatingSystemCode.create "" true  
-                    let! logDirectory = FileSystem.path "%public%\Logs"
+                    let! manufacturer = getManufacturerForCurrentSystem()
+                    let! modelCode = ModelCode.create "" true
+                    let! operatingSystemCode = OperatingSystemCode.create "" true
+                    let! logDirectory = FileSystem.path @"c:\temp"
                     let! patterns = (RegExp.toRegexPatterns [||] true)
-                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
 
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath

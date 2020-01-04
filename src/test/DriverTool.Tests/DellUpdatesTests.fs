@@ -9,6 +9,7 @@ module DellUpdatesTests =
     open DriverTool.Library.F
     open DriverTool.Library.Logging
     open DriverTool.Library
+    open DriverTool.Library.ManufacturerTypes
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
@@ -24,11 +25,14 @@ module DellUpdatesTests =
     [<Category(TestCategory.IntegrationTests)>]
     let getUpdates2Test (modelCodeString,operatingSystemCodeString) =
         match(result{
+            let! manufacturer = getManufacturerForCurrentSystem()
             let! modelCode = ModelCode.create modelCodeString false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-            let! logDirectory = FileSystem.path "%public%\Logs"
+            let! logDirectory = FileSystem.path @"c:\temp"
             let! patterns = (RegExp.toRegexPatterns [||] true)
-            let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
             
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath

@@ -95,18 +95,22 @@ module LenovoUpdateTests =
         |Result.Ok v -> Assert.IsTrue(false,"Did not fail as expected.")
         |Result.Error ex -> Assert.AreEqual("Failed to download all package infos due to the following 1 error messages:\r\nUri 'https://download.lenovo.com/pccbbs/mobiles/n2hwe01w.txt' does not represent a xml file.",ex.Message)        
 
+    open DriverTool.Library.UpdatesContext
+    open DriverTool.Library.ManufacturerTypes
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
     let getRemoteUpdatesTests () =
         match(result{
-            let! cacheFolderPath = FileSystem.path @"C:\Temp\DriverToolCache"
-            let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
-            let! model = ModelCode.create "20QG" false
-            let! osCode = OperatingSystemCode.create "WIN10X64" false
-            let! logDirectory = FileSystem.path @"C:\Temp\DriverToolLogs"
-            let context = DriverTool.Library.UpdatesContext.toUpdatesRetrievalContext model osCode false logDirectory [||]                                
-            let! packageInfos = DriverTool.LenovoUpdates.getRemoteUpdates logger existingCacheFolderPath context
+            let! manufacturer = getManufacturerForCurrentSystem()
+            let! modelCode = ModelCode.create "20QG" false
+            let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" false
+            let! logDirectory = FileSystem.path @"c:\temp"
+            let! patterns = (RegExp.toRegexPatterns [||] true)
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
+            let! packageInfos = DriverTool.LenovoUpdates.getRemoteUpdates logger cacheFolderPath updatesRetrievalContext
             return packageInfos        
         })with
         |Result.Ok v -> Assert.IsTrue(true)
