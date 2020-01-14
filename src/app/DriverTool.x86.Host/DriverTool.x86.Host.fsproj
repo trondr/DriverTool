@@ -14,6 +14,8 @@
     <UseStandardResourceNames>true</UseStandardResourceNames>
     <WarningsAsErrors>3239;$(WarningsAsErrors)</WarningsAsErrors>
     <Name>DriverTool.x86.Host</Name>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,62 +51,76 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <EmbeddedResource Include="Libs\Akka.dll" />
-    <EmbeddedResource Include="Libs\Akka.FSharp.dll" />
-    <EmbeddedResource Include="Libs\Akka.Remote.dll" />
-    <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
-    <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
-    <EmbeddedResource Include="Libs\CsvHelper.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Buffers.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Codecs.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Common.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Handlers.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Transport.dll" />
-    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Data.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Quotations.Evaluator.dll" />
-    <EmbeddedResource Include="Libs\FsPickler.dll" />
-    <EmbeddedResource Include="Libs\Google.Protobuf.dll" />
-    <EmbeddedResource Include="Libs\log4net.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Win32.Primitives.dll" />
-    <EmbeddedResource Include="Libs\NCmdLiner.dll" />
-    <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
-    <EmbeddedResource Include="Libs\SharpYaml.dll" />
-    <EmbeddedResource Include="Libs\System.AppContext.dll" />
-    <EmbeddedResource Include="Libs\System.Collections.Immutable.dll" />
-    <EmbeddedResource Include="Libs\System.Console.dll" />
-    <EmbeddedResource Include="Libs\System.Diagnostics.DiagnosticSource.dll" />
-    <EmbeddedResource Include="Libs\System.Diagnostics.Tracing.dll" />
-    <EmbeddedResource Include="Libs\System.Globalization.Calendars.dll" />
-    <EmbeddedResource Include="Libs\System.IO.Compression.dll" />
-    <EmbeddedResource Include="Libs\System.IO.Compression.ZipFile.dll" />
-    <EmbeddedResource Include="Libs\System.IO.dll" />
-    <EmbeddedResource Include="Libs\System.IO.FileSystem.dll" />
-    <EmbeddedResource Include="Libs\System.IO.FileSystem.Primitives.dll" />
-    <EmbeddedResource Include="Libs\System.Linq.dll" />
-    <EmbeddedResource Include="Libs\System.Linq.Expressions.dll" />
-    <EmbeddedResource Include="Libs\System.Net.Http.dll" />
-    <EmbeddedResource Include="Libs\System.Net.Sockets.dll" />
-    <EmbeddedResource Include="Libs\System.Reactive.dll" />
-    <EmbeddedResource Include="Libs\System.Reflection.dll" />
-    <EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
-    <EmbeddedResource Include="Libs\System.Runtime.dll" />
-    <EmbeddedResource Include="Libs\System.Runtime.Extensions.dll" />
-    <EmbeddedResource Include="Libs\System.Runtime.InteropServices.dll" />
-    <EmbeddedResource Include="Libs\System.Runtime.InteropServices.RuntimeInformation.dll" />
-    <EmbeddedResource Include="Libs\System.Security.Cryptography.Algorithms.dll" />
-    <EmbeddedResource Include="Libs\System.Security.Cryptography.Encoding.dll" />
-    <EmbeddedResource Include="Libs\System.Security.Cryptography.Primitives.dll" />
-    <EmbeddedResource Include="Libs\System.Security.Cryptography.X509Certificates.dll" />
-    <EmbeddedResource Include="Libs\System.Text.RegularExpressions.dll" />
-    <EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
-    <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
-    <EmbeddedResource Include="Libs\System.Xml.ReaderWriter.dll" />
+	<EmbeddedResource Include="Libs\Akka.dll" />
+	<EmbeddedResource Include="Libs\Akka.FSharp.dll" />
+	<EmbeddedResource Include="Libs\Akka.Remote.dll" />
+	<EmbeddedResource Include="Libs\Client.dll" />
+	<EmbeddedResource Include="Libs\Common.dll" />
+	<EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
+	<EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
+	<EmbeddedResource Include="Libs\CsvHelper.dll" />
+	<EmbeddedResource Include="Libs\DotNetty.Buffers.dll" />
+	<EmbeddedResource Include="Libs\DotNetty.Codecs.dll" />
+	<EmbeddedResource Include="Libs\DotNetty.Common.dll" />
+	<EmbeddedResource Include="Libs\DotNetty.Handlers.dll" />
+	<EmbeddedResource Include="Libs\DotNetty.Transport.dll" />
+	<EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
+	<EmbeddedResource Include="Libs\DriverTool.Library.dll" />
+	<EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
+	<EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />
+	<EmbeddedResource Include="Libs\FSharp.Data.dll" />
+	<EmbeddedResource Include="Libs\FSharp.Quotations.Evaluator.dll" />
+	<EmbeddedResource Include="Libs\FsPickler.dll" />
+	<EmbeddedResource Include="Libs\Google.Protobuf.dll" />
+	<EmbeddedResource Include="Libs\log4net.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Abstractions.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Binder.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.DependencyInjection.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.Abstractions.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.Options.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Extensions.Primitives.dll" />
+	<EmbeddedResource Include="Libs\Microsoft.Win32.Primitives.dll" />
+	<EmbeddedResource Include="Libs\NCmdLiner.dll" />
+	<EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+	<EmbeddedResource Include="Libs\SharpYaml.dll" />
+	<EmbeddedResource Include="Libs\System.AppContext.dll" />
+	<EmbeddedResource Include="Libs\System.Buffers.dll" />
+	<EmbeddedResource Include="Libs\System.Collections.Immutable.dll" />
+	<EmbeddedResource Include="Libs\System.ComponentModel.Annotations.dll" />
+	<EmbeddedResource Include="Libs\System.Console.dll" />
+	<EmbeddedResource Include="Libs\System.Diagnostics.DiagnosticSource.dll" />
+	<EmbeddedResource Include="Libs\System.Diagnostics.Tracing.dll" />
+	<EmbeddedResource Include="Libs\System.Globalization.Calendars.dll" />
+	<EmbeddedResource Include="Libs\System.IO.Compression.dll" />
+	<EmbeddedResource Include="Libs\System.IO.Compression.ZipFile.dll" />
+	<EmbeddedResource Include="Libs\System.IO.dll" />
+	<EmbeddedResource Include="Libs\System.IO.FileSystem.dll" />
+	<EmbeddedResource Include="Libs\System.IO.FileSystem.Primitives.dll" />
+	<EmbeddedResource Include="Libs\System.Linq.dll" />
+	<EmbeddedResource Include="Libs\System.Linq.Expressions.dll" />
+	<EmbeddedResource Include="Libs\System.Memory.dll" />
+	<EmbeddedResource Include="Libs\System.Net.Http.dll" />
+	<EmbeddedResource Include="Libs\System.Net.Sockets.dll" />
+	<EmbeddedResource Include="Libs\System.Numerics.Vectors.dll" />
+	<EmbeddedResource Include="Libs\System.Reactive.dll" />
+	<EmbeddedResource Include="Libs\System.Reflection.dll" />
+	<EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
+	<EmbeddedResource Include="Libs\System.Runtime.dll" />
+	<EmbeddedResource Include="Libs\System.Runtime.Extensions.dll" />
+	<EmbeddedResource Include="Libs\System.Runtime.InteropServices.dll" />
+	<EmbeddedResource Include="Libs\System.Runtime.InteropServices.RuntimeInformation.dll" />
+	<EmbeddedResource Include="Libs\System.Security.Cryptography.Algorithms.dll" />
+	<EmbeddedResource Include="Libs\System.Security.Cryptography.Encoding.dll" />
+	<EmbeddedResource Include="Libs\System.Security.Cryptography.Primitives.dll" />
+	<EmbeddedResource Include="Libs\System.Security.Cryptography.X509Certificates.dll" />
+	<EmbeddedResource Include="Libs\System.Text.RegularExpressions.dll" />
+	<EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
+	<EmbeddedResource Include="Libs\System.ValueTuple.dll" />
+	<EmbeddedResource Include="Libs\System.Xml.ReaderWriter.dll" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
@@ -162,26 +178,47 @@
       <HintPath>..\..\..\packages\FSharp.Core.4.7.0\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Quotations.Evaluator">
-      <HintPath>..\..\..\packages\FSharp.Quotations.Evaluator.1.1.3\lib\net45\FSharp.Quotations.Evaluator.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Quotations.Evaluator.2.0.0\lib\netstandard2.0\FSharp.Quotations.Evaluator.dll</HintPath>
     </Reference>
     <Reference Include="FsPickler">
-      <HintPath>..\..\..\packages\FsPickler.5.2\lib\net45\FsPickler.dll</HintPath>
+      <HintPath>..\..\..\packages\FsPickler.5.2.2\lib\net45\FsPickler.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
-      <HintPath>..\..\..\packages\Google.Protobuf.3.3.0\lib\net45\Google.Protobuf.dll</HintPath>
+      <HintPath>..\..\..\packages\Google.Protobuf.3.11.2\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.Configuration">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.Binder.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.3.1.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.1.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.Logging">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.1.1.1\lib\netstandard1.1\Microsoft.Extensions.Logging.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.Abstractions.1.1.1\lib\netstandard1.1\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Options.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Primitives.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives">
       <Private>True</Private>
@@ -200,17 +237,24 @@
     <Reference Include="System.AppContext">
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Buffers">
+      <HintPath>..\..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.7.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Console">
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Diagnostics.DiagnosticSource">
-      <HintPath>..\..\..\packages\System.Diagnostics.DiagnosticSource.4.3.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Diagnostics.DiagnosticSource.4.7.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Tracing">
       <Private>True</Private>
@@ -240,6 +284,9 @@
     <Reference Include="System.Linq.Expressions">
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Memory">
+      <HintPath>..\..\..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http">
       <Private>True</Private>
     </Reference>
@@ -247,6 +294,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>..\..\..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reflection">
       <Private>True</Private>
     </Reference>
@@ -254,7 +304,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Extensions">
       <Private>True</Private>
@@ -282,7 +332,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
-      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
       <Private>True</Private>
@@ -311,6 +361,13 @@ exit /b 0</PostBuildEvent>
     <PreBuildEvent>robocopy "$(ProjectDir)..\DriverTool.Library\bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
 exit /b 0</PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\..\..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\..\..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -137,7 +137,7 @@
       <HintPath>..\..\..\packages\FSharp.Core.4.7.0\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.3.3.2\lib\net45\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
