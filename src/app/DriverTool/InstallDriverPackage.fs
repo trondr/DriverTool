@@ -3,7 +3,7 @@
 module InstallDriverPackage =
     open System
     open DriverTool.Library.InstallXml
-    open DriverTool.PackageDefinition
+    open DriverTool.Library.PackageDefinition
     open DriverTool.Library.Requirements
     open Microsoft.FSharp.Core.Operators
     open DriverTool.Library.Logging
@@ -218,7 +218,7 @@ module InstallDriverPackage =
             let localDriversFolder = getLocalDriversPackageFolder driverPackageName
             let! localDriversFolderPath = FileSystem.path localDriversFolder
             let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
-            let! installDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtInstallPackageCmd installConfiguration driverPackageName 
+            let! installDriversExitCode = installDrivers localDriversFolderPath DriverTool.Packaging.dtInstallPackageCmd installConfiguration driverPackageName 
             let registerApplication =
                 match installDriversExitCode with
                 |0|3010 -> 
@@ -240,7 +240,7 @@ module InstallDriverPackage =
             let localDriversFolder = getLocalDriversPackageFolder driverPackageName
             let! localDriversFolderPath = FileSystem.path localDriversFolder
             let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
-            let! uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd installConfiguration driverPackageName
+            let! uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.Packaging.dtUnInstallPackageCmd installConfiguration driverPackageName
             let! nonExistingLocalDriversFolderPath = DirectoryOperations.deleteDirectory true localDriversFolderPath
             let registerApplication =
                 match uninstallDriversExitCode with

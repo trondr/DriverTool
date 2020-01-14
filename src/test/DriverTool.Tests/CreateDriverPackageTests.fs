@@ -8,6 +8,7 @@ open DriverTool
 open DriverTool.Library.F
 open DriverTool.Library
 open DriverTool.Library.ManufacturerTypes
+open DriverTool.Packaging
 
 [<TestFixture>]
 module CreateDriverPackageTests =

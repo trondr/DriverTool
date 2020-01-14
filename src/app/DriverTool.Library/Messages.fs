@@ -1,5 +1,7 @@
 ﻿namespace DriverTool.Library
 
+open InstallXml
+
 module Messages =
     open System
     open DriverTool.Library.Logging
@@ -7,6 +9,7 @@ module Messages =
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.ManufacturerTypes
     open DriverTool.Library.PathOperations
+    open DriverTool.Library.PackageDefinition
 
     type SccmPackageInfoDownloadContext = {
         Manufacturer:Manufacturer
@@ -61,9 +64,16 @@ module Messages =
 
     type PackagingContext =
         {            
+            Manufacturer:Manufacturer
+            PackagePublisher:string
+            Model:ModelCode
+            SystemFamily:SystemFamily
+            OperatingSystem:OperatingSystemCode
+            LogDirectory:FileSystem.Path
             PackageName:string            
             PackageFolderPath:FileSystem.Path
             ReleaseDate:DateTime
+            SccmReleaseDate:DateTime
             Started:bool
             PackageDownloads:Progress
             SccmPackageDownloads:Progress
@@ -76,15 +86,15 @@ module Messages =
         {progress with Total = progress.Total + 1}
 
     let doneProgress progress =
-        {progress with Value = progress.Value + 1}
+        {progress with Progress.Value = progress.Value + 1}
 
 
     let startPackageDownload packagingContext =
         {packagingContext with PackageDownloads = startProgress packagingContext.PackageDownloads}
     let donePackageDownload packagingContext =
         {packagingContext with PackageDownloads = doneProgress packagingContext.PackageDownloads}
-    let startSccmPackageDownload packagingContext =
-        {packagingContext with SccmPackageDownloads = startProgress packagingContext.SccmPackageDownloads}
+    let startSccmPackageDownload packagingContext sccmReleaseDate =
+        {packagingContext with SccmPackageDownloads = startProgress packagingContext.SccmPackageDownloads;SccmReleaseDate=sccmReleaseDate}
     let doneSccmPackageDownload packagingContext =
         {packagingContext with SccmPackageDownloads = doneProgress packagingContext.SccmPackageDownloads}
 
@@ -97,11 +107,18 @@ module Messages =
     let doneSccmPackageExtract packagingContext =
         {packagingContext with SccmPackageExtracts = doneProgress packagingContext.SccmPackageExtracts}
 
-    let toInitialPackagingContext packageName packageFolderPath releaseDate =
+    let toInitialPackagingContext manufacturer packagePublisher model systemFamily operatingSystem logDirectory packageName packageFolderPath releaseDate sccmReleaseDate =
         {
+            Manufacturer=manufacturer
+            PackagePublisher=packagePublisher
+            Model=model
+            SystemFamily=systemFamily
+            OperatingSystem=operatingSystem
+            LogDirectory=logDirectory
             PackageName=packageName
             PackageFolderPath=packageFolderPath
-            ReleaseDate=releaseDate
+            ReleaseDate=releaseDate      
+            SccmReleaseDate=sccmReleaseDate
             Started=false
             PackageDownloads={Total=0;Value=0;Name="Package Downloads"}
             SccmPackageDownloads={Total=0;Value=0;Name="Sccm Package Downloads"}
@@ -124,7 +141,7 @@ module Messages =
     let createPackagingContext (releaseDate:DateTime) (dpcc:DriverPackageCreationContext) =
         result{
             let! (packageName, packageFolderPath) = getPackageNameAndPath releaseDate dpcc
-            let packagingContext = toInitialPackagingContext packageName packageFolderPath releaseDate                
+            let packagingContext = toInitialPackagingContext dpcc.Manufacturer dpcc.PackagePublisher dpcc.Model dpcc.SystemFamily dpcc.OperatingSystem dpcc.LogDirectory packageName packageFolderPath releaseDate releaseDate             
             return packagingContext
         }
 
@@ -146,13 +163,24 @@ module Messages =
         |DownloadedPackage of DownloadedPackageInfo
         |DownloadSccmPackage of SccmPackageInfoDownloadContext
         |DownloadedSccmPackage of DownloadedSccmPackageInfo                        
-        |ExtractPackage of DownloadedPackageInfo
+        |ExtractPackage of PackagingContext*DownloadedPackageInfo
         |PackageExtracted of ExtractedPackageInfo        
-        |ExtractSccmPackage of DownloadedSccmPackageInfo
+        |ExtractSccmPackage of PackagingContext*DownloadedSccmPackageInfo
         |SccmPackageExtracted of ExtractedSccmPackageInfo        
         |PackagingProgress of PackagingContext
         |FinalizePackaging of PackagingContext
-        |PackagingFinalized of PackagingContext*PackagingContext
+        |UpdatePackagingContext of PackagingContext
+        |PackagingContextUpdated of PackagingContext*PackagingContext        
+        |MovePackaging of PackagingContext*PackagingContext
+        |PackagagingMoved
+        |UpdateInstallXml of PackagingContext
+        |InstallXmlUpdated of InstallConfigurationData
+        |CreatePackageDefinition of PackagingContext*InstallConfigurationData
+        |PackageDefinitionCreated of PackageDefinition*InstallConfigurationData
+        |CreateDismPackageDefinition of PackagingContext*InstallConfigurationData
+        |DismPackageDefinitionCreated of FileSystem.Path
+        |PackagingFinalized
         |Finished
         |Error of Exception
         |Info of string
+        |Warning of string

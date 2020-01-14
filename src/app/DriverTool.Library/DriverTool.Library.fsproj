@@ -92,6 +92,7 @@
     <Compile Include="Robocopy.fs" />
     <Compile Include="Requirements.fs" />
     <Compile Include="Compression.fs" />
+    <Compile Include="PackageDefintion.fs" />
     <Compile Include="Run.fs" />
     <Compile Include="HostMessages.fs" />
     <Compile Include="Messages.fs" />

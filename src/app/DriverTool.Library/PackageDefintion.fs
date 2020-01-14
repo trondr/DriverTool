@@ -1,10 +1,10 @@
-﻿namespace DriverTool
-open System
+﻿namespace DriverTool.Library
 
-module PackageDefinition =
-    let logger = DriverTool.Library.Logging.getLoggerByName "PackageDefinition"
+module PackageDefinition =    
+    open System
     open DriverTool.Library
-    
+    let logger = DriverTool.Library.Logging.getLoggerByName "PackageDefinition"
+
     type ApplicationRegistryValue = {Path:string;ValueName:string;Value:string}
 
     let getApplicationRegistryValueBase companyName applicationName applicationVersion installRevision =

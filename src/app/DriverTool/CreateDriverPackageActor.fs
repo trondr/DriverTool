@@ -3,6 +3,8 @@
 module CreateDriverPackageActor =
     
     open System    
+
+    open DriverTool.Library.Environment
     open DriverTool.Library.F0
     open DriverTool.Library.F
     open DriverTool.Library.HostMessages
@@ -15,6 +17,8 @@ module CreateDriverPackageActor =
     open DriverTool.DownloadActor
     open DriverTool.ExtractActor
     open DriverTool.PackageTemplate
+    open DriverTool.Library.PackageDefinition
+    open DriverTool.Packaging
     open Akka.FSharp    
     open Akka.Actor
     open Akka.Routing
@@ -141,7 +145,7 @@ module CreateDriverPackageActor =
         let result = (move,RetryPolicies.Retry(10, System.TimeSpan.FromSeconds(10.0))) ||> run
         match(result) with
         |RetryResult.RetryFailure ex -> CreateDriverPackageMessage.Error ex
-        |RetryResult.RetrySuccess _ -> CreateDriverPackageMessage.PackagingMoved (source,destination)
+        |RetryResult.RetrySuccess _ -> CreateDriverPackageMessage.PackagagingMoved
 
     let isProgressFinished progress =
         let percentageProgress = (getPercent progress)        
@@ -168,19 +172,84 @@ module CreateDriverPackageActor =
         let sccmPackageExtractsProgress = (toProgressMessage packagingContext.SccmPackageExtracts)
         sprintf "Progress: %s, %s, %s, %s" packageDownloadsProgress sccmPackageDownloadsProgress packageExtractsProgress sccmPackageExtractsProgress
 
-    let reportProgress packagingContext =
+    let checkAndReportProgress packagingContext =
         match (isPackagingFinished packagingContext) with
         |true->
             CreateDriverPackageMessage.FinalizePackaging packagingContext
         |false ->
             CreateDriverPackageMessage.Info (toPackagingProgressString packagingContext)
 
+    let updateInstallXml (packagingContext:PackagingContext) =
+        match(result{
+            let! installXmlPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue packagingContext.PackageFolderPath,"Install.xml"))
+            let! existingInstallXmlPath = FileOperations.ensureFileExists installXmlPath
+            let! installConfiguration = DriverTool.Library.InstallXml.loadInstallXml existingInstallXmlPath
+            
+            let updatedInstallConfiguration = 
+                { installConfiguration with 
+                    LogDirectory = (unExpandEnironmentVariables (FileSystem.pathValue packagingContext.LogDirectory));
+                    LogFileName = toValidDirectoryName (sprintf "%s.log" packagingContext.PackageName);
+                    PackageName = packagingContext.PackageName;
+                    PackageVersion = "1.0"
+                    PackageRevision = "000"
+                    ComputerModel = packagingContext.Model.Value;
+                    ComputerSystemFamiliy = packagingContext.SystemFamily.Value;
+                    ComputerVendor = DriverTool.Library.ManufacturerTypes.manufacturerToName packagingContext.Manufacturer;
+                    OsShortName = packagingContext.OperatingSystem.Value;
+                    Publisher = packagingContext.PackagePublisher
+                }
+            let! savedInstallConfiguration = DriverTool.Library.InstallXml.saveInstallXml (existingInstallXmlPath, updatedInstallConfiguration)
+            logger.Info(msg (sprintf  "Saved install configuration to '%s'. Value: %A" (FileSystem.pathValue existingInstallXmlPath) savedInstallConfiguration))
+            return savedInstallConfiguration
+        })with
+        |Result.Error ex -> CreateDriverPackageMessage.Error ex
+        |Result.Ok installConfiguration -> CreateDriverPackageMessage.Info (sprintf "Successfully updated and saved install.xml '%A'" installConfiguration)
+
+
+    let createPackageDefinitionSms packagingContext installConfiguration =
+        match(result{
+            logger.Info("Create PackageDefinition.sms")            
+            let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue packagingContext.PackageFolderPath,"PackageDefinition.sms"))                
+            let packageDefinition = getPackageDefinitionFromInstallConfiguration installConfiguration
+            let! packageDefintionWriteResult = 
+                packageDefinition
+                |> writePackageDefinitionToFile packageDefinitionSmsPath
+            logger.Info(sprintf "Created PackageDefinition.sms: %A" packageDefintionWriteResult)
+            return packageDefinition
+        })with
+        |Result.Error ex -> CreateDriverPackageMessage.Error ex
+        |Result.Ok packageDefinition -> CreateDriverPackageMessage.PackageDefinitionCreated (packageDefinition,installConfiguration)
+
+    let createPackageDefinitionDismSms packagingContext installConfiguration =
+        match(result{
+            logger.Info("Create PackageDefinition-DISM.sms")            
+            let packageDefinition = getPackageDefinitionFromInstallConfiguration installConfiguration
+            let! packageDefinitionDimsSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue packagingContext.PackageFolderPath,"PackageDefinition-DISM.sms"))
+            let sccmPackageFolderName = (sccmPackageFolderName packagingContext.SccmReleaseDate )
+            let packageDefintionDism = {packageDefinition with PackageDefinition.InstallCommandLine = "DISM.exe /Image:%OSDisk%\\ /Add-Driver /Driver:.\\Drivers\\" + sccmPackageFolderName + "\\ /Recurse"; }
+            let! dismPackageDefinitionFilePath = 
+                packageDefintionDism
+                |> writePackageDefinitionDismToFile packageDefinitionDimsSmsPath                                    
+            logger.Info(sprintf "Created PackageDefinition-DISM.sms: %A" dismPackageDefinitionFilePath)
+            return dismPackageDefinitionFilePath
+        })with
+        |Result.Error ex -> CreateDriverPackageMessage.Error ex
+        |Result.Ok dismPackageDefinitionFilePath -> CreateDriverPackageMessage.DismPackageDefinitionCreated dismPackageDefinitionFilePath
+
+    let updatePackagingContext packagingContext dpcc =
+        match(result{
+            let! updatedPackagingContext = DriverTool.Library.Messages.updatePackagingContext packagingContext packagingContext.ReleaseDate dpcc                        
+            return updatedPackagingContext
+        })with
+        |Result.Error ex -> CreateDriverPackageMessage.Error ex
+        |Result.Ok updatedPackagingContext -> CreateDriverPackageMessage.PackagingContextUpdated (packagingContext,updatedPackagingContext)
+
     let createDriverPackageActor (dpcc:DriverPackageCreationContext) (clientActor:IActorRef) (mailbox:Actor<_>) =
         
         let self = mailbox.Context.Self
         let downloadActor = spawnOpt mailbox.Context "DownloadActor" downloadActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]
-        let packagingActor = spawnOpt mailbox.Context "ExtractActor" extractActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]
-        
+        let extractActor = spawnOpt mailbox.Context "ExtractActor" (extractActor) [ SpawnOption.Router(SmallestMailboxPool(10)) ]
+
         let rec initialize () = 
             actor {                                                
                 let! message = mailbox.Receive()
@@ -220,7 +289,7 @@ module CreateDriverPackageActor =
                     (retriveUpdatesAsync updatesRetrievalContext)                    
                     |> pipeToWithSender self sender
                 |UpdateInfosRetrieved packageInfos ->
-                    logger.Info(sprintf "Information about %i updates has been retrieved. Initiating download of each update...." (Array.length packageInfos) )                    
+                    logger.Info(sprintf "Information about %i updates has been retrieved. Initiating download of each update...." (Array.length packageInfos) ) 
                     downloadPackages packageInfos self
                 |RetrieveSccmPackageInfo sccmPackageInfoRetrievalContext ->
                     logger.Info(sprintf "Retrieving sccm package info for context: %A...." sccmPackageInfoRetrievalContext)
@@ -237,65 +306,93 @@ module CreateDriverPackageActor =
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |DownloadedPackage downloadedPackage ->
-                    logger.Info(sprintf "Request extraction of downloaded package: %A." downloadedPackage)
-                    packagingActor <! ExtractPackage downloadedPackage
+                    logger.Info(sprintf "Package has been downloaded: %A." downloadedPackage)
                     let updatedPackagingContext = donePackageDownload packagingContext
+                    self <! ExtractPackage (updatedPackagingContext, downloadedPackage)                    
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |DownloadSccmPackage sccmPackageDownloadContext ->
                     logger.Info(sprintf "Request download of sccm package: %A." sccmPackageDownloadContext)
                     downloadActor <! DownloadSccmPackage sccmPackageDownloadContext
-                    let updatedPackagingContext = startSccmPackageDownload packagingContext
+                    let updatedPackagingContext = startSccmPackageDownload packagingContext sccmPackageDownloadContext.SccmPackage.Released
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |DownloadedSccmPackage downloadedSccmPackage ->
-                    logger.Info(sprintf "Request extraction of downloaded sccm package: %A." downloadedSccmPackage)
-                    packagingActor <! ExtractSccmPackage downloadedSccmPackage
+                    logger.Info(sprintf "Sccm package has been downloaded: %A." downloadedSccmPackage)
+                    self <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
                     let updatedPackagingContext = doneSccmPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext                
-                |ExtractPackage downloadedPackage -> 
-                    logger.Info(sprintf "Extracting package: %A." downloadedPackage)
-                    throwNotImplementedException logger message
-                    let updatedPackagingContext = donePackageExtract packagingContext
+                |ExtractPackage (packagingContext,downloadedPackage) -> 
+                    logger.Info(sprintf "Request extract of package: %A." downloadedPackage)
+                    extractActor <! ExtractPackage  (packagingContext,downloadedPackage)
+                    let updatedPackagingContext = startPackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
-                    return! create (startPackageExtract packagingContext)
+                    return! create updatedPackagingContext
                 |PackageExtracted extractedPackage -> 
-                    logger.Info(sprintf "Package extracted: %A." extractedPackage)
-                    throwNotImplementedException logger message
+                    logger.Info(sprintf "Package extracted: %A." extractedPackage)                    
                     let updatedPackagingContext = donePackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
-                |ExtractSccmPackage downloadedSccmPackage -> 
-                    logger.Info(sprintf "Extracting sccm package: %A." downloadedSccmPackage)
-                    throwNotImplementedException logger message
-                    let updatedPackagingContext = startSccmPackageExtract packagingContext
+                |ExtractSccmPackage (packagingContext,downloadedSccmPackage) ->                     
+                    let updatedPackagingContext =
+                        if (not dpcc.ExcludeSccmPackage) then
+                            logger.Info(sprintf "Request extract of sccm package: %A." downloadedSccmPackage)
+                            extractActor <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
+                            startSccmPackageExtract packagingContext
+                        else
+                            logger.Info(sprintf "Skipping extract of sccm package: %A." downloadedSccmPackage)
+                            packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |SccmPackageExtracted extractedSccmPackage -> 
-                    logger.Info(sprintf "Sccm package extracted: %A." extractedSccmPackage)
-                    throwNotImplementedException logger message
+                    logger.Info(sprintf "Sccm package has been extracted: %A." extractedSccmPackage)                    
                     let updatedPackagingContext = doneSccmPackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
-                    return! create updatedPackagingContext
+                    return! create updatedPackagingContext                   
                 |PackagingProgress packagingContext ->
-                    self <! (reportProgress packagingContext)                    
+                    self <! (checkAndReportProgress packagingContext)                    
                 |FinalizePackaging packagingContext ->
                     logger.Info(sprintf "Finalize packaging for context: %A." packagingContext)
-                    match(result{
-                        let! destinationContext = updatePackagingContext packagingContext packagingContext.ReleaseDate dpcc                        
-                        return destinationContext
-                    })with
-                    |Result.Error ex -> 
-                        self <! CreateDriverPackageMessage.Error ex
-                    |Result.Ok updatedPackagingContext -> 
-                        self <! (movePackaging packagingContext updatedPackagingContext)
-                        return! create updatedPackagingContext
-                |PackagingFinalized (sourceContext,destinationContext) ->
-                    logger.Info(sprintf "Successfully finalized packaging: %A -> %A" sourceContext.PackageFolderPath destinationContext.PackageFolderPath)
-                    logger.Info(sprintf "Requesting shutdown...")
-                    self <! Finished
+                    self <! CreateDriverPackageMessage.UpdatePackagingContext packagingContext
+                |UpdatePackagingContext packagingContext ->
+                    logger.Info("Updating packaging context to reflect the latest release date...")
+                    self <! (updatePackagingContext packagingContext dpcc)                    
+                |PackagingContextUpdated (oldpackagingContext,newPackagingContext) ->
+                    logger.Info(sprintf "Packging context has been updated %A -> %A." oldpackagingContext newPackagingContext)
+                    logger.Info("Requesting move of pacakging...")
+                    self <! CreateDriverPackageMessage.MovePackaging (oldpackagingContext, newPackagingContext)                        
+                    return! create packagingContext                
+                |MovePackaging (sourceContext,destinationContext) ->
+                    logger.Info(sprintf "Moving package from '%A' -> '%A'" sourceContext destinationContext)
+                    self <! (movePackaging sourceContext destinationContext)
                     return! create destinationContext
+                |PackagagingMoved ->
+                    logger.Info(sprintf "Package has been moved.")
+                    logger.Info("Requesting update of install xml")
+                    self <! CreateDriverPackageMessage.UpdateInstallXml packagingContext
+                |UpdateInstallXml packagingContext ->
+                    logger.Info(sprintf "Updating install xml...")
+                    self <! (updateInstallXml packagingContext)
+                |InstallXmlUpdated installConfiguration ->
+                    logger.Info(sprintf "Install xml has been updated: %A." installConfiguration)
+                    self <! CreateDriverPackageMessage.CreatePackageDefinition (packagingContext, installConfiguration)
+                |CreatePackageDefinition (packagingContext,installConfiguration)->
+                    logger.Info(sprintf "Creating main package definition...")
+                    self <! (createPackageDefinitionSms packagingContext installConfiguration)
+                |PackageDefinitionCreated (packageDefinition, installConfiguration) ->
+                    logger.Info(sprintf "Main package definition has been created: %A." packageDefinition)
+                    self <! CreateDriverPackageMessage.CreateDismPackageDefinition (packagingContext,installConfiguration)
+                |CreateDismPackageDefinition (packagingContext,installConfiguration)->
+                    logger.Info(sprintf "Creating DISM package definition...")
+                    self <! (createPackageDefinitionDismSms packagingContext installConfiguration)
+                |DismPackageDefinitionCreated packageDefinitionDismFilePath ->
+                    logger.Info(sprintf "DISM package definition has been created: %A." packageDefinitionDismFilePath)
+                    self <! CreateDriverPackageMessage.PackagingFinalized 
+                |PackagingFinalized  ->
+                    logger.Info(sprintf "Successfully finalized packaging.")
+                    logger.Info("Requesting shutdown...")
+                    self <! Finished                    
                 |Finished ->
                     logger.Info(sprintf "Shuting down...")
                     clientActor <! (new QuitHostMessage())
@@ -303,6 +400,8 @@ module CreateDriverPackageActor =
                     system.Terminate() |> ignore
                 |CreateDriverPackageMessage.Info info ->
                     logger.Info(info)
+                |CreateDriverPackageMessage.Warning info ->
+                    logger.Warn(info)
                 |CreateDriverPackageMessage.Error ex ->                     
                     logger.Error(getAccumulatedExceptionMessages ex)
                     logger.Error("Fatal error occured. Terminating application.")
