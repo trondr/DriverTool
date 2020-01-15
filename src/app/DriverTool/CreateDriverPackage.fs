@@ -31,38 +31,7 @@ module CreateDriverPackage =
     
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
 
-    
 
-    let downloadUpdateBase (downloadInfo:DownloadInfo, ignoreVerificationErrors) =
-        downloadIfDifferent (logger,downloadInfo, ignoreVerificationErrors)         
-
-    let downloadUpdate (downloadJob, ignoreVerificationErrors) =
-        genericLoggerResult LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
-
-    let toFileName (filePath:FileSystem.Path) =
-        System.IO.Path.GetFileName(FileSystem.pathValue filePath)
-
-    let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
-        packageInfos
-        //Remove packages with no download jobs (download job for the package failed typically)
-        |> Seq.filter(fun p ->
-                        let downloadJob = downloadJobs|>Seq.tryFind(fun dj -> 
-                                                let djFileName = toFileName dj.DestinationFile
-                                                p.Installer.Name = djFileName
-                                            )
-                        optionToBoolean downloadJob
-                    )
-        //Create downloaded package info
-        |> Seq.map (fun p -> 
-                        {
-                            InstallerPath = getDestinationInstallerPath destinationDirectory p;
-                            ReadmePath = getDestinationReadmePath destinationDirectory p;
-                            PackageXmlPath = getDestinationPackageXmlPath destinationDirectory p;
-                            Package = p;
-                        }
-                    )
-        |>Seq.toArray
-    
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos             
@@ -133,25 +102,7 @@ module CreateDriverPackage =
                 return isAdministrator
         }
     
-    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath cacheFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage doNotDownloadSccmPackage sccmPackageInstaller sccmPackageReadme sccmPackageReleased =
-        {
-            PackagePublisher=packagePublisher
-            Manufacturer=manufacturer
-            SystemFamily=systemFamily
-            Model=modelCode
-            OperatingSystem=operatingSystemCode
-            DestinationFolderPath=destinationFolderPath
-            CacheFolderPath=cacheFolderPath
-            BaseOnLocallyInstalledUpdates=baseOnLocallyInstalledUpdates
-            LogDirectory=logDirectory
-            ExcludeUpdateRegexPatterns=excludeUpdateRegexPatterns
-            PackageTypeName=packageTypeName
-            ExcludeSccmPackage=excludeSccmPackage
-            DoNotDownloadSccmPackage = doNotDownloadSccmPackage
-            SccmPackageInstaller = sccmPackageInstaller
-            SccmPackageReadme = sccmPackageReadme
-            SccmPackageReleased = sccmPackageReleased
-        }
+    
 
     let createDriverPackageBase (dpcc:DriverPackageCreationContext) =             
             result {

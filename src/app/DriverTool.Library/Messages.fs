@@ -69,6 +69,7 @@ module Messages =
             Model:ModelCode
             SystemFamily:SystemFamily
             OperatingSystem:OperatingSystemCode
+            CacheFolderPath:FileSystem.Path
             LogDirectory:FileSystem.Path
             PackageName:string            
             PackageFolderPath:FileSystem.Path
@@ -107,13 +108,14 @@ module Messages =
     let doneSccmPackageExtract packagingContext =
         {packagingContext with SccmPackageExtracts = doneProgress packagingContext.SccmPackageExtracts}
 
-    let toInitialPackagingContext manufacturer packagePublisher model systemFamily operatingSystem logDirectory packageName packageFolderPath releaseDate sccmReleaseDate =
+    let toInitialPackagingContext manufacturer packagePublisher model systemFamily operatingSystem logDirectory cacheFolderPath packageName packageFolderPath releaseDate sccmReleaseDate =
         {
             Manufacturer=manufacturer
             PackagePublisher=packagePublisher
             Model=model
             SystemFamily=systemFamily
             OperatingSystem=operatingSystem
+            CacheFolderPath=cacheFolderPath
             LogDirectory=logDirectory
             PackageName=packageName
             PackageFolderPath=packageFolderPath
@@ -141,7 +143,7 @@ module Messages =
     let createPackagingContext (releaseDate:DateTime) (dpcc:DriverPackageCreationContext) =
         result{
             let! (packageName, packageFolderPath) = getPackageNameAndPath releaseDate dpcc
-            let packagingContext = toInitialPackagingContext dpcc.Manufacturer dpcc.PackagePublisher dpcc.Model dpcc.SystemFamily dpcc.OperatingSystem dpcc.LogDirectory packageName packageFolderPath releaseDate releaseDate             
+            let packagingContext = toInitialPackagingContext dpcc.Manufacturer dpcc.PackagePublisher dpcc.Model dpcc.SystemFamily dpcc.OperatingSystem dpcc.CacheFolderPath dpcc.LogDirectory packageName packageFolderPath releaseDate releaseDate             
             return packagingContext
         }
 
@@ -159,8 +161,8 @@ module Messages =
         |UpdateInfosRetrieved of PackageInfo array
         |RetrieveSccmPackageInfo of SccmPackageInfoRetrievalContext
         |SccmPackageInfoRetrieved of SccmPackageInfo
-        |DownloadPackage of PackageInfo
-        |DownloadedPackage of DownloadedPackageInfo
+        |DownloadPackage of PackageInfo*PackagingContext
+        |DownloadedPackage of DownloadedPackageInfo option
         |DownloadSccmPackage of SccmPackageInfoDownloadContext
         |DownloadedSccmPackage of DownloadedSccmPackageInfo                        
         |ExtractPackage of PackagingContext*DownloadedPackageInfo

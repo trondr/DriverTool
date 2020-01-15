@@ -3,7 +3,7 @@
 open NUnit.Framework
 open DriverTool.Library.PackageXml
 open DriverTool.Library.Web
-open DriverTool.CreateDriverPackage
+open DriverTool.DownloadActor
 open DriverTool
 open DriverTool.Library.F
 open DriverTool.Library
@@ -96,7 +96,7 @@ module CreateDriverPackageTests =
                 SourceChecksum="ec6c692772662540c3d4bc6156ae33a37dd2ed06";
                 DestinationFile=FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe"
             }
-        let actual = CreateDriverPackage.downloadUpdate (downloadInfo,false)
+        let actual = DownloadActor.downloadUpdate (downloadInfo,false)
         match actual with
         |Ok p -> Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
