@@ -129,6 +129,19 @@ module PackageXml =
                     }
         installerDownloadInfo
 
+    let packageInfoToDownloadJobs destinationDirectory packageInfo =
+        seq{
+            let readmeDownloadInfo = toReadmeDownloadInfo destinationDirectory packageInfo                    
+            match readmeDownloadInfo with
+            |Some d -> yield d
+            |None -> ()
+
+            let installerDownloadInfo = toInstallerDownloadInfo destinationDirectory packageInfo
+            match installerDownloadInfo with
+            |Ok d -> yield d
+            |Error ex -> logger.Error("Failed to get download info for installer file. " + ex.Message)        
+        }
+
     /// <summary>
     /// Get files to download. As it is possible for two packages to share a readme file this function will return DownloadJobs with uniqe destination files.
     /// </summary>
@@ -137,16 +150,9 @@ module PackageXml =
     let packageInfosToDownloadJobs destinationDirectory packageInfos =
         seq{
             for packageInfo in packageInfos do
-                let readmeDownloadInfo = toReadmeDownloadInfo destinationDirectory packageInfo                    
-                match readmeDownloadInfo with
-                |Some d -> yield d
-                |None -> ()
-
-                let installerDownloadInfo = toInstallerDownloadInfo destinationDirectory packageInfo
-                match installerDownloadInfo with
-                |Ok d -> yield d
-                |Error ex -> logger.Error("Failed to get download info for installer file. " + ex.Message)
+                packageInfoToDownloadJobs destinationDirectory packageInfo
         }
+        |> Seq.concat
         //Make sure destination file is unique
         |> Seq.groupBy (fun p -> p.DestinationFile) 
         |> Seq.map (fun (k,v) -> v |>Seq.head)
