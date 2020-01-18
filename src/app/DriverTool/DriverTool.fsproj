@@ -167,6 +167,7 @@
     <Compile Include="Packaging.fs" />
     <Compile Include="Actors.fs" />
     <Compile Include="DownloadActor.fs" />
+    <Compile Include="DownloadCoordinator.fs" />
     <Compile Include="ExtractActor.fs" />
     <Compile Include="CreateDriverPackageActor.fs" />
     <Compile Include="ActorSystem.fs" />

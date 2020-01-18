@@ -10,6 +10,7 @@ module Messages =
     open DriverTool.Library.ManufacturerTypes
     open DriverTool.Library.PathOperations
     open DriverTool.Library.PackageDefinition
+    open DriverTool.Library.Web
 
     type SccmPackageInfoDownloadContext = {
         Manufacturer:Manufacturer
@@ -164,7 +165,9 @@ module Messages =
         |DownloadPackage of PackageInfo*PackagingContext
         |DownloadedPackage of DownloadedPackageInfo option
         |DownloadSccmPackage of SccmPackageInfoDownloadContext
-        |DownloadedSccmPackage of DownloadedSccmPackageInfo                        
+        |DownloadedSccmPackage of DownloadedSccmPackageInfo
+        |DownloadJob of DownloadInfo
+        |JobDownloaded of DownloadInfo
         |ExtractPackage of PackagingContext*DownloadedPackageInfo
         |PackageExtracted of ExtractedPackageInfo        
         |ExtractSccmPackage of PackagingContext*DownloadedSccmPackageInfo

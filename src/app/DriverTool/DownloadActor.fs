@@ -34,6 +34,10 @@ module DownloadActor =
 
     let downloadUpdate (downloadJob, ignoreVerificationErrors) =
         genericLoggerResult LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
+        
+    let downloadUpdateAsync downloadJob ignoreVerificationErrors =
+        System.Threading.Tasks.Task.Run(fun () -> downloadUpdate (downloadJob, ignoreVerificationErrors))
+        |>Async.AwaitTask
 
     let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
         packageInfos
@@ -56,22 +60,22 @@ module DownloadActor =
                     )
         |>Seq.toArray
 
-    let downloadPackage destinationDirectory packageInfo =
-        let downloadJobs = 
-            packageInfo
-            |> packageInfoToDownloadJobs destinationDirectory            
-            |> PSeq.map (fun dj -> resultToOption logger (downloadUpdate (dj,ignoreVerificationErrors dj)))
-            |> PSeq.toArray
-            |> Seq.choose id //Remove all failed downloads            
-            |> Seq.toArray            
-        let downloadedPackageInfo = 
-            packageInfosToDownloadedPackageInfos destinationDirectory (seq{packageInfo}) downloadJobs
-            |> Array.tryPick Some
-        CreateDriverPackageMessage.DownloadedPackage downloadedPackageInfo
+    //let downloadPackage destinationDirectory packageInfo =
+    //    let downloadJobs = 
+    //        packageInfo
+    //        |> packageInfoToDownloadJobs destinationDirectory            
+    //        |> PSeq.map (fun dj -> resultToOption logger (downloadUpdate (dj,ignoreVerificationErrors dj)))
+    //        |> PSeq.toArray
+    //        |> Seq.choose id //Remove all failed downloads            
+    //        |> Seq.toArray            
+    //    let downloadedPackageInfo = 
+    //        packageInfosToDownloadedPackageInfos destinationDirectory (seq{packageInfo}) downloadJobs
+    //        |> Array.tryPick Some
+    //    CreateDriverPackageMessage.DownloadedPackage downloadedPackageInfo
 
-    let downloadPackageAsync destinationDirectory packageInfo  =
-        System.Threading.Tasks.Task.Run(fun () -> downloadPackage destinationDirectory packageInfo)
-        |>Async.AwaitTask
+    //let downloadPackageAsync destinationDirectory packageInfo  =
+    //    System.Threading.Tasks.Task.Run(fun () -> downloadPackage destinationDirectory packageInfo)
+    //    |>Async.AwaitTask
 
     let downloadActor (mailbox:Actor<_>) =
         
@@ -80,10 +84,14 @@ module DownloadActor =
                 let! message = mailbox.Receive()
                 let (sender, self) = (mailbox.Context.Sender, mailbox.Context.Self)
                 match message with
-                |DownloadPackage (package,packagingContext) -> 
-                    logger.Info(sprintf "Downloading package %A." package)
-                    (downloadPackageAsync packagingContext.CacheFolderPath package)               
+                |DownloadJob downloadInfo ->
+                    logger.Info(sprintf "Downloading job %A." downloadInfo)
+                    (downloadUpdateAsync downloadInfo (ignoreVerificationErrors downloadInfo))
                     |>pipeToWithSender self sender
+                //|DownloadPackage (package,packagingContext) -> 
+                //    logger.Info(sprintf "Downloading package %A." package)
+                //    (downloadPackageAsync packagingContext.CacheFolderPath package)               
+                //    |>pipeToWithSender self sender
                 |DownloadSccmPackage sccmPackageDownloadContext -> 
                     logger.Info(sprintf "Downloading sccm package %A." sccmPackageDownloadContext)
                     (downloadSccmPackageAsync sccmPackageDownloadContext)
