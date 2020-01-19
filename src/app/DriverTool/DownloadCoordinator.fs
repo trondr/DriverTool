@@ -33,8 +33,7 @@ module DownloadCoordinatorActor =
     let packageToUniqueDownloadJob downloadCoordinatorContext destinationFolderPath package =
         let uniqueDownloadJobs =                 
             (packageInfoToDownloadJobs destinationFolderPath package)            
-            |>Seq.filter(fun dl -> notAllreadyDownloading downloadCoordinatorContext dl)                
-            |>Seq.map(fun dl -> (CreateDriverPackageMessage.DownloadJob dl))
+            |>Seq.filter(fun dl -> notAllreadyDownloading downloadCoordinatorContext dl)            
             |>Seq.toArray
         uniqueDownloadJobs
 
@@ -53,13 +52,17 @@ module DownloadCoordinatorActor =
                     (packageToUniqueDownloadJob downloadCoordinatorContext packagingContext.CacheFolderPath package)                    
                     |> Array.map(fun dl -> 
                         logger.Info(sprintf "Request download of job %A for package %A." dl package)
-                        downloadActor <! dl
+                        downloadActor <! CreateDriverPackageMessage.DownloadJob dl
                         ) |> ignore                                        
                 |DownloadJob downloadJob ->
                     logger.Info(sprintf "Request download of job %A." downloadJob)
                     downloadActor <! downloadJob
                     let updatedDownloadCoordinatorContext = updateDownloadCoordinatorContext downloadCoordinatorContext downloadJob
                     return! loop updatedDownloadCoordinatorContext 
+                |JobDownloaded downloadJob ->
+                    logger.Info(sprintf "Download of job %A is finished." downloadJob)
+
+                    
                 |DownloadSccmPackage sccmPackageDownloadContext ->
                     logger.Info(sprintf "Request download of sccm package %A." sccmPackageDownloadContext)
                     downloadActor <! CreateDriverPackageMessage.DownloadSccmPackage sccmPackageDownloadContext                

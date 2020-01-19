@@ -91,8 +91,8 @@ module DownloadCoordinatorActorTests =
         let expectedDownloadJob1 = getTestDownloadJob @"c:\temp" "dummy2.txt"
         let expectedDownloadJob2 = getTestDownloadJob @"c:\temp" "dummy2.exe"
         Assert.AreEqual(2,Array.length actual,"Array length is not 2")
-        Assert.IsTrue(actual |> Array.exists (fun d -> d = DownloadJob expectedDownloadJob1) )
-        Assert.IsTrue(actual |> Array.exists (fun d -> d = DownloadJob expectedDownloadJob2) )
+        Assert.IsTrue(actual |> Array.exists (fun d -> d = expectedDownloadJob1) )
+        Assert.IsTrue(actual |> Array.exists (fun d -> d = expectedDownloadJob2) )
 
     [<Test>]
     let ``packageToUniqueDownloadJob only installer must be downloaded since readme file is allready downloading, return one download job`` () =
@@ -103,5 +103,5 @@ module DownloadCoordinatorActorTests =
         let actual = packageToUniqueDownloadJob downloadCoordinatorContext destinationFolderPath package        
         let expectedDownloadJob2 = getTestDownloadJob @"c:\temp" "dummy.exe"        
         Assert.AreEqual(1,Array.length actual,"Array length is not 1")
-        Assert.IsTrue(actual |> Array.exists (fun d -> d = DownloadJob expectedDownloadJob2) )
+        Assert.IsTrue(actual |> Array.exists (fun d -> d = expectedDownloadJob2) )
 
