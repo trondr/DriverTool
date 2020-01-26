@@ -77,6 +77,7 @@
     <Compile Include="WmiHelperTests.fs" />
     <Compile Include="WebTests.fs" />
     <Compile Include="WebParsingTests.fs" />
+    <Compile Include="LenovoCatalogXmlTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
     <Compile Include="LenovoUpdateTests.fs" />
     <Compile Include="PackageTemplateTests.fs" />

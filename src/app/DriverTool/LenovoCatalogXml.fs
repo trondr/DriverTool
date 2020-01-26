@@ -52,9 +52,9 @@ module LenovoCatalogXml =
         |None -> None
         |Some d -> 
             match d with
-            |Regex @"^(\d{4})(\d{2})$" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)            
-            |Regex @"^(\d{4})(\d{2})\w{2}$" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)
-            |Regex @"^(\d{4})-(\d{2})-(\d{2})$" [year;month;day] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month)(toInt32Unsafe day))
+            |Regex @"^(\d{4})(\d{2})" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)            
+            |Regex @"^(\d{4})(\d{2})\w{2}" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)
+            |Regex @"^(\d{4})-(\d{2})-(\d{2})" [year;month;day] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month)(toInt32Unsafe day))
             |_ -> raise (new Exception(sprintf "Unsupported date format: %s" d))
     
     let toDriverPack (driverPackXElement:XElement) =
