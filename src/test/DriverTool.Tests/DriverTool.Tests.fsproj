@@ -73,6 +73,7 @@
     <Compile Include="WmiHelperTests.fs" />
     <Compile Include="WebTests.fs" />
     <Compile Include="WebParsingTests.fs" />
+    <Compile Include="LenovoCatalogXmlTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
     <Compile Include="LenovoUpdateTests.fs" />
     <Compile Include="PackageTemplateTests.fs" />
@@ -92,14 +93,14 @@
     <Compile Include="PackageXmlTests.fs" />
     <Compile Include="InstallXmlTests.fs" />
     <Compile Include="RegExpTests.fs" />
-    <Compile Include="CsvOperationTests.fs" />    
+    <Compile Include="CsvOperationTests.fs" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp92489.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95015.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
-	<EmbeddedResource Include="TestData\HPCatalog\HP_sp99341.html" />
+    <EmbeddedResource Include="TestData\HPCatalog\HP_sp99341.html" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_v2.xml" />
