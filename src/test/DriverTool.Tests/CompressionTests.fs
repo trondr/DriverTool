@@ -151,8 +151,7 @@ module CompressionTests=
                     let deletedOrChangedFile () =
                         if(not sourceAndDestiationAreEqual) then                                                        
                             let filePath =
-                                existingDestinationFolderPath
-                                |> FileSystem.existingDirectoryPathValueToPath
+                                existingDestinationFolderPath                                
                                 |> DirectoryOperations.getFilesUnsafe true
                                 |> Seq.head
                             if(changeContentOfAFile) then

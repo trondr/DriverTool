@@ -48,8 +48,6 @@ module FileSystem =
 
     let pathValue (Path path) = path
 
-    type ExistingFilePath = private ExistingFilePath of string
-
     let fileExists (filePath:Path) =
         System.IO.File.Exists(pathValue filePath)
 
@@ -61,7 +59,7 @@ module FileSystem =
         result{
             let! existingFilePath =
                 match filePath with
-                |FilePathExists -> Result.Ok (ExistingFilePath (pathValue filePath))
+                |FilePathExists -> Result.Ok (Path (pathValue filePath))
                 |_ -> Result.Error (new FileNotFoundException("File not found: " + pathValue filePath):>Exception)
             return existingFilePath
         }
@@ -72,13 +70,6 @@ module FileSystem =
             let! existingPath = existingFilePath p
             return existingPath
         }
-
-    let existingFilePathValue (ExistingFilePath existingFilePath) = existingFilePath
-    
-    let existingFilePathValueToPath existingFilePath =
-        Path (existingFilePathValue existingFilePath)
-
-    type ExistingDirectoryPath = private ExistingDirectoryPath of string
 
     let directoryExists (directoryPath:Path) =
         System.IO.Directory.Exists(pathValue directoryPath)
@@ -92,13 +83,8 @@ module FileSystem =
             let! p = (path pathString)
             let! existingPath =
                 match p with
-                |DirectoryPathExists -> Result.Ok (ExistingDirectoryPath (pathValue p))
+                |DirectoryPathExists -> Result.Ok (Path (pathValue p))
                 | p -> Result.Error (new DirectoryNotFoundException("Directory not found: " + pathValue p):>Exception)
             return existingPath
         }
     
-    let existingDirectoryPathValue (ExistingDirectoryPath existingDirectoryPath) = existingDirectoryPath
-    
-    let existingDirectoryPathValueToPath existingDirectoryPath =
-        Path (existingDirectoryPathValue existingDirectoryPath)
-     

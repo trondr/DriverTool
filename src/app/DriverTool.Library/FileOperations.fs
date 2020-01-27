@@ -168,8 +168,8 @@ module FileOperations =
 
     /// Compare two files using 1k blocks
     let compareFileUnsafe (filePath1, filePath2) =
-        use stream1 = File.OpenRead(FileSystem.existingFilePathValue filePath1)
-        use stream2 = File.OpenRead(FileSystem.existingFilePathValue filePath2)
+        use stream1 = File.OpenRead(FileSystem.pathValue filePath1)
+        use stream2 = File.OpenRead(FileSystem.pathValue filePath2)
         let s1 = readInBlocks stream1 1000        
         let s2 = readInBlocks stream2 1000
         let isEqual =
@@ -182,23 +182,23 @@ module FileOperations =
 
     let compareDirectory directoryPath1 directoryPath2 =
         imperative{
-            let directories1 = System.IO.Directory.GetDirectories(FileSystem.existingDirectoryPathValue directoryPath1)   
-            let directories2 = System.IO.Directory.GetDirectories(FileSystem.existingDirectoryPathValue directoryPath2)                        
+            let directories1 = System.IO.Directory.GetDirectories(FileSystem.pathValue directoryPath1)   
+            let directories2 = System.IO.Directory.GetDirectories(FileSystem.pathValue directoryPath2)                        
             if( directories1.Length <> directories2.Length) then 
                 return false
         
-            let relativeDirectories1 = directories1 |> Array.map(fun d -> d.Replace(FileSystem.existingDirectoryPathValue directoryPath1,"")) |> Array.sort
-            let relativeDirectories2 = directories2 |> Array.map(fun d -> d.Replace(FileSystem.existingDirectoryPathValue directoryPath2,"")) |> Array.sort
+            let relativeDirectories1 = directories1 |> Array.map(fun d -> d.Replace(FileSystem.pathValue directoryPath1,"")) |> Array.sort
+            let relativeDirectories2 = directories2 |> Array.map(fun d -> d.Replace(FileSystem.pathValue directoryPath2,"")) |> Array.sort
             
             if( relativeDirectories1 <> relativeDirectories2) then 
                 return false
             
-            let files1 = DirectoryOperations.getFilesUnsafe true (FileSystem.existingDirectoryPathValueToPath directoryPath1) |>Array.sort
-            let files2 = DirectoryOperations.getFilesUnsafe true (FileSystem.existingDirectoryPathValueToPath directoryPath2) |> Array.sort
+            let files1 = DirectoryOperations.getFilesUnsafe true (directoryPath1) |>Array.sort
+            let files2 = DirectoryOperations.getFilesUnsafe true (directoryPath2) |> Array.sort
             if( files1.Length <> files2.Length) then 
                 return false
 
-            let files2To1 = files2 |> Array.map(fun f -> f.Replace(FileSystem.existingDirectoryPathValue directoryPath2,FileSystem.existingDirectoryPathValue directoryPath1)) |> Array.sort
+            let files2To1 = files2 |> Array.map(fun f -> f.Replace(FileSystem.pathValue directoryPath2,FileSystem.pathValue directoryPath1)) |> Array.sort
 
             if( files1 <> files2To1) then 
                 return false
@@ -257,7 +257,7 @@ module FileOperations =
         match(result{
             let! sourceFilePath = FileSystem.path sourceFile
             let! existingSourceFilePath = FileSystem.existingFilePath sourceFilePath
-            let! verifiedSourceFilePath = FileSystem.path (FileSystem.existingFilePathValue existingSourceFilePath)
+            let! verifiedSourceFilePath = FileSystem.path (FileSystem.pathValue existingSourceFilePath)
             let fileName = PathOperations.getFileNameFromPath sourceFilePath
             let! destinationFilePath = PathOperations.combinePaths2 destinationFolderPath fileName    
             let! copiedFilePath = copyFile true verifiedSourceFilePath destinationFilePath

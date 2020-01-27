@@ -270,7 +270,7 @@ module PackageXml =
         let destinationFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.PackageXmlName)
         match FileSystem.existingFilePathString downloadedPackageInfo.PackageXmlPath with
         |Ok filePath -> 
-            match (FileOperations.copyFileS (FileSystem.existingFilePathValue filePath, destinationFilePath)) with
+            match (FileOperations.copyFileS (FileSystem.pathValue filePath, destinationFilePath)) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
@@ -280,7 +280,7 @@ module PackageXml =
         let destinationReadmeFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Readme.Name)
         match FileSystem.existingFilePathString downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
-            match (FileOperations.copyFileS (FileSystem.existingFilePathValue readmeFilePath, destinationReadmeFilePath)) with
+            match (FileOperations.copyFileS (FileSystem.pathValue readmeFilePath, destinationReadmeFilePath)) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
@@ -297,7 +297,7 @@ module PackageXml =
            let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Installer.Name)
            match FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
-                match FileOperations.copyFileS (FileSystem.existingFilePathValue installerPath, destinationInstallerFilePath) with
+                match FileOperations.copyFileS (FileSystem.pathValue installerPath, destinationInstallerFilePath) with
                 |Ok _ -> 
                     Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
@@ -310,7 +310,7 @@ module PackageXml =
             let arguments = extractCommandLine.Replace(fileName,"")
             match (FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath) with
             |Ok fp -> 
-                match DriverTool.Library.ProcessOperations.startConsoleProcess (FileSystem.existingFilePathValueToPath fp, arguments,FileSystem.pathValue packageFolderPath,-1,null,null,false) with
+                match DriverTool.Library.ProcessOperations.startConsoleProcess (fp, arguments,FileSystem.pathValue packageFolderPath,-1,null,null,false) with
                 |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex
