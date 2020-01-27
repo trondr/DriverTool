@@ -52,14 +52,14 @@ module DownloadCoordinatorActor =
                     (packageToUniqueDownloadJob downloadCoordinatorContext packagingContext.CacheFolderPath package)                    
                     |> Array.map(fun dl -> 
                         logger.Info(sprintf "Request download of job %A for package %A." dl package)
-                        downloadActor <! CreateDriverPackageMessage.DownloadJob dl
+                        downloadActor <! CreateDriverPackageMessage.DownloadJobb dl
                         ) |> ignore                                        
-                |DownloadJob downloadJob ->
+                |DownloadJobb downloadJob ->
                     logger.Info(sprintf "Request download of job %A." downloadJob)
                     downloadActor <! downloadJob
                     let updatedDownloadCoordinatorContext = updateDownloadCoordinatorContext downloadCoordinatorContext downloadJob
                     return! loop updatedDownloadCoordinatorContext 
-                |JobDownloaded downloadJob ->
+                |JobbDownloaded downloadJob ->
                     logger.Info(sprintf "Download of job %A is finished." downloadJob)
 
                     

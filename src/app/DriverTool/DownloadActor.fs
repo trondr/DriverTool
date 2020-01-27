@@ -84,7 +84,7 @@ module DownloadActor =
                 let! message = mailbox.Receive()
                 let (sender, self) = (mailbox.Context.Sender, mailbox.Context.Self)
                 match message with
-                |DownloadJob downloadInfo ->
+                |DownloadJobb downloadInfo ->
                     logger.Info(sprintf "Downloading job %A." downloadInfo)
                     (downloadUpdateAsync downloadInfo (ignoreVerificationErrors downloadInfo))
                     |>pipeToWithSender self sender

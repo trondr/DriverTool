@@ -166,8 +166,8 @@ module Messages =
         |DownloadedPackage of DownloadedPackageInfo option
         |DownloadSccmPackage of SccmPackageInfoDownloadContext
         |DownloadedSccmPackage of DownloadedSccmPackageInfo
-        |DownloadJob of DownloadInfo
-        |JobDownloaded of DownloadInfo
+        |DownloadJobb of DownloadInfo
+        |JobbDownloaded of DownloadInfo
         |ExtractPackage of PackagingContext*DownloadedPackageInfo
         |PackageExtracted of ExtractedPackageInfo        
         |ExtractSccmPackage of PackagingContext*DownloadedSccmPackageInfo

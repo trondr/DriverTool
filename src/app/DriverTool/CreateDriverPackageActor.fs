@@ -441,9 +441,9 @@ module CreateDriverPackageActor =
                     logger.Error(getAccumulatedExceptionMessages ex)
                     logger.Error("Fatal error occured. Terminating application.")
                     self <! (Finished)
-                //| _ ->
-                //    logger.Warn(sprintf "Message not handled by CreateDriverPackageActor: %A" message)                    
-                //    return! create packagingContext
+                | _ ->
+                    logger.Warn(sprintf "Message not handled by CreateDriverPackageActor: %A" message)                    
+                    return! create packagingContext
                 return! create packagingContext
             }
 

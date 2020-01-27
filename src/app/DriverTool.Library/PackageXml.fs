@@ -147,15 +147,15 @@ module PackageXml =
     /// </summary>
     /// <param name="destinationDirectory"></param>
     /// <param name="packageInfos"></param>
-    let packageInfosToDownloadJobs destinationDirectory packageInfos =
-        seq{
-            for packageInfo in packageInfos do
-                packageInfoToDownloadJobs destinationDirectory packageInfo
-        }
+    let packageInfosToDownloadJobs destinationDirectory packageInfos =        
+        packageInfos
+        |> Seq.map (fun p -> 
+            packageInfoToDownloadJobs destinationDirectory p
+            )
         |> Seq.concat
         //Make sure destination file is unique
         |> Seq.groupBy (fun p -> p.DestinationFile) 
-        |> Seq.map (fun (k,v) -> v |>Seq.head)
+        |> Seq.map (fun (_,v) -> v |>Seq.head)
 
     let toOptionalUri baseUrl fileName =
         match String.IsNullOrWhiteSpace(baseUrl) with
