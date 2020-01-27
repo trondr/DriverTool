@@ -170,7 +170,7 @@
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>..\..\..\packages\FSharp.Data.3.3.2\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
