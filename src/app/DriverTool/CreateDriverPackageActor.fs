@@ -299,7 +299,7 @@ module CreateDriverPackageActor =
         let rec initialize () = 
             actor {                                                
                 let! message = mailbox.Receive()
-                let (sender, self) = (mailbox.Context.Sender, mailbox.Context.Self)
+                let (system, sender, self) = (mailbox.Context.System, mailbox.Context.Sender, mailbox.Context.Self)
                 match message with
                 |Start -> 
                     logger.Info("Checking requirements")
@@ -320,6 +320,19 @@ module CreateDriverPackageActor =
                     logger.Info(sprintf "Initialize packaging for packaging context: %A...." context)
                     self <! (initializePackaging context)
                     return! create context
+                |Finished ->
+                    logger.Info(sprintf "Shuting down...")
+                    clientActor <! (new QuitHostMessage())
+                    self <! (Akka.Actor.PoisonPill.Instance)
+                    system.Terminate() |> ignore
+                |CreateDriverPackageMessage.Info info ->
+                    logger.Info(info)
+                |CreateDriverPackageMessage.Warning info ->
+                    logger.Warn(info)
+                |CreateDriverPackageMessage.Error ex ->                     
+                    logger.Error(getAccumulatedExceptionMessages ex)
+                    logger.Error("Fatal error occured. Terminating application.")
+                    self <! (Finished)                
                 | _ ->                    
                     throwNotInitializedException message
                 return! initialize ()
@@ -375,6 +388,10 @@ module CreateDriverPackageActor =
                     let updatedPackagingContext = doneSccmPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext                
+                |DownloadJobb downloadInfo ->
+                    logger.Error(sprintf "Message not supported %A" message)
+                |JobbDownloaded downloadInfo -> 
+                    logger.Error(sprintf "Message not supported %A" message)
                 |ExtractPackage (packagingContext,downloadedPackage) -> 
                     logger.Info(sprintf "Request extract of package: %A." downloadedPackage)
                     extractActor <! ExtractPackage  (packagingContext,downloadedPackage)
@@ -458,9 +475,9 @@ module CreateDriverPackageActor =
                     logger.Error(getAccumulatedExceptionMessages ex)
                     logger.Error("Fatal error occured. Terminating application.")
                     self <! (Finished)
-                | _ ->
-                    logger.Warn(sprintf "Message not handled by CreateDriverPackageActor: %A" message)                    
-                    return! create packagingContext
+                //| _ ->
+                //    logger.Warn(sprintf "Message not handled by CreateDriverPackageActor: %A" message)                    
+                //    return! create packagingContext
                 return! create packagingContext
             }
 

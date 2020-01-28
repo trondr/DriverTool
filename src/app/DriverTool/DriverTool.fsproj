@@ -86,7 +86,7 @@
     <EmbeddedResource Include="Libs\Akka.Remote.dll" />
     <EmbeddedResource Include="Libs\Client.dll" />
     <EmbeddedResource Include="Libs\Common.dll" />
-	<EmbeddedResource Include="Libs\Common.Logging.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
@@ -96,11 +96,11 @@
     <EmbeddedResource Include="Libs\DotNetty.Handlers.dll" />
     <EmbeddedResource Include="Libs\DotNetty.Transport.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
-	<EmbeddedResource Include="Libs\DriverTool.Library.dll" />
+    <EmbeddedResource Include="Libs\DriverTool.Library.dll" />
     <EmbeddedResource Include="Libs\Dynamitey.dll" />
     <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
     <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />    
+    <EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.Xsd.dll" />
     <EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
