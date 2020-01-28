@@ -129,8 +129,25 @@ module CreateDriverPackageActor =
             |Result.Error ex -> CreateDriverPackageMessage.Error ex
             |Ok downloadedSccmPackageInfo -> CreateDriverPackageMessage.DownloadedSccmPackage downloadedSccmPackageInfo
 
-    let retrieveSccmPackageInfoAsync context =
-        System.Threading.Tasks.Task.Run(fun () -> retrieveSccmPackageInfo context)
+    open System.Threading
+    open System.Threading.Tasks
+
+    let startSTATask<'t> func =
+        let tcs = new TaskCompletionSource<'t>()
+        let thread = new System.Threading.Thread(
+                        fun () -> 
+                            try
+                                tcs.SetResult(func())
+                            with
+                            |ex ->
+                                tcs.SetException(ex)        
+                        )
+        thread.SetApartmentState(ApartmentState.STA)
+        thread.Start()
+        tcs.Task        
+    
+    let retrieveSccmPackageInfoAsync context =        
+        (startSTATask (fun () -> retrieveSccmPackageInfo context))
         |> Async.AwaitTask
 
     let requestIntializationOfPackaging result =
