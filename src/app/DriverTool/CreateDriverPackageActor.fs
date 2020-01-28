@@ -156,7 +156,7 @@ module CreateDriverPackageActor =
         |Result.Ok context -> CreateDriverPackageMessage.InitializePackaging context
 
     let throwNotInitializedException actorMessage =            
-        throwExceptionWithLogging logger (sprintf "Packaging actor has not been initialized. Cannot process message %A" actorMessage)
+        throwExceptionWithLogging logger (sprintf "Packaging actor has not been initialized. Cannot process message: %A" actorMessage)
 
     let throwAllreadyInitializedException actorMessage =            
         throwExceptionWithLogging logger (sprintf "Packaging actor has allready been initialized. Cannot process message %A" actorMessage)
