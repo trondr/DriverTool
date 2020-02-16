@@ -102,19 +102,6 @@ module CreateDriverPackageTests =
             let actual = DownloadActor.downloadWebFile false wfd
             Assert.AreEqual(expected,actual)
         |Result.Error ex -> Assert.Fail(ex.Message)
-        
-        
-            
-            //{
-            //    SourceUri=new Uri("http://ftp.hp.com/pub/softpaq/sp81501-82000/sp81886.exe");
-            //    SourceFileSize=4092824L;
-            //    SourceChecksum="ec6c692772662540c3d4bc6156ae33a37dd2ed06";
-            //    DestinationFile=FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe"
-            //}
-        //let actual = DownloadActor.downloadWebFile false downloadInfo
-        //match actual with
-        //|Ok p -> Assert.IsTrue(true)
-        //|Error ex -> Assert.Fail(ex.Message)
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
