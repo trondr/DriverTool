@@ -219,15 +219,16 @@ module WebDownloadTests =
 
                     let! destinationFilePath = FileSystem.path @"c:\temp\test2312123.exe"
 
-                    let download = 
-                        WebFile2.DownloadWebFile ({
+                    let webFileSource = 
+                        {
                             Url=new System.Uri("https://test.local.com")
                             Checksum=None
                             Size=Some 123L            
                             FileName=System.IO.Path.GetFileName(FileSystem.pathValue destinationFilePath)
-                        }, ({DestinationFile=destinationFilePath}))
+                        }
+                    let webFileDestination = {DestinationFile=destinationFilePath}
 
-                    let actual = DriverTool.Library.WebDownload.verifyDownload' logger hasSameFileHasStub isTrustedStub ignoreVerificationErrors download
+                    let actual = DriverTool.Library.WebDownload.verifyDownload' logger hasSameFileHasStub isTrustedStub ignoreVerificationErrors (webFileSource, webFileDestination)
                     let result = 
                         match actual with
                         |Ok _ ->
@@ -270,11 +271,10 @@ module WebDownloadTests =
     
     let downloadIfDifferentTests (downloadIsRequired,downloadSucceeds,verifyDownloadSucceeds,expectedSuccess:bool,expectedErrorMessage) =
 
-        let sourceWebFile = {Url=toUriUnsafe "http://some/test.txt";Checksum=Some "SomeCheckSum";Size=Some 0L;FileName="test.txt"}
-        let destinationFile = {DestinationFile=(FileSystem.pathUnSafe @"c:\temp\test.txt")}
-        let ignoreVerificationErrors = true
-        let testDownload =
-            WebFile2.DownloadWebFile (sourceWebFile,destinationFile)
+        let webFileSource = {Url=toUriUnsafe "http://some/test.txt";Checksum=Some "SomeCheckSum";Size=Some 0L;FileName="test.txt"}
+        let webFileDestination = {DestinationFile=(FileSystem.pathUnSafe @"c:\temp\test.txt")}
+        let webFileDownload = {Source=webFileSource;Destination=webFileDestination}
+        let ignoreVerificationErrors = true        
 
         let downloadFileStub force (sourceUri:System.Uri,destinationFile:FileSystem.Path) =
             Assert.AreEqual(true,downloadIsRequired,"downloadFile(...) should not have been called.")
@@ -287,15 +287,15 @@ module WebDownloadTests =
         let downloadIsRequiredStub (checkSum:string option) (size:System.Int64 option) (destinationFile:FileSystem.Path) =
             downloadIsRequired
 
-        let verifyDownloadStub (ignoreVerificationErrors:bool) (download:WebFile2) =
+        let verifyDownloadStub (ignoreVerificationErrors:bool) (webFileSource, webFileDestination) =
             Assert.AreEqual(true,downloadIsRequired,"verifyDownload(...) should not have been called.")
             match verifyDownloadSucceeds with
             |true ->                
-                Result.Ok (WebFile2.DownloadedWebFile destinationFile)
+                Result.Ok (WebFile2.DownloadedWebFile webFileDestination)
             |false ->
                 Result.Error (new System.Exception("Failed to verify download."))
                 
-        let actual = downloadIfDifferent' testLogger downloadIsRequiredStub downloadFileStub verifyDownloadStub ignoreVerificationErrors testDownload
+        let actual = downloadIfDifferent' testLogger downloadIsRequiredStub downloadFileStub verifyDownloadStub ignoreVerificationErrors webFileDownload
         match(actual)with
         |Result.Ok v ->
             Assert.IsTrue(expectedSuccess)
@@ -305,7 +305,7 @@ module WebDownloadTests =
             |WebFile2.DownloadWebFile (s,d) ->
                 Assert.Fail(sprintf "%A" v)            
             |WebFile2.DownloadedWebFile d ->
-                Assert.AreEqual(destinationFile,d)
+                Assert.AreEqual(webFileDestination,d)
         |Result.Error ex ->
             Assert.IsFalse(expectedSuccess)
             Assert.IsTrue(ex.Message.Contains(expectedErrorMessage))

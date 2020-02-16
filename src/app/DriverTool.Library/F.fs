@@ -259,6 +259,14 @@ module F=
             logger.Error(ex.Message)
             None
 
+    let resultToValueUnsafe result =
+        match result with
+        |Result.Ok v -> 
+            v
+        |Result.Error ex ->
+            raise ex
+            
+
     open System.Collections.Generic
 
     //Source: http://tomasp.net/blog/imperative-i-return.aspx/

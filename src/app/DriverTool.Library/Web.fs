@@ -11,8 +11,10 @@ module Web =
     type Web = class end
     let logger = getLoggerByName(typeof<Web>.Name)
 
-    type WebFile = {Url:string; Checksum:string; FileName:string;Size:Int64}
+    type DownloadStatus = NotDownloaded|Downloaded|DownloadedAndVerified
 
+    type WebFile = {Url:string; Checksum:string; Size:Int64; FileName:string}
+        
     type DownloadInfo =
         {
             SourceUri:Uri;

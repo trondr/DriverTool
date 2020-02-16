@@ -9,6 +9,7 @@ module DownloadActor =
     open DriverTool.Library.PathOperations
     open DriverTool.Actors
     open DriverTool.Library.PackageXml    
+    open DriverTool.Library.WebDownload
     open DriverTool.Library.Web
     open FSharp.Collections.ParallelSeq
     open Akka.FSharp
@@ -23,21 +24,35 @@ module DownloadActor =
         |Result.Error ex ->            
             CreateDriverPackageMessage.Error ex
         |Ok downloadedSccmPackage -> 
-            DownloadedSccmPackage downloadedSccmPackage
+            SccmPackageDownloaded downloadedSccmPackage
 
     let downloadSccmPackageAsync context =
         System.Threading.Tasks.Task.Run(fun () -> downloadSccmPackage context)
         |>Async.AwaitTask
 
-    let downloadUpdateBase (downloadInfo:DownloadInfo, ignoreVerificationErrors) =
-        downloadIfDifferent (logger,downloadInfo, ignoreVerificationErrors)         
+    let toDownloadFinishedMessage webFileDownload downloadResult = 
+        match downloadResult with
+        |Result.Ok _ ->
+            CreateDriverPackageMessage.DownloadFinished webFileDownload
+        |Result.Error ex ->
+            CreateDriverPackageMessage.Error ex
 
-    let downloadUpdate (downloadJob, ignoreVerificationErrors) =
-        genericLoggerResult LogLevel.Debug downloadUpdateBase (downloadJob, ignoreVerificationErrors)
+    let downloadWebFile' (ignoreVerificationErrors,webFileDownload) =
+        (DriverTool.Library.WebDownload.downloadIfDifferent ignoreVerificationErrors webFileDownload)
+        |> toDownloadFinishedMessage webFileDownload
+
+    let downloadWebFile ignoreVerificationErrors webFileDownload =
+        downloadWebFile' (ignoreVerificationErrors, webFileDownload)
         
-    let downloadUpdateAsync downloadJob ignoreVerificationErrors =
-        System.Threading.Tasks.Task.Run(fun () -> downloadUpdate (downloadJob, ignoreVerificationErrors))
+    let downloadWebFileAsync ignoreVerificationErrors webFileDownload =
+        System.Threading.Tasks.Task.Run(fun () -> downloadWebFile ignoreVerificationErrors webFileDownload)
         |>Async.AwaitTask
+
+    let downloadUpdate' (downloadJob,ignoreVerificationErrors) =
+        DriverTool.Library.Web.downloadIfDifferent (logger, downloadJob,ignoreVerificationErrors)
+
+    let downloadUpdate (downloadJob,ignoreVerificationErrors) =
+        genericLoggerResult LogLevel.Debug downloadUpdate' (downloadJob,ignoreVerificationErrors)
 
     let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
         packageInfos
@@ -84,10 +99,15 @@ module DownloadActor =
                 let! message = mailbox.Receive()
                 let (sender, self) = (mailbox.Context.Sender, mailbox.Context.Self)
                 match message with
-                |DownloadJobb downloadInfo ->
-                    logger.Info(sprintf "Downloading job %A." downloadInfo)
-                    (downloadUpdateAsync downloadInfo (ignoreVerificationErrors downloadInfo))
+                |StartDownload webFileDownload ->
+                    let destinationFile = webFileDownload.Destination
+                    logger.Info(sprintf "Downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination.DestinationFile) 
+                    let ignoreVerificationErrors = DriverTool.Library.WebDownload.ignoreVerificationErrors destinationFile                    
+                    (downloadWebFileAsync ignoreVerificationErrors webFileDownload)
                     |>pipeToWithSender self sender
+                |DownloadFinished webFileDownload ->
+                    logger.Info(sprintf "Finished downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination) 
+                
                 //|DownloadPackage (package,packagingContext) -> 
                 //    logger.Info(sprintf "Downloading package %A." package)
                 //    (downloadPackageAsync packagingContext.CacheFolderPath package)               

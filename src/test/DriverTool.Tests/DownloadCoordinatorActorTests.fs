@@ -10,16 +10,18 @@ module DownloadCoordinatorActorTests =
     open DriverTool.Library.PackageXml
     open DriverTool.Library
     open DriverTool.Library.Messages
+    open DriverTool.Library.WebDownload
+    open DriverTool.Library.F
 
-    let getTestDownloadJob destinationFolder fileName =
-        let destinationFile = FileSystem.pathUnSafe (System.IO.Path.Combine(destinationFolder, fileName))
-        let downloadJob = {DownloadInfo.DestinationFile=destinationFile;SourceChecksum="";SourceFileSize=0L;SourceUri=toUriUnsafe ("http://dummy/" + fileName) }
-        downloadJob
+    let getTestWebFileDownload destinationFolder fileName =
+        let destinationFile = FileSystem.pathUnSafe (System.IO.Path.Combine(destinationFolder, fileName))        
+        let webFileDownload = resultToValueUnsafe (toWebFileDownload "http://dummy/" "some checksum" 0L destinationFile)
+        webFileDownload
 
     let getTestDownloadCoordinatorContext =
         let destinationFile = FileSystem.pathUnSafe @"c:\temp\dummy.txt"
-        let downloadJob = getTestDownloadJob @"c:\temp" "dummy.txt"
-        let downloads = [(downloadJob.DestinationFile,downloadJob)] |>Map.ofSeq
+        let downloadJob = getTestWebFileDownload @"c:\temp" "dummy.txt"
+        let downloads = [(downloadJob.Destination.DestinationFile,downloadJob)] |>Map.ofSeq
         let downloadCoordinatorContext = {Downloads=downloads}
         downloadCoordinatorContext
 
@@ -33,7 +35,7 @@ module DownloadCoordinatorActorTests =
     [<Test>]
     let ``notAllreadyDownloading DownloadJob does not allready exists, return false`` () =
         let downloadCoordinatorContext = getTestDownloadCoordinatorContext
-        let newDownloadJob = getTestDownloadJob @"c:\temp" "dummy_new.txt"
+        let newDownloadJob = getTestWebFileDownload @"c:\temp" "dummy_new.txt"
         let actual = notAllreadyDownloading downloadCoordinatorContext newDownloadJob
         Assert.IsTrue(actual)
 
@@ -48,7 +50,7 @@ module DownloadCoordinatorActorTests =
     [<Test>]
     let ``updateDownloadCoordinatorContext Download job is new so update the context`` () =
         let downloadCoordinatorContext = getTestDownloadCoordinatorContext
-        let newDownloadJob = getTestDownloadJob @"c:\temp" "dummt_new.txt"
+        let newDownloadJob = getTestWebFileDownload @"c:\temp" "dummt_new.txt"
         let actual = updateDownloadCoordinatorContext downloadCoordinatorContext newDownloadJob
         Assert.AreNotEqual(downloadCoordinatorContext,actual)
         ()
@@ -88,8 +90,8 @@ module DownloadCoordinatorActorTests =
         let destinationFolderPath = FileSystem.pathUnSafe @"c:\temp"
         let downloadCoordinatorContext = getTestDownloadCoordinatorContext
         let actual = packageToUniqueDownloadJob downloadCoordinatorContext destinationFolderPath package
-        let expectedDownloadJob1 = getTestDownloadJob @"c:\temp" "dummy2.txt"
-        let expectedDownloadJob2 = getTestDownloadJob @"c:\temp" "dummy2.exe"
+        let expectedDownloadJob1 = getTestWebFileDownload @"c:\temp" "dummy2.txt"
+        let expectedDownloadJob2 = getTestWebFileDownload @"c:\temp" "dummy2.exe"
         Assert.AreEqual(2,Array.length actual,"Array length is not 2")
         Assert.IsTrue(actual |> Array.exists (fun d -> d = expectedDownloadJob1) )
         Assert.IsTrue(actual |> Array.exists (fun d -> d = expectedDownloadJob2) )
@@ -101,7 +103,7 @@ module DownloadCoordinatorActorTests =
         let destinationFolderPath = FileSystem.pathUnSafe @"c:\temp"
         let downloadCoordinatorContext = getTestDownloadCoordinatorContext
         let actual = packageToUniqueDownloadJob downloadCoordinatorContext destinationFolderPath package        
-        let expectedDownloadJob2 = getTestDownloadJob @"c:\temp" "dummy.exe"        
+        let expectedDownloadJob2 = getTestWebFileDownload @"c:\temp" "dummy.exe"        
         Assert.AreEqual(1,Array.length actual,"Array length is not 1")
         Assert.IsTrue(actual |> Array.exists (fun d -> d = expectedDownloadJob2) )
 

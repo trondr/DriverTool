@@ -6,6 +6,7 @@ module PackageXml =
     open DriverTool.Library.F
     open DriverTool.Library
     open DriverTool.Library.Web
+    open DriverTool.Library.WebDownload
     open System
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageXml"
         
@@ -141,6 +142,50 @@ module PackageXml =
             |Ok d -> yield d
             |Error ex -> logger.Error("Failed to get download info for installer file. " + ex.Message)        
         }
+
+    let getDestinationFilePath destinationDirectory (packageFile:PackageFile) =
+        if(String.IsNullOrWhiteSpace(packageFile.Name)) then
+            Result.Error (new Exception(sprintf "Failed to get destination file path because package file name is blank. Package file: %A" packageFile))
+        else
+            FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationDirectory, packageFile.Name))
+
+    let optionToResult message option =
+        match option with
+        |Some v -> Result.Ok v
+        |None -> Result.Error (new System.Exception(message))
+
+    let resultToOption message result =
+        match result with
+        |Result.Ok v -> Some v
+        |Result.Error (ex:Exception) ->
+            logger.Warn(message + " " + ex.Message)
+            None
+
+    let packageFileToWebFileDownload (destinationDirectory:FileSystem.Path) (packageFile:PackageFile) =
+        let webFileDownload =
+            result{
+                let! destinationFile = getDestinationFilePath destinationDirectory packageFile
+                let webFileDestination = {DestinationFile=destinationFile}
+                let! sourceUrl = optionToResult (sprintf "Failed to get source url for package file: %A" packageFile) packageFile.Url 
+                let! webFileSource = (DriverTool.Library.WebDownload.toWebFileSource sourceUrl.OriginalString packageFile.Checksum packageFile.Size) 
+                let webFileDownload = {Source=webFileSource;Destination=webFileDestination}
+                return webFileDownload            
+            }
+        resultToOption (sprintf "Failed to pepare download for package file: %A." packageFile) webFileDownload
+            
+
+    let packageInfoToWebFileDownloads destinationDirectory (packageInfo:PackageInfo) =
+        seq{
+            let readmeWebFileDownload = packageFileToWebFileDownload destinationDirectory packageInfo.Readme
+            match readmeWebFileDownload with
+            |Some v -> yield v
+            |None -> ()
+
+            let installerWebFileDownload =  packageFileToWebFileDownload destinationDirectory packageInfo.Installer
+            match installerWebFileDownload with
+            |Some v -> yield v
+            |None -> ()
+        }        
 
     /// <summary>
     /// Get files to download. As it is possible for two packages to share a readme file this function will return DownloadJobs with uniqe destination files.

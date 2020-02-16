@@ -10,8 +10,16 @@ module Messages =
     open DriverTool.Library.ManufacturerTypes
     open DriverTool.Library.PathOperations
     open DriverTool.Library.PackageDefinition
-    open DriverTool.Library.Web
+    open DriverTool.Library.WebDownload
 
+    type LogMessage =
+        |ErrorMsg of Exception
+        |InfoMsg of string
+        |WarnMsg of string
+        |DebugMsg of string
+
+    type LogItem = {TimeStamp:DateTime;LoggerName:string;ThreadId:int;LogMessage:LogMessage}
+        
     type SccmPackageInfoDownloadContext = {
         Manufacturer:Manufacturer
         CacheFolderPath:FileSystem.Path
@@ -163,11 +171,11 @@ module Messages =
         |RetrieveSccmPackageInfo of SccmPackageInfoRetrievalContext
         |SccmPackageInfoRetrieved of SccmPackageInfo
         |DownloadPackage of PackageInfo*PackagingContext
-        |DownloadedPackage of DownloadedPackageInfo option
+        |PackageDownloaded of DownloadedPackageInfo option
         |DownloadSccmPackage of SccmPackageInfoDownloadContext
-        |DownloadedSccmPackage of DownloadedSccmPackageInfo
-        |DownloadJobb of DownloadInfo
-        |JobbDownloaded of DownloadInfo
+        |SccmPackageDownloaded of DownloadedSccmPackageInfo
+        |StartDownload of WebFileDownload
+        |DownloadFinished of WebFileDownload
         |ExtractPackage of PackagingContext*DownloadedPackageInfo
         |PackageExtracted of ExtractedPackageInfo        
         |ExtractSccmPackage of PackagingContext*DownloadedSccmPackageInfo

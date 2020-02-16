@@ -36,7 +36,7 @@ module CreateDriverPackage =
         let downloadJobs = 
             packageInfos             
             |> packageInfosToDownloadJobs destinationDirectory            
-            |> PSeq.map (fun dj -> resultToOption logger (downloadUpdate (dj,ignoreVerificationErrors dj)))
+            |> PSeq.map (fun dj -> resultToOption logger (DriverTool.DownloadActor.downloadUpdate (dj,ignoreVerificationErrors dj)))
             |> PSeq.toArray
             |> Seq.choose id //Remove all failed downloads            
             |> Seq.toArray            

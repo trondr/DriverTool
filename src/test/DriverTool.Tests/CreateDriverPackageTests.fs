@@ -9,6 +9,8 @@ open DriverTool.Library.F
 open DriverTool.Library
 open DriverTool.Library.ManufacturerTypes
 open DriverTool.Packaging
+open DriverTool.Library.WebDownload
+open DriverTool.Library.Messages
 
 [<TestFixture>]
 module CreateDriverPackageTests =
@@ -89,17 +91,30 @@ module CreateDriverPackageTests =
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
     let downloadUpdateTest () =
-        let downloadInfo = 
-            {
-                SourceUri=new Uri("http://ftp.hp.com/pub/softpaq/sp81501-82000/sp81886.exe");
-                SourceFileSize=4092824L;
-                SourceChecksum="ec6c692772662540c3d4bc6156ae33a37dd2ed06";
-                DestinationFile=FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe"
-            }
-        let actual = DownloadActor.downloadUpdate (downloadInfo,false)
-        match actual with
-        |Ok p -> Assert.IsTrue(true)
-        |Error ex -> Assert.Fail(ex.Message)
+        match(result{
+            let! webFileSource = toWebFileSource "http://ftp.hp.com/pub/softpaq/sp81501-82000/sp81886.exe" "ec6c692772662540c3d4bc6156ae33a37dd2ed06" 4092824L 
+            let webFileDestination = {DestinationFile = (FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe")}
+            return {Source=webFileSource;Destination=webFileDestination}            
+        })with
+        |Result.Ok wfd -> 
+            Assert.IsTrue(true)
+            let expected = CreateDriverPackageMessage.DownloadFinished wfd
+            let actual = DownloadActor.downloadWebFile false wfd
+            Assert.AreEqual(expected,actual)
+        |Result.Error ex -> Assert.Fail(ex.Message)
+        
+        
+            
+            //{
+            //    SourceUri=new Uri("http://ftp.hp.com/pub/softpaq/sp81501-82000/sp81886.exe");
+            //    SourceFileSize=4092824L;
+            //    SourceChecksum="ec6c692772662540c3d4bc6156ae33a37dd2ed06";
+            //    DestinationFile=FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe"
+            //}
+        //let actual = DownloadActor.downloadWebFile false downloadInfo
+        //match actual with
+        //|Ok p -> Assert.IsTrue(true)
+        //|Error ex -> Assert.Fail(ex.Message)
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -114,9 +129,9 @@ module CreateDriverPackageTests =
             Assert.IsTrue(actual.Contains("IF NOT EXIST \"c:\\temp\" md \"c:\\temp\""))
             return actual
         })with
-        |Ok _ -> 
+        |Result.Ok _ -> 
             Assert.IsTrue(isSuccess,"Expected fail, but succeeded")
-        |Error ex -> 
+        |Result.Error ex -> 
             Assert.IsFalse(isSuccess,sprintf "Expected success, but failed. %A" ex)
         
         

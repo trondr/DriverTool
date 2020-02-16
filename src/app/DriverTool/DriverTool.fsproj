@@ -182,6 +182,7 @@
     <Compile Include="PackageTemplate.fs" />
     <Compile Include="Packaging.fs" />
     <Compile Include="Actors.fs" />
+    <Compile Include="LoggerActor.fs" />
     <Compile Include="DownloadActor.fs" />
     <Compile Include="DownloadCoordinator.fs" />
     <Compile Include="ExtractActor.fs" />

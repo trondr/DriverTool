@@ -11,19 +11,20 @@ module DownloadCoordinatorActor =
     open DriverTool.Library.PackageXml
     open DriverTool.Library
     open DriverTool.Library.Web
+    open DriverTool.Library.WebDownload
     let logger = getLoggerByName "DownloadCoordinatorActor"
 
     //The download coordinator context is used to keep track of which download jobs have been started.
-    type DownloadCoordinatorContext = {Downloads:Map<FileSystem.Path,DownloadInfo>}
+    type DownloadCoordinatorContext = {Downloads:Map<FileSystem.Path,WebFileDownload>}
 
     //Check if download job is not allready beeing downloaded.
-    let notAllreadyDownloading downloadCoordinatorContext downloadJob  =
-        not (downloadCoordinatorContext.Downloads.ContainsKey(downloadJob.DestinationFile))
+    let notAllreadyDownloading downloadCoordinatorContext webFileDownload  =
+        not (downloadCoordinatorContext.Downloads.ContainsKey(webFileDownload.Destination.DestinationFile))
 
     /// Add download job to download coordinator context if not allready added.
-    let updateDownloadCoordinatorContext downloadCoordinatorContext downloadJob =
-        if(not (downloadCoordinatorContext.Downloads.ContainsKey(downloadJob.DestinationFile))) then
-            {downloadCoordinatorContext with Downloads=downloadCoordinatorContext.Downloads.Add(downloadJob.DestinationFile, downloadJob)}
+    let updateDownloadCoordinatorContext downloadCoordinatorContext webFileDownload =
+        if(not (downloadCoordinatorContext.Downloads.ContainsKey(webFileDownload.Destination.DestinationFile))) then
+            {downloadCoordinatorContext with Downloads=downloadCoordinatorContext.Downloads.Add(webFileDownload.Destination.DestinationFile, webFileDownload)}
         else
             downloadCoordinatorContext
 
@@ -32,8 +33,8 @@ module DownloadCoordinatorActor =
     /// to avoid any file system sharing vialations when two threads attempts to download to the same destination file.
     let packageToUniqueDownloadJob downloadCoordinatorContext destinationFolderPath package =
         let uniqueDownloadJobs =                 
-            (packageInfoToDownloadJobs destinationFolderPath package)            
-            |>Seq.filter(fun dl -> notAllreadyDownloading downloadCoordinatorContext dl)            
+            (packageInfoToWebFileDownloads destinationFolderPath package)            
+            |>Seq.filter(fun wfd -> notAllreadyDownloading downloadCoordinatorContext wfd)            
             |>Seq.toArray
         uniqueDownloadJobs
 
@@ -52,15 +53,15 @@ module DownloadCoordinatorActor =
                     (packageToUniqueDownloadJob downloadCoordinatorContext packagingContext.CacheFolderPath package)                    
                     |> Array.map(fun dl -> 
                         logger.Info(sprintf "Request download of job %A for package %A." dl package)
-                        downloadActor <! CreateDriverPackageMessage.DownloadJobb dl
+                        downloadActor <! CreateDriverPackageMessage.StartDownload dl
                         ) |> ignore                                        
-                |DownloadJobb downloadJob ->
-                    logger.Info(sprintf "Request download of job %A." downloadJob)
-                    downloadActor <! downloadJob
-                    let updatedDownloadCoordinatorContext = updateDownloadCoordinatorContext downloadCoordinatorContext downloadJob
+                |StartDownload webFileDownload ->
+                    logger.Info(sprintf "Request download of job %A." webFileDownload)                                        
+                    downloadActor <! CreateDriverPackageMessage.StartDownload webFileDownload
+                    let updatedDownloadCoordinatorContext = updateDownloadCoordinatorContext downloadCoordinatorContext webFileDownload
                     return! loop updatedDownloadCoordinatorContext 
-                |JobbDownloaded downloadJob ->
-                    logger.Info(sprintf "Download of job %A is finished." downloadJob)
+                |DownloadFinished webFileDownload ->
+                    logger.Info(sprintf "Download of job %A is finished." webFileDownload)
 
                     
                 |DownloadSccmPackage sccmPackageDownloadContext ->

@@ -14,6 +14,7 @@ module WebDownload=
 
     type WebFileSource = {Url:Uri; Checksum:string option; Size:Int64 option; FileName:string}
     type WebFileDestination = {DestinationFile:FileSystem.Path}
+    type WebFileDownload = {Source:WebFileSource;Destination:WebFileDestination}
 
     type WebFile2 =
         |SourceWebFile of WebFileSource
@@ -56,6 +57,21 @@ module WebDownload=
                 }
             return webFileSource
         }
+
+    let toWebFileDownload url checksum size destinationFile =
+        result{
+            let! webFileSource = toWebFileSource url checksum size
+            return {Source=webFileSource;Destination={DestinationFile=destinationFile}}
+        }
+
+    let (|TextFile|_|) (input:string) = if input.ToLower().EndsWith(".txt") then Some(input) else None
+    let (|XmlFile|_|) (input:string) = if input.ToLower().EndsWith(".xml") then Some(input) else None
+
+    let ignoreVerificationErrors webFile =
+        match FileSystem.pathValue webFile.DestinationFile with
+        | TextFile _ -> true
+        | XmlFile _ -> true
+        | _ -> false
 
     let getWebProxy (logger:Common.Logging.ILog) (webProxyUrl:string) (byPassOnLocal:bool) (byPassList:string[]) = 
         match webProxyUrl with
@@ -133,56 +149,46 @@ module WebDownload=
     type HasSameFileHashFunc = FileSystem.Path*string option*Int64 option->bool
     type IsTrustedFunc = FileSystem.Path -> bool
 
-    let verifyDownload' (logger:Common.Logging.ILog) (hasSameFileHashFunc: HasSameFileHashFunc) (isTrustedFunc: IsTrustedFunc) ignoreVerificationErrors (download:WebFile2)  = 
-        match download with
-        | WebFile2.SourceWebFile swf -> 
-            Result.Error (new Exception(sprintf "Web file has not been downloaded. %A" swf))        
-        |WebFile2.DownloadedWebFile dwf ->
-            Result.Ok (WebFile2.DownloadedWebFile dwf)
-        |WebFile2.DownloadWebFile (sourceWebFile, destinationFile) ->
-            match (hasSameFileHashFunc (destinationFile.DestinationFile,sourceWebFile.Checksum,sourceWebFile.Size)) with
-            |true  -> 
-                logger.Info(msg (sprintf  "Destination file ('%A') hash match source file ('%A') hash." destinationFile sourceWebFile.Url ))
-                Result.Ok (WebFile2.DownloadedWebFile destinationFile)
-            |false ->
-                let msg1 = (sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue destinationFile.DestinationFile) sourceWebFile.Url.OriginalString)
-                match ignoreVerificationErrors with
-                |true ->
-                    logger.Warn(msg1)
-                    Result.Ok (WebFile2.DownloadedWebFile destinationFile)
-                |false->
-                    let isTrusted = isTrustedFunc destinationFile.DestinationFile
-                    match isTrusted with
-                    |true ->                    
-                        logger.Warn(msg1 + "However the file is trusted (the file is digitally signed) so it is assumed that there is a mistake in the published checksum data on the vendor web page.")
-                        Result.Ok (WebFile2.DownloadedWebFile destinationFile)
-                    |false ->    
-                        Result.Error (new Exception(msg1 + "Additionally the file is not trusted (not signed or signature has been invalidated.)"))
+    let verifyDownload' (logger:Common.Logging.ILog) (hasSameFileHashFunc: HasSameFileHashFunc) (isTrustedFunc: IsTrustedFunc) ignoreVerificationErrors (webFileSource, webFileDestination)  = 
+        match (hasSameFileHashFunc (webFileDestination.DestinationFile,webFileSource.Checksum,webFileSource.Size)) with
+        |true  -> 
+            logger.Info(msg (sprintf  "Destination file ('%A') hash match source file ('%A') hash." webFileDestination webFileSource.Url ))
+            Result.Ok (WebFile2.DownloadedWebFile webFileDestination)
+        |false ->
+            let msg1 = (sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue webFileDestination.DestinationFile) webFileSource.Url.OriginalString)
+            match ignoreVerificationErrors with
+            |true ->
+                logger.Warn(msg1)
+                Result.Ok (WebFile2.DownloadedWebFile webFileDestination)
+            |false->
+                let isTrusted = isTrustedFunc webFileDestination.DestinationFile
+                match isTrusted with
+                |true ->                    
+                    logger.Warn(msg1 + "However the file is trusted (the file is digitally signed) so it is assumed that there is a mistake in the published checksum data on the vendor web page.")
+                    Result.Ok (WebFile2.DownloadedWebFile webFileDestination)
+                |false ->    
+                    Result.Error (new Exception(msg1 + "Additionally the file is not trusted (not signed or signature has been invalidated.)"))
 
     let verifyDownload ignoreVerificationErrors download =
         verifyDownload' logger (DriverTool.Library.Checksum.hasSameFileHash2) (Cryptography.isTrusted) ignoreVerificationErrors download
     
     type DownloadFileFunc = (bool->Uri*FileSystem.Path -> Result<FileSystem.Path,Exception>)
-    type VerifyDownloadFunc = (bool->WebFile2->Result<WebFile2,Exception>)
+    type VerifyDownloadFunc = (bool->(WebFileSource* WebFileDestination)->Result<WebFile2,Exception>)
 
-    let downloadIfDifferent' (logger:ILog) downloadIsRequired' (downloadFile':DownloadFileFunc) (verifyDownload':VerifyDownloadFunc) ignoreVerificationErrors (download:WebFile2) =        
-        match download with
-        |WebFile2.SourceWebFile s ->
-            Result.Error (new Exception(sprintf "Cannot download '%A'" download))
-        |WebFile2.DownloadedWebFile d ->
-            Result.Error (new Exception(sprintf "Allready downloaded '%A'" download))
-        |WebFile2.DownloadWebFile (sourceWebFile, destinationFile) ->            
-            let isDownloadRequired = downloadIsRequired' sourceWebFile.Checksum sourceWebFile.Size destinationFile.DestinationFile
-            match isDownloadRequired with
-            |true -> 
-                let downloadResult = downloadFile' true (sourceWebFile.Url,destinationFile.DestinationFile)
-                match downloadResult with
-                |Result.Ok s -> 
-                    verifyDownload' ignoreVerificationErrors download 
-                |Result.Error ex -> Result.Error (new Exception((sprintf "Failed to download '%A' due to: %s " sourceWebFile.Url ex.Message), ex))
-            |false -> 
-                logger.Info(msg (sprintf "Destination file '%s' allready exists." (FileSystem.pathValue destinationFile.DestinationFile)))
-                Result.Ok (WebFile2.DownloadedWebFile destinationFile)
+    let downloadIfDifferent' (logger:ILog) downloadIsRequired' (downloadFile':DownloadFileFunc) (verifyDownload':VerifyDownloadFunc) ignoreVerificationErrors webFileDownload =        
+        let webFileSource = webFileDownload.Source
+        let webFileDestination = webFileDownload.Destination
+        let isDownloadRequired = downloadIsRequired' webFileSource.Checksum webFileSource.Size webFileDestination.DestinationFile
+        match isDownloadRequired with
+        |true -> 
+            let downloadResult = downloadFile' true (webFileSource.Url,webFileDestination.DestinationFile)
+            match downloadResult with
+            |Result.Ok s -> 
+                verifyDownload' ignoreVerificationErrors (webFileSource, webFileDestination) 
+            |Result.Error ex -> Result.Error (new Exception((sprintf "Failed to download '%A' due to: %s " webFileSource.Url ex.Message), ex))
+        |false -> 
+            logger.Info(msg (sprintf "Destination file '%s' allready exists." (FileSystem.pathValue webFileDestination.DestinationFile)))
+            Result.Ok (WebFile2.DownloadedWebFile webFileDestination)
 
-    let downloadIfDifferent ignoreVerificationErrors (download:WebFile2) =
-        downloadIfDifferent' logger downloadIsRequired downloadFile verifyDownload ignoreVerificationErrors download
+    let downloadIfDifferent ignoreVerificationErrors webFileDownload =
+        downloadIfDifferent' logger downloadIsRequired downloadFile verifyDownload ignoreVerificationErrors webFileDownload

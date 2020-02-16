@@ -127,7 +127,7 @@ module CreateDriverPackageActor =
                 return downloadedScmPackageInfo            
             }) with
             |Result.Error ex -> CreateDriverPackageMessage.Error ex
-            |Ok downloadedSccmPackageInfo -> CreateDriverPackageMessage.DownloadedSccmPackage downloadedSccmPackageInfo
+            |Ok downloadedSccmPackageInfo -> CreateDriverPackageMessage.SccmPackageDownloaded downloadedSccmPackageInfo
 
     open System.Threading
     open System.Threading.Tasks
@@ -367,7 +367,7 @@ module CreateDriverPackageActor =
                     let updatedPackagingContext = startPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
-                |DownloadedPackage downloadedPackage ->
+                |PackageDownloaded downloadedPackage ->
                     logger.Info(sprintf "Package has been downloaded: %A. Request extraction..." downloadedPackage)
                     let updatedPackagingContext = donePackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
@@ -382,15 +382,15 @@ module CreateDriverPackageActor =
                     let updatedPackagingContext = startSccmPackageDownload packagingContext sccmPackageDownloadContext.SccmPackage.Released
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
-                |DownloadedSccmPackage downloadedSccmPackage ->
+                |SccmPackageDownloaded downloadedSccmPackage ->
                     logger.Info(sprintf "Sccm package has been downloaded: %A. Request extraction..." downloadedSccmPackage)
                     self <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
                     let updatedPackagingContext = doneSccmPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext                
-                |DownloadJobb downloadInfo ->
+                |StartDownload webFileDownload ->
                     logger.Error(sprintf "Message not supported %A" message)
-                |JobbDownloaded downloadInfo -> 
+                |DownloadFinished webFileDownload -> 
                     logger.Error(sprintf "Message not supported %A" message)
                 |ExtractPackage (packagingContext,downloadedPackage) -> 
                     logger.Info(sprintf "Request extract of package: %A." downloadedPackage)
