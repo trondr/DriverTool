@@ -15,7 +15,7 @@ module DownloadCoordinatorActorTests =
 
     let getTestWebFileDownload destinationFolder fileName =
         let destinationFile = FileSystem.pathUnSafe (System.IO.Path.Combine(destinationFolder, fileName))        
-        let webFileDownload = resultToValueUnsafe (toWebFileDownload "http://dummy/" "some checksum" 0L destinationFile)
+        let webFileDownload = resultToValueUnsafe (toWebFileDownload (sprintf "http://dummy/%s" fileName) "some checksum" 0L destinationFile)
         webFileDownload
 
     let getTestDownloadCoordinatorContext =
@@ -64,7 +64,7 @@ module DownloadCoordinatorActorTests =
                 {
                     Url = toOptionalUri "http://dummy" installerFileName
                     Name = installerFileName
-                    Checksum = ""
+                    Checksum = "some checksum"
                     Size = 0L
                     Type = PackageFileType.Installer
                 }
@@ -75,7 +75,7 @@ module DownloadCoordinatorActorTests =
                 {
                     Url = toOptionalUri "http://dummy" readmeFileName
                     Name = readmeFileName
-                    Checksum = ""
+                    Checksum = "some checksum"
                     Size = 0L
                     Type = PackageFileType.Readme
                 }
