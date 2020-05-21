@@ -90,6 +90,7 @@ module Messages =
             PackageExtracts:Progress
             SccmPackageExtracts:Progress            
             Finished:bool
+            ExtractFolderPrefix:int
         }
 
     let startProgress progress =
@@ -136,6 +137,7 @@ module Messages =
             PackageExtracts={Total=0;Value=0;Name="Package Extracts"}
             SccmPackageExtracts={Total=0;Value=0;Name="Sccm Package Extracts"}
             Finished=false;
+            ExtractFolderPrefix=10
         }
 
     let getPackageNameAndPath (releaseDate:DateTime) (dpcc:DriverPackageCreationContext) =

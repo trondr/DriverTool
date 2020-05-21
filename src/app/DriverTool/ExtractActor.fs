@@ -12,14 +12,17 @@ module ExtractActor =
     open Akka.FSharp
     let logger = getLoggerByName "ExtractActor"
     
-    let getPrefix value =
-        ((value+1)*10).ToString("D3")
+    let getPrefix (value:int) =
+        //((value+1)*10).ToString("D3")
+        value.ToString("D3")
 
     let extractUpdate packagingContext downloadedPackage =
         match(result{
             let extractUpdate' = DriverTool.Updates.extractUpdateFunc packagingContext.Manufacturer
-            let prefix = getPrefix packagingContext.PackageExtracts.Value
-            let! extractedPackage = extractUpdate' (packagingContext.PackageFolderPath,(prefix,downloadedPackage))
+            let prefix = getPrefix packagingContext.ExtractFolderPrefix
+            let! driversPath = combine2Paths (FileSystem.pathValue packagingContext.PackageFolderPath, "Drivers")
+            let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
+            let! extractedPackage = extractUpdate' (existingDriversPath,(prefix,downloadedPackage))
             let! installScript = createInstallScript (extractedPackage,packagingContext.Manufacturer,packagingContext.LogDirectory)
             let! packageDefinitionFile = createPackageDefinitionFile (packagingContext.LogDirectory, extractedPackage, packagingContext.PackagePublisher)            
             return extractedPackage

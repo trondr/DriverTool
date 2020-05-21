@@ -12,6 +12,7 @@ module DownloadCoordinatorActor =
     open DriverTool.Library
     open DriverTool.Library.Web
     open DriverTool.Library.WebDownload
+    open Akka.Actor
     let logger = getLoggerByName "DownloadCoordinatorActor"
 
     //The download coordinator context is used to keep track of which download jobs have been started.
@@ -86,7 +87,7 @@ module DownloadCoordinatorActor =
     let webFileDownloadsToDestinationFiles webFileDownloads =
         webFileDownloads |> Seq.map(fun d -> d.Destination.DestinationFile)
 
-    let downloadCoordinatorActor (mailbox:Actor<_>) =
+    let downloadCoordinatorActor (ownerActor:IActorRef) (mailbox:Actor<_>) =
         
         let downloadActor = spawnOpt mailbox.Context "DownloadActor" downloadActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]
         let downloadCoordinatorContext = {PackageDownloads=Map.empty}
@@ -117,13 +118,17 @@ module DownloadCoordinatorActor =
                     let destinationFolderPath = FileSystem.getDirectoryPath webFileDownload.Destination.DestinationFile
                     finishedPackages
                         |> List.map(fun p -> 
-                                let downloadedPackage = toDownloadedPackageInfo destinationFolderPath p
+                                let downloadedPackage = toDownloadedPackageInfo destinationFolderPath p                                
                                 self <! (CreateDriverPackageMessage.PackageDownloaded (Some downloadedPackage))
                             ) |> ignore
                     return! loop updatedDownloadCoordinatorContext
-                |PackageDownloaded downloadedPackage ->
-                    logger.Warn("TODO: Handle downloaded packages for further processing (== extract).")
-                    ()
+                |PackageDownloaded downloadedPackage ->                    
+                    match downloadedPackage with
+                    |Some dp -> 
+                        logger.Info(sprintf "Download of package '%s' finished." dp.Package.Name)
+                        ownerActor <! (PackageDownloaded downloadedPackage)                    
+                    |None->
+                        logger.Info("No package downloaded.")
                 //|DownloadSccmPackage sccmPackageDownloadContext ->
                 //    logger.Info(sprintf "Request download of sccm package %A." sccmPackageDownloadContext)
                 //    downloadActor <! CreateDriverPackageMessage.DownloadSccmPackage sccmPackageDownloadContext                

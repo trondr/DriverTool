@@ -293,8 +293,8 @@ module CreateDriverPackageActor =
     let createDriverPackageActor (dpcc:DriverPackageCreationContext) (clientActor:IActorRef) (mailbox:Actor<_>) =
         
         let self = mailbox.Context.Self        
-        let downloadCoordinator = spawn mailbox.Context "DownloadCoordinatorActor" DownloadCoordinatorActor.downloadCoordinatorActor 
-        let extractActor = spawnOpt mailbox.Context "ExtractActor" (extractActor) [ SpawnOption.Router(SmallestMailboxPool(10)) ]
+        let downloadCoordinatorActor = spawn mailbox.Context.System "DownloadCoordinatorActor" (DownloadCoordinatorActor.downloadCoordinatorActor self)
+        let extractCoordinatorActor = spawn mailbox.Context.System "ExtractCoordinatorActor" (ExtractCoordinatorActor.extractCoordinatorActor self)
 
         let rec initialize () = 
             actor {                                                
@@ -363,7 +363,7 @@ module CreateDriverPackageActor =
                     self <! DownloadSccmPackage sccmPackageDownloadContext
                 |DownloadPackage (package,packagingContext) ->
                     logger.Info(sprintf "Request download of package: %A." package)
-                    downloadCoordinator <! DownloadPackage (package,packagingContext)
+                    downloadCoordinatorActor <! DownloadPackage (package,packagingContext)
                     let updatedPackagingContext = startPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
@@ -378,7 +378,7 @@ module CreateDriverPackageActor =
                     return! create updatedPackagingContext
                 |DownloadSccmPackage sccmPackageDownloadContext ->
                     logger.Info(sprintf "Request download of sccm package: %A." sccmPackageDownloadContext)
-                    downloadCoordinator <! DownloadSccmPackage sccmPackageDownloadContext
+                    downloadCoordinatorActor <! DownloadSccmPackage sccmPackageDownloadContext
                     let updatedPackagingContext = startSccmPackageDownload packagingContext sccmPackageDownloadContext.SccmPackage.Released
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
@@ -394,7 +394,7 @@ module CreateDriverPackageActor =
                     logger.Error(sprintf "Message not supported %A" message)
                 |ExtractPackage (packagingContext,downloadedPackage) -> 
                     logger.Info(sprintf "Request extract of package: %A." downloadedPackage)
-                    extractActor <! ExtractPackage  (packagingContext,downloadedPackage)
+                    extractCoordinatorActor <! ExtractPackage  (packagingContext,downloadedPackage)
                     let updatedPackagingContext = startPackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
@@ -407,7 +407,7 @@ module CreateDriverPackageActor =
                     let updatedPackagingContext =
                         if (not dpcc.ExcludeSccmPackage) then
                             logger.Info(sprintf "Request extract of sccm package: %A." downloadedSccmPackage)
-                            extractActor <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
+                            extractCoordinatorActor <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
                             startSccmPackageExtract packagingContext
                         else
                             logger.Info(sprintf "Skipping extract of sccm package: %A." downloadedSccmPackage)
@@ -466,9 +466,9 @@ module CreateDriverPackageActor =
                     logger.Info(sprintf "Shutting down...")
                     clientActor <! (new QuitHostMessage())
                     logger.Info(sprintf "Shutting down ExtractActor...")
-                    system.Stop(extractActor)
+                    system.Stop(extractCoordinatorActor)
                     logger.Info(sprintf "Shutting down DownloadActor...")
-                    system.Stop(downloadCoordinator)
+                    system.Stop(downloadCoordinatorActor)
                     logger.Info(sprintf "Finished shuting down...")                    
                     self <! (Akka.Actor.PoisonPill.Instance)                                                        
                 |CreateDriverPackageMessage.Info info ->
