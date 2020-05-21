@@ -229,7 +229,6 @@ module CreateDriverPackage =
             logger.Info(msg (sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled))
             logger.Info("Starting x86 client actor system and x86 host actor system.")
             let (clientActorSystem, clientActorRef) = DriverTool.ActorSystem.startClientActorSystem()            
-            clientActorRef <! "Starting client actor communicating with DriverTool x86 host."
             logger.Info("Starting CreateDriverPackage actor.")
             let createDriverPackageActorRef = spawn clientActorSystem "CreateDriverPackageActor" (createDriverPackageActor dpcc clientActorRef)
             logger.Info(sprintf "Initializing CreateDriverPackage actor with driver package creation context: %A" dpcc)

@@ -22,6 +22,7 @@ let resolveEventHandler =
 let setup() =       
     AppDomain.CurrentDomain.add_AssemblyResolve(resolveEventHandler)
     AppDomain.CurrentDomain.UnhandledException.AddHandler(fun _ x -> printfn "%s" (x.ExceptionObject.ToString()))
+
 let teardown() =
     AppDomain.CurrentDomain.remove_AssemblyResolve(resolveEventHandler)
     AppDomain.CurrentDomain.UnhandledException.RemoveHandler(fun _ x -> printfn "%s" (x.ExceptionObject.ToString()))

@@ -463,10 +463,14 @@ module CreateDriverPackageActor =
                     logger.Info("Requesting shutdown...")
                     self <! Finished                    
                 |Finished ->
-                    logger.Info(sprintf "Shuting down...")
+                    logger.Info(sprintf "Shutting down...")
                     clientActor <! (new QuitHostMessage())
-                    self <! (Akka.Actor.PoisonPill.Instance)
-                    system.Terminate() |> ignore
+                    logger.Info(sprintf "Shutting down ExtractActor...")
+                    system.Stop(extractActor)
+                    logger.Info(sprintf "Shutting down DownloadActor...")
+                    system.Stop(downloadActor)
+                    logger.Info(sprintf "Finished shuting down...")                    
+                    self <! (Akka.Actor.PoisonPill.Instance)                                                        
                 |CreateDriverPackageMessage.Info info ->
                     logger.Info(info)
                 |CreateDriverPackageMessage.Warning info ->

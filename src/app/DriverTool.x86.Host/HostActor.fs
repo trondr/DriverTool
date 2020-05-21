@@ -15,10 +15,11 @@ module HostActors =
                 |HostMessage.Information s ->
                     logger.Info(sprintf "%s" s)
                 |HostMessage.Quit _ ->
-                    logger.Info("Terminating DriverTool host...")
-                    sender <! "Request for termination of host has been received. Terminating DriverTool host..."
-                    actorSystem.Terminate() |> ignore
-                |HostMessage.LenovoSccmPackageInfoRequest r ->
+                    logger.Info("Terminating x86 DriverTool host...")
+                    sender <! "Request for termination of host has been received. Terminating x86 DriverTool host..."
+                    sender <! new QuitConfirmedHostMessage()
+                    actorSystem.Terminate() |> ignore                
+                |HostMessage.LenovoSccmPackageInfoRequest r ->                
                     logger.Info(sprintf "Processing %A" r)
                 return! loop()
         }

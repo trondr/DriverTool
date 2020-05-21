@@ -48,7 +48,7 @@ module ActorSystem =
             logger.Error(sprintf "Failed to start x86 host due to error: %s " (getAccumulatedExceptionMessages ex))
             raise ex
         let hostActor = context.ActorSelection("akka.tcp://HostSystem@localhost:8081/user/HostActor")
-        hostActor <! "DriverTool x86 host is now listening for requests."
+        hostActor <! "Ping DriverTool x86 host from client."
         hostActor
 
     let stopx86HostProcess hostActor = 
@@ -67,9 +67,14 @@ module ActorSystem =
                     hostActor <! s
                 |Quit q -> 
                     logger.Info("Sending termination request to x86 host.")
-                    hostActor <! q
-                    logger.Info("Sending termination request to x86 client.")
-                    self <! PoisonPill.Instance
+                    hostActor <! q                    
+                |QuitConfirmed _ ->
+                    logger.Info("x86 host has confirmed termination request.")
+                    logger.Info("Terminating client actor system.")
+                    actorSystem.Terminate()|>ignore
+                |StartConfirmed _ ->
+                    logger.Info("x86 host has confirmed start.")
+                    ()
                 return! loop ()
             }
         loop()

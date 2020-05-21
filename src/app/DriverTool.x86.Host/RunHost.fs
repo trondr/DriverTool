@@ -39,7 +39,7 @@ akka {
         let config = Akka.FSharp.Configuration.parse (hoconConfig port)
         use system = Akka.FSharp.System.create "HostSystem" config
         let hostActor = Akka.FSharp.Spawn.spawn system "HostActor" hostActor
-        hostActor <! "DriverTool x86 host actor is now listening for requests."
+        hostActor <! "DriverTool x86 host is now listening for requests."
         system.WhenTerminated.Wait()
-        logger.Info("DriverTool host has been terminated.")
+        logger.Info("DriverTool x86 host has been terminated.")
         0
