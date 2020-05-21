@@ -152,7 +152,7 @@ module Messages =
     let createPackagingContext (releaseDate:DateTime) (dpcc:DriverPackageCreationContext) =
         result{
             let! (packageName, packageFolderPath) = getPackageNameAndPath releaseDate dpcc
-            let packagingContext = toInitialPackagingContext dpcc.Manufacturer dpcc.PackagePublisher dpcc.Model dpcc.SystemFamily dpcc.OperatingSystem dpcc.CacheFolderPath dpcc.LogDirectory packageName packageFolderPath releaseDate releaseDate             
+            let packagingContext = toInitialPackagingContext dpcc.Manufacturer dpcc.PackagePublisher dpcc.Model dpcc.SystemFamily dpcc.OperatingSystem dpcc.LogDirectory dpcc.CacheFolderPath packageName packageFolderPath releaseDate releaseDate             
             return packagingContext
         }
 
