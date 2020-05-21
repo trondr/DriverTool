@@ -87,4 +87,7 @@ module FileSystem =
                 | p -> Result.Error (new DirectoryNotFoundException("Directory not found: " + pathValue p):>Exception)
             return existingPath
         }
+
+    let getDirectoryPath filePath =
+        pathUnSafe (System.IO.Path.GetDirectoryName(pathValue filePath))
     

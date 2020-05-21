@@ -105,6 +105,14 @@ module PackageXml =
     let getDestinationPackageXmlPath destinationDirectory packageInfo =
         System.IO.Path.Combine(FileSystem.pathValue destinationDirectory, packageInfo.PackageXmlName)
     
+    let toDownloadedPackageInfo destinationDirectory packageInfo =
+        {
+            InstallerPath = getDestinationInstallerPath destinationDirectory packageInfo;
+            ReadmePath = getDestinationReadmePath destinationDirectory packageInfo;
+            PackageXmlPath = getDestinationPackageXmlPath destinationDirectory packageInfo;
+            Package = packageInfo;
+        }
+
     let toDownloadUriUnsafe optionUri : Uri =
         match optionUri with
         |None -> raise (toException "Download Url not defined." None)

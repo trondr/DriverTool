@@ -62,11 +62,16 @@ module DownloadCoordinatorActor =
                 fold udlc p xs
         fold downloadCoordinatorContext packageInfo destinationFiles
 
+    //Remove destination file from downloadCoordinator context and return any packages that are finished.
     let removeFromDownloadsCoordinatorContext downloadCoordinatorContext destinationFile = 
         if(allreadyDownloading downloadCoordinatorContext destinationFile) then            
-            {downloadCoordinatorContext with PackageDownloads=downloadCoordinatorContext.PackageDownloads.Remove(destinationFile)}
+            let currentPackagesRemoved = downloadCoordinatorContext.PackageDownloads.Item(destinationFile)
+            let updatedDownloadCoordinatorContext = {downloadCoordinatorContext with PackageDownloads=downloadCoordinatorContext.PackageDownloads.Remove(destinationFile)}
+            let allRemainingPackages = updatedDownloadCoordinatorContext.PackageDownloads |> Map.toSeq |>  Seq.map (fun (k,v) -> v) |> Seq.concat |> Seq.toList
+            let finishedPackages = currentPackagesRemoved |> List.filter(fun p -> not (List.contains p allRemainingPackages) )
+            (updatedDownloadCoordinatorContext, finishedPackages)
         else
-            downloadCoordinatorContext
+            (downloadCoordinatorContext,List.empty)
 
     /// Get unique downloads jobs (installer and reamde) from package. Readme file can be shared by more than one package so
     /// make sure to check if a file is not allready beeing downloaded according to the downloads coordinator context. This is necessary
@@ -108,8 +113,17 @@ module DownloadCoordinatorActor =
                     return! loop downloadCoordinatorContext
                 |DownloadFinished webFileDownload ->
                     logger.Info(sprintf "Download of job %A is finished." webFileDownload)
-                    let updatedDownloadCoordinatorContext = removeFromDownloadsCoordinatorContext downloadCoordinatorContext webFileDownload.Destination.DestinationFile
+                    let (updatedDownloadCoordinatorContext, finishedPackages) = removeFromDownloadsCoordinatorContext downloadCoordinatorContext webFileDownload.Destination.DestinationFile
+                    let destinationFolderPath = FileSystem.getDirectoryPath webFileDownload.Destination.DestinationFile
+                    finishedPackages
+                        |> List.map(fun p -> 
+                                let downloadedPackage = toDownloadedPackageInfo destinationFolderPath p
+                                self <! (CreateDriverPackageMessage.PackageDownloaded (Some downloadedPackage))
+                            ) |> ignore
                     return! loop updatedDownloadCoordinatorContext
+                |PackageDownloaded downloadedPackage ->
+                    logger.Warn("TODO: Handle downloaded packages for further processing (== extract).")
+                    ()
                 //|DownloadSccmPackage sccmPackageDownloadContext ->
                 //    logger.Info(sprintf "Request download of sccm package %A." sccmPackageDownloadContext)
                 //    downloadActor <! CreateDriverPackageMessage.DownloadSccmPackage sccmPackageDownloadContext                
