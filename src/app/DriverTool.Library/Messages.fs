@@ -163,8 +163,8 @@ module Messages =
             return updatePackagingContext
         }
 
-    type CreateDriverPackageMessage =
-        |Start        
+    type CreateDriverPackageMessage =        
+        |Start                
         |InitializePackaging of PackagingContext
         |RetrieveUpdateInfos of UpdatesRetrievalContext
         |UpdateInfosRetrieved of PackageInfo array
@@ -193,7 +193,7 @@ module Messages =
         |CreateDismPackageDefinition of PackagingContext*InstallConfigurationData
         |DismPackageDefinitionCreated of FileSystem.Path
         |PackagingFinalized
-        |Finished
+        |Finished        
         |Error of Exception
         |Info of string
         |Warning of string

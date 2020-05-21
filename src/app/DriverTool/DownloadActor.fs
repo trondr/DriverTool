@@ -106,8 +106,7 @@ module DownloadActor =
                     (downloadWebFileAsync ignoreVerificationErrors webFileDownload)
                     |>pipeToWithSender self sender
                 |DownloadFinished webFileDownload ->
-                    logger.Info(sprintf "Finished downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination) 
-                
+                    logger.Info(sprintf "Finished downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination)                 
                 //|DownloadPackage (package,packagingContext) -> 
                 //    logger.Info(sprintf "Downloading package %A." package)
                 //    (downloadPackageAsync packagingContext.CacheFolderPath package)               

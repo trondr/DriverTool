@@ -15,16 +15,56 @@ module DownloadCoordinatorActor =
     let logger = getLoggerByName "DownloadCoordinatorActor"
 
     //The download coordinator context is used to keep track of which download jobs have been started.
-    type DownloadCoordinatorContext = {Downloads:Map<FileSystem.Path,WebFileDownload>}
+    type DownloadCoordinatorContext = 
+        {            
+            PackageDownloads:Map<FileSystem.Path,List<PackageInfo>>
+        }
 
-    //Check if download job is not allready beeing downloaded.
-    let notAllreadyDownloading downloadCoordinatorContext webFileDownload  =
-        not (downloadCoordinatorContext.Downloads.ContainsKey(webFileDownload.Destination.DestinationFile))
+    //Check if download job is allready beeing downloaded.
+    let allreadyDownloading downloadCoordinatorContext destinationFile  =
+        (downloadCoordinatorContext.PackageDownloads.ContainsKey(destinationFile))
 
-    /// Add download job to download coordinator context if not allready added.
-    let updateDownloadCoordinatorContext downloadCoordinatorContext webFileDownload =
-        if(not (downloadCoordinatorContext.Downloads.ContainsKey(webFileDownload.Destination.DestinationFile))) then
-            {downloadCoordinatorContext with Downloads=downloadCoordinatorContext.Downloads.Add(webFileDownload.Destination.DestinationFile, webFileDownload)}
+    //Check if download job is allready beeing downloaded.
+    let notAllreadyDownloading downloadCoordinatorContext destinationFile  =
+        not (allreadyDownloading downloadCoordinatorContext destinationFile)
+
+    let isPackageRegistered downloadCoordinatorContext destinationFile package =
+        if(not (allreadyDownloading downloadCoordinatorContext destinationFile)) then
+            false
+        else
+            let currentPackages = downloadCoordinatorContext.PackageDownloads.Item(destinationFile)
+            let packageExists = (currentPackages |> List.filter (fun p -> p = package) |> List.length) > 0
+            packageExists
+
+    /// Add download destination file and corresponding package to download coordinator context if not allready added.
+    let updateDownloadCoordinatorContext downloadCoordinatorContext packageInfo destinationFile =
+        if(not (allreadyDownloading downloadCoordinatorContext destinationFile)) then
+            //download job not added, register download job with corresponding dependent package
+            {downloadCoordinatorContext with PackageDownloads=downloadCoordinatorContext.PackageDownloads.Add(destinationFile, [packageInfo])}
+        else
+            if(not (isPackageRegistered downloadCoordinatorContext destinationFile packageInfo)) then
+                //download destination file allready added but package is not registered
+                //register new package depending on the same download destination file
+                let currentPackages = downloadCoordinatorContext.PackageDownloads.Item(destinationFile)                
+                let updatedPackages = currentPackages  @ [packageInfo]            
+                let updatedPackageDownloads = downloadCoordinatorContext.PackageDownloads |> (Map.add (destinationFile) updatedPackages)
+                {downloadCoordinatorContext with PackageDownloads=updatedPackageDownloads}                        
+            else
+                //download destination file and correspondin package is allready added. No change.
+                downloadCoordinatorContext                
+
+    let updateDownloadsCoordinatorContext downloadCoordinatorContext packageInfo destinationFiles =        
+        let rec fold dlc p dfs =
+            match dfs with
+            |[] -> dlc
+            |h::xs -> 
+                let udlc = updateDownloadCoordinatorContext dlc p h
+                fold udlc p xs
+        fold downloadCoordinatorContext packageInfo destinationFiles
+
+    let removeFromDownloadsCoordinatorContext downloadCoordinatorContext destinationFile = 
+        if(allreadyDownloading downloadCoordinatorContext destinationFile) then            
+            {downloadCoordinatorContext with PackageDownloads=downloadCoordinatorContext.PackageDownloads.Remove(destinationFile)}
         else
             downloadCoordinatorContext
 
@@ -34,14 +74,17 @@ module DownloadCoordinatorActor =
     let packageToUniqueDownloadJob downloadCoordinatorContext destinationFolderPath package =
         let uniqueDownloadJobs =                 
             (packageInfoToWebFileDownloads destinationFolderPath package)            
-            |>Seq.filter(fun wfd -> notAllreadyDownloading downloadCoordinatorContext wfd)            
+            |>Seq.filter(fun wfd -> notAllreadyDownloading downloadCoordinatorContext wfd.Destination.DestinationFile)            
             |>Seq.toArray
         uniqueDownloadJobs
+
+    let webFileDownloadsToDestinationFiles webFileDownloads =
+        webFileDownloads |> Seq.map(fun d -> d.Destination.DestinationFile)
 
     let downloadCoordinatorActor (mailbox:Actor<_>) =
         
         let downloadActor = spawnOpt mailbox.Context "DownloadActor" downloadActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]
-        let downloadCoordinatorContext = {Downloads=Map.empty}
+        let downloadCoordinatorContext = {PackageDownloads=Map.empty}
 
         let rec loop downloadCoordinatorContext = 
             actor {                                                
@@ -50,26 +93,31 @@ module DownloadCoordinatorActor =
                 match message with
                 |DownloadPackage (package,packagingContext) -> 
                     logger.Info(sprintf "Downloading package %A." package)                    
-                    (packageToUniqueDownloadJob downloadCoordinatorContext packagingContext.CacheFolderPath package)                    
+                    let webFileDownloads = packageToUniqueDownloadJob downloadCoordinatorContext packagingContext.CacheFolderPath package
+                    webFileDownloads
                     |> Array.map(fun dl -> 
                         logger.Info(sprintf "Request download of job %A for package %A." dl package)
                         downloadActor <! CreateDriverPackageMessage.StartDownload dl
-                        ) |> ignore                                        
+                        ) |> ignore                      
+                    let destinationFiles = (webFileDownloadsToDestinationFiles webFileDownloads) |> List.ofSeq
+                    let updatedDownloadCoordinatorContext = updateDownloadsCoordinatorContext downloadCoordinatorContext package destinationFiles 
+                    return! loop updatedDownloadCoordinatorContext                    
                 |StartDownload webFileDownload ->
                     logger.Info(sprintf "Request download of job %A." webFileDownload)                                        
-                    downloadActor <! CreateDriverPackageMessage.StartDownload webFileDownload
-                    let updatedDownloadCoordinatorContext = updateDownloadCoordinatorContext downloadCoordinatorContext webFileDownload
-                    return! loop updatedDownloadCoordinatorContext 
+                    downloadActor <! CreateDriverPackageMessage.StartDownload webFileDownload                    
+                    return! loop downloadCoordinatorContext
                 |DownloadFinished webFileDownload ->
                     logger.Info(sprintf "Download of job %A is finished." webFileDownload)
-
-                    
-                |DownloadSccmPackage sccmPackageDownloadContext ->
-                    logger.Info(sprintf "Request download of sccm package %A." sccmPackageDownloadContext)
-                    downloadActor <! CreateDriverPackageMessage.DownloadSccmPackage sccmPackageDownloadContext                
-                |CreateDriverPackageMessage.Error ex ->
-                    logger.Warn(sprintf "Download failed due to: %s" (getAccumulatedExceptionMessages ex))
-                    logger.Warn("Ignoring download failure and continue processing.")
+                    let updatedDownloadCoordinatorContext = removeFromDownloadsCoordinatorContext downloadCoordinatorContext webFileDownload.Destination.DestinationFile
+                    return! loop updatedDownloadCoordinatorContext
+                //|DownloadSccmPackage sccmPackageDownloadContext ->
+                //    logger.Info(sprintf "Request download of sccm package %A." sccmPackageDownloadContext)
+                //    downloadActor <! CreateDriverPackageMessage.DownloadSccmPackage sccmPackageDownloadContext                
+                //    return! loop downloadCoordinatorContext
+                //|CreateDriverPackageMessage.Error ex ->
+                //    logger.Warn(sprintf "Download failed due to: %s" (getAccumulatedExceptionMessages ex))
+                //    logger.Warn("Ignoring download failure and continue processing.")
+                //    return! loop downloadCoordinatorContext
                 | _ ->
                     logger.Warn(sprintf "Message not handled by DownloadActorCoordinator: %A" message)
                     return! loop downloadCoordinatorContext
