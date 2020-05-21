@@ -39,7 +39,9 @@ module ActorSystem =
     let startx86HostProcess (context:Akka.Actor.IActorContext) =
         match(result{
             let! exePath = x86HostPath()
-            let! existingExePath = FileOperations.ensureFileExists exePath
+            let! existingExePath = FileOperations.ensureFileExists exePath                       
+            let processName = ProcessOperations.getProcessName exePath            
+            ProcessOperations.terminateProcesses(processName)
             ProcessOperations.startProcess existingExePath "RunHost /port=8081" None false |> ignore            
             return ()
         })with

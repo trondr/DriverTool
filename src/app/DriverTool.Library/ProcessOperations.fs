@@ -130,5 +130,30 @@ module ProcessOperations =
             Result.Ok proc
         with
         |ex -> Result.Error ex
+
+    let getProcessName exePath =
+        System.IO.Path.GetFileNameWithoutExtension(FileSystem.pathValue exePath)
+
+    let getProcessesByName processName =
+        System.Diagnostics.Process.GetProcessesByName(processName)
+
+    let terminateProcesses processName =        
+        (getProcessesByName (processName)) 
+        |> Array.map(fun p ->             
+            logger.Info(sprintf "Terminating existing process '%s' (%d)" p.ProcessName p.Id)
+            p.Kill()
+        ) |> ignore
     
+    let getCurrentProcess() =
+        System.Diagnostics.Process.GetCurrentProcess()
+
+    //Terminate existing processes except current instance
+    let terminateProcessesExceptCurrent processName =
+        let currentProcess = getCurrentProcess()
+        (getProcessesByName (processName))
+        |> Array.filter (fun p -> p.Id <> currentProcess.Id)
+        |> Array.map(fun p ->             
+            logger.Info(sprintf "Terminating existing process '%s' (%d)" p.ProcessName p.Id)
+            p.Kill()
+        ) |> ignore
     
