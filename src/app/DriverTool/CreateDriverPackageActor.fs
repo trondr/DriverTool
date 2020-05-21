@@ -292,8 +292,8 @@ module CreateDriverPackageActor =
 
     let createDriverPackageActor (dpcc:DriverPackageCreationContext) (clientActor:IActorRef) (mailbox:Actor<_>) =
         
-        let self = mailbox.Context.Self
-        let downloadActor = spawnOpt mailbox.Context "DownloadActor" downloadActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]
+        let self = mailbox.Context.Self        
+        let downloadCoordinator = spawn mailbox.Context "DownloadCoordinatorActor" DownloadCoordinatorActor.downloadCoordinatorActor 
         let extractActor = spawnOpt mailbox.Context "ExtractActor" (extractActor) [ SpawnOption.Router(SmallestMailboxPool(10)) ]
 
         let rec initialize () = 
@@ -358,12 +358,12 @@ module CreateDriverPackageActor =
                     (retrieveSccmPackageInfoAsync sccmPackageInfoRetrievalContext)                    
                     |> pipeToWithSender self sender
                 |SccmPackageInfoRetrieved sccmPackageInfo ->
-                    logger.Info(sprintf "Sccm package info has been retrived: %A. Start download." sccmPackageInfo)
+                    logger.Info(sprintf "Sccm package info has been retrived: %A. Request download." sccmPackageInfo)
                     let sccmPackageDownloadContext = toSccmPackageInfoDownloadContext dpcc.Manufacturer dpcc.CacheFolderPath sccmPackageInfo
-                    downloadActor <! DownloadSccmPackage sccmPackageDownloadContext
+                    self <! DownloadSccmPackage sccmPackageDownloadContext
                 |DownloadPackage (package,packagingContext) ->
                     logger.Info(sprintf "Request download of package: %A." package)
-                    downloadActor <! DownloadPackage (package,packagingContext)
+                    downloadCoordinator <! DownloadPackage (package,packagingContext)
                     let updatedPackagingContext = startPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
@@ -378,7 +378,7 @@ module CreateDriverPackageActor =
                     return! create updatedPackagingContext
                 |DownloadSccmPackage sccmPackageDownloadContext ->
                     logger.Info(sprintf "Request download of sccm package: %A." sccmPackageDownloadContext)
-                    downloadActor <! DownloadSccmPackage sccmPackageDownloadContext
+                    downloadCoordinator <! DownloadSccmPackage sccmPackageDownloadContext
                     let updatedPackagingContext = startSccmPackageDownload packagingContext sccmPackageDownloadContext.SccmPackage.Released
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
@@ -468,7 +468,7 @@ module CreateDriverPackageActor =
                     logger.Info(sprintf "Shutting down ExtractActor...")
                     system.Stop(extractActor)
                     logger.Info(sprintf "Shutting down DownloadActor...")
-                    system.Stop(downloadActor)
+                    system.Stop(downloadCoordinator)
                     logger.Info(sprintf "Finished shuting down...")                    
                     self <! (Akka.Actor.PoisonPill.Instance)                                                        
                 |CreateDriverPackageMessage.Info info ->

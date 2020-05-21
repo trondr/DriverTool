@@ -105,5 +105,5 @@ module ActorSystem =
     let startClientActorSystem () =
         let config = Akka.FSharp.Configuration.parse hoconConfig
         let system = Akka.FSharp.System.create "ClientSystem" config
-        let actor = Akka.FSharp.Spawn.spawn system "ClientActor" clientActor        
+        let actor = Akka.FSharp.Spawn.spawn system "ClientActor" clientActor
         (system,actor)

@@ -103,7 +103,7 @@ module DownloadCoordinatorActor =
                     let updatedDownloadCoordinatorContext = updateDownloadsCoordinatorContext downloadCoordinatorContext package destinationFiles 
                     return! loop updatedDownloadCoordinatorContext                    
                 |StartDownload webFileDownload ->
-                    logger.Info(sprintf "Request download of job %A." webFileDownload)                                        
+                    logger.Info(sprintf "Request download of job %A." webFileDownload)
                     downloadActor <! CreateDriverPackageMessage.StartDownload webFileDownload                    
                     return! loop downloadCoordinatorContext
                 |DownloadFinished webFileDownload ->
