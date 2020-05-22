@@ -33,7 +33,7 @@ module ExtractCoordinatorActor =
             extractCoordinatorContext
 
     let extractCoordinatorActor (ownerActor:IActorRef) (mailbox:Actor<_>) =        
-        let extractActor = spawnOpt mailbox.Context "ExtractActor" (extractActor mailbox.Context.Self) [ SpawnOption.Router(SmallestMailboxPool(5)) ]
+        let extractActor = spawnOpt mailbox.Context "ExtractActor" (extractActor mailbox.Context.Self) [ SpawnOption.Router(SmallestMailboxPool(System.Environment.ProcessorCount)) ]
         let extractCoordinatorContext = {Index=10; Packages=[]}
         
         if(logger.IsDebugEnabled) then mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(System.TimeSpan.FromSeconds(5.0),System.TimeSpan.FromSeconds(5.0),mailbox.Context.Self,(CreateDriverPackageMessage.Info "ExtractCoordinatorActor is alive"),mailbox.Context.Self)

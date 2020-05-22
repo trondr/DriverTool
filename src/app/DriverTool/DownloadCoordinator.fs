@@ -89,7 +89,7 @@ module DownloadCoordinatorActor =
 
         if(logger.IsDebugEnabled) then mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(System.TimeSpan.FromSeconds(5.0),System.TimeSpan.FromSeconds(5.0),mailbox.Context.Self,(CreateDriverPackageMessage.Info "DownloadCoordinatorActor is alive"),mailbox.Context.Self)
 
-        let downloadActor = spawnOpt mailbox.Context "DownloadActor" (downloadActor mailbox.Context.Self) [ SpawnOption.Router(SmallestMailboxPool(5)) ]
+        let downloadActor = spawnOpt mailbox.Context "DownloadActor" (downloadActor mailbox.Context.Self) [ SpawnOption.Router(SmallestMailboxPool(System.Environment.ProcessorCount)) ]
         let downloadCoordinatorContext = {PackageDownloads=Map.empty}
         let rec loop downloadCoordinatorContext = 
             actor {                                                
