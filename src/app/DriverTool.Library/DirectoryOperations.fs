@@ -76,6 +76,9 @@ module DirectoryOperations =
     
     let getParentFolderPath (folderPath:FileSystem.Path)=        
         FileSystem.path (System.IO.DirectoryInfo(FileSystem.pathValue folderPath).Parent.FullName)
+
+    let getParentFolderPathUnsafe (folderPath:FileSystem.Path)=        
+        FileSystem.pathUnSafe (System.IO.DirectoryInfo(FileSystem.pathValue folderPath).Parent.FullName)
     
     let getSubDirectoriesUnsafe directory =
         System.IO.Directory.GetDirectories(directory)
@@ -131,7 +134,13 @@ module DirectoryOperations =
             Result.Ok folderPath
 
     let moveDirectoryUnsafe sourceFolderPath destinationFolderPath =
-        System.IO.Directory.Move(FileSystem.pathValue sourceFolderPath,FileSystem.pathValue destinationFolderPath)
+        try
+            createDirectoryUnsafe (getParentFolderPathUnsafe destinationFolderPath) |> ignore
+            System.IO.Directory.Move(FileSystem.pathValue sourceFolderPath,FileSystem.pathValue destinationFolderPath)
+        with
+        |ex ->
+            logger.Warn(getAccumulatedExceptionMessages ex)
+            reraise()
 
     let moveDirectory sourceFolderPath destinationFolderPath =
         tryCatch2 moveDirectoryUnsafe sourceFolderPath destinationFolderPath

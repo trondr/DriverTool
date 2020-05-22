@@ -75,6 +75,15 @@ module Messages =
     let toProgressMessage progress =
         sprintf "%i / %i (%f %%) (%s)" progress.Value progress.Total (getPercent progress) progress.Name
 
+    type PackagingProgress = {
+            Started:bool
+            PackageDownloads:Progress
+            SccmPackageDownloads:Progress
+            PackageExtracts:Progress
+            SccmPackageExtracts:Progress            
+            Finished:bool
+        }
+
     type PackagingContext =
         {            
             Manufacturer:Manufacturer
@@ -88,12 +97,7 @@ module Messages =
             PackageFolderPath:FileSystem.Path
             ReleaseDate:DateTime
             SccmReleaseDate:DateTime
-            Started:bool
-            PackageDownloads:Progress
-            SccmPackageDownloads:Progress
-            PackageExtracts:Progress
-            SccmPackageExtracts:Progress            
-            Finished:bool
+            PackagingProgress:PackagingProgress            
             ExtractFolderPrefix:int
         }
 
@@ -103,24 +107,45 @@ module Messages =
     let doneProgress progress =
         {progress with Progress.Value = progress.Value + 1}
 
+    let startPackageDownload' packagingProgress =
+        {packagingProgress with PackageDownloads = startProgress packagingProgress.PackageDownloads; Started=true}
+    let startPackageDownload (packagingContext:PackagingContext) =
+        {packagingContext with PackagingProgress = startPackageDownload' packagingContext.PackagingProgress}
 
-    let startPackageDownload packagingContext =
-        {packagingContext with PackageDownloads = startProgress packagingContext.PackageDownloads; Started=true}
-    let donePackageDownload packagingContext =
-        {packagingContext with PackageDownloads = doneProgress packagingContext.PackageDownloads}
+    let donePackageDownload' packagingProgress =
+        {packagingProgress with PackageDownloads = doneProgress packagingProgress.PackageDownloads}        
+    let donePackageDownload (packagingContext:PackagingContext) =
+        {packagingContext with PackagingProgress = donePackageDownload' packagingContext.PackagingProgress}
+
+    let startSccmPackageDownload' packagingProgress  =
+        {packagingProgress with SccmPackageDownloads = startProgress packagingProgress.SccmPackageDownloads;Started=true}
     let startSccmPackageDownload packagingContext sccmReleaseDate =
-        {packagingContext with SccmPackageDownloads = startProgress packagingContext.SccmPackageDownloads;SccmReleaseDate=sccmReleaseDate; Started=true}
-    let doneSccmPackageDownload packagingContext =
-        {packagingContext with SccmPackageDownloads = doneProgress packagingContext.SccmPackageDownloads}
+        {packagingContext with PackagingProgress = startSccmPackageDownload' packagingContext.PackagingProgress;SccmReleaseDate=sccmReleaseDate}
 
-    let startPackageExtract packagingContext =
-        {packagingContext with PackageExtracts = startProgress packagingContext.PackageExtracts; Started=true}
-    let donePackageExtract packagingContext =
-        {packagingContext with PackageExtracts = doneProgress packagingContext.PackageExtracts}
-    let startSccmPackageExtract packagingContext =
-        {packagingContext with SccmPackageExtracts = startProgress packagingContext.SccmPackageExtracts; Started=true}
-    let doneSccmPackageExtract packagingContext =
-        {packagingContext with SccmPackageExtracts = doneProgress packagingContext.SccmPackageExtracts}
+    let doneSccmPackageDownload' packagingProgress =
+        {packagingProgress with SccmPackageDownloads = doneProgress packagingProgress.SccmPackageDownloads}        
+    let doneSccmPackageDownload (packagingContext:PackagingContext) =
+        {packagingContext with PackagingProgress = doneSccmPackageDownload' packagingContext.PackagingProgress}
+
+    let startPackageExtract' packagingProgress =
+        {packagingProgress with PackageExtracts = startProgress packagingProgress.PackageExtracts; Started=true}
+    let startPackageExtract (packagingContext:PackagingContext) =
+        {packagingContext with PackagingProgress = startPackageExtract' packagingContext.PackagingProgress;}
+
+    let donePackageExtract' packagingProgress =
+        {packagingProgress with PackageExtracts = doneProgress packagingProgress.PackageExtracts}
+    let donePackageExtract (packagingContext:PackagingContext) =
+        {packagingContext with PackagingProgress = donePackageExtract' packagingContext.PackagingProgress}
+
+    let startSccmPackageExtract' packagingProgress =
+        {packagingProgress with SccmPackageExtracts = startProgress packagingProgress.SccmPackageExtracts; Started=true}
+    let startSccmPackageExtract (packagingContext:PackagingContext) =
+        {packagingContext with PackagingProgress = startSccmPackageExtract' packagingContext.PackagingProgress}
+
+    let doneSccmPackageExtract' packagingProgress =
+        {packagingProgress with SccmPackageExtracts = doneProgress packagingProgress.SccmPackageExtracts}
+    let doneSccmPackageExtract (packagingContext:PackagingContext) =
+        {packagingContext with PackagingProgress = doneSccmPackageExtract' packagingContext.PackagingProgress}
 
     let toInitialPackagingContext manufacturer packagePublisher model systemFamily operatingSystem logDirectory cacheFolderPath packageName packageFolderPath releaseDate sccmReleaseDate =
         {
@@ -135,12 +160,15 @@ module Messages =
             PackageFolderPath=packageFolderPath
             ReleaseDate=releaseDate      
             SccmReleaseDate=sccmReleaseDate
-            Started=false
-            PackageDownloads={Total=0;Value=0;Name="Package Downloads"}
-            SccmPackageDownloads={Total=0;Value=0;Name="Sccm Package Downloads"}
-            PackageExtracts={Total=0;Value=0;Name="Package Extracts"}
-            SccmPackageExtracts={Total=0;Value=0;Name="Sccm Package Extracts"}
-            Finished=false;
+            PackagingProgress =
+                {
+                    Started=false
+                    PackageDownloads={Total=0;Value=0;Name="Package Downloads"}
+                    SccmPackageDownloads={Total=0;Value=0;Name="Sccm Package Downloads"}
+                    PackageExtracts={Total=0;Value=0;Name="Package Extracts"}
+                    SccmPackageExtracts={Total=0;Value=0;Name="Sccm Package Extracts"}
+                    Finished=false;
+                }
             ExtractFolderPrefix=10
         }
 
@@ -165,9 +193,12 @@ module Messages =
     let updatePackagingContext packagingContext releaseDate dpcc =
         result{
             let! (packageName, packageFolderPath) = getPackageNameAndPath releaseDate dpcc        
-            let updatePackagingContext = {packagingContext with ReleaseDate=releaseDate;PackageName=packageName;PackageFolderPath=packageFolderPath}
+            let updatePackagingContext = {packagingContext with ReleaseDate=(max releaseDate packagingContext.ReleaseDate);PackageName=packageName;PackageFolderPath=packageFolderPath}
             return updatePackagingContext
         }
+
+    let updatePackaginContextReleaseDate (packagingContext:PackagingContext) releaseDate =
+        {packagingContext with ReleaseDate=(max packagingContext.ReleaseDate releaseDate)}
 
     type CreateDriverPackageMessage =        
         |Start                
@@ -187,8 +218,8 @@ module Messages =
         |PackageExtracted of ExtractedPackageInfo option*DownloadedPackageInfo        
         |ExtractSccmPackage of PackagingContext*DownloadedSccmPackageInfo
         |SccmPackageExtracted of ExtractedSccmPackageInfo option*DownloadedSccmPackageInfo        
-        |PackagingProgress of PackagingContext
-        |FinalizePackaging of PackagingContext
+        |PackagingProgress
+        |FinalizePackaging 
         |UpdatePackagingContext of PackagingContext
         |PackagingContextUpdated of PackagingContext*PackagingContext        
         |MovePackaging of PackagingContext*PackagingContext

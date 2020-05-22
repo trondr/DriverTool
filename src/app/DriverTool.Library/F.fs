@@ -309,8 +309,21 @@ module F=
     let toDateString (dateTime:DateTime) =
         dateTime.ToString("yyyy-MM-dd")
 
+    let toDateTime dateString = 
+        try
+            System.DateTime.Parse(dateString)
+        with            
+        |_ ->   
+            DateTime.MinValue
+
     let listToSequence (list:System.Collections.IList) =
         seq{
             for item in list do
                 yield item
         }
+
+    let max date1 date2 =
+        if(date1 > date2) then
+            date1
+        else
+            date2
