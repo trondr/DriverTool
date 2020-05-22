@@ -51,6 +51,9 @@ module FileSystem =
     let fileExists (filePath:Path) =
         System.IO.File.Exists(pathValue filePath)
 
+    let fileExists' filePath =
+        System.IO.File.Exists(filePath)
+
     let (|FilePathExists|_|) =
         fileExists
         >> ifTrueThen FilePathExists

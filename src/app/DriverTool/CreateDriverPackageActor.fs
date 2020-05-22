@@ -118,16 +118,22 @@ module CreateDriverPackageActor =
                 logger.Info(msg (sprintf "Sccm packge: %A" sccmPackage))
                 return sccmPackage
             })with
-            |Result.Error ex -> CreateDriverPackageMessage.Error ex
-            |Ok sccmPackage -> CreateDriverPackageMessage.SccmPackageInfoRetrieved sccmPackage
+            |Result.Error ex ->
+                logger.Error(sprintf "Failed to retrive sccm pacakge info. %s" (getAccumulatedExceptionMessages ex))
+                CreateDriverPackageMessage.SccmPackageInfoRetrieved None
+            |Result.Ok sccmPackage -> 
+                CreateDriverPackageMessage.SccmPackageInfoRetrieved (Some sccmPackage)
         else
             match(result{
                 logger.Info("Attempting to use manually downloaded sccm package...")
                 let! downloadedScmPackageInfo = toDownloadedSccmPackageInfo context.CacheFolderPath context.SccmPackageInstaller context.SccmPackageReadme context.SccmPackageReleased
                 return downloadedScmPackageInfo            
             }) with
-            |Result.Error ex -> CreateDriverPackageMessage.Error ex
-            |Ok downloadedSccmPackageInfo -> CreateDriverPackageMessage.SccmPackageDownloaded downloadedSccmPackageInfo
+            |Result.Error ex -> 
+                logger.Error(sprintf "Failed attempt to user manually downloaded sccm pacakge. %s" (getAccumulatedExceptionMessages ex))
+                CreateDriverPackageMessage.SccmPackageDownloaded None
+            |Ok downloadedSccmPackageInfo -> 
+                CreateDriverPackageMessage.SccmPackageDownloaded (Some downloadedSccmPackageInfo)
 
     open System.Threading
     open System.Threading.Tasks
@@ -296,6 +302,12 @@ module CreateDriverPackageActor =
         let downloadCoordinatorActor = spawn mailbox.Context.System "DownloadCoordinatorActor" (DownloadCoordinatorActor.downloadCoordinatorActor self)
         let extractCoordinatorActor = spawn mailbox.Context.System "ExtractCoordinatorActor" (ExtractCoordinatorActor.extractCoordinatorActor self)
 
+        let pc = createPackagingContext dpcc.SccmPackageReleased dpcc
+        match pc with
+        |Ok c ->
+            mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(System.TimeSpan.FromSeconds(5.0),System.TimeSpan.FromSeconds(5.0),mailbox.Context.Self,(CreateDriverPackageMessage.PackagingProgress c),mailbox.Context.Self)
+        |Result.Error ex -> ()
+
         let rec initialize () = 
             actor {                                                
                 let! message = mailbox.Receive()
@@ -332,7 +344,7 @@ module CreateDriverPackageActor =
                 |CreateDriverPackageMessage.Error ex ->                     
                     logger.Error(getAccumulatedExceptionMessages ex)
                     logger.Error("Fatal error occured. Terminating application.")
-                    self <! (Finished)                
+                    self <! (Finished)                                
                 | _ ->                    
                     throwNotInitializedException message
                 return! initialize ()
@@ -365,9 +377,14 @@ module CreateDriverPackageActor =
                     (retrieveSccmPackageInfoAsync sccmPackageInfoRetrievalContext)                    
                     |> pipeToWithSender self sender
                 |SccmPackageInfoRetrieved sccmPackageInfo ->
-                    logger.Info(sprintf "Sccm package info has been retrived: %A. Request download." sccmPackageInfo)
-                    let sccmPackageDownloadContext = toSccmPackageInfoDownloadContext dpcc.Manufacturer dpcc.CacheFolderPath sccmPackageInfo
-                    self <! DownloadSccmPackage sccmPackageDownloadContext
+                    match sccmPackageInfo with
+                    |Some sp -> 
+                        logger.Info(sprintf "Sccm package info has been retrived: %A. Request download." sp)
+                        let sccmPackageDownloadContext = toSccmPackageInfoDownloadContext dpcc.Manufacturer dpcc.CacheFolderPath sp
+                        self <! DownloadSccmPackage sccmPackageDownloadContext
+                    |None ->
+                        logger.Warn("Sccm package info was not retrieved.")
+                        ()
                 |DownloadPackage (package,_) ->
                     logger.Info(sprintf "Request download of package: %s." package.Installer.Name)
                     downloadCoordinatorActor <! DownloadPackage (package, packagingContext)
@@ -375,15 +392,15 @@ module CreateDriverPackageActor =
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |PackageDownloaded downloadedPackage ->
+                    let updatedPackagingContext = donePackageDownload packagingContext
                     match downloadedPackage with
                     |Some dl ->                     
                         logger.Info(sprintf "Package has been downloaded: %s. Request extraction..." dl.Package.Installer.Name)
-                        let updatedPackagingContext = donePackageDownload packagingContext
                         self <! PackagingProgress updatedPackagingContext
-                        self <! ExtractPackage (updatedPackagingContext, dl)                                            
-                        return! create updatedPackagingContext
+                        self <! ExtractPackage (updatedPackagingContext, dl)                                                                    
                     |None -> 
-                        return! create packagingContext
+                        ()
+                    return! create updatedPackagingContext
                 |DownloadSccmPackage sccmPackageDownloadContext ->
                     logger.Info(sprintf "Request download of sccm package: %s." sccmPackageDownloadContext.SccmPackage.InstallerFile.FileName)
                     downloadCoordinatorActor <! DownloadSccmPackage sccmPackageDownloadContext
@@ -391,14 +408,18 @@ module CreateDriverPackageActor =
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |SccmPackageDownloaded downloadedSccmPackage ->
-                    logger.Info(sprintf "Sccm package has been downloaded: %s. Request extraction..." downloadedSccmPackage.SccmPackage.InstallerFile.FileName)
-                    self <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
                     let updatedPackagingContext = doneSccmPackageDownload packagingContext
+                    match downloadedSccmPackage with
+                    |Some dls ->
+                        logger.Info(sprintf "Sccm package has been downloaded: %s. Request extraction..." dls.SccmPackage.InstallerFile.FileName)
+                        self <! ExtractSccmPackage (packagingContext,dls)                                                
+                    |None -> 
+                        logger.Warn("Sccm package was not downloaded.")
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext                
                 |StartDownload webFileDownload ->
                     logger.Error(sprintf "Message not supported %A" message)
-                |DownloadFinished webFileDownload -> 
+                |DownloadFinished (webFileDownloaded,webFileDownload) -> 
                     logger.Error(sprintf "Message not supported %A" message)
                 |ExtractPackage (_,downloadedPackage) -> 
                     logger.Info(sprintf "Request extract of package: %s." downloadedPackage.Package.Installer.Name)
@@ -406,8 +427,8 @@ module CreateDriverPackageActor =
                     let updatedPackagingContext = startPackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
-                |PackageExtracted extractedPackage -> 
-                    logger.Info(sprintf "Package extracted: %s." extractedPackage.DownloadedPackage.Package.Installer.Name)
+                |PackageExtracted (extractedPackage,downloadedPackage) ->                     
+                    logger.Info(sprintf "Package extracted: %s." downloadedPackage.Package.Installer.Name)
                     let updatedPackagingContext = donePackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
@@ -422,9 +443,13 @@ module CreateDriverPackageActor =
                             packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
-                |SccmPackageExtracted extractedSccmPackage -> 
-                    logger.Info(sprintf "Sccm package has been extracted: %s." extractedSccmPackage.DownloadedSccmPackage.SccmPackage.InstallerFile.FileName)
+                |SccmPackageExtracted (extractedSccmPackage,downloadedSccmPackage) -> 
                     let updatedPackagingContext = doneSccmPackageExtract packagingContext
+                    match extractedSccmPackage with
+                    |Some esp ->
+                        logger.Info(sprintf "Sccm package has been extracted: %s." downloadedSccmPackage.SccmPackage.InstallerFile.FileName)
+                    |None ->
+                        logger.Warn(sprintf "Sccm package was not extracted: %s" downloadedSccmPackage.SccmPackage.InstallerFile.FileName)
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext                   
                 |PackagingProgress _ ->

@@ -1,7 +1,6 @@
 ﻿namespace DriverTool
 
 module DownloadActor =
-            
     open DriverTool.Library.Messages
     open DriverTool.Library.Logging
     open DriverTool.Library.F
@@ -12,6 +11,7 @@ module DownloadActor =
     open DriverTool.Library.WebDownload
     open DriverTool.Library.Web    
     open Akka.FSharp
+    open Akka.Actor
     let logger = getLoggerByName "DownloadActor"
 
     let downloadSccmPackage (sccmPackageDownloadContext:SccmPackageInfoDownloadContext) =
@@ -20,10 +20,12 @@ module DownloadActor =
             let! downloadedSccmPackage = downloadSccmPackage (sccmPackageDownloadContext.CacheFolderPath, sccmPackageDownloadContext.SccmPackage)
             return downloadedSccmPackage
         })with
-        |Result.Error ex ->            
-            CreateDriverPackageMessage.Error ex
         |Ok downloadedSccmPackage -> 
-            SccmPackageDownloaded downloadedSccmPackage
+            SccmPackageDownloaded (Some downloadedSccmPackage)
+        |Result.Error ex ->            
+            logger.Error(sprintf "Failed to download Sccm Package. %s" (getAccumulatedExceptionMessages ex))
+            SccmPackageDownloaded None
+        
 
     let downloadSccmPackageAsync context =
         System.Threading.Tasks.Task.Run(fun () -> downloadSccmPackage context)
@@ -32,9 +34,10 @@ module DownloadActor =
     let toDownloadFinishedMessage webFileDownload downloadResult = 
         match downloadResult with
         |Result.Ok _ ->
-            CreateDriverPackageMessage.DownloadFinished webFileDownload
+            CreateDriverPackageMessage.DownloadFinished (Some webFileDownload,webFileDownload)
         |Result.Error ex ->
-            CreateDriverPackageMessage.Error ex
+            logger.Error(sprintf "Failed to download %s. %s" webFileDownload.Source.FileName (getAccumulatedExceptionMessages ex))
+            CreateDriverPackageMessage.DownloadFinished (None,webFileDownload)
 
     let downloadWebFile' (ignoreVerificationErrors,webFileDownload) =
         (DriverTool.Library.WebDownload.downloadIfDifferent ignoreVerificationErrors webFileDownload)
@@ -74,25 +77,10 @@ module DownloadActor =
                     )
         |>Seq.toArray
 
-    //let downloadPackage destinationDirectory packageInfo =
-    //    let downloadJobs = 
-    //        packageInfo
-    //        |> packageInfoToDownloadJobs destinationDirectory            
-    //        |> PSeq.map (fun dj -> resultToOption logger (downloadUpdate (dj,ignoreVerificationErrors dj)))
-    //        |> PSeq.toArray
-    //        |> Seq.choose id //Remove all failed downloads            
-    //        |> Seq.toArray            
-    //    let downloadedPackageInfo = 
-    //        packageInfosToDownloadedPackageInfos destinationDirectory (seq{packageInfo}) downloadJobs
-    //        |> Array.tryPick Some
-    //    CreateDriverPackageMessage.DownloadedPackage downloadedPackageInfo
-
-    //let downloadPackageAsync destinationDirectory packageInfo  =
-    //    System.Threading.Tasks.Task.Run(fun () -> downloadPackage destinationDirectory packageInfo)
-    //    |>Async.AwaitTask
-
-    let downloadActor (mailbox:Actor<_>) =
+    let downloadActor (ownerActor:IActorRef) (mailbox:Actor<_>) =
         
+        if(logger.IsDebugEnabled) then mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(System.TimeSpan.FromSeconds(10.0),System.TimeSpan.FromSeconds(5.0),mailbox.Context.Self,(CreateDriverPackageMessage.Info "DownloadActor is alive"),mailbox.Context.Self)
+
         let rec loop () = 
             actor {                                                
                 let! message = mailbox.Receive()
@@ -103,21 +91,13 @@ module DownloadActor =
                     logger.Info(sprintf "Downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination.DestinationFile)
                     let ignoreVerificationErrors = DriverTool.Library.WebDownload.ignoreVerificationErrors destinationFile                    
                     (downloadWebFileAsync ignoreVerificationErrors webFileDownload)
-                    |>pipeToWithSender self sender
-                |DownloadFinished webFileDownload ->
-                    logger.Info(sprintf "Finished downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination)
-                    sender <! DownloadFinished webFileDownload
-                //|DownloadPackage (package,packagingContext) -> 
-                //    logger.Info(sprintf "Downloading package %A." package)
-                //    (downloadPackageAsync packagingContext.CacheFolderPath package)               
-                //    |>pipeToWithSender self sender
+                    |>pipeToWithSender ownerActor sender
                 |DownloadSccmPackage sccmPackageDownloadContext -> 
                     logger.Info((sprintf "Downloading sccm package %s." sccmPackageDownloadContext.SccmPackage.InstallerFile.FileName))
                     (downloadSccmPackageAsync sccmPackageDownloadContext)
-                    |>pipeToWithSender self sender                
-                |CreateDriverPackageMessage.Error ex ->
-                    logger.Warn((sprintf "Download failed due to: %s" (getAccumulatedExceptionMessages ex)))
-                    logger.Warn(("Ignoring download failure and continue processing."))
+                    |>pipeToWithSender ownerActor sender
+                |CreateDriverPackageMessage.Info msg ->
+                    logger.Info(msg)
                 | _ ->
                     logger.Warn((sprintf "Message not handled by DownloadActor: %A" message))
                     return! loop()

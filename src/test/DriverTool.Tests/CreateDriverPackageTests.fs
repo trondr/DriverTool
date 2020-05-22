@@ -98,7 +98,7 @@ module CreateDriverPackageTests =
         })with
         |Result.Ok wfd -> 
             Assert.IsTrue(true)
-            let expected = CreateDriverPackageMessage.DownloadFinished wfd
+            let expected = CreateDriverPackageMessage.DownloadFinished (Some wfd,wfd)
             let actual = DownloadActor.downloadWebFile false wfd
             Assert.AreEqual(expected,actual)
         |Result.Error ex -> Assert.Fail(ex.Message)

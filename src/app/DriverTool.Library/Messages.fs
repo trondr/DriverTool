@@ -105,20 +105,20 @@ module Messages =
 
 
     let startPackageDownload packagingContext =
-        {packagingContext with PackageDownloads = startProgress packagingContext.PackageDownloads}
+        {packagingContext with PackageDownloads = startProgress packagingContext.PackageDownloads; Started=true}
     let donePackageDownload packagingContext =
         {packagingContext with PackageDownloads = doneProgress packagingContext.PackageDownloads}
     let startSccmPackageDownload packagingContext sccmReleaseDate =
-        {packagingContext with SccmPackageDownloads = startProgress packagingContext.SccmPackageDownloads;SccmReleaseDate=sccmReleaseDate}
+        {packagingContext with SccmPackageDownloads = startProgress packagingContext.SccmPackageDownloads;SccmReleaseDate=sccmReleaseDate; Started=true}
     let doneSccmPackageDownload packagingContext =
         {packagingContext with SccmPackageDownloads = doneProgress packagingContext.SccmPackageDownloads}
 
     let startPackageExtract packagingContext =
-        {packagingContext with PackageExtracts = startProgress packagingContext.PackageExtracts}
+        {packagingContext with PackageExtracts = startProgress packagingContext.PackageExtracts; Started=true}
     let donePackageExtract packagingContext =
         {packagingContext with PackageExtracts = doneProgress packagingContext.PackageExtracts}
     let startSccmPackageExtract packagingContext =
-        {packagingContext with SccmPackageExtracts = startProgress packagingContext.SccmPackageExtracts}
+        {packagingContext with SccmPackageExtracts = startProgress packagingContext.SccmPackageExtracts; Started=true}
     let doneSccmPackageExtract packagingContext =
         {packagingContext with SccmPackageExtracts = doneProgress packagingContext.SccmPackageExtracts}
 
@@ -176,17 +176,17 @@ module Messages =
         |UpdateInfosRetrieved of PackageInfo array
         |UpdateInfoRetrieved of PackageInfo
         |RetrieveSccmPackageInfo of SccmPackageInfoRetrievalContext
-        |SccmPackageInfoRetrieved of SccmPackageInfo
+        |SccmPackageInfoRetrieved of SccmPackageInfo option
         |DownloadPackage of PackageInfo*PackagingContext
         |PackageDownloaded of DownloadedPackageInfo option
         |DownloadSccmPackage of SccmPackageInfoDownloadContext
-        |SccmPackageDownloaded of DownloadedSccmPackageInfo
+        |SccmPackageDownloaded of DownloadedSccmPackageInfo option
         |StartDownload of WebFileDownload
-        |DownloadFinished of WebFileDownload
+        |DownloadFinished of WebFileDownload option*WebFileDownload
         |ExtractPackage of PackagingContext*DownloadedPackageInfo
-        |PackageExtracted of ExtractedPackageInfo        
+        |PackageExtracted of ExtractedPackageInfo option*DownloadedPackageInfo        
         |ExtractSccmPackage of PackagingContext*DownloadedSccmPackageInfo
-        |SccmPackageExtracted of ExtractedSccmPackageInfo        
+        |SccmPackageExtracted of ExtractedSccmPackageInfo option*DownloadedSccmPackageInfo        
         |PackagingProgress of PackagingContext
         |FinalizePackaging of PackagingContext
         |UpdatePackagingContext of PackagingContext

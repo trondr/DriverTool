@@ -10,6 +10,7 @@ module ExtractActor =
     open DriverTool.Library
     open DriverTool.Library.PackageXml
     open Akka.FSharp
+    open Akka.Actor
     let logger = getLoggerByName "ExtractActor"
     let loggerName = LoggerName "ExtractActor"
     
@@ -22,14 +23,17 @@ module ExtractActor =
             let prefix = getPrefix packagingContext.ExtractFolderPrefix
             let! driversPath = combine2Paths (FileSystem.pathValue packagingContext.PackageFolderPath, "Drivers")
             let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
-            logger.Info( (sprintf "Extracting Package '%s'..." downloadedPackage.Package.Installer.Name))
+            logger.Info( (sprintf "Extracting Update Package '%s'..." downloadedPackage.Package.Installer.Name))
             let! extractedPackage = extractUpdate' (existingDriversPath,(prefix,downloadedPackage))
             let! installScript = createInstallScript (extractedPackage,packagingContext.Manufacturer,packagingContext.LogDirectory)
             let! packageDefinitionFile = createPackageDefinitionFile (packagingContext.LogDirectory, extractedPackage, packagingContext.PackagePublisher)            
             return extractedPackage
         })with
-        |Result.Error  ex -> CreateDriverPackageMessage.Error ex
-        |Result.Ok ep -> CreateDriverPackageMessage.PackageExtracted ep
+        |Result.Error  ex -> 
+            logger.Error(sprintf "Failed to extract downloaded package '%s'. Error: %s" downloadedPackage.Package.Installer.Name (getAccumulatedExceptionMessages ex))
+            CreateDriverPackageMessage.PackageExtracted (None, downloadedPackage)
+        |Result.Ok ep -> 
+            CreateDriverPackageMessage.PackageExtracted (Some ep,downloadedPackage)
 
     let extractSccmPackage packagingContext (downloadedSccmPackage:DownloadedSccmPackageInfo) =        
         match(result{
@@ -45,11 +49,17 @@ module ExtractActor =
             logger.Info((sprintf "Created sccm package install script: %A" sccmPackageInstallScriptPath))
             return sccmPackageDestinationPath
         })with
-        |Result.Error ex -> CreateDriverPackageMessage.Error ex
-        |Result.Ok p -> CreateDriverPackageMessage.SccmPackageExtracted {ExtractedDirectoryPath=FileSystem.pathValue p;DownloadedSccmPackage=downloadedSccmPackage}
+        |Result.Error ex -> 
+            logger.Error(sprintf "Failed to extract downloaded sccm package '%s'. Error: %s" downloadedSccmPackage.SccmPackage.InstallerFile.FileName (getAccumulatedExceptionMessages ex))
+            CreateDriverPackageMessage.SccmPackageExtracted (None, downloadedSccmPackage)
+        |Result.Ok p -> 
+            let extractedSccmPackage = {ExtractedDirectoryPath=FileSystem.pathValue p;DownloadedSccmPackage=downloadedSccmPackage}
+            CreateDriverPackageMessage.SccmPackageExtracted (Some extractedSccmPackage,downloadedSccmPackage)
 
-    let extractActor (mailbox:Actor<_>) =
+    let extractActor (ownerActor:IActorRef)  (mailbox:Actor<_>) =
         
+        if(logger.IsDebugEnabled) then mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(System.TimeSpan.FromSeconds(10.0),System.TimeSpan.FromSeconds(5.0),mailbox.Context.Self,(CreateDriverPackageMessage.Info "ExtractActor is alive"),mailbox.Context.Self)
+
         let rec loop () = 
             actor {                                                
                 let! message = mailbox.Receive()
@@ -57,10 +67,18 @@ module ExtractActor =
                 match message with                
                 |ExtractPackage (packagingContext,downloadedPackage) ->
                     logger.Info( (sprintf "Extracting downloaded package: %s" downloadedPackage.Package.Installer.Name))
-                    sender <! extractUpdate packagingContext downloadedPackage
+                    self <! extractUpdate packagingContext downloadedPackage                
+                |PackageExtracted (extractedPackage,downloadedPackage) ->
+                    logger.Info( (sprintf "Finished extraction attempt of downloaded package: %s" downloadedPackage.Package.Installer.Name))
+                    ownerActor <! PackageExtracted (extractedPackage,downloadedPackage)
                 |ExtractSccmPackage (packagingContext,downloadedSccmPackage) ->
                       logger.Info( (sprintf "Extracting downloaded sccm package: %s" downloadedSccmPackage.SccmPackage.InstallerFile.FileName))
-                      sender <! extractSccmPackage packagingContext downloadedSccmPackage                  
+                      self <! extractSccmPackage packagingContext downloadedSccmPackage
+                |SccmPackageExtracted (extractedSccmPackage,downloadedSccmPackage)->
+                    logger.Info( (sprintf "Finished extraction attempt of downloaded sccm package: %s" downloadedSccmPackage.SccmPackage.InstallerFile.FileName))
+                    ownerActor <! SccmPackageExtracted (extractedSccmPackage,downloadedSccmPackage)
+                |CreateDriverPackageMessage.Info msg ->
+                    logger.Info(msg)
                 | _ ->                    
                     logger.Warn((sprintf "Message not handled: %A" message))
                     return! loop ()

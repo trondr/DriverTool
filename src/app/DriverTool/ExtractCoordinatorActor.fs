@@ -33,8 +33,10 @@ module ExtractCoordinatorActor =
             extractCoordinatorContext
 
     let extractCoordinatorActor (ownerActor:IActorRef) (mailbox:Actor<_>) =        
-        let extractActor = spawnOpt mailbox.Context "ExtractActor" extractActor [ SpawnOption.Router(SmallestMailboxPool(10)) ]
+        let extractActor = spawnOpt mailbox.Context "ExtractActor" (extractActor mailbox.Context.Self) [ SpawnOption.Router(SmallestMailboxPool(5)) ]
         let extractCoordinatorContext = {Index=10; Packages=[]}
+        
+        if(logger.IsDebugEnabled) then mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(System.TimeSpan.FromSeconds(5.0),System.TimeSpan.FromSeconds(5.0),mailbox.Context.Self,(CreateDriverPackageMessage.Info "ExtractCoordinatorActor is alive"),mailbox.Context.Self)
     
         let rec loop (extractCoordinatorContext:ExtractCoordinatorContext) =
             actor {
@@ -46,16 +48,30 @@ module ExtractCoordinatorActor =
                     let updatedPackagingContext = {packagingContext with ExtractFolderPrefix = extractCoordinatorContext.Index}
                     let updatedExtractCoordinatorContext = 
                         updateExtractCoordinatorContext extractCoordinatorContext downloadedPackage.Package (extractCoordinatorContext.Index + 10)
-                    extractActor<! ExtractPackage (updatedPackagingContext, downloadedPackage)                    
+                    extractActor<! ExtractPackage (updatedPackagingContext, downloadedPackage)
                     return! loop updatedExtractCoordinatorContext
-                |PackageExtracted extractedPackage -> 
-                    logger.Info( (sprintf "Package extracted: %s." extractedPackage.DownloadedPackage.Package.Installer.Name))
+                |PackageExtracted (extractedPackage,downloadedPackage) -> 
+                    System.Console.WriteLine(sprintf "Package extracted (console): %s." downloadedPackage.Package.Installer.Name)
+                    logger.Info( (sprintf "Package extracted: %s." downloadedPackage.Package.Installer.Name))
                     let updatedExtractCoordinatorContext = 
-                        removePackageFromExtractCoordinatorContext extractCoordinatorContext extractedPackage.DownloadedPackage.Package
-                    ownerActor <! PackageExtracted extractedPackage
+                        removePackageFromExtractCoordinatorContext extractCoordinatorContext downloadedPackage.Package
+                    ownerActor <! PackageExtracted (extractedPackage,downloadedPackage)
                     return! loop updatedExtractCoordinatorContext
+                |ExtractSccmPackage (packagingContext,dowloadedSccmPackage) ->
+                    logger.Info( (sprintf "Extracting sccm package: %s." dowloadedSccmPackage.SccmPackage.InstallerFile.FileName))
+                    extractActor<! ExtractSccmPackage (packagingContext, dowloadedSccmPackage)
+                    return! loop extractCoordinatorContext
+                |SccmPackageExtracted (extractedSccmPackageInfo,downloadedSccmPackageInfo) ->
+                    match extractedSccmPackageInfo with
+                    |Some esp ->
+                        logger.Info( (sprintf "Sccm package extracted: %s." downloadedSccmPackageInfo.SccmPackage.InstallerFile.FileName))
+                        ownerActor <! SccmPackageExtracted (extractedSccmPackageInfo,downloadedSccmPackageInfo)
+                    |None -> 
+                        logger.Warn(sprintf "Sccm package '%s' was not extracted." downloadedSccmPackageInfo.SccmPackage.InstallerFile.FileName)
+                |CreateDriverPackageMessage.Info msg ->
+                    logger.Info(msg)
                 | _ ->
                     logger.Warn((sprintf "Message not handled by ExtractCoordinatorActor: %A" message))
-                    return! loop extractCoordinatorContext
+                return! loop extractCoordinatorContext
             }
         loop extractCoordinatorContext
