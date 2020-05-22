@@ -183,12 +183,12 @@
     <Compile Include="Packaging.fs" />
     <Compile Include="Actors.fs" />
     <Compile Include="LoggerActor.fs" />
+    <Compile Include="ActorSystem.fs" />
     <Compile Include="DownloadActor.fs" />
     <Compile Include="DownloadCoordinator.fs" />
     <Compile Include="ExtractActor.fs" />
     <Compile Include="ExtractCoordinatorActor.fs" />
     <Compile Include="CreateDriverPackageActor.fs" />
-    <Compile Include="ActorSystem.fs" />
     <Compile Include="CreateDriverPackage.fs" />
     <Compile Include="BitLockerOperations.fs" />
     <Compile Include="InstallDriverPackage.fs" />

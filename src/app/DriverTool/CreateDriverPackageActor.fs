@@ -205,7 +205,7 @@ module CreateDriverPackageActor =
     let toPackagingProgressString packagingContext =
         let packageDownloadsProgress = (toProgressMessage packagingContext.PackageDownloads)
         let sccmPackageDownloadsProgress = (toProgressMessage packagingContext.SccmPackageDownloads)
-        let packageExtractsProgress = (toProgressMessage packagingContext.SccmPackageExtracts)
+        let packageExtractsProgress = (toProgressMessage packagingContext.PackageExtracts)
         let sccmPackageExtractsProgress = (toProgressMessage packagingContext.SccmPackageExtracts)
         sprintf "Progress: %s, %s, %s, %s" packageDownloadsProgress sccmPackageDownloadsProgress packageExtractsProgress sccmPackageExtractsProgress
 
@@ -352,7 +352,14 @@ module CreateDriverPackageActor =
                     |> pipeToWithSender self sender
                 |UpdateInfosRetrieved packageInfos ->
                     logger.Info(sprintf "Information about %i updates has been retrieved. Initiating download of each update...." (Array.length packageInfos) ) 
-                    downloadPackages packageInfos packagingContext self
+                    packageInfos
+                    |> Array.map (fun p -> 
+                        self <! CreateDriverPackageMessage.UpdateInfoRetrieved p
+                        ) |> ignore                    
+                |UpdateInfoRetrieved packageInfo ->
+                    logger.Info(sprintf "Information about update '%s' has been retrieved. Initiating request for download of update." packageInfo.Installer.Name )
+                    self <! CreateDriverPackageMessage.DownloadPackage (packageInfo,packagingContext)
+                    return! create packagingContext
                 |RetrieveSccmPackageInfo sccmPackageInfoRetrievalContext ->
                     logger.Info(sprintf "Retrieving sccm package info for context: %A...." sccmPackageInfoRetrievalContext)
                     (retrieveSccmPackageInfoAsync sccmPackageInfoRetrievalContext)                    
@@ -361,29 +368,30 @@ module CreateDriverPackageActor =
                     logger.Info(sprintf "Sccm package info has been retrived: %A. Request download." sccmPackageInfo)
                     let sccmPackageDownloadContext = toSccmPackageInfoDownloadContext dpcc.Manufacturer dpcc.CacheFolderPath sccmPackageInfo
                     self <! DownloadSccmPackage sccmPackageDownloadContext
-                |DownloadPackage (package,packagingContext) ->
-                    logger.Info(sprintf "Request download of package: %A." package)
-                    downloadCoordinatorActor <! DownloadPackage (package,packagingContext)
+                |DownloadPackage (package,_) ->
+                    logger.Info(sprintf "Request download of package: %s." package.Installer.Name)
+                    downloadCoordinatorActor <! DownloadPackage (package, packagingContext)
                     let updatedPackagingContext = startPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |PackageDownloaded downloadedPackage ->
-                    logger.Info(sprintf "Package has been downloaded: %A. Request extraction..." downloadedPackage)
-                    let updatedPackagingContext = donePackageDownload packagingContext
-                    self <! PackagingProgress updatedPackagingContext
                     match downloadedPackage with
-                    |Some dl ->
+                    |Some dl ->                     
+                        logger.Info(sprintf "Package has been downloaded: %s. Request extraction..." dl.Package.Installer.Name)
+                        let updatedPackagingContext = donePackageDownload packagingContext
+                        self <! PackagingProgress updatedPackagingContext
                         self <! ExtractPackage (updatedPackagingContext, dl)                                            
-                    |None -> ()                    
-                    return! create updatedPackagingContext
+                        return! create updatedPackagingContext
+                    |None -> 
+                        return! create packagingContext
                 |DownloadSccmPackage sccmPackageDownloadContext ->
-                    logger.Info(sprintf "Request download of sccm package: %A." sccmPackageDownloadContext)
+                    logger.Info(sprintf "Request download of sccm package: %s." sccmPackageDownloadContext.SccmPackage.InstallerFile.FileName)
                     downloadCoordinatorActor <! DownloadSccmPackage sccmPackageDownloadContext
                     let updatedPackagingContext = startSccmPackageDownload packagingContext sccmPackageDownloadContext.SccmPackage.Released
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |SccmPackageDownloaded downloadedSccmPackage ->
-                    logger.Info(sprintf "Sccm package has been downloaded: %A. Request extraction..." downloadedSccmPackage)
+                    logger.Info(sprintf "Sccm package has been downloaded: %s. Request extraction..." downloadedSccmPackage.SccmPackage.InstallerFile.FileName)
                     self <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
                     let updatedPackagingContext = doneSccmPackageDownload packagingContext
                     self <! PackagingProgress updatedPackagingContext
@@ -392,41 +400,44 @@ module CreateDriverPackageActor =
                     logger.Error(sprintf "Message not supported %A" message)
                 |DownloadFinished webFileDownload -> 
                     logger.Error(sprintf "Message not supported %A" message)
-                |ExtractPackage (packagingContext,downloadedPackage) -> 
-                    logger.Info(sprintf "Request extract of package: %A." downloadedPackage)
+                |ExtractPackage (_,downloadedPackage) -> 
+                    logger.Info(sprintf "Request extract of package: %s." downloadedPackage.Package.Installer.Name)
                     extractCoordinatorActor <! ExtractPackage  (packagingContext,downloadedPackage)
                     let updatedPackagingContext = startPackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |PackageExtracted extractedPackage -> 
-                    logger.Info(sprintf "Package extracted: %A." extractedPackage)                    
+                    logger.Info(sprintf "Package extracted: %s." extractedPackage.DownloadedPackage.Package.Installer.Name)
                     let updatedPackagingContext = donePackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
-                |ExtractSccmPackage (packagingContext,downloadedSccmPackage) ->                     
+                |ExtractSccmPackage (_,downloadedSccmPackage) ->                     
                     let updatedPackagingContext =
                         if (not dpcc.ExcludeSccmPackage) then
-                            logger.Info(sprintf "Request extract of sccm package: %A." downloadedSccmPackage)
+                            logger.Info(sprintf "Request extract of sccm package: %s." downloadedSccmPackage.SccmPackage.InstallerFile.FileName)
                             extractCoordinatorActor <! ExtractSccmPackage (packagingContext,downloadedSccmPackage)
                             startSccmPackageExtract packagingContext
                         else
-                            logger.Info(sprintf "Skipping extract of sccm package: %A." downloadedSccmPackage)
+                            logger.Info(sprintf "Skipping extract of sccm package: %s." downloadedSccmPackage.SccmPackage.InstallerFile.FileName)
                             packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext
                 |SccmPackageExtracted extractedSccmPackage -> 
-                    logger.Info(sprintf "Sccm package has been extracted: %A." extractedSccmPackage)                    
+                    logger.Info(sprintf "Sccm package has been extracted: %s." extractedSccmPackage.DownloadedSccmPackage.SccmPackage.InstallerFile.FileName)
                     let updatedPackagingContext = doneSccmPackageExtract packagingContext
                     self <! PackagingProgress updatedPackagingContext
                     return! create updatedPackagingContext                   
-                |PackagingProgress packagingContext ->
-                    self <! (checkAndReportProgress packagingContext)                    
+                |PackagingProgress _ ->
+                    self <! (checkAndReportProgress packagingContext)
+                    return! create packagingContext
                 |FinalizePackaging packagingContext ->
                     logger.Info(sprintf "Finalize packaging for context: %A." packagingContext)
                     self <! CreateDriverPackageMessage.UpdatePackagingContext packagingContext
-                |UpdatePackagingContext packagingContext ->
+                    return! create packagingContext
+                |UpdatePackagingContext _ ->
                     logger.Info("Updating packaging context to reflect the latest release date...")
-                    self <! (updatePackagingContext packagingContext dpcc)                    
+                    self <! (updatePackagingContext packagingContext dpcc)
+                    return! create packagingContext
                 |PackagingContextUpdated (oldpackagingContext,newPackagingContext) ->
                     logger.Info(sprintf "Packging context has been updated %A -> %A." oldpackagingContext newPackagingContext)
                     logger.Info("Requesting move of pacakging...")
@@ -440,12 +451,14 @@ module CreateDriverPackageActor =
                     logger.Info(sprintf "Package has been moved.")
                     logger.Info("Requesting update of install xml")
                     self <! CreateDriverPackageMessage.UpdateInstallXml packagingContext
+                    return! create packagingContext
                 |UpdateInstallXml packagingContext ->
                     logger.Info(sprintf "Updating install xml...")
                     self <! (updateInstallXml packagingContext)
                 |InstallXmlUpdated installConfiguration ->
                     logger.Info(sprintf "Install xml has been updated: %A." installConfiguration)
                     self <! CreateDriverPackageMessage.CreatePackageDefinition (packagingContext, installConfiguration)
+                    return! create packagingContext
                 |CreatePackageDefinition (packagingContext,installConfiguration)->
                     logger.Info(sprintf "Creating main package definition...")
                     self <! (createPackageDefinitionSms packagingContext installConfiguration)

@@ -10,8 +10,7 @@ module DownloadActor =
     open DriverTool.Actors
     open DriverTool.Library.PackageXml    
     open DriverTool.Library.WebDownload
-    open DriverTool.Library.Web
-    open FSharp.Collections.ParallelSeq
+    open DriverTool.Library.Web    
     open Akka.FSharp
     let logger = getLoggerByName "DownloadActor"
 
@@ -101,7 +100,7 @@ module DownloadActor =
                 match message with
                 |StartDownload webFileDownload ->
                     let destinationFile = webFileDownload.Destination
-                    logger.Info(sprintf "Downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination.DestinationFile) 
+                    logger.Info(sprintf "Downloading web file '%A' -> '%A'." webFileDownload.Source webFileDownload.Destination.DestinationFile)
                     let ignoreVerificationErrors = DriverTool.Library.WebDownload.ignoreVerificationErrors destinationFile                    
                     (downloadWebFileAsync ignoreVerificationErrors webFileDownload)
                     |>pipeToWithSender self sender
@@ -113,14 +112,14 @@ module DownloadActor =
                 //    (downloadPackageAsync packagingContext.CacheFolderPath package)               
                 //    |>pipeToWithSender self sender
                 |DownloadSccmPackage sccmPackageDownloadContext -> 
-                    logger.Info(sprintf "Downloading sccm package %A." sccmPackageDownloadContext)
+                    logger.Info((sprintf "Downloading sccm package %s." sccmPackageDownloadContext.SccmPackage.InstallerFile.FileName))
                     (downloadSccmPackageAsync sccmPackageDownloadContext)
                     |>pipeToWithSender self sender                
                 |CreateDriverPackageMessage.Error ex ->
-                    logger.Warn(sprintf "Download failed due to: %s" (getAccumulatedExceptionMessages ex))
-                    logger.Warn("Ignoring download failure and continue processing.")
+                    logger.Warn((sprintf "Download failed due to: %s" (getAccumulatedExceptionMessages ex)))
+                    logger.Warn(("Ignoring download failure and continue processing."))
                 | _ ->
-                    logger.Warn(sprintf "Message not handled by DownloadActor: %A" message)
+                    logger.Warn((sprintf "Message not handled by DownloadActor: %A" message))
                     return! loop()
                 return! loop ()
             }

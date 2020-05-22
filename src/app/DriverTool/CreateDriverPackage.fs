@@ -28,10 +28,8 @@ module CreateDriverPackage =
     open DriverTool.ExtractActor
     open DriverTool.CreateDriverPackageActor
 
-    
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
-
-
+    
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos             

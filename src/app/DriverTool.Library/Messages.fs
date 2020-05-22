@@ -12,11 +12,15 @@ module Messages =
     open DriverTool.Library.PackageDefinition
     open DriverTool.Library.WebDownload
 
+    type LoggerName = LoggerName of string
+
     type LogMessage =
-        |ErrorMsg of Exception
-        |InfoMsg of string
-        |WarnMsg of string
-        |DebugMsg of string
+        |FatalMsg of LoggerName*Exception
+        |ErrorMsg of LoggerName*Exception        
+        |WarnMsg of LoggerName*Msg
+        |InfoMsg of LoggerName*string
+        |TraceMsg of LoggerName*Msg
+        |DebugMsg of LoggerName*Msg
 
     type LogItem = {TimeStamp:DateTime;LoggerName:string;ThreadId:int;LogMessage:LogMessage}
         
@@ -170,6 +174,7 @@ module Messages =
         |InitializePackaging of PackagingContext
         |RetrieveUpdateInfos of UpdatesRetrievalContext
         |UpdateInfosRetrieved of PackageInfo array
+        |UpdateInfoRetrieved of PackageInfo
         |RetrieveSccmPackageInfo of SccmPackageInfoRetrievalContext
         |SccmPackageInfoRetrieved of SccmPackageInfo
         |DownloadPackage of PackageInfo*PackagingContext

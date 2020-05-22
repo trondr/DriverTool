@@ -2,6 +2,7 @@
 
 module ActorSystem =
 
+    open Akka
     open Akka.FSharp
     open Akka.Actor
     open DriverTool.Library
@@ -107,5 +108,6 @@ module ActorSystem =
     let startClientActorSystem () =
         let config = Akka.FSharp.Configuration.parse hoconConfig
         let system = Akka.FSharp.System.create "ClientSystem" config
-        let actor = Akka.FSharp.Spawn.spawn system "ClientActor" clientActor
-        (system,actor)
+        let clientActor = Akka.FSharp.Spawn.spawn system "ClientActor" clientActor        
+        (system,clientActor)
+  
