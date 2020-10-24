@@ -64,6 +64,7 @@ module LenovoUpdateTests =
                                 }
                             ReleaseDate = "2019-08-15"
                             PackageXmlName = packageXmlFileName
+                            ExternalFiles = None
                         }
                 }
             logger.Info("Create package folder path...")

@@ -82,6 +82,7 @@ module DellUpdatesTests =
                     }
                 ReleaseDate= "";
                 PackageXmlName="";
+                ExternalFiles = None
             }
         
         seq{

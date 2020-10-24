@@ -42,6 +42,7 @@ module HpUpdates =
                                     }
                                 ReleaseDate= (getSdpReleaseDate sdp)|>toDateString
                                 PackageXmlName=sdp.PackageId + ".sdp";
+                                ExternalFiles = None
                            }
                     )
                 |>Seq.toArray

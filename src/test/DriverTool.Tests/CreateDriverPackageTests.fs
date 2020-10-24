@@ -42,6 +42,7 @@ module CreateDriverPackageTests =
                 }            
             ReleaseDate="";
             PackageXmlName=""
+            ExternalFiles = None
         }
     let defaultDownloadInfo =
         {

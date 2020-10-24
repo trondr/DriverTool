@@ -97,6 +97,29 @@ module LenovoUpdates =
                 let dpi = packageXmlInfo2downloadedPackageXmlInfo (packageXmlInfo, downloadInfo2.DestinationFile)
                 return dpi
             }
+
+    let downloadExternalFiles cacheFolderPath (packageInfo:PackageInfo) =
+        let e:DownloadInfo array = [||]        
+        match packageInfo.ExternalFiles with
+        |None -> Result.Ok e
+        |Some files -> 
+            result {
+                let! res = 
+                    files                    
+                    |> Array.map(fun f ->                 
+                        match f.Url with
+                        |None -> Result.Error (toException (sprintf "Source url for external file '%s' has not been defined." f.Name) None)
+                        |Some sourceUri->                                
+                            result{
+                                let! destinationFilePath = getTempXmlFilePathFromUri cacheFolderPath sourceUri
+                                let downloadInfo = {SourceUri=sourceUri;SourceChecksum=f.Checksum;SourceFileSize=f.Size;DestinationFile=destinationFilePath;}
+                                let! downloadInfo2 = downloadIfDifferent (logger, downloadInfo, (ignoreVerificationErrors downloadInfo))
+                                return downloadInfo2
+                            }
+                        )                    
+                    |>toAccumulatedResult
+                return (res |> Seq.toArray)
+            }
     
     let downloadPackageXmls cacheFolderPath packageXmlInfos : Result<seq<DownloadedPackageXmlInfo>,Exception> = 
         let downloadedPackageXmlInfos = 
@@ -151,6 +174,11 @@ module LenovoUpdates =
             let! packageInfos = 
                 (parsePackageXmls downloadedPackageXmls)
                 |>toAccumulatedResult
+            let! downloadResult = 
+                    packageInfos
+                    |>Seq.toArray
+                    |> Array.map (downloadExternalFiles cacheFolderPath)                    
+                    |> toAccumulatedResult
             return 
                 packageInfos 
                 |>Seq.filter (filterUpdates context)

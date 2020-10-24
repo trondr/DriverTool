@@ -43,6 +43,7 @@ module DownloadCoordinatorActorTests =
                 }
             ReleaseDate = "2019-08-15"
             PackageXmlName = packageXmlFileName
+            ExternalFiles = None
         }
 
     let getTestDownloadCoordinatorContext =

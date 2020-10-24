@@ -27,7 +27,7 @@ module PackageXml =
         }
 
 
-    type PackageFileType = Installer|Readme
+    type PackageFileType = Installer|Readme|External
     
     type PackageFile =
         {
@@ -50,6 +50,7 @@ module PackageXml =
             Readme:PackageFile
             ReleaseDate:string
             PackageXmlName:string
+            ExternalFiles: PackageFile[] option
         }
 
     let packageInfoSortKey packageInfo =
@@ -220,6 +221,31 @@ module PackageXml =
             |false ->
                 Some (new Uri(sprintf "%s/%s" baseUrl fileName))
 
+    let xn s = 
+        XName.Get(s)
+
+    let toExternalFiles (packageXElement:XElement) (baseUrl:string) =
+        let xExternal = packageXElement.Element(XName.Get("Files")).Element(XName.Get("External"))
+        match xExternal with
+        |null -> None
+        | _ -> 
+            let externalPackageFiles = 
+                xExternal.Elements(XName.Get("File"))
+                |> Seq.map (fun xf ->
+                        let name = xf.Element(xn "Name").Value
+                        let crc = xf.Element(xn "CRC").Value
+                        let size = xf.Element(xn "Size").Value |> int64
+                        {
+                            Url = toOptionalUri baseUrl name
+                            Name = name                            
+                            Checksum = crc
+                            Size = size
+                            Type = External
+                        }
+                    )
+                |> Seq.toArray
+            Some externalPackageFiles
+
     let getPackageInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         let packageXDocument = XDocument.Load(FileSystem.pathValue downloadedPackageInfo.FilePath)
         let packageXElement = packageXDocument.Root
@@ -275,6 +301,7 @@ module PackageXml =
         let releaseDate = packageXElement.Element(XName.Get("ReleaseDate")).Value
         let baseUrl = downloadedPackageInfo.BaseUrl
         let category = downloadedPackageInfo.Category
+        let externalFiles = toExternalFiles packageXElement baseUrl
         {
             Name = name;
             Title = title;
@@ -300,6 +327,7 @@ module PackageXml =
             Category = category;
             ReleaseDate = releaseDate;
             PackageXmlName = ((new System.IO.FileInfo(FileSystem.pathValue downloadedPackageInfo.FilePath)).Name)
+            ExternalFiles = externalFiles
         }        
         
     let getPackageFolderName category releaseDate =         
