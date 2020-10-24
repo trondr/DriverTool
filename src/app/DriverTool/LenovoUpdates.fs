@@ -111,7 +111,8 @@ module LenovoUpdates =
                         |None -> Result.Error (toException (sprintf "Source url for external file '%s' has not been defined." f.Name) None)
                         |Some sourceUri->                                
                             result{
-                                let! destinationFilePath = getTempXmlFilePathFromUri cacheFolderPath sourceUri
+                                let fileName = WebDownload.getFileNameFromUri sourceUri
+                                let! destinationFilePath = FileSystem.path (getDownloadCacheFilePath (FileSystem.pathValue cacheFolderPath) fileName)
                                 let downloadInfo = {SourceUri=sourceUri;SourceChecksum=f.Checksum;SourceFileSize=f.Size;DestinationFile=destinationFilePath;}
                                 let! downloadInfo2 = downloadIfDifferent (logger, downloadInfo, (ignoreVerificationErrors downloadInfo))
                                 return downloadInfo2
@@ -179,6 +180,7 @@ module LenovoUpdates =
                     |>Seq.toArray
                     |> Array.map (downloadExternalFiles cacheFolderPath)                    
                     |> toAccumulatedResult
+            
             return 
                 packageInfos 
                 |>Seq.filter (filterUpdates context)
