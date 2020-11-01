@@ -27,9 +27,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>CreateDriverPackage /destinationFolder="c:\temp\DI" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /doNotDownloadSccmPackage="True" /sccmPackageInstaller="tp_p50-p70_w1064_1903_201904.exe" /sccmPackageReadme="tp_p50-p70_w1064_1903_201904.txt" /sccmPackageReleased="2019-10-01"</StartArguments>
+    <StartArguments>DownloadLenovUpdatePackageXmls</StartArguments>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>0025</WarningsAsErrors>
+    <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,6 +44,7 @@
     <Prefer32Bit>true</Prefer32Bit>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>0025</WarningsAsErrors>
+    <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

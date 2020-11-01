@@ -95,3 +95,9 @@ module Commands =
                                                 driverPackagePath :string
                       ) : NCmdLiner.Result<int> =
             CommandProviders.decompressDriverPackage (driverPackagePath)
+
+#if DEBUG
+        [<Command(Description="Download Lenovo Update Package Xmls for all models")>]
+        static member DownloadLenovUpdatePackageXmls() : NCmdLiner.Result<int> =
+            CommandProviders.downloadLenovoUpdatePackageXmls()
+#endif

@@ -26,6 +26,11 @@ type ModelCode private (modelCode : string) =
         let failure ex = Result.Error ex
         ModelCode.createWithContinuation success failure modelCode defaultToLocal
     
+    static member createUnsafe modelCode defaultToLocal=
+        match(ModelCode.create modelCode defaultToLocal)with
+        |Result.Ok m -> m
+        |Result.Error ex -> raise ex
+
     override x.GetHashCode() =
         hash (modelCode)
     

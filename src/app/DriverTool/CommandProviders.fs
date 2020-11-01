@@ -115,3 +115,29 @@ module CommandProviders =
     
     let decompressDriverPackage(driverPackagePath) =
         genericLogger LogLevel.Debug decompressDriverPackageBase (driverPackagePath)
+
+    let downloadLenovoUpdatePackageXmls() =
+        match(result{
+            let! manufacturer = DriverTool.Library.ManufacturerTypes.getManufacturerForCurrentSystem()
+            let! cacheFolderPath = FileSystem.path @"C:\Temp\LenovoUpdatePackagesXml2"
+            let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
+            let! catalogXmlPath = DriverTool.LenovoCatalog.downloadCatalog existingCacheFolderPath
+            let! lenovoCatalogProducts = DriverTool.LenovoCatalogXml.loadLenovoCatalog catalogXmlPath
+            let allmodelCodes = DriverTool.LenovoCatalog.getAllLenovoModels lenovoCatalogProducts
+            let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" false
+            let! logDirectory = FileSystem.path @"c:\temp"
+            let! patterns = (RegExp.toRegexPatterns [||] true)            
+            let logger = DriverTool.Library.Logging.getLoggerByName "DownloadLenovoUpdatePackageXmls"
+            let packageInfoResults =
+                allmodelCodes|>Array.map(fun modelCode -> 
+                    let updatesRetrievalContext = DriverTool.Library.UpdatesContext.toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory existingCacheFolderPath false patterns
+                    let packageInfos = DriverTool.LenovoUpdates.getRemoteUpdates logger existingCacheFolderPath updatesRetrievalContext
+                    packageInfos
+                    )
+            return packageInfoResults        
+        })with
+        |Result.Ok v -> NCmdLiner.Result.Ok(0)
+        |Result.Error ex -> NCmdLiner.Result.Ok(1)
+
+
+        

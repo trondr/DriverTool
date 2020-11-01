@@ -26,6 +26,18 @@ module LenovoCatalog =
     
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
 
+    let getAllLenovoModels (lenovoCatalogProducts:seq<LenovoCatalogProduct>) =
+        let models = 
+            lenovoCatalogProducts
+            |>Seq.map(fun p-> p.Queries.ModelTypes)
+            |>Seq.concat
+            |>Seq.map(fun mt -> 
+                match mt with 
+                |ModelType modelType -> ModelCode.createUnsafe modelType false
+                )
+            |>Seq.toArray
+        models
+
     let getSccmPackageInfosFromLenovoCatalogProducts (lenovoCatalogProducts:seq<LenovoCatalogProduct>) =
         let products =
             lenovoCatalogProducts
