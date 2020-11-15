@@ -66,7 +66,7 @@
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
     <EmbeddedResource Include="Libs\DriverTool.Library.dll" />
     <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />    
+    <EmbeddedResource Include="Libs\FSharp.Control.Reactive.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.DesignTime.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.dll" />
     <EmbeddedResource Include="Libs\FSharp.Quotations.Evaluator.dll" />
@@ -175,13 +175,13 @@
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\..\packages\FSharp.Core.4.7.0\lib\net45\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Core.4.7.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Quotations.Evaluator">
       <HintPath>..\..\..\packages\FSharp.Quotations.Evaluator.2.0.0\lib\netstandard2.0\FSharp.Quotations.Evaluator.dll</HintPath>
     </Reference>
     <Reference Include="FsPickler">
-      <HintPath>..\..\..\packages\FsPickler.5.2.2\lib\net45\FsPickler.dll</HintPath>
+      <HintPath>..\..\..\packages\FsPickler.5.3.2\lib\net45\FsPickler.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
       <HintPath>..\..\..\packages\Google.Protobuf.3.11.2\lib\net45\Google.Protobuf.dll</HintPath>
