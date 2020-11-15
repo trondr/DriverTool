@@ -5,7 +5,7 @@ module LenovoUpdateTests =
     open DriverTool    
     open DriverTool.Library.PackageXml
     open NUnit.Framework    
-    let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+    let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.Info,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     open DriverTool.Library.F
     open DriverTool.Library
     
@@ -139,3 +139,21 @@ module LenovoUpdateTests =
         })with
         |Result.Ok v -> Assert.IsTrue(true)
         |Result.Error ex -> Assert.Fail(ex.Message)
+
+    [<Test>]
+    [<Timeout(3600000)>]
+    [<Category(TestCategory.ManualTests)>]
+    let getLocalUpdatesP50Test () =
+        match(result{
+            let! manufacturer = getManufacturerForCurrentSystem()
+            let! modelCode = ModelCode.create "" true
+            let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" false
+            let! logDirectory = FileSystem.path @"c:\temp"
+            let! patterns = (RegExp.toRegexPatterns [||] true)            
+            let! cacheFolderPath = FileSystem.path @"C:\Temp\LenovoUpdatePackagesXml2"
+            let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
+            let! updates = DriverTool.LenovoUpdates.getLocalUpdates2 logger cacheFolderPath updatesRetrievalContext        
+            return updates
+        })with
+        |Result.Ok u -> Assert.IsTrue ((Array.length u) > 0,"")
+        |Result.Error ex -> Assert.Fail(ex.ToString())
