@@ -230,6 +230,37 @@ module LenovoUpdates =
                         )
         updatedPacageInfos
 
+    let updateIsInstalled logger cacheFolderPath systemInformation (packageInfo:PackageInfo) =
+        match(result{
+            let workingFolder = FileSystem.pathValue cacheFolderPath
+            let! lsuPackageFilePath = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath packageInfo.PackageXmlName
+            let! lsuPackage = LsupEval.Lsup.loadLsuPackageFromFile (FileSystem.pathValue lsuPackageFilePath)
+            let isInstalled =
+                let isDependent = 
+                    match lsuPackage.Dependencies with                
+                    |Some d ->                    
+                        let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
+                        let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder None detectionRule 
+                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating dependencies: '%s'. Return: %b" packageInfo.PackageXmlName isMatch))|>ignore))
+                        isMatch
+                    |None -> false
+
+                let isDetectedInstalled =
+                    match lsuPackage.DetectInstall with                
+                    |Some d ->                    
+                        let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
+                        let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder None detectionRule 
+                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating detect install: '%s'. Return: %b" packageInfo.PackageXmlName isMatch))|>ignore))
+                        isMatch
+                    |None -> false
+                (isDependent && isDetectedInstalled)
+            return isInstalled
+        }) with
+        |Result.Ok b -> b
+        |Result.Error ex -> 
+            logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Failed to evaluate if '%s' is installed. Return: false" packageInfo.PackageXmlName))|>ignore))
+            false
+
     let getLocalUpdates (logger:Common.Logging.ILog) cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             logger.Info("Checking if Lenovo System Update is installed...")
