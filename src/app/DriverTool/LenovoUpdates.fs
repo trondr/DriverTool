@@ -241,7 +241,7 @@ module LenovoUpdates =
                     |Some d ->                    
                         let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
                         let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder None detectionRule 
-                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating dependencies: '%s'. Return: %b" packageInfo.PackageXmlName isMatch))|>ignore))
+                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating dependencies: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch))|>ignore))
                         isMatch
                     |None -> false
 
@@ -250,10 +250,11 @@ module LenovoUpdates =
                     |Some d ->                    
                         let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
                         let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder None detectionRule 
-                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating detect install: '%s'. Return: %b" packageInfo.PackageXmlName isMatch))|>ignore))
+                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating detect install: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch))|>ignore))
                         isMatch
                     |None -> false
                 (isDependent && isDetectedInstalled)
+                //isDetectedInstalled
             return isInstalled
         }) with
         |Result.Ok b -> b
@@ -283,6 +284,28 @@ module LenovoUpdates =
                 |> updateFromRemote remotePackageInfos
                 |>Seq.filter (filterUpdates context)
                 |>Seq.toArray                
+            logger.Info(sprintf "Local updates: %A" localUpdates)
+            return localUpdates
+        }
+
+    let getLocalUpdates2 (logger:Common.Logging.ILog) cacheFolderPath (context:UpdatesRetrievalContext) =
+        result{
+            
+            let! actualModelCode = ModelCode.create String.Empty true
+            let! modelCodeIsValid = assertThatModelCodeIsValid context.Model actualModelCode
+            logger.Info(sprintf "Model code '%s' is valid: %b" context.Model.Value modelCodeIsValid)
+            let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
+            let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid context.OperatingSystem actualOperatingSystemCode
+            logger.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
+            let! systemInformation =  LsupEval.Rules.getCurrentSystemInformation'()
+
+            let! remotePackageInfos = getRemoteUpdates logger cacheFolderPath context
+            let localUpdates = 
+                remotePackageInfos
+                |> Seq.distinct
+                |> Seq.filter( fun p -> updateIsInstalled logger cacheFolderPath systemInformation p)
+                |>Seq.filter (filterUpdates context)
+                |>Seq.toArray
             logger.Info(sprintf "Local updates: %A" localUpdates)
             return localUpdates
         }
