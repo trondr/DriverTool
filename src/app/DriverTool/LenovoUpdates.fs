@@ -187,6 +187,7 @@ module LenovoUpdates =
                 |>Seq.toArray
         }
 
+    ///Get all updates for the current model from Lenovo remote web site
     let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
         DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug getRemoteUpdatesBase (logger, cacheFolderPath, context)
     
@@ -201,34 +202,6 @@ module LenovoUpdates =
             Result.Ok true
         else
             Result.Error (new Exception(sprintf "Given operating system code '%s' and actual operating system code '%s' are not equal." operatingSystemCode.Value actualOperatingSystemCode.Value))
-
-    let updateFromRemote (remotePackageInfos:seq<PackageInfo>) (packageInfos:seq<PackageInfo>) =
-        let updatedPacageInfos = 
-            packageInfos
-            //Filter local updates that do not have corresponding remote update
-            |>Seq.filter(fun p -> 
-                            let remotePackageInfo = 
-                                remotePackageInfos
-                                |> Seq.tryFind(fun rp -> rp.Installer.Name = p.Installer.Name)
-                            match remotePackageInfo with
-                            |Some _ -> true
-                            |None -> 
-                                logger.Warn(sprintf "Remote update not found for local update: %A" p)
-                                false
-                        )            
-            //For those local updates that have a corresponding remote update, transfer the BaseUrl and Category information from the remote update to the local update.
-            |>Seq.map(fun p -> 
-                        let remotePackageInfo = 
-                            remotePackageInfos
-                            |> Seq.tryFind(fun rp -> rp.Installer.Name = p.Installer.Name)
-                        let updatedPackageInfo =
-                            match remotePackageInfo with
-                            |Some rp ->                                
-                                {p with Category=rp.Category;Installer={p.Installer with Url = rp.Installer.Url};Readme={p.Readme with Url = rp.Readme.Url}}
-                            |None -> p
-                        updatedPackageInfo
-                        )
-        updatedPacageInfos
 
     let updateIsInstalled logger cacheFolderPath systemInformation (packageInfo:PackageInfo) =
         match(result{
@@ -262,33 +235,8 @@ module LenovoUpdates =
             logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Failed to evaluate if '%s' is installed. Return: false" packageInfo.PackageXmlName))|>ignore))
             false
 
+    /// Get locally installed updates.
     let getLocalUpdates (logger:Common.Logging.ILog) cacheFolderPath (context:UpdatesRetrievalContext) =
-        result{
-            logger.Info("Checking if Lenovo System Update is installed...")
-            let! lenovoSystemUpdateIsInstalled = DriverTool.Library.LenovoSystemUpdateCheck.ensureLenovoSystemUpdateIsInstalled ()
-            logger.Info(sprintf "Lenovo System Update is installed: %b" lenovoSystemUpdateIsInstalled)
-            logger.Info("Getting locally installed updates...")
-            let! packageInfos = DriverTool.LenovoSystemUpdate.getLocalUpdates()
-            
-            let! actualModelCode = ModelCode.create String.Empty true
-            let! modelCodeIsValid = assertThatModelCodeIsValid context.Model actualModelCode
-            logger.Info(sprintf "Model code '%s' is valid: %b" context.Model.Value modelCodeIsValid)
-            let! actualOperatingSystemCode = OperatingSystemCode.create String.Empty true
-            let! operatingSystemCodeIsValid = asserThatOperatingSystemCodeIsValid context.OperatingSystem actualOperatingSystemCode
-            logger.Info(sprintf "Operating system code '%s' is valid: %b" context.OperatingSystem.Value operatingSystemCodeIsValid)
-
-            let! remotePackageInfos = getRemoteUpdates logger cacheFolderPath context
-            let localUpdates = 
-                packageInfos
-                |> Seq.distinct
-                |> updateFromRemote remotePackageInfos
-                |>Seq.filter (filterUpdates context)
-                |>Seq.toArray                
-            logger.Info(sprintf "Local updates: %A" localUpdates)
-            return localUpdates
-        }
-
-    let getLocalUpdates2 (logger:Common.Logging.ILog) cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             
             let! actualModelCode = ModelCode.create String.Empty true
