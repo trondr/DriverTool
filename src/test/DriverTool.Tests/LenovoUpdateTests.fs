@@ -152,7 +152,7 @@ module LenovoUpdateTests =
             let! patterns = (RegExp.toRegexPatterns [||] true)            
             let! cacheFolderPath = FileSystem.path @"C:\Temp\LenovoUpdatePackagesXml2"
             let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
-            let! updates = DriverTool.LenovoUpdates.getLocalUpdates2 logger cacheFolderPath updatesRetrievalContext        
+            let! updates = DriverTool.LenovoUpdates.getLocalUpdates logger cacheFolderPath updatesRetrievalContext        
             return updates
         })with
         |Result.Ok u -> Assert.IsTrue ((Array.length u) > 0,"")
