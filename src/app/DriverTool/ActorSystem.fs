@@ -37,28 +37,27 @@ module ActorSystem =
             return existingx86HostPath
         }
 
-    let startx86HostProcess (context:Akka.Actor.IActorContext) =
+    let startx86HostProcess (system:Akka.Actor.ActorSystem) =
         match(result{
             let! exePath = x86HostPath()
             let! existingExePath = FileOperations.ensureFileExists exePath                       
             let processName = ProcessOperations.getProcessName exePath            
             ProcessOperations.terminateProcesses(processName)
-            ProcessOperations.startProcess existingExePath "RunHost /port=8081" None false |> ignore            
-            return ()
+            let! hostProcess = ProcessOperations.startProcess existingExePath "RunHost /port=8081" None false            
+            return hostProcess
         })with
-        |Result.Ok _ -> logger.Info("Successfully started x86 host.")
+        |Result.Ok hp -> 
+            logger.Info(sprintf "Successfully started x86 host (%d)." hp.Id)            
         |Result.Error ex -> 
             logger.Error(sprintf "Failed to start x86 host due to error: %s " (getAccumulatedExceptionMessages ex))
-            raise ex
-        let hostActor = context.ActorSelection("akka.tcp://HostSystem@localhost:8081/user/HostActor")
-        hostActor <! "Ping DriverTool x86 host from client."
+            raise ex        
+        let hostActor = system.ActorSelection("akka.tcp://HostSystem@localhost:8081/user/HostActor")        
         hostActor
 
     let stopx86HostProcess hostActor = 
         hostActor <! (new QuitHostMessage())
     
-    let clientActor (mailbox:Actor<_>) =
-        let hostActor = startx86HostProcess mailbox.Context        
+    let clientActor  (hostActor:ActorSelection) (mailbox:Actor<_>) =        
         let rec loop () = 
             actor {                                                
                 let! message = mailbox.Receive()
@@ -72,9 +71,11 @@ module ActorSystem =
                     logger.Info("Sending termination request to x86 host.")
                     hostActor <! q                    
                 |QuitConfirmed _ ->
-                    logger.Info("x86 host has confirmed termination request.")
-                    logger.Info("Terminating client actor system.")
-                    actorSystem.Terminate()|>ignore
+                    logger.Info("x86 host has confirmed termination request. Terminating client actor system.")
+                    actorSystem.Terminate()|>ignore                
+                |ConfirmStart m ->
+                    logger.Info("Ask x86 host to confirm start.")
+                    hostActor <! m
                 |StartConfirmed _ ->
                     logger.Info("x86 host has confirmed start.")
                     ()
@@ -105,9 +106,10 @@ module ActorSystem =
     }
     """
 
-    let startClientActorSystem () =
+    let startClientActorSystem () =        
         let config = Akka.FSharp.Configuration.parse hoconConfig
         let system = Akka.FSharp.System.create "ClientSystem" config
-        let clientActor = Akka.FSharp.Spawn.spawn system "ClientActor" clientActor        
+        let hostActor = startx86HostProcess system
+        let clientActor = Akka.FSharp.Spawn.spawn system "ClientActor" (clientActor hostActor)       
+        Async.wait 5 "Waited 5 seconds for actor systems to start." |> ignore        
         (system,clientActor)
-  

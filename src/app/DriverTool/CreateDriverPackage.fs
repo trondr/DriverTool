@@ -226,12 +226,13 @@ module CreateDriverPackage =
             let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
             logger.Info(msg (sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled))
             logger.Info("Starting x86 client actor system and x86 host actor system.")
-            let (clientActorSystem, clientActorRef) = DriverTool.ActorSystem.startClientActorSystem()            
+            let (clientActorSystem, clientActorRef) = DriverTool.ActorSystem.startClientActorSystem()
+            clientActorRef <! (new ConfirmStartHostMessage())
             logger.Info("Starting CreateDriverPackage actor.")
             let createDriverPackageActorRef = spawn clientActorSystem "CreateDriverPackageActor" (createDriverPackageActor dpcc clientActorRef)
-            logger.Info(sprintf "Initializing CreateDriverPackage actor with driver package creation context: %A" dpcc)
+            logger.Info(sprintf "Initializing CreateDriverPackage actor with driver package creation context: %A" dpcc)            
             createDriverPackageActorRef <! CreateDriverPackageMessage.Start
-            clientActorSystem.WhenTerminated.Wait()
+            clientActorSystem.WhenTerminated.Wait()            
             clientActorSystem.Dispose()
             logger.Info("Client actor system and host has been terminated.")
             return ()

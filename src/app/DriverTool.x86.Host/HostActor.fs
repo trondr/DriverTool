@@ -13,14 +13,18 @@ module HostActors =
                 let hostMessage = toHostMessage message
                 match hostMessage with
                 |HostMessage.Information s ->
-                    logger.Info(sprintf "%s" s)
+                    logger.Info(sprintf "%s" s)                
                 |HostMessage.Quit _ ->
                     logger.Info("Terminating x86 DriverTool host...")
                     sender <! "Request for termination of host has been received. Terminating x86 DriverTool host..."
                     sender <! new QuitConfirmedHostMessage()
-                    actorSystem.Terminate() |> ignore                
+                    DriverTool.Library.Async.wait 5 "Waited 5 seconds before terminating actor system."
+                    actorSystem.Terminate() |> ignore
                 |HostMessage.LenovoSccmPackageInfoRequest r ->                
-                    logger.Info(sprintf "Processing %A" r)
+                    logger.Warn(sprintf "Not Implemented! Simulate processing of Sccm Package Info Request '%A'" r)
+                |HostMessage.ConfirmStart _ ->
+                    logger.Info("Confirming start!")
+                    sender <! new StartConfirmedHostMessage()
                 return! loop()
         }
         loop()
