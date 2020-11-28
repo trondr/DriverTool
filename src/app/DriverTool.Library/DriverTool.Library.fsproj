@@ -55,6 +55,7 @@
     <Compile Include="Configuration.fs" />
     <Compile Include="Logging.fs" />
     <Compile Include="F.fs" />
+    <Compile Include="Async.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="FileSystem.fs" />
     <Compile Include="PathOperations.fs" />
