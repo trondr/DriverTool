@@ -1,7 +1,9 @@
 ﻿namespace DriverTool.x86.Host
 
 module RunHost =
-    
+    open System
+    open System.ServiceModel
+    open System.ServiceModel.Description
     open DriverTool.x86.Host.HostActors
     open Akka.FSharp
     open DriverTool.Library.HostMessages
@@ -35,11 +37,23 @@ akka {
         configString.Replace("8081", port) //Replace the default 8081 port with specified port.
             
     let runHost port =
-        
         let config = Akka.FSharp.Configuration.parse (hoconConfig port)
         use system = Akka.FSharp.System.create "HostSystem" config
         let hostActor = Akka.FSharp.Spawn.spawn system "HostActor" hostActor
         hostActor <! "DriverTool x86 host is now listening for requests."
         system.WhenTerminated.Wait()
         logger.Info("DriverTool x86 host has been terminated.")
+        0
+
+    let runHost2 () =
+        let serviceUri = new Uri("http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/")
+        let host = new ServiceHost(typeof<DriverTool.x86.Service.Library.Service1>, serviceUri)
+        host.AddServiceEndpoint(typeof<DriverTool.x86.Service.Library.IService1>, new WSHttpBinding(), "") |> ignore
+        let smb = new ServiceMetadataBehavior()
+        smb.HttpGetEnabled <- true
+        host.Description.Behaviors.Add(smb)
+        host.Open()
+        Console.WriteLine("Service is host at " + DateTime.Now.ToString());
+        let cancelationTokenSource = new System.Threading.CancellationTokenSource()
+        cancelationTokenSource.Token.WaitHandle.WaitOne() |>ignore 
         0

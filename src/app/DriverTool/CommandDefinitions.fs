@@ -100,4 +100,8 @@ module Commands =
         [<Command(Description="Download Lenovo Update Package Xmls for all models")>]
         static member DownloadLenovUpdatePackageXmls() : NCmdLiner.Result<int> =
             CommandProviders.downloadLenovoUpdatePackageXmls()
+
+        [<Command(Description="")>]
+        static member CallGrpcClientDemo() : NCmdLiner.Result<int> =
+            CommandProviders.callGrpcDemo()
 #endif

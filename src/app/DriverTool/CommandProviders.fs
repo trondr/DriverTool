@@ -59,7 +59,7 @@ module CommandProviders =
                 let! cacheFolderPath = FileSystem.path DriverTool.Library.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
                 let driverPackageCreationContext = DriverTool.CreateDriverPackageActor.toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath existingCacheFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage doNotDownloadSccmPackage sccmPackageInstaller sccmPackageReadme released
-                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage2 driverPackageCreationContext
+                let! createDriverPackageResult = DriverTool.CreateDriverPackage.createDriverPackage driverPackageCreationContext
                 return createDriverPackageResult
             }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
@@ -139,5 +139,9 @@ module CommandProviders =
         |Result.Ok v -> NCmdLiner.Result.Ok(0)
         |Result.Error ex -> NCmdLiner.Result.Ok(1)
 
+    let callGrpcDemo () =
+        logger.Warn("TO BE IMPLEMENTED. Start x86 host and call x86 Service methods. Demo:")
+        printf "%s" (DriverTool.x86.Client.Class1.GetData().StringValue)
+        NCmdLiner.Result.Ok(0)
 
         

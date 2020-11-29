@@ -141,12 +141,6 @@
     <Reference Include="Akka.Remote">
       <HintPath>..\..\..\packages\Akka.Remote.1.3.17\lib\net45\Akka.Remote.dll</HintPath>
     </Reference>
-    <Reference Include="Client">
-      <HintPath>..\..\..\packages_manual\Lenovo\Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Common">
-      <HintPath>..\..\..\packages_manual\Lenovo\Common.dll</HintPath>
-    </Reference>
     <Reference Include="Common.Logging">
       <HintPath>..\..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
@@ -328,6 +322,7 @@
     <Reference Include="System.Security.Cryptography.X509Certificates">
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Text.RegularExpressions">
       <Private>True</Private>
     </Reference>
@@ -347,6 +342,11 @@
     <ProjectReference Include="..\DriverTool.Library\DriverTool.Library.fsproj">
       <Name>DriverTool.Library</Name>
       <Project>{5c9696b4-d386-463d-8bde-1ec35901614a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\DriverTool.x86.Service.Library\DriverTool.x86.Service.Library.csproj">
+      <Name>DriverTool.x86.Service.Library</Name>
+      <Project>{d3ff9a73-b1a7-400a-b9d3-767385fba209}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
