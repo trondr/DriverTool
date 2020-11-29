@@ -20,7 +20,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.Library", "src\a
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.x86.Host", "src\app\DriverTool.x86.Host\DriverTool.x86.Host.fsproj", "{C7EF76B9-0CE8-4E62-8F86-D2C2D755E7C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverTool.x86.Service.Library", "src\app\DriverTool.x86.Service.Library\DriverTool.x86.Service.Library.csproj", "{D3FF9A73-B1A7-400A-B9D3-767385FBA209}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverTool.x86.Service", "src\app\DriverTool.x86.Service\DriverTool.x86.Service.csproj", "{D3FF9A73-B1A7-400A-B9D3-767385FBA209}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverTool.x86.Client", "src\app\DriverTool.x86.Client\DriverTool.x86.Client.csproj", "{4EA4967C-EE7F-4410-B588-F6C246211ADB}"
 	ProjectSection(ProjectDependencies) = postProject

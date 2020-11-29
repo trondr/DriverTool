@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="5u5UT/2C37ZYiZA8sdUM+UchdbnYvKKUDjXDLK1n5Vg=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="q0uD4OWO9bdPx3l9ImThuPRNZtmQImySIH0QomeGq+Y=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="wsHttpBinding" name="WSHttpBinding_IService1">
       <properties>
@@ -127,10 +127,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="WSHttpBinding_IService1" contract="ServiceReference1.IService1" bindingType="wsHttpBinding" address="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/" bindingConfiguration="WSHttpBinding_IService1">
+    <endpoint name="WSHttpBinding_IService1" contract="ServiceReference1.IService1" bindingType="wsHttpBinding" address="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/" bindingConfiguration="WSHttpBinding_IService1">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/</serializedValue>
+          <serializedValue>http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

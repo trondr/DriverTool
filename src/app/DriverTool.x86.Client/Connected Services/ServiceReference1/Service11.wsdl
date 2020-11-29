@@ -174,9 +174,9 @@
   </wsp:Policy>
   <wsdl:types>
     <xsd:schema targetNamespace="http://tempuri.org/Imports">
-      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/?xsd=xsd0" namespace="http://tempuri.org/" />
-      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/DriverTool.x86.Service.Library" />
+      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/DriverTool.x86.Service" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IService1_GetData_InputMessage">
@@ -229,9 +229,9 @@
   </wsdl:binding>
   <wsdl:service name="Service1">
     <wsdl:port name="WSHttpBinding_IService1" binding="tns:WSHttpBinding_IService1">
-      <soap12:address location="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/" />
+      <soap12:address location="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/" />
       <wsa10:EndpointReference>
-        <wsa10:Address>http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/</wsa10:Address>
+        <wsa10:Address>http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/</wsa10:Address>
         <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
           <Upn>eta410@corp.corpcommon.com</Upn>
         </Identity>

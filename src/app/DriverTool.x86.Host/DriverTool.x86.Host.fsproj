@@ -344,8 +344,8 @@
       <Project>{5c9696b4-d386-463d-8bde-1ec35901614a}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\DriverTool.x86.Service.Library\DriverTool.x86.Service.Library.csproj">
-      <Name>DriverTool.x86.Service.Library</Name>
+    <ProjectReference Include="..\DriverTool.x86.Service\DriverTool.x86.Service.csproj">
+      <Name>DriverTool.x86.Service</Name>
       <Project>{d3ff9a73-b1a7-400a-b9d3-767385fba209}</Project>
       <Private>True</Private>
     </ProjectReference>

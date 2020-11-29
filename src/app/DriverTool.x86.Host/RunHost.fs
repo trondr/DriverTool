@@ -46,9 +46,9 @@ akka {
         0
 
     let runHost2 () =
-        let serviceUri = new Uri("http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service.Library/Service1/")
-        let host = new ServiceHost(typeof<DriverTool.x86.Service.Library.Service1>, serviceUri)
-        host.AddServiceEndpoint(typeof<DriverTool.x86.Service.Library.IService1>, new WSHttpBinding(), "") |> ignore
+        let serviceUri = new Uri("http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/")
+        let host = new ServiceHost(typeof<DriverTool.x86.Service.Service1>, serviceUri)
+        host.AddServiceEndpoint(typeof<DriverTool.x86.Service.IService1>, new WSHttpBinding(), "") |> ignore
         let smb = new ServiceMetadataBehavior()
         smb.HttpGetEnabled <- true
         host.Description.Behaviors.Add(smb)
