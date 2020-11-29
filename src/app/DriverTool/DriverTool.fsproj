@@ -86,8 +86,6 @@
     <EmbeddedResource Include="Libs\Akka.dll" />
     <EmbeddedResource Include="Libs\Akka.FSharp.dll" />
     <EmbeddedResource Include="Libs\Akka.Remote.dll" />
-    <EmbeddedResource Include="Libs\Client.dll" />
-    <EmbeddedResource Include="Libs\Common.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
