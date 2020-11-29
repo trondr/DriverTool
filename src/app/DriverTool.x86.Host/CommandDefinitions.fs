@@ -9,16 +9,6 @@ namespace DriverTool.x86.Host
         type CommandDefinitions =        
             
             [<Command(Description = "Run DriverTool x86 host, listening for requests from main DriverTool process.", Summary = "Run DriverTool x86 host.")>]
-            static member RunHost (
-                                    [<RequiredCommandParameter(Description = "Tcp port to listen on.", ExampleValue = @"8081", AlternativeName = "f")>] 
-                                    port: string                                                
-                                    ) : NCmdLiner.Result<int> =                
-                    NCmdLiner.Result.Ok (runHost port)
-            
-            [<Command(Description = "Run DriverTool x86 host, listening for requests from main DriverTool process.", Summary = "Run DriverTool x86 host.")>]
-            static member RunHost2 (
-                                    //[<RequiredCommandParameter(Description = "Tcp port to listen on.", ExampleValue = @"8081", AlternativeName = "f")>] 
-                                    //port: string                                                
-                                    ) : NCmdLiner.Result<int> =                
-                    NCmdLiner.Result.Ok (runHost2 ())
+            static member RunHost () =
+                    NCmdLiner.Result.Ok (runHost ())
         
