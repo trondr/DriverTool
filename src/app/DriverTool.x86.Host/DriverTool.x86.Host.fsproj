@@ -125,7 +125,6 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <Compile Include="Init.fs" />
-    <Compile Include="HostActor.fs" />
     <Compile Include="RunHost.fs" />
     <Compile Include="CommandDefinitions.fs" />
     <Compile Include="RunCommand.fs" />
