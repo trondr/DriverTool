@@ -141,7 +141,8 @@ module CommandProviders =
 
     let callGrpcDemo () =
         logger.Warn("TO BE IMPLEMENTED. Start x86 host and call x86 Service methods. Demo:")
-        printf "%s" (DriverTool.x86.Client.Class1.GetData())
+        let url = "https://support.lenovo.com/no/en/downloads/ds112090";
+        printf "%s" (DriverTool.x86.Client.ToolService.GetWebPageContent(url))
         NCmdLiner.Result.Ok(0)
 
         
