@@ -132,15 +132,6 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Akka">
-      <HintPath>..\..\..\packages\Akka.1.3.17\lib\net45\Akka.dll</HintPath>
-    </Reference>
-    <Reference Include="Akka.FSharp">
-      <HintPath>..\..\..\packages\Akka.FSharp.1.3.17\lib\net45\Akka.FSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Akka.Remote">
-      <HintPath>..\..\..\packages\Akka.Remote.1.3.17\lib\net45\Akka.Remote.dll</HintPath>
-    </Reference>
     <Reference Include="Common.Logging">
       <HintPath>..\..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
