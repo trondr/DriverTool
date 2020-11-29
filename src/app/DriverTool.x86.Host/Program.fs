@@ -26,6 +26,7 @@ let teardown() =
     AppDomain.CurrentDomain.UnhandledException.RemoveHandler(fun _ x -> printfn "%s" (x.ExceptionObject.ToString()))
 
 [<EntryPoint>]
+[< STAThread >]
 let main argv = 
     setup()
     let exitCode = DriverTool.x86.Host.RunCommand.runCommand argv    

@@ -47,6 +47,8 @@
     <Compile Include="IService1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service1.cs" />
+    <Compile Include="STAOperationBehaviorAttribute.cs" />
+    <Compile Include="STAOperationInvoker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

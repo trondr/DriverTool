@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace DriverTool.x86.Service
 {
@@ -10,15 +11,17 @@ namespace DriverTool.x86.Service
             return string.Format("You entered: {0}", value);
         }
 
+        [STAOperationBehavior]
         public CompositeType GetDataUsingDataContract(CompositeType composite)
         {
+            var apartmentState = Thread.CurrentThread.GetApartmentState().ToString();
             if (composite == null)
             {
                 throw new ArgumentNullException("composite");
             }
             if (composite.BoolValue)
             {
-                composite.StringValue += "Suffix";
+                composite.StringValue += "Suffix" + "-" + apartmentState;
             }
             return composite;
         }
