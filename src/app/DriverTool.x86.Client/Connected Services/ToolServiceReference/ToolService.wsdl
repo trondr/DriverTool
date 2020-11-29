@@ -96,7 +96,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="WSHttpBinding_IToolService_GetData_Input_policy">
+  <wsp:Policy wsu:Id="WSHttpBinding_IToolService_GetWebPageContent_Input_policy">
     <wsp:ExactlyOne>
       <wsp:All>
         <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
@@ -115,45 +115,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="WSHttpBinding_IToolService_GetData_output_policy">
-    <wsp:ExactlyOne>
-      <wsp:All>
-        <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
-          <sp:Body />
-          <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing" />
-        </sp:SignedParts>
-        <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
-          <sp:Body />
-        </sp:EncryptedParts>
-      </wsp:All>
-    </wsp:ExactlyOne>
-  </wsp:Policy>
-  <wsp:Policy wsu:Id="WSHttpBinding_IToolService_GetDataUsingDataContract_Input_policy">
-    <wsp:ExactlyOne>
-      <wsp:All>
-        <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
-          <sp:Body />
-          <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing" />
-          <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing" />
-        </sp:SignedParts>
-        <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
-          <sp:Body />
-        </sp:EncryptedParts>
-      </wsp:All>
-    </wsp:ExactlyOne>
-  </wsp:Policy>
-  <wsp:Policy wsu:Id="WSHttpBinding_IToolService_GetDataUsingDataContract_output_policy">
+  <wsp:Policy wsu:Id="WSHttpBinding_IToolService_GetWebPageContent_output_policy">
     <wsp:ExactlyOne>
       <wsp:All>
         <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
@@ -176,53 +138,31 @@
     <xsd:schema targetNamespace="http://tempuri.org/Imports">
       <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd0" namespace="http://tempuri.org/" />
       <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/DriverTool.x86.Service" />
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="IToolService_GetData_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetData" />
+  <wsdl:message name="IToolService_GetWebPageContent_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetWebPageContent" />
   </wsdl:message>
-  <wsdl:message name="IToolService_GetData_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetDataResponse" />
-  </wsdl:message>
-  <wsdl:message name="IToolService_GetDataUsingDataContract_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetDataUsingDataContract" />
-  </wsdl:message>
-  <wsdl:message name="IToolService_GetDataUsingDataContract_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetDataUsingDataContractResponse" />
+  <wsdl:message name="IToolService_GetWebPageContent_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetWebPageContentResponse" />
   </wsdl:message>
   <wsdl:portType name="IToolService">
-    <wsdl:operation name="GetData">
-      <wsdl:input wsaw:Action="http://tempuri.org/IToolService/GetData" message="tns:IToolService_GetData_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IToolService/GetDataResponse" message="tns:IToolService_GetData_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="GetDataUsingDataContract">
-      <wsdl:input wsaw:Action="http://tempuri.org/IToolService/GetDataUsingDataContract" message="tns:IToolService_GetDataUsingDataContract_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IToolService/GetDataUsingDataContractResponse" message="tns:IToolService_GetDataUsingDataContract_OutputMessage" />
+    <wsdl:operation name="GetWebPageContent">
+      <wsdl:input wsaw:Action="http://tempuri.org/IToolService/GetWebPageContent" message="tns:IToolService_GetWebPageContent_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IToolService/GetWebPageContentResponse" message="tns:IToolService_GetWebPageContent_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="WSHttpBinding_IToolService" type="tns:IToolService">
     <wsp:PolicyReference URI="#WSHttpBinding_IToolService_policy" />
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="GetData">
-      <soap12:operation soapAction="http://tempuri.org/IToolService/GetData" style="document" />
+    <wsdl:operation name="GetWebPageContent">
+      <soap12:operation soapAction="http://tempuri.org/IToolService/GetWebPageContent" style="document" />
       <wsdl:input>
-        <wsp:PolicyReference URI="#WSHttpBinding_IToolService_GetData_Input_policy" />
+        <wsp:PolicyReference URI="#WSHttpBinding_IToolService_GetWebPageContent_Input_policy" />
         <soap12:body use="literal" />
       </wsdl:input>
       <wsdl:output>
-        <wsp:PolicyReference URI="#WSHttpBinding_IToolService_GetData_output_policy" />
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetDataUsingDataContract">
-      <soap12:operation soapAction="http://tempuri.org/IToolService/GetDataUsingDataContract" style="document" />
-      <wsdl:input>
-        <wsp:PolicyReference URI="#WSHttpBinding_IToolService_GetDataUsingDataContract_Input_policy" />
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <wsp:PolicyReference URI="#WSHttpBinding_IToolService_GetDataUsingDataContract_output_policy" />
+        <wsp:PolicyReference URI="#WSHttpBinding_IToolService_GetWebPageContent_output_policy" />
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

@@ -1,13 +1,15 @@
-﻿using DriverTool.x86.Client.ToolServiceReference;
+﻿using System.Security.Policy;
+using DriverTool.x86.Client.ToolServiceReference;
 
 namespace DriverTool.x86.Client
 {
     public class Class1
     {
-        public static CompositeType GetData()
+        public static string GetData()
         {
             var client = new ToolServiceClient();
-            return client.GetDataUsingDataContract(new CompositeType {BoolValue = true,StringValue = "TestString"});
+            var url = "https://support.lenovo.com/no/en/downloads/ds112090";
+            return client.GetWebPageContent(url);
         }
     }
 }

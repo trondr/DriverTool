@@ -56,16 +56,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Connected Services\ToolServiceReference\DriverTool.x86.Client.ToolServiceReference.CompositeType.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
     <None Include="Connected Services\ToolServiceReference\item.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Connected Services\ToolServiceReference\item1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Connected Services\ToolServiceReference\item2.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Connected Services\ToolServiceReference\ToolService.wsdl" />

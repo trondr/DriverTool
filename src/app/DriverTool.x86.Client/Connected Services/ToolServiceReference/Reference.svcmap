@@ -25,7 +25,6 @@
     <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="cc332178-8d55-41e7-a199-9dba250289e6" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd1" />
     <MetadataFile FileName="ToolService.wsdl" MetadataType="Wsdl" ID="ba77acfb-00d6-43c2-bb1c-0d315028228f" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?wsdl" />
     <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="a20ca06a-2ecc-43ce-8406-b6f69871c83c" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd0" />
-    <MetadataFile FileName="item2.xsd" MetadataType="Schema" ID="08c6162e-7b8f-40be-b4bf-b908489912b3" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd2" />
     <MetadataFile FileName="item.disco" MetadataType="Disco" ID="51a1d004-b1b5-4c4a-a5ff-71fd43eeb91c" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?disco" />
   </Metadata>
   <Extensions>

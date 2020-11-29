@@ -141,7 +141,7 @@ module CommandProviders =
 
     let callGrpcDemo () =
         logger.Warn("TO BE IMPLEMENTED. Start x86 host and call x86 Service methods. Demo:")
-        printf "%s" (DriverTool.x86.Client.Class1.GetData().StringValue)
+        printf "%s" (DriverTool.x86.Client.Class1.GetData())
         NCmdLiner.Result.Ok(0)
 
         

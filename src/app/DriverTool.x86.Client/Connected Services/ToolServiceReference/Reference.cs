@@ -9,86 +9,17 @@
 //------------------------------------------------------------------------------
 
 namespace DriverTool.x86.Client.ToolServiceReference {
-    using System.Runtime.Serialization;
-    using System;
     
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="CompositeType", Namespace="http://schemas.datacontract.org/2004/07/DriverTool.x86.Service")]
-    [System.SerializableAttribute()]
-    public partial class CompositeType : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool BoolValueField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string StringValueField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool BoolValue {
-            get {
-                return this.BoolValueField;
-            }
-            set {
-                if ((this.BoolValueField.Equals(value) != true)) {
-                    this.BoolValueField = value;
-                    this.RaisePropertyChanged("BoolValue");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string StringValue {
-            get {
-                return this.StringValueField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.StringValueField, value) != true)) {
-                    this.StringValueField = value;
-                    this.RaisePropertyChanged("StringValue");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ToolServiceReference.IToolService")]
     public interface IToolService {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetData", ReplyAction="http://tempuri.org/IToolService/GetDataResponse")]
-        string GetData(int value);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetWebPageContent", ReplyAction="http://tempuri.org/IToolService/GetWebPageContentResponse")]
+        string GetWebPageContent(string url);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetData", ReplyAction="http://tempuri.org/IToolService/GetDataResponse")]
-        System.Threading.Tasks.Task<string> GetDataAsync(int value);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetDataUsingDataContract", ReplyAction="http://tempuri.org/IToolService/GetDataUsingDataContractResponse")]
-        DriverTool.x86.Client.ToolServiceReference.CompositeType GetDataUsingDataContract(DriverTool.x86.Client.ToolServiceReference.CompositeType composite);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetDataUsingDataContract", ReplyAction="http://tempuri.org/IToolService/GetDataUsingDataContractResponse")]
-        System.Threading.Tasks.Task<DriverTool.x86.Client.ToolServiceReference.CompositeType> GetDataUsingDataContractAsync(DriverTool.x86.Client.ToolServiceReference.CompositeType composite);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetWebPageContent", ReplyAction="http://tempuri.org/IToolService/GetWebPageContentResponse")]
+        System.Threading.Tasks.Task<string> GetWebPageContentAsync(string url);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -118,20 +49,12 @@ namespace DriverTool.x86.Client.ToolServiceReference {
                 base(binding, remoteAddress) {
         }
         
-        public string GetData(int value) {
-            return base.Channel.GetData(value);
+        public string GetWebPageContent(string url) {
+            return base.Channel.GetWebPageContent(url);
         }
         
-        public System.Threading.Tasks.Task<string> GetDataAsync(int value) {
-            return base.Channel.GetDataAsync(value);
-        }
-        
-        public DriverTool.x86.Client.ToolServiceReference.CompositeType GetDataUsingDataContract(DriverTool.x86.Client.ToolServiceReference.CompositeType composite) {
-            return base.Channel.GetDataUsingDataContract(composite);
-        }
-        
-        public System.Threading.Tasks.Task<DriverTool.x86.Client.ToolServiceReference.CompositeType> GetDataUsingDataContractAsync(DriverTool.x86.Client.ToolServiceReference.CompositeType composite) {
-            return base.Channel.GetDataUsingDataContractAsync(composite);
+        public System.Threading.Tasks.Task<string> GetWebPageContentAsync(string url) {
+            return base.Channel.GetWebPageContentAsync(url);
         }
     }
 }
