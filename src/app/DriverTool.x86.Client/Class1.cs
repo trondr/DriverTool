@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using DriverTool.x86.Client.ServiceReference1;
+﻿using DriverTool.x86.Client.ToolServiceReference;
 
 namespace DriverTool.x86.Client
 {
@@ -12,7 +6,7 @@ namespace DriverTool.x86.Client
     {
         public static CompositeType GetData()
         {
-            var client = new ServiceReference1.Service1Client();
+            var client = new ToolServiceClient();
             return client.GetDataUsingDataContract(new CompositeType {BoolValue = true,StringValue = "TestString"});
         }
     }

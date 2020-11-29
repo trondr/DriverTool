@@ -46,14 +46,14 @@ akka {
         0
 
     let runHost2 () =
-        let serviceUri = new Uri("http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/")
-        let host = new ServiceHost(typeof<DriverTool.x86.Service.Service1>, serviceUri)
-        host.AddServiceEndpoint(typeof<DriverTool.x86.Service.IService1>, new WSHttpBinding(), "") |> ignore
+        let serviceUri = new Uri("http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/")
+        let host = new ServiceHost(typeof<DriverTool.x86.Service.ToolService>, serviceUri)
+        host.AddServiceEndpoint(typeof<DriverTool.x86.Service.IToolService>, new WSHttpBinding(), "") |> ignore
         let smb = new ServiceMetadataBehavior()
         smb.HttpGetEnabled <- true
         host.Description.Behaviors.Add(smb)
         host.Open()
-        Console.WriteLine("Service is host at " + DateTime.Now.ToString());
+        Console.WriteLine("Service is host at " + serviceUri.ToString());
         let cancelationTokenSource = new System.Threading.CancellationTokenSource()
         cancelationTokenSource.Token.WaitHandle.WaitOne() |>ignore 
         0

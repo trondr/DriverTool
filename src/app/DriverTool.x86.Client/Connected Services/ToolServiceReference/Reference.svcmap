@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="2c73749e-5fd6-40c7-ab36-de046ab534df" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="cc332178-8d55-41e7-a199-9dba250289e6" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd1" />
+    <MetadataFile FileName="ToolService.wsdl" MetadataType="Wsdl" ID="ba77acfb-00d6-43c2-bb1c-0d315028228f" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?wsdl" />
+    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="a20ca06a-2ecc-43ce-8406-b6f69871c83c" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd0" />
+    <MetadataFile FileName="item2.xsd" MetadataType="Schema" ID="08c6162e-7b8f-40be-b4bf-b908489912b3" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd2" />
+    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="51a1d004-b1b5-4c4a-a5ff-71fd43eeb91c" SourceId="1" SourceUrl="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -3,9 +3,9 @@ using System.ServiceModel;
 
 namespace DriverTool.x86.Service
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "IService1" in both code and config file together.
+    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "IToolService" in both code and config file together.
     [ServiceContract]
-    public interface IService1
+    public interface IToolService
     {
         [OperationContract]
         string GetData(int value);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/Service1/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/DriverTool.x86.Service" />
+  <xs:import schemaLocation="http://localhost:8733/Design_Time_Addresses/DriverTool.x86.Service/ToolService/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/DriverTool.x86.Service" />
   <xs:element name="GetData">
     <xs:complexType>
       <xs:sequence>

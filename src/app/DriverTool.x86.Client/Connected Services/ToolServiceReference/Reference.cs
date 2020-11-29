@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DriverTool.x86.Client.ServiceReference1 {
+namespace DriverTool.x86.Client.ToolServiceReference {
     using System.Runtime.Serialization;
     using System;
     
@@ -75,46 +75,46 @@ namespace DriverTool.x86.Client.ServiceReference1 {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ServiceReference1.IService1")]
-    public interface IService1 {
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ToolServiceReference.IToolService")]
+    public interface IToolService {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetData", ReplyAction="http://tempuri.org/IService1/GetDataResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetData", ReplyAction="http://tempuri.org/IToolService/GetDataResponse")]
         string GetData(int value);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetData", ReplyAction="http://tempuri.org/IService1/GetDataResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetData", ReplyAction="http://tempuri.org/IToolService/GetDataResponse")]
         System.Threading.Tasks.Task<string> GetDataAsync(int value);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetDataUsingDataContract", ReplyAction="http://tempuri.org/IService1/GetDataUsingDataContractResponse")]
-        DriverTool.x86.Client.ServiceReference1.CompositeType GetDataUsingDataContract(DriverTool.x86.Client.ServiceReference1.CompositeType composite);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetDataUsingDataContract", ReplyAction="http://tempuri.org/IToolService/GetDataUsingDataContractResponse")]
+        DriverTool.x86.Client.ToolServiceReference.CompositeType GetDataUsingDataContract(DriverTool.x86.Client.ToolServiceReference.CompositeType composite);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetDataUsingDataContract", ReplyAction="http://tempuri.org/IService1/GetDataUsingDataContractResponse")]
-        System.Threading.Tasks.Task<DriverTool.x86.Client.ServiceReference1.CompositeType> GetDataUsingDataContractAsync(DriverTool.x86.Client.ServiceReference1.CompositeType composite);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IToolService/GetDataUsingDataContract", ReplyAction="http://tempuri.org/IToolService/GetDataUsingDataContractResponse")]
+        System.Threading.Tasks.Task<DriverTool.x86.Client.ToolServiceReference.CompositeType> GetDataUsingDataContractAsync(DriverTool.x86.Client.ToolServiceReference.CompositeType composite);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IService1Channel : DriverTool.x86.Client.ServiceReference1.IService1, System.ServiceModel.IClientChannel {
+    public interface IToolServiceChannel : DriverTool.x86.Client.ToolServiceReference.IToolService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class Service1Client : System.ServiceModel.ClientBase<DriverTool.x86.Client.ServiceReference1.IService1>, DriverTool.x86.Client.ServiceReference1.IService1 {
+    public partial class ToolServiceClient : System.ServiceModel.ClientBase<DriverTool.x86.Client.ToolServiceReference.IToolService>, DriverTool.x86.Client.ToolServiceReference.IToolService {
         
-        public Service1Client() {
+        public ToolServiceClient() {
         }
         
-        public Service1Client(string endpointConfigurationName) : 
+        public ToolServiceClient(string endpointConfigurationName) : 
                 base(endpointConfigurationName) {
         }
         
-        public Service1Client(string endpointConfigurationName, string remoteAddress) : 
+        public ToolServiceClient(string endpointConfigurationName, string remoteAddress) : 
                 base(endpointConfigurationName, remoteAddress) {
         }
         
-        public Service1Client(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+        public ToolServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(endpointConfigurationName, remoteAddress) {
         }
         
-        public Service1Client(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+        public ToolServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
         }
         
@@ -126,11 +126,11 @@ namespace DriverTool.x86.Client.ServiceReference1 {
             return base.Channel.GetDataAsync(value);
         }
         
-        public DriverTool.x86.Client.ServiceReference1.CompositeType GetDataUsingDataContract(DriverTool.x86.Client.ServiceReference1.CompositeType composite) {
+        public DriverTool.x86.Client.ToolServiceReference.CompositeType GetDataUsingDataContract(DriverTool.x86.Client.ToolServiceReference.CompositeType composite) {
             return base.Channel.GetDataUsingDataContract(composite);
         }
         
-        public System.Threading.Tasks.Task<DriverTool.x86.Client.ServiceReference1.CompositeType> GetDataUsingDataContractAsync(DriverTool.x86.Client.ServiceReference1.CompositeType composite) {
+        public System.Threading.Tasks.Task<DriverTool.x86.Client.ToolServiceReference.CompositeType> GetDataUsingDataContractAsync(DriverTool.x86.Client.ToolServiceReference.CompositeType composite) {
             return base.Channel.GetDataUsingDataContractAsync(composite);
         }
     }
