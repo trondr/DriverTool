@@ -8,7 +8,7 @@ namespace DriverTool.x86.Service
     {
         public string GetData(int value)
         {
-            return string.Format("You entered: {0}", value);
+            return $"You entered: {value}";
         }
 
         [STAOperationBehavior]
@@ -17,7 +17,7 @@ namespace DriverTool.x86.Service
             var apartmentState = Thread.CurrentThread.GetApartmentState().ToString();
             if (composite == null)
             {
-                throw new ArgumentNullException("composite");
+                throw new ArgumentNullException(nameof(composite));
             }
             if (composite.BoolValue)
             {
