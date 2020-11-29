@@ -144,6 +144,12 @@ module ProcessOperations =
             p.Kill()
         ) |> ignore
     
+    let processIsRunning processName =
+        let proc = getProcessesByName processName
+        match proc with
+        | null -> false
+        | _ -> true
+
     let getCurrentProcess() =
         System.Diagnostics.Process.GetCurrentProcess()
 
