@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-    <StartArguments>CallGrpcClientDemo</StartArguments>
+    <StartArguments>CallWcfClientDemo</StartArguments>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>0025</WarningsAsErrors>
     <StartAction>Project</StartAction>

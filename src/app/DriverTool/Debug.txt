@@ -31,3 +31,5 @@ CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePubli
 CreateDriverPackage /destinationFolder="c:\temp\DI" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="False" /doNotDownloadSccmPackage="True" /sccmPackageInstaller="tp_p50-p70_w1064_1909_201911.exe" /sccmPackageReadme="tp_p50-p70_w1064_1909_201911.txt" /sccmPackageReleased="2019-11-01"
 
 CreateDriverPackage /destinationFolder="c:\temp\DI" /packagePublisher="MyCompany" /baseOnLocallyInstalledUpdates="True" /doNotDownloadSccmPackage="True" /sccmPackageInstaller="tp_p50-p70_w1064_1909_201911.exe" /sccmPackageReadme="tp_p50-p70_w1064_1909_201911.txt" /sccmPackageReleased="2019-11-01"
+
+CallWcfClientDemo

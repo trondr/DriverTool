@@ -102,6 +102,6 @@ module Commands =
             CommandProviders.downloadLenovoUpdatePackageXmls()
 
         [<Command(Description="")>]
-        static member CallGrpcClientDemo() : NCmdLiner.Result<int> =
-            CommandProviders.callGrpcDemo()
+        static member CallWcfClientDemo() : NCmdLiner.Result<int> =
+            CommandProviders.callWcfDemo()
 #endif
