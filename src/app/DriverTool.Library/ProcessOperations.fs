@@ -147,7 +147,7 @@ module ProcessOperations =
     let processIsRunning processName =
         let proc = getProcessesByName processName
         match proc with
-        | null -> false
+        | [||] -> false
         | _ -> true
 
     let getCurrentProcess() =

@@ -39,7 +39,7 @@ module x86Host =
             let! hostProcess =  
                 match isAllreadyRunning with
                 |true -> 
-                    let proc = (ProcessOperations.getProcessesByName processName |> Array.last)
+                    let proc = (ProcessOperations.getProcessesByName processName |> Array.head)
                     Result.Ok proc
                 |false -> 
                     let procRes = ProcessOperations.startProcess existingExePath "RunHost" None false 

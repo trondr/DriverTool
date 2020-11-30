@@ -345,6 +345,8 @@
 robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).exe
 robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).pdb
 robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" $(TargetName).exe.config
+robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" DriverTool.x86.Service.dll
+robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)..\DriverTool\bin\$(ConfigurationName)" DriverTool.x86.Service.dll.config
 exit /b 0</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
