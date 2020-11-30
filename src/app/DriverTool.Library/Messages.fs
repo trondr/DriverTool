@@ -57,13 +57,6 @@ module Messages =
             SccmPackageReleased:DateTime
         }
 
-    //let releaseDate= (max latestRelaseDate (downloadedSccmPackage.SccmPackage.Released.ToString("yyyy-MM-dd")))
-    //let manufacturerName = manufacturerToName dpcc.Manufacturer
-    //let systemFamilyName = dpcc.SystemFamily.Value.Replace(manufacturerName,"").Trim()                
-    //let osBuild = OperatingSystem.getOsBuildForCurrentSystem
-    //let packageName = sprintf "%s %s %s %s %s %s %s" manufacturerName systemFamilyName dpcc.Model.Value dpcc.OperatingSystem.Value osBuild dpcc.PackageTypeName releaseDate
-    //let! versionedPackagePath = combine4Paths (FileSystem.pathValue dpcc.DestinationFolderPath, dpcc.Model.Value, releaseDate + "-1.0", "Script")
-
     type Progress = { Total:int; Value:int; Name:string}
 
     let getPercent progress =
@@ -199,39 +192,3 @@ module Messages =
 
     let updatePackaginContextReleaseDate (packagingContext:PackagingContext) releaseDate =
         {packagingContext with ReleaseDate=(max packagingContext.ReleaseDate releaseDate)}
-
-    type CreateDriverPackageMessage =        
-        |Start                
-        |InitializePackaging of PackagingContext
-        |RetrieveUpdateInfos of UpdatesRetrievalContext
-        |UpdateInfosRetrieved of PackageInfo array
-        |UpdateInfoRetrieved of PackageInfo
-        |RetrieveSccmPackageInfo of SccmPackageInfoRetrievalContext
-        |SccmPackageInfoRetrieved of SccmPackageInfo option
-        |DownloadPackage of PackageInfo*PackagingContext
-        |PackageDownloaded of DownloadedPackageInfo option
-        |DownloadSccmPackage of SccmPackageInfoDownloadContext
-        |SccmPackageDownloaded of DownloadedSccmPackageInfo option
-        |StartDownload of WebFileDownload
-        |DownloadFinished of WebFileDownload option*WebFileDownload
-        |ExtractPackage of PackagingContext*DownloadedPackageInfo
-        |PackageExtracted of ExtractedPackageInfo option*DownloadedPackageInfo        
-        |ExtractSccmPackage of PackagingContext*DownloadedSccmPackageInfo
-        |SccmPackageExtracted of ExtractedSccmPackageInfo option*DownloadedSccmPackageInfo        
-        |PackagingProgress
-        |FinalizePackaging 
-        |UpdatePackagingContext of PackagingContext
-        |PackagingContextUpdated of PackagingContext*PackagingContext        
-        |MovePackaging of PackagingContext*PackagingContext
-        |PackagagingMoved
-        |UpdateInstallXml of PackagingContext
-        |InstallXmlUpdated of InstallConfigurationData
-        |CreatePackageDefinition of PackagingContext*InstallConfigurationData
-        |PackageDefinitionCreated of PackageDefinition*InstallConfigurationData
-        |CreateDismPackageDefinition of PackagingContext*InstallConfigurationData
-        |DismPackageDefinitionCreated of FileSystem.Path
-        |PackagingFinalized
-        |Finished        
-        |Error of Exception
-        |Info of string
-        |Warning of string

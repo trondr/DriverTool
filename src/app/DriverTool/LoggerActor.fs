@@ -1,7 +1,6 @@
 ﻿namespace DriverTool
 
 module LoggerActor=    
-    open Akka.FSharp
     open DriverTool.Library.Logging
     open DriverTool.Library.Messages
     open System.Collections.Generic
@@ -43,25 +42,4 @@ module LoggerActor=
 
     let logTrace loggerName (msg:Msg) =
         let logger = getLogger loggerName
-        logger.Trace(msg)
-
-    let loggerActor (mailbox:Actor<_>) =
-        
-        let rec loop () =
-            actor{
-                let! message = mailbox.Receive()
-                match message with
-                |FatalMsg (loggerName, msg) ->
-                    logFatal loggerName msg
-                |ErrorMsg (loggerName, msg) ->
-                    logError loggerName msg
-                |WarnMsg (loggerName, msg) ->
-                    logWarn loggerName msg
-                |InfoMsg (loggerName, msg) ->
-                    logInfo loggerName msg
-                |DebugMsg (loggerName, msg) ->
-                    logDebug loggerName msg
-                |TraceMsg (loggerName, msg) ->
-                    logTrace loggerName msg                    
-            }
-        loop()
+        logger.Trace(msg)    

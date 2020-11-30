@@ -96,7 +96,6 @@
     <Compile Include="Compression.fs" />
     <Compile Include="PackageDefintion.fs" />
     <Compile Include="Run.fs" />
-    <Compile Include="HostMessages.fs" />
     <Compile Include="Messages.fs" />
   </ItemGroup>
   <ItemGroup>

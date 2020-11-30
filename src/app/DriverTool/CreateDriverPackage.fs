@@ -5,8 +5,7 @@ module CreateDriverPackage =
     open System
     open System.Linq
     open DriverTool.Packaging
-    open Microsoft.FSharp.Collections
-    open DriverTool
+    open Microsoft.FSharp.Collections    
     open DriverTool.Library.PackageXml
     open FSharp.Collections.ParallelSeq    
     open DriverTool.Library.ManufacturerTypes
@@ -19,13 +18,9 @@ module CreateDriverPackage =
     open DriverTool.Library.F
     open DriverTool.Library
     open DriverTool.Library.UpdatesContext
-    open DriverTool.Library.Environment
-    open DriverTool.Library.HostMessages
+    open DriverTool.Library.Environment    
     open DriverTool.Library.Messages
-    open Akka.FSharp
-    open DriverTool.Actors
-    open DriverTool.DownloadActor    
-    open DriverTool.ExtractActor
+    open DriverTool.DownloadActor       
     open DriverTool.CreateDriverPackageActor
 
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
@@ -53,13 +48,6 @@ module CreateDriverPackage =
         |> PSeq.toArray
         |> Seq.ofArray
         |> toAccumulatedResult
-     
-    
-
-    
-
-
-    
 
     let createInstallScripts (extractedUpdates:seq<ExtractedPackageInfo>,manufacturer:Manufacturer,logDirectory:FileSystem.Path) =
         let extractedUpdatesList = 
@@ -220,23 +208,3 @@ module CreateDriverPackage =
     
     let createDriverPackage driverPackageCreationContext =
         DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug createDriverPackageBase driverPackageCreationContext
-
-    let createDriverPackageBase2 (dpcc:DriverPackageCreationContext) = 
-        result{
-            let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
-            logger.Info(msg (sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled))
-            logger.Info("Starting x86 client actor system and x86 host actor system.")
-            let (clientActorSystem, clientActorRef) = DriverTool.ActorSystem.startClientActorSystem()
-            clientActorRef <! (new ConfirmStartHostMessage())
-            logger.Info("Starting CreateDriverPackage actor.")
-            let createDriverPackageActorRef = spawn clientActorSystem "CreateDriverPackageActor" (createDriverPackageActor dpcc clientActorRef)
-            logger.Info(sprintf "Initializing CreateDriverPackage actor with driver package creation context: %A" dpcc)            
-            createDriverPackageActorRef <! CreateDriverPackageMessage.Start
-            clientActorSystem.WhenTerminated.Wait()            
-            clientActorSystem.Dispose()
-            logger.Info("Client actor system and host has been terminated.")
-            return ()
-        }
-
-    let createDriverPackage2 driverPackageCreationContext =
-        DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug createDriverPackageBase2 driverPackageCreationContext

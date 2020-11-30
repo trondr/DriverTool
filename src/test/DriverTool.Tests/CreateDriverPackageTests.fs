@@ -90,21 +90,6 @@ module CreateDriverPackageTests =
 
 
     [<Test>]
-    [<Category(TestCategory.ManualTests)>]
-    let downloadUpdateTest () =
-        match(result{
-            let! webFileSource = toWebFileSource "http://ftp.hp.com/pub/softpaq/sp81501-82000/sp81886.exe" "ec6c692772662540c3d4bc6156ae33a37dd2ed06" 4092824L 
-            let webFileDestination = {DestinationFile = (FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe")}
-            return {Source=webFileSource;Destination=webFileDestination}            
-        })with
-        |Result.Ok wfd -> 
-            Assert.IsTrue(true)
-            let expected = CreateDriverPackageMessage.DownloadFinished (Some wfd,wfd)
-            let actual = DownloadActor.downloadWebFile false wfd
-            Assert.AreEqual(expected,actual)
-        |Result.Error ex -> Assert.Fail(ex.Message)
-    
-    [<Test>]
     [<Category(TestCategory.UnitTests)>]
     [<TestCase(false,"setup.exe /s", "Dell", @"c:\temp",true)>]
     [<TestCase(false,"setup.exe /s", "HP", @"c:\temp",true)>]
