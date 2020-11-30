@@ -203,7 +203,7 @@ module LenovoUpdates =
         else
             Result.Error (new Exception(sprintf "Given operating system code '%s' and actual operating system code '%s' are not equal." operatingSystemCode.Value actualOperatingSystemCode.Value))
 
-    let updateIsInstalled logger cacheFolderPath systemInformation (packageInfo:PackageInfo) =
+    let updateIsInstalled logger cacheFolderPath systemInformation lsuPackages (packageInfo:PackageInfo) =
         match(result{
             let workingFolder = FileSystem.pathValue cacheFolderPath
             let! lsuPackageFilePath = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath packageInfo.PackageXmlName
@@ -213,7 +213,7 @@ module LenovoUpdates =
                     match lsuPackage.Dependencies with                
                     |Some d ->                    
                         let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
-                        let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder None detectionRule 
+                        let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder (Some lsuPackages) detectionRule 
                         logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating dependencies: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch))|>ignore))
                         isMatch
                     |None -> false
@@ -222,7 +222,7 @@ module LenovoUpdates =
                     match lsuPackage.DetectInstall with                
                     |Some d ->                    
                         let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
-                        let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder None detectionRule 
+                        let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder (Some lsuPackages) detectionRule 
                         logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating detect install: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch))|>ignore))
                         isMatch
                     |None -> false
@@ -234,6 +234,17 @@ module LenovoUpdates =
         |Result.Error ex -> 
             logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Failed to evaluate if '%s' is installed. Return: false" packageInfo.PackageXmlName))|>ignore))
             false
+
+    let getLsuPackages cacheFolderPath (packages:PackageInfo[]) =
+        packages
+        |>Array.map(fun p ->
+                result{
+                    let! lsuPackageFilePath = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath p.PackageXmlName
+                    let! lsuPackage = LsupEval.Lsup.loadLsuPackageFromFile (FileSystem.pathValue lsuPackageFilePath)
+                    return lsuPackage
+                }
+            )
+        |> toAccumulatedResult
 
     /// Get locally installed updates.
     let getLocalUpdates (logger:Common.Logging.ILog) cacheFolderPath (context:UpdatesRetrievalContext) =
@@ -248,10 +259,12 @@ module LenovoUpdates =
             let! systemInformation =  LsupEval.Rules.getCurrentSystemInformation'()
 
             let! remotePackageInfos = getRemoteUpdates logger cacheFolderPath context
+            let! lsuPackages = getLsuPackages cacheFolderPath remotePackageInfos
+            let lsuPackageArray = lsuPackages|>Seq.toArray
             let localUpdates = 
                 remotePackageInfos
                 |> Seq.distinct
-                |> Seq.filter( fun p -> updateIsInstalled logger cacheFolderPath systemInformation p)
+                |> Seq.filter( fun p -> updateIsInstalled logger cacheFolderPath systemInformation lsuPackageArray p)
                 |>Seq.filter (filterUpdates context)
                 |>Seq.toArray
             logger.Info(sprintf "Local updates: %A" localUpdates)
