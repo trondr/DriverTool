@@ -129,10 +129,16 @@ Target.create "Publish" (fun _ ->
             System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Host.exe")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Host.pdb")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Host.exe.config")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Client.dll")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Client.pdb")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Client.dll.config")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Service.dll")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Service.pdb")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.x86.Service.dll.config")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.dll")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.pdb")            
             System.IO.Path.Combine(buildAppFolder,"FSharp.Core.dll")
-            System.IO.Path.Combine(buildAppFolder,"Common.Logging.dll")            
+            System.IO.Path.Combine(buildAppFolder,"Common.Logging.dll")
         |]
     let zipFile = System.IO.Path.Combine(artifactFolder,sprintf "DriverTool.%s.zip" assemblyVersion)
     files
