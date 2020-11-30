@@ -19,17 +19,44 @@ module CreateDriverPackage =
     open DriverTool.Library
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.Environment    
-    open DriverTool.Library.Messages
-    open DriverTool.DownloadActor       
+    open DriverTool.Library.Messages           
     open DriverTool.CreateDriverPackageActor
 
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
     
+    let downloadUpdate' (downloadJob,ignoreVerificationErrors) =
+        DriverTool.Library.Web.downloadIfDifferent (logger, downloadJob,ignoreVerificationErrors)
+
+    let downloadUpdate (downloadJob,ignoreVerificationErrors) =
+        genericLoggerResult LogLevel.Debug downloadUpdate' (downloadJob,ignoreVerificationErrors)
+
+    let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
+        packageInfos
+        //Remove packages with no download jobs (download job for the package failed typically)
+        |> Seq.filter(fun p ->
+                        let downloadJob = downloadJobs|>Seq.tryFind(fun dj -> 
+                                                let djFileName = getFileNameFromPath dj.DestinationFile
+                                                p.Installer.Name = djFileName
+                                            )
+                        optionToBoolean downloadJob
+                    )
+        //Create downloaded package info
+        |> Seq.map (fun p -> 
+                        {
+                            InstallerPath = getDestinationInstallerPath destinationDirectory p;
+                            ReadmePath = getDestinationReadmePath destinationDirectory p;
+                            PackageXmlPath = getDestinationPackageXmlPath destinationDirectory p;
+                            Package = p;
+                        }
+                    )
+        |>Seq.toArray
+
+
     let downloadUpdates destinationDirectory packageInfos = 
         let downloadJobs = 
             packageInfos             
             |> packageInfosToDownloadJobs destinationDirectory            
-            |> PSeq.map (fun dj -> resultToOption logger (DriverTool.DownloadActor.downloadUpdate (dj,ignoreVerificationErrors dj)))
+            |> PSeq.map (fun dj -> resultToOption logger (downloadUpdate (dj,ignoreVerificationErrors dj)))
             |> PSeq.toArray
             |> Seq.choose id //Remove all failed downloads            
             |> Seq.toArray            

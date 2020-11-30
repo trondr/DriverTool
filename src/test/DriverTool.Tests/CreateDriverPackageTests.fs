@@ -3,7 +3,6 @@
 open NUnit.Framework
 open DriverTool.Library.PackageXml
 open DriverTool.Library.Web
-open DriverTool.DownloadActor
 open DriverTool
 open DriverTool.Library.F
 open DriverTool.Library
@@ -80,7 +79,7 @@ module CreateDriverPackageTests =
         ()
         let expectedCount = 4
         let actual = 
-            packageInfosToDownloadedPackageInfos (FileSystem.pathUnSafe @"c:\temp\test") packageInfos downloadInfos
+            DriverTool.CreateDriverPackage.packageInfosToDownloadedPackageInfos (FileSystem.pathUnSafe @"c:\temp\test") packageInfos downloadInfos
             |>Seq.toArray
         let actualCount =
             actual
