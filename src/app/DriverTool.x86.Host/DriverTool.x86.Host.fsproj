@@ -51,18 +51,10 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <EmbeddedResource Include="Libs\Akka.dll" />
-    <EmbeddedResource Include="Libs\Akka.FSharp.dll" />
-    <EmbeddedResource Include="Libs\Akka.Remote.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Buffers.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Codecs.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Common.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Handlers.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Transport.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
     <EmbeddedResource Include="Libs\DriverTool.Library.dll" />
     <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
@@ -71,19 +63,8 @@
     <EmbeddedResource Include="Libs\FSharp.Data.dll" />
     <EmbeddedResource Include="Libs\FSharp.Quotations.Evaluator.dll" />
     <EmbeddedResource Include="Libs\FsPickler.dll" />
-    <EmbeddedResource Include="Libs\Google.Protobuf.dll" />
     <EmbeddedResource Include="Libs\log4net.dll" />
     <EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Binder.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.DependencyInjection.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Options.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Primitives.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Win32.Primitives.dll" />
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="Libs\SharpYaml.dll" />
@@ -140,21 +121,6 @@
     <Reference Include="Common.Logging.Log4Net208">
       <HintPath>..\..\..\packages\Common.Logging.Log4Net208.3.4.1\lib\net40\Common.Logging.Log4Net208.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetty.Buffers">
-      <HintPath>..\..\..\packages\DotNetty.Buffers.0.6.0\lib\net45\DotNetty.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Codecs">
-      <HintPath>..\..\..\packages\DotNetty.Codecs.0.6.0\lib\net45\DotNetty.Codecs.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Common">
-      <HintPath>..\..\..\packages\DotNetty.Common.0.6.0\lib\net45\DotNetty.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Handlers">
-      <HintPath>..\..\..\packages\DotNetty.Handlers.0.6.0\lib\net45\DotNetty.Handlers.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Transport">
-      <HintPath>..\..\..\packages\DotNetty.Transport.0.6.0\lib\net45\DotNetty.Transport.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Configuration">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
     </Reference>
@@ -167,9 +133,6 @@
     <Reference Include="FsPickler">
       <HintPath>..\..\..\packages\FsPickler.5.3.2\lib\net45\FsPickler.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>..\..\..\packages\Google.Protobuf.3.11.2\lib\net45\Google.Protobuf.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
@@ -177,36 +140,6 @@
       <HintPath>..\..\..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Extensions.Configuration">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.Abstractions.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Configuration.Binder">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.Binder.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.3.1.1\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Logging">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Options">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Options.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Primitives.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Win32.Primitives">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NCmdLiner">
       <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net462\NCmdLiner.dll</HintPath>

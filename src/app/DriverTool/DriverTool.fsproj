@@ -87,11 +87,6 @@
     <EmbeddedResource Include="Libs\Common.Logging.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Buffers.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Codecs.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Common.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Handlers.dll" />
-    <EmbeddedResource Include="Libs\DotNetty.Transport.dll" />
     <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
     <EmbeddedResource Include="Libs\DriverTool.Library.dll" />
     <EmbeddedResource Include="Libs\DriverTool.x86.Client.dll" />
@@ -105,26 +100,15 @@
     <EmbeddedResource Include="Libs\FSharp.Data.DesignTime.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.dll" />
     <EmbeddedResource Include="Libs\FSharp.Interop.Dynamic.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Quotations.Evaluator.dll" />
     <EmbeddedResource Include="Libs\FSharpx.Async.dll" />
     <EmbeddedResource Include="Libs\FSharpx.Collections.dll" />
     <EmbeddedResource Include="Libs\FSharpx.Extras.dll" />
     <EmbeddedResource Include="Libs\FsPickler.dll" />
     <EmbeddedResource Include="Libs\FsPickler.Json.dll" />
-    <EmbeddedResource Include="Libs\Google.Protobuf.dll" />
     <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
     <EmbeddedResource Include="Libs\log4net.dll" />
     <EmbeddedResource Include="Libs\LsupEval.dll" />
     <EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Binder.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.DependencyInjection.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.Abstractions.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Options.dll" />
-    <EmbeddedResource Include="Libs\Microsoft.Extensions.Primitives.dll" />
     <EmbeddedResource Include="Libs\Microsoft.UpdateServices.Administration.dll" />
     <EmbeddedResource Include="Libs\Microsoft.Win32.Primitives.dll" />
     <EmbeddedResource Include="Libs\NCmdLiner.dll" />
@@ -233,21 +217,6 @@
     <Reference Include="CsvHelper">
       <HintPath>..\..\..\packages\CsvHelper.13.0.0\lib\net47\CsvHelper.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetty.Buffers">
-      <HintPath>..\..\..\packages\DotNetty.Buffers.0.6.0\lib\net45\DotNetty.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Codecs">
-      <HintPath>..\..\..\packages\DotNetty.Codecs.0.6.0\lib\net45\DotNetty.Codecs.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Common">
-      <HintPath>..\..\..\packages\DotNetty.Common.0.6.0\lib\net45\DotNetty.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Handlers">
-      <HintPath>..\..\..\packages\DotNetty.Handlers.0.6.0\lib\net45\DotNetty.Handlers.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetty.Transport">
-      <HintPath>..\..\..\packages\DotNetty.Transport.0.6.0\lib\net45\DotNetty.Transport.dll</HintPath>
-    </Reference>
     <Reference Include="Dynamitey">
       <HintPath>..\..\..\packages\Dynamitey.2.0.10.189\lib\net40\Dynamitey.dll</HintPath>
     </Reference>
@@ -272,9 +241,6 @@
     <Reference Include="FSharp.Interop.Dynamic">
       <HintPath>..\..\..\packages\FSharp.Interop.Dynamic.5.0.1.268\lib\net45\FSharp.Interop.Dynamic.dll</HintPath>
     </Reference>
-    <Reference Include="FSharp.Quotations.Evaluator">
-      <HintPath>..\..\..\packages\FSharp.Quotations.Evaluator.2.0.0\lib\netstandard2.0\FSharp.Quotations.Evaluator.dll</HintPath>
-    </Reference>
     <Reference Include="FSharpx.Async">
       <HintPath>..\..\..\packages\FSharpx.Async.1.14.1\lib\net452\FSharpx.Async.dll</HintPath>
     </Reference>
@@ -290,9 +256,6 @@
     <Reference Include="FsPickler.Json">
       <HintPath>..\..\..\packages\FsPickler.Json.5.3.2\lib\net45\FsPickler.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>..\..\..\packages\Google.Protobuf.3.14.0\lib\net45\Google.Protobuf.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
@@ -303,33 +266,6 @@
       <HintPath>..\..\..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Extensions.Configuration">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.Abstractions.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Configuration.Binder">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Configuration.Binder.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.3.1.1\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Logging">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Options">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Options.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Primitives.3.1.1\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.UpdateServices.Administration">
       <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
     </Reference>
