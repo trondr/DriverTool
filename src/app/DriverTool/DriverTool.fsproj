@@ -297,7 +297,7 @@
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="LsupEval">
-      <HintPath>..\..\..\packages\LsupEval.1.0.20144-alpha3\lib\net452\LsupEval.dll</HintPath>
+      <HintPath>..\..\..\packages\LsupEval.1.0.20336-alpha4\lib\net452\LsupEval.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces">
       <HintPath>..\..\..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
