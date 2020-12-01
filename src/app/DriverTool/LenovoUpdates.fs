@@ -353,17 +353,17 @@ module LenovoUpdates =
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         result{
             logger.Info("Extract SccmPackage installer...")        
-            let arguments = sprintf "/VERYSILENT /DIR=\"%s\" /EXTRACT=\"YES\"" (FileSystem.pathValue destinationPath)
+            let arguments = sprintf "/VERYSILENT /DIR=\"%s\"" (FileSystem.pathValue destinationPath)
+            let! nonExistingDestinationPath = DirectoryOperations.ensureDirectoryNotExistsWithMessage "Sccm package destination path should exist before extracting the downloaded sccm package." destinationPath
             let! installerExtractedFolder =
                 match (FileSystem.existingFilePathString downloadedSccmPackage.InstallerPath) with
                 |Ok fp -> 
-                    match DriverTool.Library.ProcessOperations.startConsoleProcess (fp, arguments, FileSystem.pathValue destinationPath, -1, null, null, false) with
+                    match DriverTool.Library.ProcessOperations.startConsoleProcess (fp, arguments, null, -1, null, null, false) with
                     |Ok _ -> Result.Ok destinationPath
                     |Result.Error ex -> Result.Error (new Exception("Failed to extract Sccm package. " + ex.Message, ex))
                 |Result.Error ex -> Result.Error (new Exception("Sccm package installer not found. " + ex.Message, ex))
             let! copiedReadmeFilePath = 
                 FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
-
             return (installerExtractedFolder,copiedReadmeFilePath)
         }
         

@@ -216,8 +216,9 @@ module DellUpdates=
         result{
             let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
             let! cabFilepath = FileOperations.ensureFileExtension ".cab" installerPath
-            let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath            
-            let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,destinationPath)
+            let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath
+            let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
+            let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,existingDestinationPath)
 
             let! copiedReadmeFilePath = 
                 FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath

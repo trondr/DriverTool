@@ -118,8 +118,9 @@ module HpUpdates =
             let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
             let! exeFilepath = FileOperations.ensureFileExtension ".exe" installerPath
             let! existingExeFilePath = FileOperations.ensureFileExists exeFilepath  
+            let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
             let arguments = sprintf "-PDF -F \"%s\" -S -E" (FileSystem.pathValue destinationPath)
-            let! exitCode = ProcessOperations.startConsoleProcess (installerPath,arguments,FileSystem.pathValue destinationPath,-1,null,null,false)
+            let! exitCode = ProcessOperations.startConsoleProcess (installerPath,arguments,FileSystem.pathValue existingDestinationPath,-1,null,null,false)
             
             let! copiedReadmeFilePath = 
                 FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
