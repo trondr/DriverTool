@@ -5,7 +5,7 @@ Downloads drivers and software for current PC model and creates a driver package
 ## Command line help
 
 ```
-DriverTool 1.0.19268.27 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
+DriverTool 1.0.20336.46 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
 Copyright © github/trondr 2018-2019
 Usage: DriverTool.exe <command> [parameters]
 
@@ -192,9 +192,40 @@ CreateDriverPackage             Create driver package for given manufacturer
                                 updates, such as BIOS or firmware, to be part
                                 of the package. Alternative parameter name:
                                 /exs. Default value: False
+   /doNotDownloadSccmPackage    [Optional] Do not download Sccm Package. Used
+                                as a workaround for web scraping gone wrong
+                                when Lenovo has changed the web design. Both
+                                the /sccmPackageInstaller and the
+                                /sccmPackageReadme parameters must be defined
+                                if /doNotDownloadSccmPackage=True.
+                                Alternative parameter name: /dnd. Default
+                                value: False
+   /sccmPackageInstaller        [Optional] Specify sccm package installer to
+                                override automatic download of Sccm package.
+                                Used as a workaround for web scraping gone
+                                wrong when Lenovo has changed the web design.
+                                The sccm package installer spesified must be
+                                be downloaded manually and saved to the
+                                DriverToolCache as specified in the
+                                application configuration file
+                                (DownloadCacheDirectoryPath). Alternative
+                                parameter name: /spi. Default value:
+   /sccmPackageReadme           [Optional] Specify sccm package readme to
+                                override automatic download of Sccm package.
+                                Used as a workaround for web scraping gone
+                                wrong when Lenovo has changed the web design.
+                                The sccm package readme spesified must be be
+                                downloaded manually and saved to the
+                                DriverToolCache as specified in the
+                                application configuration file
+                                (DownloadCacheDirectoryPath). Alternative
+                                parameter name: /spr. Default value:
+   /sccmPackageReleased         [Optional] Specify sccm package relase date.
+                                Alternative parameter name: /sprd. Default
+                                value: 2001-01-01
 
-   Example: DriverTool.exe CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /manufacturer="LENOVO" /systemFamily="ThinkPad P50" /modelCode="20EQ" /operatingSystemCode="WIN10X64" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns="['Software';'BIOS';'Firmware']" /packageTypeName="Drivers" /excludeSccmPackage="False" 
-   Example (alternative): DriverTool.exe CreateDriverPackage /df="c:\temp\Drivers\SomeModel" /pu="MyCompany" /ma="LENOVO" /sf="ThinkPad P50" /mo="20EQ" /op="WIN10X64" /lu="False" /xu="['Software';'BIOS';'Firmware']" /ptn="Drivers" /exs="False" 
+   Example: DriverTool.exe CreateDriverPackage /destinationFolder="c:\temp\Drivers\SomeModel" /packagePublisher="MyCompany" /manufacturer="LENOVO" /systemFamily="ThinkPad P50" /modelCode="20EQ" /operatingSystemCode="WIN10X64" /baseOnLocallyInstalledUpdates="False" /excludeUpdatePatterns="['Software';'BIOS';'Firmware']" /packageTypeName="Drivers" /excludeSccmPackage="False" /doNotDownloadSccmPackage="False" /sccmPackageInstaller="tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.exe" /sccmPackageReadme="tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.txt" /sccmPackageReleased="2019-10-01" 
+   Example (alternative): DriverTool.exe CreateDriverPackage /df="c:\temp\Drivers\SomeModel" /pu="MyCompany" /ma="LENOVO" /sf="ThinkPad P50" /mo="20EQ" /op="WIN10X64" /lu="False" /xu="['Software';'BIOS';'Firmware']" /ptn="Drivers" /exs="False" /dnd="False" /spi="tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.exe" /spr="tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.txt" /sprd="2019-10-01" 
 
 
 InstallDriverPackage            Install driver package. This command looks
@@ -245,7 +276,6 @@ DecompressDriverPackage         Decompress Drivers.zip to \Drivers folder.
 
    Example: DriverTool.exe DecompressDriverPackage /driverPackagePath="c:\temp\Drivers\SomeModel" 
    Example (alternative): DriverTool.exe DecompressDriverPackage /dpp="c:\temp\Drivers\SomeModel" 
-
  
 ```
 
