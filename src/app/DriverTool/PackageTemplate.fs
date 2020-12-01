@@ -50,6 +50,7 @@ module PackageTemplate =
                 let! exeFilePath = FileSystem.path resourceAssembly.Location
                 let! exeFileConfigPath = FileSystem.path (resourceAssembly.Location + ".config")
                 let! exeFileDirectoryPath = FileSystem.path ((new System.IO.FileInfo(FileSystem.pathValue exeFilePath))).Directory.FullName
+                let! dllFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"DriverTool.Library.dll"))
                 let! fsharpCoreDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"FSharp.Core.dll"))
                 let! extractedFSharpCoreDllPath = extractIfNotExists fsharpCoreDllPath
                 let! commonLoggingDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"Common.Logging.dll"))                
@@ -58,6 +59,7 @@ module PackageTemplate =
                     [|
                         yield exeFilePath
                         yield exeFileConfigPath
+                        yield dllFilePath
                         yield extractedFSharpCoreDllPath
                         yield extractedCommonLoggingDllPath
                     |]

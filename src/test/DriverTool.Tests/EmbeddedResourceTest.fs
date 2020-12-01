@@ -80,7 +80,7 @@ module EmbeddedResourceTest  =
         match res with
         |Ok p -> 
             Assert.IsTrue(true)
-            Assert.AreEqual(15, System.IO.Directory.GetFiles(FileSystem.pathValue p,"*.*",System.IO.SearchOption.AllDirectories).Length, sprintf "Extracted file count not expected in %s. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. %A" destinationFolderPathString (System.IO.Directory.GetFiles(destinationFolderPathString,"*.*",SearchOption.AllDirectories)))
+            Assert.AreEqual(16, System.IO.Directory.GetFiles(FileSystem.pathValue p,"*.*",System.IO.SearchOption.AllDirectories).Length, sprintf "Extracted file count not expected in %s. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. %A" destinationFolderPathString (System.IO.Directory.GetFiles(destinationFolderPathString,"*.*",SearchOption.AllDirectories)))
         |Error ex -> Assert.IsTrue(false,ex.Message)
 
     [<Test>]

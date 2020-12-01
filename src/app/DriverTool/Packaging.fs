@@ -106,14 +106,13 @@ module Packaging=
 
     let createSccmPackageInstallScript (extractedSccmPackagePath:FileSystem.Path) =
         result{
-            let! installScriptPath = 
-                FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue extractedSccmPackagePath,"DT-Install-Package.cmd"))
-            let installCommandLine = "pnputil.exe /add-driver *.inf /install /subdirs"                      
-            
+            let! existingextractedSccmPackagePath = DirectoryOperations.ensureDirectoryExists true extractedSccmPackagePath
+            let! installScriptPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingextractedSccmPackagePath,"DT-Install-Package.cmd"))
+            let installCommandLine = "pnputil.exe /add-driver *.inf /install /subdirs"            
             let createSccmInstallScriptFileContent = createSccmInstallScriptFileContent installCommandLine
             let! installScript = writeTextToFile installScriptPath createSccmInstallScriptFileContent
             let! unInstallScriptPath = 
-                FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue extractedSccmPackagePath,"DT-UnInstall-Package.cmd"))
+                FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingextractedSccmPackagePath,"DT-UnInstall-Package.cmd"))
             let! unInstallScriptResult = writeTextToFile unInstallScriptPath (createUnInstallScriptFileContent())
             return installScript
         }    

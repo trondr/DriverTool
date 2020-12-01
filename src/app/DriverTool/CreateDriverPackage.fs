@@ -239,11 +239,10 @@ module CreateDriverPackage =
                 let! sccmPackageDestinationPath =
                     if (not dpcc.ExcludeSccmPackage) then               
                         result{
-                            let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath, sccmPackageFolderName))
-                            let! existingSccmPackageDestinationPath = DirectoryOperations.ensureDirectoryExists true sccmPackageDestinationPath
-                            logger.Info(msg (sprintf "Extracting Sccm Package to folder '%A'..." existingSccmPackageDestinationPath))                
+                            let! sccmPackageDestinationPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue existingDriversPath, sccmPackageFolderName))                            
+                            logger.Info(msg (sprintf "Extracting Sccm Package to folder '%A'..." sccmPackageDestinationPath))                
                             let extractSccmPackage = DriverTool.Updates.extractSccmPackageFunc (dpcc.Manufacturer)                
-                            let! (extractedSccmPackagePath,_) = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)
+                            let! (extractedSccmPackagePath,_) = extractSccmPackage (downloadedSccmPackage, sccmPackageDestinationPath)                            
                             let! sccmPackageInstallScriptPath = createSccmPackageInstallScript extractedSccmPackagePath
                             logger.Info(sprintf "Created sccm package install script: %A" sccmPackageInstallScriptPath)
                             return sccmPackageDestinationPath
