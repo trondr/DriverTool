@@ -40,7 +40,7 @@ module Web =
         | XmlFile _ -> true
         | _ -> false
     
-    open FSharp.Control.Reactive
+    //open FSharp.Control.Reactive
 
 
     /// <summary>
