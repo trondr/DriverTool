@@ -28,6 +28,8 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>0025</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +39,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>0025</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -61,6 +65,7 @@
     <Compile Include="EnvironmentTests.fs" />
     <Compile Include="ExportRemoteUpdatesTests.fs" />
     <Compile Include="FileOperationTests.fs" />
+    <Compile Include="DirectoryOperationTests.fs" />
     <Compile Include="RegistryOperationTests.fs" />
     <Compile Include="FTests.fs" />
     <Compile Include="LoggingTests.fs" />
@@ -72,6 +77,7 @@
     <Compile Include="PathTests.fs" />
     <Compile Include="WmiHelperTests.fs" />
     <Compile Include="WebTests.fs" />
+    <Compile Include="WebDownloadTests.fs" />
     <Compile Include="WebParsingTests.fs" />
     <Compile Include="LenovoCatalogXmlTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
@@ -131,10 +137,10 @@
       <HintPath>..\..\..\packages\Common.Logging.Log4Net208.3.4.1\lib\net40\Common.Logging.Log4Net208.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>..\..\..\packages\FSharp.Core.4.7.0\lib\net45\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Core.4.7.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.3.3.2\lib\net45\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -154,17 +160,22 @@
       <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <ProjectReference Include="..\..\app\DriverTool.Library\DriverTool.Library.fsproj">
+      <Name>DriverTool.Library</Name>
+      <Project>{5c9696b4-d386-463d-8bde-1ec35901614a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj">
       <Name>DriverTool</Name>
       <Project>{19822aea-c088-455d-b5a5-4738a3a9dba7}</Project>
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>..\..\..\packages\FSharp.Data.3.3.2\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
+      <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>

@@ -1,16 +1,15 @@
 ﻿namespace DriverTool.Tests
-open System
 open NUnit.Framework
-open DriverTool
-open FileOperations
-open DriverTool.DirectoryOperations
+open DriverTool.Library.DirectoryOperations
+open DriverTool.Library
+open DriverTool.Library.FileOperations
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module FileOperationTests =
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("FileOperationTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
-
+    
     [<Test>]
     let ensureFileDoesNotExistTest_FileExists() =
         use temporaryFile = new TemporaryFile()
@@ -71,7 +70,7 @@ module FileOperationTests =
             let! existingTemporaryFile2 = FileSystem.existingFilePath temporaryFile2
 
             let! actual = compareFile existingTemporaryFile1 existingTemporaryFile2
-            Assert.IsFalse(actual, sprintf "'%s' != '%s'" (FileSystem.existingFilePathValue existingTemporaryFile1) (FileSystem.existingFilePathValue existingTemporaryFile2))
+            Assert.IsFalse(actual, sprintf "'%s' != '%s'" (FileSystem.pathValue existingTemporaryFile1) (FileSystem.pathValue existingTemporaryFile2))
                                                         
             return temporaryFolder1Path              
         })with

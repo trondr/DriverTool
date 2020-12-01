@@ -6,12 +6,10 @@ open NUnit.Framework
 module HpUpdatesTests =
     open DriverTool
     open System
-    open Init
-    open DriverTool
     type ThisAssembly = { Empty:string;}
-    open DriverTool.Logging
     let logger = Common.Logging.Simple.ConsoleOutLogger("HpUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
-    
+    open DriverTool.Library.F
+    open DriverTool.Library
     
     [<Test>]
     [<TestCase("WIN10X64","83B3")>]
@@ -74,18 +72,22 @@ module HpUpdatesTests =
         |Result.Ok _ -> Assert.IsTrue(true)
         |Result.Error e -> Assert.Fail(String.Format("{0}", e.Message))
         
-    open DriverTool.UpdatesContext    
+    open DriverTool.Library.UpdatesContext    
+    open DriverTool.Library.ManufacturerTypes
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
     let getLocalUpdatesTests () =
         match(result
                 {
-                    let! currentModelCode = ModelCode.create "" true
-                    let! currentOperatingSystem = OperatingSystemCode.create "" true
-                    let! logDirectory = FileSystem.path "%public%\Logs"
+                    let! manufacturer = getManufacturerForCurrentSystem()
+                    let! modelCode = ModelCode.create "" true
+                    let! operatingSystemCode = OperatingSystemCode.create "" true
+                    let! logDirectory = FileSystem.path @"c:\temp"
                     let! patterns = (RegExp.toRegexPatterns [||] true)
-                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
 
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
@@ -101,11 +103,14 @@ module HpUpdatesTests =
     let getRemoteUpdatesTests () =
         match(result
                 {
-                    let! currentModelCode = ModelCode.create "" true
-                    let! currentOperatingSystem = OperatingSystemCode.create "" true  
-                    let! logDirectory = FileSystem.path "%public%\Logs"
+                    let! manufacturer = getManufacturerForCurrentSystem()
+                    let! modelCode = ModelCode.create "" true
+                    let! operatingSystemCode = OperatingSystemCode.create "" true
+                    let! logDirectory = FileSystem.path @"c:\temp"
                     let! patterns = (RegExp.toRegexPatterns [||] true)
-                    let updatesRetrievalContext = toUpdatesRetrievalContext currentModelCode currentOperatingSystem true logDirectory patterns
+                    use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+                    let! cacheFolderPath = cacheFolder.FolderPath
+                    let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
 
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath

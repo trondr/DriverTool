@@ -2,11 +2,12 @@
 
     open NUnit.Framework
     open DriverTool
-    
+    open DriverTool.Library.F
+    open DriverTool.Library
 
     [<TestFixture>]
     module InstallXmlTests =         
-        open DriverTool.InstallXml
+        open DriverTool.Library.InstallXml
         type ThisAssembly = { Empty:string;}
 
         type internal TestData ={IsSuccess:bool;Expected:InstallConfigurationData;ExpectedErrorMessage:string}
@@ -42,7 +43,7 @@
             match(result {              
                 let! tempDestinationFolderPath = FileSystem.path (PathOperations.getTempPath)
                 let! installXmlPath = EmbeddedResource.extractEmbeddedResourceByFileNameBase ("InstallXmlInstall.xml", tempDestinationFolderPath,"InstallXmlInstall.xml",typeof<ThisAssembly>.Assembly)
-                let! existingInstallXmlPath = DriverTool.FileOperations.ensureFileExists installXmlPath
+                let! existingInstallXmlPath = DriverTool.Library.FileOperations.ensureFileExists installXmlPath
                 let! installConfiguration = loadInstallXml existingInstallXmlPath
                 return installConfiguration
             }) with

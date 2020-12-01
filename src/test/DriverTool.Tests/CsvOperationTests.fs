@@ -1,12 +1,15 @@
 ﻿namespace DriverTool.Tests
 
-open DriverTool.DirectoryOperations
+open NUnit.Framework
 
-module CsvOperationTests =
-    open DriverTool    
-    open DriverTool.FileOperations
-    open NUnit.Framework
-    open DriverTool.PathOperations
+[<TestFixture>]
+[<Category(TestCategory.UnitTests)>]
+module CsvOperationTests =    
+    open DriverTool.Library.FileOperations    
+    open DriverTool.Library.PathOperations
+    open DriverTool.Library.DirectoryOperations
+    open DriverTool.Library.F
+    open DriverTool.Library
     
     let logger = Common.Logging.Simple.ConsoleOutLogger("CsvOperationTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 

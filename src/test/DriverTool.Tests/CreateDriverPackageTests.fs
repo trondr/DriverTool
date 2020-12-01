@@ -1,10 +1,15 @@
 ﻿namespace DriverTool.Tests
 
 open NUnit.Framework
-open DriverTool.PackageXml
-open DriverTool.Web
-open DriverTool.CreateDriverPackage
+open DriverTool.Library.PackageXml
+open DriverTool.Library.Web
 open DriverTool
+open DriverTool.Library.F
+open DriverTool.Library
+open DriverTool.Library.ManufacturerTypes
+open DriverTool.Packaging
+open DriverTool.Library.WebDownload
+open DriverTool.Library.Messages
 
 [<TestFixture>]
 module CreateDriverPackageTests =
@@ -36,6 +41,7 @@ module CreateDriverPackageTests =
                 }            
             ReleaseDate="";
             PackageXmlName=""
+            ExternalFiles = None
         }
     let defaultDownloadInfo =
         {
@@ -73,7 +79,7 @@ module CreateDriverPackageTests =
         ()
         let expectedCount = 4
         let actual = 
-            packageInfosToDownloadedPackageInfos (FileSystem.pathUnSafe @"c:\temp\test") packageInfos downloadInfos
+            DriverTool.CreateDriverPackage.packageInfosToDownloadedPackageInfos (FileSystem.pathUnSafe @"c:\temp\test") packageInfos downloadInfos
             |>Seq.toArray
         let actualCount =
             actual
@@ -81,23 +87,6 @@ module CreateDriverPackageTests =
             |>Array.length
         Assert.AreEqual(expectedCount, actualCount, "Count of downloaded package infos")
 
-
-    [<Test>]
-    [<Category(TestCategory.ManualTests)>]
-    let downloadUpdateTest () =
-        let downloadInfo = 
-            {
-                SourceUri=new Uri("http://ftp.hp.com/pub/softpaq/sp81501-82000/sp81886.exe");
-                SourceFileSize=4092824L;
-                SourceChecksum="ec6c692772662540c3d4bc6156ae33a37dd2ed06";
-                DestinationFile=FileSystem.pathUnSafe @"C:\Temp\DriverToolCache\sp81886.exe"
-            }
-        let actual = CreateDriverPackage.downloadUpdate (downloadInfo,false)
-        match actual with
-        |Ok p -> Assert.IsTrue(true)
-        |Error ex -> Assert.Fail(ex.Message)
-    
-    open DriverTool.ManufacturerTypes
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -112,9 +101,9 @@ module CreateDriverPackageTests =
             Assert.IsTrue(actual.Contains("IF NOT EXIST \"c:\\temp\" md \"c:\\temp\""))
             return actual
         })with
-        |Ok _ -> 
+        |Result.Ok _ -> 
             Assert.IsTrue(isSuccess,"Expected fail, but succeeded")
-        |Error ex -> 
+        |Result.Error ex -> 
             Assert.IsFalse(isSuccess,sprintf "Expected success, but failed. %A" ex)
         
         

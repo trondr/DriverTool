@@ -2,8 +2,9 @@
 
 module LenovoCatalogXml =
     open System
-    open System.Xml.Linq
-    open DriverTool.FileSystem
+    open System.Xml.Linq    
+    open DriverTool.Library.F
+    open DriverTool.Library
     
     type ModelType = ModelType of string
 
@@ -54,7 +55,9 @@ module LenovoCatalogXml =
             |Regex @"^(\d{4})(\d{2})" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)            
             |Regex @"^(\d{4})(\d{2})\w{2}" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)
             |Regex @"^(\d{4})-(\d{2})-(\d{2})" [year;month;day] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month)(toInt32Unsafe day))
-            |_ -> raise (new Exception(sprintf "Unsupported date format: %s" d))
+            |_ -> 
+                printf "Unsupported date format: %s" d
+                None                
     
     let toDriverPack (driverPackXElement:XElement) =
         result{
@@ -125,7 +128,7 @@ module LenovoCatalogXml =
         |>Seq.map(fun p -> toProduct p)
         |>toAccumulatedResult
             
-    let loadLenovoCatalog (lenovoCatalogXlmFilePath:Path) =
+    let loadLenovoCatalog (lenovoCatalogXlmFilePath:FileSystem.Path) =
         result{
             let! existingCatalogXmlPath = FileOperations.ensureFileExistsWithMessage (sprintf "Lenovo catalog xml file '%A' not found." lenovoCatalogXlmFilePath) lenovoCatalogXlmFilePath
             let xDocument = XDocument.Load(FileSystem.pathValue existingCatalogXmlPath)

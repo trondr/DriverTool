@@ -2,9 +2,11 @@
 
 module BitLockerOperations=
     open System
-    open DriverTool.Environment
+    open DriverTool.Library.Environment
     open System.Management
-    let logger = Logging.getLoggerByName("BitLockerOperations")
+    let logger = DriverTool.Library.Logging.getLoggerByName("BitLockerOperations")
+    open DriverTool.Library.F
+    open DriverTool.Library
     
     let isBitLockerEnabled () =
         let nameSpace = @"\\.\root\CIMv2\Security\MicrosoftVolumeEncryption"
@@ -107,7 +109,7 @@ module BitLockerOperations=
         result{            
             let! driverToolProgramDataFolderPath = FileSystem.path driverToolProgramDataFolder
             let! existingDriverToolProgramDataFolderPath = DirectoryOperations.ensureDirectoryExists true driverToolProgramDataFolderPath
-            let! resumeBitLockerCmdFilePath = EmbeddedResource.extractEmbeddedResourceByFileName (resumeBitLockerCmdFileName,existingDriverToolProgramDataFolderPath, resumeBitLockerCmdFileName)
+            let! resumeBitLockerCmdFilePath = EmbeddedResource.extractEmbeddedResourceByFileName (resourceAssembly,resumeBitLockerCmdFileName,existingDriverToolProgramDataFolderPath, resumeBitLockerCmdFileName)
             let! schtasksExePath = FileSystem.path schtasksExe
             let! exitCode = ProcessOperations.startConsoleProcess (schtasksExePath, sprintf "/Delete /tn \"%s\" /F" resumeBitLockerTaskName, nativeSystemFolder,-1,null, null, false)
             let! destinationFolderPath = FileSystem.path driverToolProgramDataFolder

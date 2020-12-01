@@ -2,12 +2,15 @@
 
 module DellCatalog =
 
-    open DriverTool.Cab
+    open DriverTool.Library.Cab
     open DriverTool.SdpUpdates
     open System
+    open DriverTool.Library.F
+    open DriverTool.Library
+    open DriverTool.Library.Environment
     
     let expandExe =
-        System.IO.Path.Combine(DriverTool.Environment.nativeSystemFolder,"expand.exe")
+        System.IO.Path.Combine(nativeSystemFolder,"expand.exe")
 
     let expandCabFile (cabFilePath:FileSystem.Path, destinationFolderPath:FileSystem.Path) =
         result{

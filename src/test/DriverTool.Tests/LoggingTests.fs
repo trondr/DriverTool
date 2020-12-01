@@ -1,7 +1,6 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
-open DriverTool
-open Logging
+open DriverTool.Library.Logging
 open System
 
 [<TestFixture>]
@@ -73,7 +72,7 @@ module LoggingTests =
 
     [<Test>]
     let genericLoggerResultTest_Success () =
-        Logging.configureLogging()
+        configureLogging()
         let expected = "Status:OK"
         let testFuncOk () : Result<_,Exception> =
             System.Threading.Thread.Sleep(505)
@@ -85,7 +84,7 @@ module LoggingTests =
     
     [<Test>]
     let genericLoggerResultTest_Error () =
-        Logging.configureLogging()
+        configureLogging()
         let expected = "Status:ERROR"
         let testFuncError () : Result<_,Exception> =
             System.Threading.Thread.Sleep(505)

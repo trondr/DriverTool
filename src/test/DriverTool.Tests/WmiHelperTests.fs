@@ -1,12 +1,10 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
-open System
-open DriverTool
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module WmiHelperTests  =
-    open DriverTool
+    open DriverTool.Library
 
     [<Test>]
     let WmiHelperTest_Success() =

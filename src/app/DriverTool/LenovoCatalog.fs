@@ -4,12 +4,15 @@ module LenovoCatalog =
     open FSharp.Data    
     open System
     open DriverTool 
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open LenovoCatalogXml    
-    open DriverTool.Web
-    open DriverTool.OperatingSystem
+    open DriverTool.Library.Web
+    open DriverTool.Library.OperatingSystem
+    open DriverTool.Library.F0
+    open DriverTool.Library.F
+    open DriverTool.Library
 
-    let logger = Logging.getLoggerByName("LenovoCatalog")
+    let logger = DriverTool.Library.Logging.getLoggerByName "LenovoCatalog"
 
     let getLocalLenvoCatalogXmlFilePath cacheFolderPath =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue cacheFolderPath ,"LenovoCatalog.xml"))
@@ -22,6 +25,18 @@ module LenovoCatalog =
         }
     
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
+
+    let getAllLenovoModels (lenovoCatalogProducts:seq<LenovoCatalogProduct>) =
+        let models = 
+            lenovoCatalogProducts
+            |>Seq.map(fun p-> p.Queries.ModelTypes)
+            |>Seq.concat
+            |>Seq.map(fun mt -> 
+                match mt with 
+                |ModelType modelType -> ModelCode.createUnsafe modelType false
+                )
+            |>Seq.toArray
+        models
 
     let getSccmPackageInfosFromLenovoCatalogProducts (lenovoCatalogProducts:seq<LenovoCatalogProduct>) =
         let products =

@@ -3,12 +3,13 @@ namespace DriverTool.Tests
 open NUnit.Framework
 open DriverTool
 open DriverTool.ExportRemoteUpdates
-open CommandProviders
+open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.IntegrationTests)>]
 module ExportRemoteUpdatesTests =
-    open DriverTool
+    
+    open DriverTool.Library.F
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 
@@ -17,7 +18,7 @@ module ExportRemoteUpdatesTests =
         let readFromLocalMachine = false
         let testResult = 
             result  {
-                let! manufacturer = DriverTool.ManufacturerTypes.manufacturerStringToManufacturer ("Lenovo", false)
+                let! manufacturer = DriverTool.Library.ManufacturerTypes.manufacturerStringToManufacturer ("Lenovo", false)
                 let! modelCode = ModelCode.create "20FA" readFromLocalMachine
                 let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" readFromLocalMachine
                 let! csvFilePath = FileSystem.path "c:\\temp\\test.csv"                

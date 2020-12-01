@@ -5,9 +5,10 @@ open NUnit.Framework
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
 module CompressionTests=
-    open DriverTool
-    open Common.Logging
-    open DriverTool.FileOperations
+    open DriverTool    
+    open DriverTool.Library.FileOperations
+    open DriverTool.Library.F
+    open DriverTool.Library
         
     let logger = Common.Logging.Simple.ConsoleOutLogger("CompressionTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
@@ -150,8 +151,7 @@ module CompressionTests=
                     let deletedOrChangedFile () =
                         if(not sourceAndDestiationAreEqual) then                                                        
                             let filePath =
-                                existingDestinationFolderPath
-                                |> FileSystem.existingDirectoryPathValueToPath
+                                existingDestinationFolderPath                                
                                 |> DirectoryOperations.getFilesUnsafe true
                                 |> Seq.head
                             if(changeContentOfAFile) then

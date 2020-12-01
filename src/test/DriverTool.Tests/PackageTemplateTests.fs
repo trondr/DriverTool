@@ -4,8 +4,9 @@ open NUnit.Framework
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
-module PackageTemplateTests =
-    open DriverTool
+module PackageTemplateTests =    
+    open DriverTool.Library.F
+    open DriverTool.Library
     
     let expectedPackageTemplateFiles =
         [|
@@ -33,7 +34,7 @@ module PackageTemplateTests =
         
         result{
             let! destinationFolderPath = FileSystem.path (System.IO.Path.Combine(System.IO.Path.GetTempPath(),"extractPackageTemplateTest"))
-            DriverTool.DirectoryOperations.deleteDirectory true destinationFolderPath|>ignore
+            DriverTool.Library.DirectoryOperations.deleteDirectory true destinationFolderPath|>ignore
             let! existingDestinationFolderPath = DirectoryOperations.ensureDirectoryExists true destinationFolderPath
             let! extractedFiles = DriverTool.PackageTemplate.extractPackageTemplate existingDestinationFolderPath
             let expectedFileCount = expectedPackageTemplateFiles.Length

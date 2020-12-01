@@ -6,7 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.UnitTests)>]
 module AssemblyResolveTests =    
     open DriverTool.Tests.Init
-    open DriverTool.AssemblyResolver
+    open DriverTool.Library.AssemblyResolver
     open System.Reflection
     
     [<Test>]

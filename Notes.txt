@@ -23,7 +23,12 @@ ftp://ftp.dell.com/catalog/DellSDPCatalogPC.cab
 
 Lenovo Update Catalog
 ----------------------
-https://download.lenovo.com/luc/v2/LenovoUpdatesCatalog2v2.cab
+https://download.lenovo.com/luc/v2/LenovoUpdatesCatalog2v2.cab
+
+
+Generate dll embedded resource statements for DriverTool.exe.
+-------------------------------------------------------------
+Get-ChildItem -Filter *.dll | Select-Object Name | Foreach-Object { "<EmbeddedResource Include=`"Libs\$($_.Name)`" />" }
 
 
 
