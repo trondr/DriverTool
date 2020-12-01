@@ -23,11 +23,12 @@ module PackageTemplateTests =
             @"Drivers\FSharp.Core.dll"
             @"DriverTool\DriverTool.exe"
             @"DriverTool\DriverTool.exe.config"
+            @"DriverTool\DriverTool.Library.dll"
             @"DriverTool\FSharp.Core.dll"
             @"DriverTool\Common.Logging.dll"
         |]
     
-    [<Test>]    
+    [<Test>]
     let extractPackageTemplateTest () =
         let getFileCount (destintionFolderPath:FileSystem.Path) =
             System.IO.Directory.GetFiles(FileSystem.pathValue destintionFolderPath,"*.*",System.IO.SearchOption.AllDirectories).Length
