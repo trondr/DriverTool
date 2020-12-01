@@ -20,10 +20,71 @@ module CreateDriverPackage =
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.Environment    
     open DriverTool.Library.Messages           
-    open DriverTool.CreateDriverPackageActor
 
     let logger = DriverTool.Library.Logging.getLoggerByName("CreateDriverPackage")
     
+    let toDriverPackageCreationContext packagePublisher manufacturer systemFamily modelCode operatingSystemCode destinationFolderPath cacheFolderPath baseOnLocallyInstalledUpdates logDirectory excludeUpdateRegexPatterns packageTypeName excludeSccmPackage doNotDownloadSccmPackage sccmPackageInstaller sccmPackageReadme sccmPackageReleased =
+        {
+            PackagePublisher=packagePublisher
+            Manufacturer=manufacturer
+            SystemFamily=systemFamily
+            Model=modelCode
+            OperatingSystem=operatingSystemCode
+            DestinationFolderPath=destinationFolderPath
+            CacheFolderPath=cacheFolderPath
+            BaseOnLocallyInstalledUpdates=baseOnLocallyInstalledUpdates
+            LogDirectory=logDirectory
+            ExcludeUpdateRegexPatterns=excludeUpdateRegexPatterns
+            PackageTypeName=packageTypeName
+            ExcludeSccmPackage=excludeSccmPackage
+            DoNotDownloadSccmPackage = doNotDownloadSccmPackage
+            SccmPackageInstaller = sccmPackageInstaller
+            SccmPackageReadme = sccmPackageReadme
+            SccmPackageReleased = sccmPackageReleased
+        }
+
+    let getUniqueUpdatesByInstallerName packageInfos = 
+        let uniqueUpdates = 
+            packageInfos
+            |> Array.groupBy (fun p -> p.Installer.Name)
+            |> Array.map (fun (k,v) -> v |>Array.head)
+        uniqueUpdates
+
+    let toDownloadedSccmPackageInfo cacheFolderPath intallerName readmeName releasedDate =
+        result{
+            let! installerPath = PathOperations.combinePaths2 cacheFolderPath intallerName
+            let! existingInstallerPath = FileOperations.ensureFileExists installerPath
+            let! readmePath = PathOperations.combinePaths2 cacheFolderPath readmeName
+            let! existingReadmePath = FileOperations.ensureFileExists readmePath
+            let downloadedSccmPackageInfo =
+                {
+                    InstallerPath=FileSystem.pathValue existingInstallerPath; 
+                    ReadmePath=FileSystem.pathValue existingReadmePath;                     
+                    SccmPackage=
+                        {
+                            ReadmeFile=
+                                {
+                                    Url=String.Empty;
+                                    Checksum=String.Empty; 
+                                    FileName=readmeName;
+                                    Size=0L
+                                }
+                            InstallerFile=
+                                {
+                                    Url=String.Empty;
+                                    Checksum=String.Empty;
+                                    FileName=intallerName;
+                                    Size=0L
+                                }
+                            Released=releasedDate;
+                            Os=String.Empty;
+                            OsBuild=String.Empty;
+                        }                
+                }
+            return downloadedSccmPackageInfo
+        }
+
+
     let downloadUpdate' (downloadJob,ignoreVerificationErrors) =
         DriverTool.Library.Web.downloadIfDifferent (logger, downloadJob,ignoreVerificationErrors)
 
