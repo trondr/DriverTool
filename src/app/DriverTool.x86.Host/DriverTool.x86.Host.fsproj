@@ -51,21 +51,19 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-	<EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
-	<EmbeddedResource Include="Libs\Common.Logging.dll" />
-	<EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
-	<EmbeddedResource Include="Libs\CsvHelper.dll" />
-	<EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
-	<EmbeddedResource Include="Libs\DriverTool.Library.dll" />
-	<EmbeddedResource Include="Libs\DriverTool.x86.Service.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Core.dll" />
-	<EmbeddedResource Include="Libs\FSharp.Data.dll" />
-	<EmbeddedResource Include="Libs\log4net.dll" />
-	<EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
-	<EmbeddedResource Include="Libs\NCmdLiner.dll" />
-	<EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
-	<EmbeddedResource Include="Libs\System.AppContext.dll" />
-	<EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.Log4Net208.dll" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
+    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Core.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.dll" />
+    <EmbeddedResource Include="Libs\log4net.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
+    <EmbeddedResource Include="Libs\NCmdLiner.dll" />
+    <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Libs\System.AppContext.dll" />
+    <EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
