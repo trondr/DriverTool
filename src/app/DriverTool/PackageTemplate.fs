@@ -80,17 +80,8 @@ module PackageTemplate =
             let! driverToolFiles = getDriverToolFiles ()
             let! driverToolFilesCopied = 
                 driverToolFiles
-                |> (DriverTool.Library.FileOperations.copyFilePaths existingDriverToolDirectoryPath)
-            logger.Info("Adjust corflags on the copied DriverTool.exe so that the version of DriverTool.exe in the driver package will prefer to run in 64 bit process on a 64 bit operating system. This is required when installing and uninstalling the driver package.")
-            let! adjustCorFlagResult =
-                driverToolFilesCopied
-                |>Seq.filter(fun p -> (FileSystem.pathValue p).EndsWith(".exe"))
-                |>Seq.map(fun p -> 
-                            (CorFlags.prefer32BitClear p)
-                            |>toResult p                    
-                    )
-                |>toAccumulatedResult                
-            return adjustCorFlagResult
+                |> (DriverTool.Library.FileOperations.copyFilePaths existingDriverToolDirectoryPath)                            
+            return driverToolFilesCopied
         }
 
     let extractPackageTemplate (destinationFolderPath:FileSystem.Path) =
