@@ -73,3 +73,9 @@ src/app/DriverTool.x86.Host/Libs/Common.dll
 src/app/DriverTool.x86.Host/Libs/FSharp.Data.DesignTime.dll
 src/app/DriverTool/Libs/DriverTool.Library.dll
 src/app/DriverTool.x86.Host/Libs/DriverTool.Library.dll
+src/app/DriverTool.x86.Host/Libs/DriverTool.CSharpLib.dll
+src/app/DriverTool.x86.Host/Libs/DriverTool.x86.Service.dll
+src/app/DriverTool/Libs/DriverTool.CSharpLib.dll
+src/app/DriverTool/Libs/DriverTool.x86.Client.dll
+src/app/DriverTool/Libs/DriverTool.x86.Service.dll
+src/app/DriverTool/Libs/Interop.SHDocVw.dll
