@@ -271,64 +271,47 @@ module LenovoUpdates =
             return localUpdates
         }
 
-    let getLenovoSccmPackageDownloadInfoFromContent (content:string) os osbuild =
-            result{
-                let lenovoOs = (DriverTool.LenovoCatalog.osShortNameToLenovoOs os)
-                logger.Info(sprintf "Getting sccm package download links for OS='%s' OsBuild='%s'..." lenovoOs osbuild)
-                let! sccmPackageInfos = DriverTool.LenovoCatalog.getDownloadLinksFromWebPageContent content
-                let downloadLinks = 
-                    sccmPackageInfos
-                    |>Seq.sortBy (fun dl -> dl.Os, dl.OsBuild)
-                    |> Seq.toArray
-                    |> Array.rev
-                logger.Info(sprintf "Found sccm package download links:%s%A" System.Environment.NewLine downloadLinks)
-                let sccmPackages =
-                    downloadLinks
-                    |> Seq.filter (fun s -> (s.Os = lenovoOs && s.OsBuild = osbuild))
-                    |> Seq.toArray
-                let! sccmPackageInfo =
-                    match (sccmPackages.Length > 0) with
-                    |true -> Result.Ok sccmPackages.[0]
-                    |false -> 
-                        match osbuild with
-                        |"*" ->
-                            let sccmPackages =
-                                downloadLinks
-                                |> Seq.filter (fun s -> (s.Os = lenovoOs))
-                                |> Seq.toArray
-                            match (sccmPackages.Length > 0) with
-                            |true -> Result.Ok sccmPackages.[0]
-                            | false ->
-                                Result.Error (new Exception(sprintf "Sccm package not found OS=%s, OsBuild=%s." os osbuild))
-                        |_ ->
-                            Result.Error (new Exception(sprintf "Sccm package not found for OS=%s, OsBuild=%s." os osbuild))
-                logger.Info(sprintf "Selected sccm package download link: %A" sccmPackageInfo)
-                return sccmPackageInfo            
-            }
-   
-    let getLenovoSccmPackageDownloadInfo (uri:string) os osbuild =
-        match(result{
-            let! content = DriverTool.Library.WebParsing.getContentFromWebPage uri
-            let! sccmPackageInfo = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
-            return sccmPackageInfo        
-        }) with
-        |Result.Ok sccmPackageInfo -> Result.Ok sccmPackageInfo
-        |Result.Error ex -> Result.Error (toException (sprintf "Failed to get sccm package info from url '%s' for OS=%s and OsBuild=%s due to error '%s'. It seems that Lenovo has changed the web page design making the algorithm for automatically scraping the information from the web page obsolete. To workaround the issue, manually browse to the web page '%s' and download the sccm pacakge installer (*.exe) and the sccm package readme (*.txt) and save the files to the driver tool cache  folder '%s'. Then modify the DriverTool.exe command line to skip download of Sccm package and specify the name of the installer and readme and relase date. Switches that needs to be added (example): /doNotDownloadSccmPackage=\"True\" /sccmPackageInstaller=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.exe\" /sccmPackageReadme=\"tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201910.txt\" /sccmPackageReleased=\"2019-10-01\"" uri os osbuild ex.Message uri (downloadCacheDirectoryPath)) (Some ex))
-
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath)  : Result<SccmPackageInfo,Exception> =
         result
             {
-                let! products = DriverTool.LenovoCatalog.getSccmPackageInfos cacheFolderPath
+                let! products = DriverTool.LenovoCatalogv2.getSccmPackageInfosv2 cacheFolderPath
                 let modeCode4 = (modelCode.Value.Substring(0,4))
                 let os = (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value)
                 let osBuild = OperatingSystem.getOsBuildForCurrentSystem
                 let product = DriverTool.LenovoCatalog.findSccmPackageInfoByModelCode4AndOsAndBuild logger modeCode4 os osBuild products
-                logger.Info(sprintf "Sccm product info: %A " product)
-                let osBuild = product.Value.OsBuild.Value
-                let! sccmPackage = getLenovoSccmPackageDownloadInfo product.Value.SccmDriverPackUrl.Value operatingSystemCode.Value osBuild 
+                logger.Info(sprintf "Sccm product info: %A " product)                
+                let! sccmPackage = 
+                        match product with
+                        |None -> Result.Error (new Exception("No sccm package found."))
+                        |Some p ->
+                            match p.OsBuild with
+                            |None -> Result.Error (new Exception(sprintf "No os build for sccm package '%A' found." p))
+                            |Some osBuild ->
+                                let readmeUrl =  p.SccmDriverPackUrl.Value.Replace(".exe",".txt")
+                                let installerUrl = p.SccmDriverPackUrl.Value
+                                Result.Ok 
+                                    {
+                                        ReadmeFile =                                         
+                                            {
+                                            Url = readmeUrl;
+                                            Checksum = "";
+                                            FileName = getFileNameFromUrl readmeUrl;
+                                            Size=0L;
+                                            }
+                                        InstallerFile=
+                                            {
+                                                Url=installerUrl;
+                                                Checksum=""
+                                                FileName=getFileNameFromUrl installerUrl
+                                                Size=0L
+                                            }
+                                        Released=(DriverTool.LenovoCatalog.getReleaseDateFromUrl installerUrl);
+                                        Os= (DriverTool.LenovoCatalog.osShortNameToLenovoOs p.Os);
+                                        OsBuild=osBuild
+                                    }
                 return sccmPackage
             }
-
+    
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName

@@ -22,7 +22,7 @@ module LenovoCatalog =
             let! destinationFile = getLocalLenvoCatalogXmlFilePath cacheFolderPath
             let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml"), true, destinationFile)
             return downloadResult
-        }
+        }    
     
     type Product = {Model:Option<string>;Os:string;OsBuild:Option<string>;Name:string;SccmDriverPackUrl:Option<string>;ModelCodes:array<string>}
 
@@ -153,26 +153,6 @@ module LenovoCatalog =
         | "Windows 7 (32-bit)" -> "WIN7X86"
         | _ -> (raise (new Exception("Unknown OS name: " + osName) ))
 
-    let getDownloadLinkInfo (ulNode:HtmlNode) =
-        let liElements = ulNode.Elements() |> Seq.toArray
-        let subLiElements = liElements.[0].Elements()        
-        let name = subLiElements.[0].InnerText()        
-        let osName = getOs liElements.[1]
-        let url = getDownloadLink ulNode
-        let checksum = getCheckSum ulNode
-        let osBuild = getOsBuildFromName2 name
-        let downloadLinkInfo =
-            {
-                DriverName = name
-                Type = urlToDownloadType url
-                Url = url
-                Checksum = checksum
-                FileName= getFileNameFromUrl url
-                Os = osNameToOsShortName osName
-                OsBuild = osBuild
-            }
-        downloadLinkInfo
-    
     let osShortNameToLenovoOs osShortName =
         match osShortName with
         | "WIN10X86" -> "win10"
@@ -186,84 +166,6 @@ module LenovoCatalog =
         | "win732" -> "win732"
         | "win764" -> "win764"
         | _ -> raise (new System.Exception("Unsupported OS: " + osShortName))
-    
-    let getSccmPackageInfoFromUlNodesUnsafe ulNodes =
-        let infos = 
-            ulNodes
-            |> Seq.map (fun ul -> getDownloadLinkInfo ul)
-            |> Seq.groupBy (fun d -> d.Os, d.OsBuild)
-            |> Seq.map (fun ((os,osBuild),links) ->                             
-                            let readme = links|> Seq.filter (fun d -> d.Type = DownloadType.Readme) |> Seq.head
-                            let installer = links|> Seq.filter (fun d -> d.Type = DownloadType.Installer) |> Seq.head
-                            let sccmPackage = 
-                                {
-                                    ReadmeFile =                                         
-                                        {
-                                        Url = readme.Url;
-                                        Checksum = readme.Checksum;
-                                        FileName = readme.FileName;
-                                        Size=0L;
-                                        }
-                                    InstallerFile=
-                                        {
-                                            Url=installer.Url;
-                                            Checksum=installer.Checksum
-                                            FileName=installer.FileName
-                                            Size=0L
-                                        }
-                                    Released=(getReleaseDateFromUrl installer.Url);
-                                    Os= (osShortNameToLenovoOs installer.Os);
-                                    OsBuild=installer.OsBuild
-                                }
-                            sccmPackage
-                        )
-        infos
-
-    let getSccmPackageInfoFromUlNodes ulNodes =
-        tryCatch getSccmPackageInfoFromUlNodesUnsafe ulNodes
-        
-    let getDownloadsTabHtmlNode (htmlDocument:HtmlDocument) = 
-        let downloadsTab =
-            htmlDocument.Descendants["div"]
-                //Find the downloadsTab
-                |>Seq.filter (fun d -> 
-                                        match (d.TryGetAttribute("id")) with
-                                        |Some id -> (id.Value() = "downloadsTab")
-                                        |None -> false
-                             )
-                |>Seq.tryHead
-        match downloadsTab with
-        |None -> Result.Error (toException (sprintf "Download tabs ('downloadTabs') not found in html document.") None)
-        |Some dt -> Result.Ok dt
-        
-    let loadHtmlDocument content =
-        try
-            use htmlContentStream = stringToStream content
-            let htmlDocument = HtmlDocument.Load(htmlContentStream)
-            Result.Ok htmlDocument
-        with
-        |ex -> Result.Error (toException (sprintf "Failed to load html document content.") (Some ex))
-
-    let getUnorderdLists (downloadsTabHtmlNode:HtmlNode) =
-        let list =
-            downloadsTabHtmlNode.Descendants["ul"]
-            //Find all unordered list containing items of type "EXE" or "TXT README" 
-            |>Seq.filter (fun ul-> 
-                                (ul.Elements() |> Seq.exists (fun li -> li.InnerText().Contains(".exe") || li.InnerText().Contains(".txt") || li.InnerText().Contains("TXT README") || li.InnerText().Contains("README")))
-                            )
-        if (Seq.isEmpty list) then 
-            Result.Error (toException (sprintf "No download links were found beneath the downloads tab in the html document.") None)
-        else
-            Result.Ok list
-
-    let getDownloadLinksFromWebPageContent content =
-        result{
-            let! htmlDocument = loadHtmlDocument content
-            let! downloadsTabHtmlNode = getDownloadsTabHtmlNode htmlDocument
-            let! unorderedLists = getUnorderdLists downloadsTabHtmlNode
-            let! sccmPackageInfos = getSccmPackageInfoFromUlNodes unorderedLists
-            return sccmPackageInfos
-        }
     
     let getHighestOsBuildProduct (products:seq<Product>) =
         let maxOsbUildProduct =

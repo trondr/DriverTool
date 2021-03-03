@@ -81,6 +81,7 @@
     <Compile Include="WebParsingTests.fs" />
     <Compile Include="LenovoCatalogXmlTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
+    <Compile Include="LenovoCatalogv2Tests.fs" />
     <Compile Include="LenovoUpdateTests.fs" />
     <Compile Include="PackageTemplateTests.fs" />
     <Compile Include="InstallDriverPackageTests.fs" />
@@ -117,6 +118,7 @@
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.txt" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w_2_.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.exe" />
+    <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_catalogv2.xml" />
     <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_MissingDownloadsTab.html" />
