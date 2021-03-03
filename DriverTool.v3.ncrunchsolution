@@ -1,9 +1,6 @@
 ﻿<SolutionConfiguration>
   <Settings>
     <AllowParallelTestExecution>True</AllowParallelTestExecution>
-    <HotSpotsLineExclusionList>
-      <Value>Checksum.fs:src\app\DriverTool.Library\DriverTool.Library.fsproj-41</Value>
-    </HotSpotsLineExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
 </SolutionConfiguration>
