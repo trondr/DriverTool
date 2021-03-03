@@ -243,21 +243,71 @@ module OperatingSystem =
         |Regex @"(1809)" [osBuild] -> osBuild
         |Regex @"(1903)" [osBuild] -> osBuild
         |Regex @"(1909)" [osBuild] -> osBuild
-        |Regex @"(2003)" [osBuild] -> osBuild
-        |Regex @"(2009)" [osBuild] -> osBuild
-        |Regex @"(2103)" [osBuild] -> osBuild
-        |Regex @"(2109)" [osBuild] -> osBuild
-        |Regex @"(2203)" [osBuild] -> osBuild
-        |Regex @"(2209)" [osBuild] -> osBuild
+        |Regex @"(2004)" [osBuild] -> osBuild        
+        |Regex @"(20H2)" [osBuild] -> osBuild
+        |Regex @"(21H1)" [osBuild] -> osBuild
+        |Regex @"(21H2)" [osBuild] -> osBuild
+        |Regex @"(22H1)" [osBuild] -> osBuild
+        |Regex @"(22H2)" [osBuild] -> osBuild
+        |Regex @"(23H1)" [osBuild] -> osBuild
+        |Regex @"(23H2)" [osBuild] -> osBuild
+        |Regex @"(24H1)" [osBuild] -> osBuild
+        |Regex @"(24H2)" [osBuild] -> osBuild
+        |Regex @"(25H1)" [osBuild] -> osBuild
+        |Regex @"(25H2)" [osBuild] -> osBuild
         | _ -> "*"
-
-    let getOsBuildForCurrentSystemBase (getRegValueFunc:(string -> string -> option<obj>)) =
+    
+    let getOsReleaseIdForCurrentSystemBase (getRegValueFunc:(string -> string -> option<obj>)) =
         let relaseId = getRegValueFunc "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion" "ReleaseId"
         relaseId|> Option.fold (fun _ r -> r.ToString()) "*"
 
+    let getOsBuildFromReleaseId releaseId = 
+        match releaseId with
+        |Regex @"(1607)" [osBuild] -> osBuild
+        
+        |Regex @"(1703)" [osBuild] -> osBuild        
+        |Regex @"(1709)" [osBuild] -> osBuild
+        
+        |Regex @"(1803)" [osBuild] -> osBuild
+        |Regex @"(1809)" [osBuild] -> osBuild
+        
+        |Regex @"(1903)" [osBuild] -> osBuild
+        |Regex @"(1909)" [osBuild] -> osBuild
+        
+        |Regex @"(2004)" [osBuild] -> osBuild        
+        |Regex @"(2009)" [osBuild] -> "20H2"
+        
+        |Regex @"(2103)" [_] -> "21H1"
+        |Regex @"(2104)" [_] -> "21H1"
+        |Regex @"(2109)" [_] -> "21H2"
+        |Regex @"(2110)" [_] -> "21H2"
+        
+        |Regex @"(2203)" [_] -> "22H1"
+        |Regex @"(2204)" [_] -> "22H1"
+        |Regex @"(2209)" [_] -> "22H2"
+        |Regex @"(2210)" [_] -> "22H2"
+
+        |Regex @"(2303)" [_] -> "23H1"
+        |Regex @"(2304)" [_] -> "23H1"
+        |Regex @"(2309)" [_] -> "23H2"
+        |Regex @"(2310)" [_] -> "23H2"
+
+        |Regex @"(2403)" [_] -> "24H1"
+        |Regex @"(2404)" [_] -> "24H1"
+        |Regex @"(2409)" [_] -> "24H2"
+        |Regex @"(2410)" [_] -> "24H2"
+
+        |Regex @"(2503)" [_] -> "25H1"
+        |Regex @"(2504)" [_] -> "25H1"
+        |Regex @"(2509)" [_] -> "25H2"
+        |Regex @"(2510)" [_] -> "25H2"
+
+        | _ -> "*"
+
     /// <summary>
-    /// Get os build (relase id) for current system from registry. If release id is not found, return *. 
+    /// Get os build (release id) for current system from registry. If release id is not found, return *. 
     /// Release id is typically 1709, 1803, 1809, 1903 etc defining the semi anual release of Windows 10
     /// </summary>
     let getOsBuildForCurrentSystem =
-        getOsBuildForCurrentSystemBase RegistryOperations.getRegValue        
+        let releaseId = getOsReleaseIdForCurrentSystemBase RegistryOperations.getRegValue
+        getOsBuildFromReleaseId releaseId
