@@ -112,8 +112,8 @@ module Web =
     let useCachedVersion (logger:Common.Logging.ILog) (downloadInfo:DownloadInfo) =        
         useCachedVersionBase logger System.IO.File.Exists downloadInfo
 
-    let downloadIsRequired logger downloadInfo =
-        ((String.IsNullOrEmpty(downloadInfo.SourceChecksum))||(not (hasSameFileHash downloadInfo))) && (not (useCachedVersion logger downloadInfo))
+    let downloadIsRequired logger downloadInfo =        
+        ((String.IsNullOrEmpty(downloadInfo.SourceChecksum) && (not (Cryptography.isTrusted downloadInfo.DestinationFile) ))||(not (hasSameFileHash downloadInfo))) && (not (useCachedVersion logger downloadInfo))
     
     type HasSameFileHashFunc = (DownloadInfo) -> bool
     type IsTrustedFunc = FileSystem.Path -> bool

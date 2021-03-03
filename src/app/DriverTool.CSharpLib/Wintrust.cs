@@ -12,8 +12,9 @@ namespace DriverTool.CSharpLib
         private static extern uint WinVerifyTrust(IntPtr hWnd, IntPtr pgActionID, IntPtr pWinTrustData);
         private static uint WinVerifyTrust(string fileName)
         {
-            var wintrustActionGenericVerifyV2 = new Guid("{00AAC56B-CD44-11d0-8CC2-00C04FC295EE}");
             uint result = 1;
+            if (!System.IO.File.Exists(fileName)) return result;
+            var wintrustActionGenericVerifyV2 = new Guid("{00AAC56B-CD44-11d0-8CC2-00C04FC295EE}");            
             using (var fileInfo = new WintrustFileInfo(fileName,Guid.Empty))
             using (var guidPtr = new UnmanagedPointer(Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Guid))),AllocMethod.HGlobal))
             using (var wvtDataPtr = new UnmanagedPointer(Marshal.AllocHGlobal(Marshal.SizeOf(typeof(WintrustData))),AllocMethod.HGlobal))
