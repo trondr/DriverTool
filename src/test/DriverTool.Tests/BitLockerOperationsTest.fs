@@ -5,7 +5,7 @@ open NUnit.Framework
 [<TestFixture>]
 [<Category(TestCategory.IntegrationTests)>]
 module BitLockerOperationsTest =
-    open DriverTool
+    open DriverTool.Library
 
     [<Test>]
     let isBitLockerEnabledTest () =

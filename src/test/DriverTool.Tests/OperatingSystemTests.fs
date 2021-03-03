@@ -1,7 +1,7 @@
 ﻿namespace DriverTool.Tests
 open NUnit.Framework
 open System
-open DriverTool
+open DriverTool.Library
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]
@@ -212,6 +212,6 @@ module OperatingSystemTests =
             else
                 Some releaseIdFromRegistry
 
-        let actual = OperatingSystem.getOsBuildForCurrentSystemBase getRegValueStub
+        let actual = OperatingSystem.getOsReleaseIdForCurrentSystemBase getRegValueStub
 
         Assert.AreEqual(expected, actual)

@@ -2,13 +2,15 @@
 
 module InstallDriverPackage =
     open System
-    open InstallXml
-    open DriverTool.PackageDefinition
-    open DriverTool.Requirements
+    open DriverTool.Library.InstallXml
+    open DriverTool.Library.PackageDefinition
+    open DriverTool.Library.Requirements
     open Microsoft.FSharp.Core.Operators
-    open DriverTool.Logging
-    let logger = Logging.getLoggerByName("InstallDriverPackage")
-        
+    open DriverTool.Library.Logging
+    let logger = getLoggerByName "InstallDriverPackage"
+    open DriverTool.Library.F
+    open DriverTool.Library
+
     let getInstallXmlPath (driverPackagePath:FileSystem.Path) =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Install.xml"))
 
@@ -16,7 +18,7 @@ module InstallDriverPackage =
     
     let getSystemInfo =
         result{
-            let! currentComputerModel = DriverTool.SystemInfo.getModelCodeForCurrentSystem()
+            let! currentComputerModel = DriverTool.Library.SystemInfo.getModelCodeForCurrentSystem()
             let currentOsShortName = OperatingSystem.getOsShortName
             return {Model=currentComputerModel;OperatingSystem=currentOsShortName}
         }
@@ -45,14 +47,14 @@ module InstallDriverPackage =
     let unRegisterSccmApplication (installConfiguration:InstallConfigurationData) =        
         let applicationRegistryValue = (getApplicationRegistryValue installConfiguration)
         logger.Info("Unregister application: " + applicationRegistryValue.Path)
-        match (DriverTool.RegistryOperations.regKeyExists applicationRegistryValue.Path) with
-        | true -> DriverTool.RegistryOperations.deleteRegKey applicationRegistryValue.Path
+        match (DriverTool.Library.RegistryOperations.regKeyExists applicationRegistryValue.Path) with
+        | true -> DriverTool.Library.RegistryOperations.deleteRegKey applicationRegistryValue.Path
         | _ -> ()
 
     let registerSccmApplication (installConfiguration:InstallConfigurationData) =        
         let applicationRegistryValue = (getApplicationRegistryValue installConfiguration)
         logger.Info("Register application: " + applicationRegistryValue.Path)
-        use regKey = DriverTool.RegistryOperations.createRegKey applicationRegistryValue.Path
+        use regKey = DriverTool.Library.RegistryOperations.createRegKey applicationRegistryValue.Path
         regKey.SetValue(applicationRegistryValue.ValueName,applicationRegistryValue.Value)
     
     let getDriverPackageName (installConfiguration:InstallConfigurationData) =
@@ -152,19 +154,19 @@ module InstallDriverPackage =
             
             logger.Info("Getting active drivers...")
             let! activeDriverFolders = getGetActiveDriverFolders existingLocalDriversFolderPath    
-            activeDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Will be processed: %s")|>ignore
+            activeDriverFolders |> logSeqWithFormatString logger (sprintf "Will be processed: %s")|>ignore
             
             logger.Info("Getting inactive drivers...")
             let! inactiveDriverFolders = getGetInActiveDriverFolders existingLocalDriversFolderPath
-            inactiveDriverFolders |> DriverTool.Logging.logSeqWithFormatString logger  (sprintf "Will NOT be processed: %s")|>ignore
+            inactiveDriverFolders |> logSeqWithFormatString logger  (sprintf "Will NOT be processed: %s")|>ignore
             
             logger.Info("Verifying that active scripts exists...")
             let! existingInstallScripts = getExistingScripts (activeDriverFolders, installScriptName)
-            existingInstallScripts |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Script verified: %s")|>Seq.toArray|>ignore
+            existingInstallScripts |> logSeqWithFormatString logger (sprintf "Script verified: %s")|>Seq.toArray|>ignore
 
             logger.Info(msg (sprintf  "Executing '%s' for each driver folder..." installScriptName))
             let! installedDriverExitCodes = executeScripts (existingInstallScripts,installScriptName,installConfiguration,driverPackageName)
-            existingInstallScripts |>Seq.zip installedDriverExitCodes |> DriverTool.Logging.logSeqWithFormatString logger (sprintf "Script execution result: %s") |> ignore
+            existingInstallScripts |>Seq.zip installedDriverExitCodes |> logSeqWithFormatString logger (sprintf "Script execution result: %s") |> ignore
             logger.Info(msg (sprintf "Finished executing '%s' for each driver folder!" installScriptName))
             let adjustedExitCode = getAdjustedExitCode installedDriverExitCodes
             logger.Info(msg (sprintf "Adjusted exit code: %i" adjustedExitCode))
@@ -186,14 +188,14 @@ module InstallDriverPackage =
     let resetConfigFlagsUnsafe (_:unit) =
         logger.Info("Reset all ConfigFlag's having value 131072 to 0. This will avoid UAC prompts due driver initialization at standard user logon.")
         let regKeyPath = @"HKLM\SYSTEM\CurrentControlSet\Enum"
-        DriverTool.RegistryOperations.getRegistrySubKeyPaths regKeyPath true
-        |> Seq.filter(fun p -> (DriverTool.RegistryOperations.regValueExists p "ConfigFlags"))
-        |> Seq.filter(fun p -> (DriverTool.RegistryOperations.regValueIs p "ConfigFlags" 131072))
+        DriverTool.Library.RegistryOperations.getRegistrySubKeyPaths regKeyPath true
+        |> Seq.filter(fun p -> (DriverTool.Library.RegistryOperations.regValueExists p "ConfigFlags"))
+        |> Seq.filter(fun p -> (DriverTool.Library.RegistryOperations.regValueIs p "ConfigFlags" 131072))
         |> Seq.map (fun p ->
                         //The ConfigFlag value 131072 signals a driver initialization, 
                         //which we do not want for a standard user user at logon, so set 
                         //ConfigFlags to 0                        
-                        (DriverTool.RegistryOperations.setRegValue p "ConfigFlags" 0) |> ignore
+                        (DriverTool.Library.RegistryOperations.setRegValue p "ConfigFlags" 0) |> ignore
                         logger.Info(msg (sprintf  "ConfigFlag value in '[%s]' was reset to 0." p))
                     )
         |>Seq.toArray
@@ -216,7 +218,7 @@ module InstallDriverPackage =
             let localDriversFolder = getLocalDriversPackageFolder driverPackageName
             let! localDriversFolderPath = FileSystem.path localDriversFolder
             let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
-            let! installDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtInstallPackageCmd installConfiguration driverPackageName 
+            let! installDriversExitCode = installDrivers localDriversFolderPath DriverTool.Packaging.dtInstallPackageCmd installConfiguration driverPackageName 
             let registerApplication =
                 match installDriversExitCode with
                 |0|3010 -> 
@@ -238,7 +240,7 @@ module InstallDriverPackage =
             let localDriversFolder = getLocalDriversPackageFolder driverPackageName
             let! localDriversFolderPath = FileSystem.path localDriversFolder
             let! copyResult = copyDrivers (driverPackagePath, localDriversFolderPath)
-            let! uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.CreateDriverPackage.dtUnInstallPackageCmd installConfiguration driverPackageName
+            let! uninstallDriversExitCode = installDrivers localDriversFolderPath DriverTool.Packaging.dtUnInstallPackageCmd installConfiguration driverPackageName
             let! nonExistingLocalDriversFolderPath = DirectoryOperations.deleteDirectory true localDriversFolderPath
             let registerApplication =
                 match uninstallDriversExitCode with

@@ -1,6 +1,6 @@
 namespace DriverTool.Tests
 open NUnit.Framework
-open Paths
+open DriverTool.Library.Paths
 
 [<TestFixture>]
 [<Category(TestCategory.UnitTests)>]

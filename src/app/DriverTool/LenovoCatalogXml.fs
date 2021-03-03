@@ -2,8 +2,9 @@
 
 module LenovoCatalogXml =
     open System
-    open System.Xml.Linq
-    open DriverTool.FileSystem
+    open System.Xml.Linq    
+    open DriverTool.Library.F
+    open DriverTool.Library
     
     type ModelType = ModelType of string
 
@@ -54,7 +55,9 @@ module LenovoCatalogXml =
             |Regex @"^(\d{4})(\d{2})" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)            
             |Regex @"^(\d{4})(\d{2})\w{2}" [year;month] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month) 1)
             |Regex @"^(\d{4})-(\d{2})-(\d{2})" [year;month;day] -> Some (toDateTime (toInt32Unsafe year) (toInt32Unsafe month)(toInt32Unsafe day))
-            |_ -> raise (new Exception(sprintf "Unsupported date format: %s" d))
+            |_ -> 
+                printf "Unsupported date format: %s" d
+                None                
     
     let toDriverPack (driverPackXElement:XElement) =
         result{
@@ -125,11 +128,80 @@ module LenovoCatalogXml =
         |>Seq.map(fun p -> toProduct p)
         |>toAccumulatedResult
             
-    let loadLenovoCatalog (lenovoCatalogXlmFilePath:Path) =
+    let loadLenovoCatalog (lenovoCatalogXlmFilePath:FileSystem.Path) =
         result{
             let! existingCatalogXmlPath = FileOperations.ensureFileExistsWithMessage (sprintf "Lenovo catalog xml file '%A' not found." lenovoCatalogXlmFilePath) lenovoCatalogXlmFilePath
             let xDocument = XDocument.Load(FileSystem.pathValue existingCatalogXmlPath)
             let! products = toProducts xDocument                
+            return products
+        }
+
+    type SccmDriverPack =
+        {
+            Version:string
+            Url:string
+            ReleaseDate:DateTime option
+        }
+
+    type LenovoCatalogModel =
+        {
+            Name:string
+            ModelTypes:ModelType[]
+            SccmDriverPacks:SccmDriverPack[]
+        }
+
+    let toSccmDriverPack (sccmXElement:XElement) =
+        result{
+            let! version = XmlHelper.getRequiredAttribute sccmXElement "version"
+            let url = sccmXElement.Value
+            return 
+                {
+                    Version = version                    
+                    Url = url
+                    ReleaseDate = None
+                }
+        }        
+    
+    let toSccmDriverPacks (modelXElement:XElement) =
+        result{
+             let sccmDriverPackElements = modelXElement.Elements(XName.Get("SCCM"))
+             let! sccmDriverPacks = 
+                sccmDriverPackElements 
+                |> Seq.map (fun d -> toSccmDriverPack d)
+                |>toAccumulatedResult
+             return sccmDriverPacks
+        }
+
+    let toModelTypes (modelXElement:XElement) =
+        result{
+            let typeElements = modelXElement.Descendants(XName.Get("Type"))
+            let! modelTypes = typeElements|>Seq.map(fun t -> toModelType t) |> toAccumulatedResult            
+            return modelTypes            
+        }
+
+    let toModel (modelXElement:XElement) =
+        result{
+            let! name = XmlHelper.getRequiredAttribute modelXElement "name"
+            let! modelTypes = toModelTypes modelXElement
+            let! sccmDriverPacks = toSccmDriverPacks modelXElement
+            return
+                {
+                    Name = name
+                    ModelTypes = (modelTypes |> Seq.toArray)
+                    SccmDriverPacks = (sccmDriverPacks |> Seq.toArray)                    
+                }
+        }
+
+    let toModels (xDocument:XDocument) =
+        xDocument.Descendants(XName.Get("Model"))
+        |>Seq.map(fun m -> toModel m)
+        |>toAccumulatedResult
+
+    let loadLenovoCatalogv2 (lenovoCatalogv2XlmFilePath:FileSystem.Path) =
+        result{
+            let! existingCatalogv2XmlPath = FileOperations.ensureFileExistsWithMessage (sprintf "Lenovo catalog xml file '%A' not found." lenovoCatalogv2XlmFilePath) lenovoCatalogv2XlmFilePath
+            let xDocument = XDocument.Load(FileSystem.pathValue existingCatalogv2XmlPath)
+            let! products = toModels xDocument                
             return products
         }
         

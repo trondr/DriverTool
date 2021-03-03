@@ -8,617 +8,161 @@
       <Value>NUnitTestsWithSameName</Value>
     </HiddenComponentWarnings>
     <IgnoredTests>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.XmlToolKitTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.WmiHelperTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.WebTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.WebParsingTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.WebDownloadTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.RegistryOperationTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.RegExpTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.ProcessOperationsTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.PathTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.PathsTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.PackageXmlTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.PackageTemplateTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.PackageInfoTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.OperatingSystemTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.OperatingSystemCodeTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.ModelCodeTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.ManufacturerTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.ManualWebTest</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.LoggingTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.LenovoUpdateTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.LenovoCatalogXmlTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.LenovoCatalogTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.InstallXmlTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.InstallDriverPackageTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.HpUpdatesTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.HpCatalogTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.FTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.FileOperationTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.ExportRemoteUpdatesTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.EnvironmentTests</FixtureName>
+      </FixtureTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellUpdatesTests.getLatestPackageInfoVersionTest</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 3</TestName>
+      </NamedTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.DirectoryOperationTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.DellUpdatesTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.DellCommandUpdatesTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.DellCommandUpdatesIntegrationTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.CsvOperationTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.CryptographyTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.CreateDriverPackageTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.CompressionTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.ChecksumTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.BitLockerOperationsTest</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.AssemblyResolveTests</FixtureName>
+      </FixtureTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 2</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.SdpCatalogTests.getReleaseDateTest({SdpTestFile = "0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";
- IsSuccess = true;
- Expected =
-  {PackageId = "0e6cf4ac-2853-48aa-825b-8fe28206575f";
-   Title = "Realtek High Definition Audio Driver,6.0.1.8454,A02";
-   CreationDate = 10/3/2018 12:00:00 AM;
-   Description =
-    "This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";
-   ProductName = "Drivers and Applications";
-   MoreInfoUrl =
-    "http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=99DDD";
-   UpdateSpecificData = {MsrcSeverity = Important;
-                         UpdateClassification = Updates;
-                         SecurityBulletinID = Some "99DDD";
-                         KBArticleID = Some "99DDD";};
-   IsInstallable = "";
-   IsInstalled = None;
-   InstallableItems =
-    [|{Id = "1";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "2_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 6/19/2017 8:22:57 AM;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};};
-      {Id = "2";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "1_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 6/19/2018 8:22:57 AM;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};};
-      {Id = "3";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "3_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 6/19/2016 8:22:57 AM;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};}|];};
- ExpectedErrorMessage = "N/A";})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 1</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpTests({SdpTestFile = "dc718411-a5f1-4b15-966a-63a77cbb156e.sdp";
- IsSuccess = true;
- Expected =
-  {PackageId = "dc718411-a5f1-4b15-966a-63a77cbb156e";
-   Title = "Dell OpenManage Inventory Agent (for Dell Business Client Systems)";
-   CreationDate = 1/24/2019 12:00:00 AM;
-   Description =
-    "Dell OpenManage Inventory Agent is a data provider for Microsoft WMI to inventory information for Dell supported devices on Dell Precision workstations, OptiPlex desktops, and Latitude laptops. This service is run at boot time and then stopped automatically.";
-   ProductName = "Drivers and Applications";
-   MoreInfoUrl = "http://downloads.dell.com/cmsdk/DSIA_Readme.doc";
-   UpdateSpecificData = {MsrcSeverity = Important;
-                         UpdateClassification = Updates;
-                         SecurityBulletinID = Some "45YPT";
-                         KBArticleID = Some "45YPT";};
-   IsInstallable = "";
-   IsInstalled = None;
-   InstallableItems =
-    [|{Id = "5968b32a-dc30-4186-8652-ecc4a7cdc684";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = NeverReboots;};
-       UninstallProperties = None;
-       InstallerData =
-        MsiInstallerData
-          {MsiFile = "DSIAPC_1.6.6.5.msi";
-           CommandLine = "Reboot=ReallySuppress";
-           UninstallCommandLine = None;
-           ProductCode = ProductCode "{FB2B7CC0-8307-47e6-A065-11015CC96B99}";};
-       OriginFile =
-        {Digest = "7sJyfjiOzAzMVjZ7FqJLS0hQsG0=";
-         FileName = "DSIAPC_1.6.6.5.msi";
-         Modified = 1/24/2019 8:52:15 AM;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05427436M/1/DSIAPC_1.6.6.5.msi";
-         Size = 26825728L;};}|];};
- ExpectedErrorMessage = "N/A";})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToFileNameTest("DriverTool.PackageTemplate.Install.xml","c:\\temp\\testpackage_1","c:\\temp\\testpackage_1\\Install.xml")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpTests({SdpTestFile = "0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";
- IsSuccess = true;
- Expected =
-  {PackageId = "0e6cf4ac-2853-48aa-825b-8fe28206575f";
-   Title = "Realtek High Definition Audio Driver,6.0.1.8454,A02";
-   CreationDate = 10/3/2018 12:00:00 AM;
-   Description =
-    "This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";
-   ProductName = "Drivers and Applications";
-   MoreInfoUrl =
-    "http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=99DDD";
-   UpdateSpecificData = {MsrcSeverity = Important;
-                         UpdateClassification = Updates;
-                         SecurityBulletinID = Some "99DDD";
-                         KBArticleID = Some "99DDD";};
-   IsInstallable = "";
-   IsInstalled = None;
-   InstallableItems =
-    [|{Id = "3787be40-ec14-47c7-a24d-23210ef448e9";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 6/19/2018 8:22:57 AM;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};}|];};
- ExpectedErrorMessage = "N/A";})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToFileNameTest("DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe","c:\\temp\\testpackage_2","c:\\temp\\testpackage_2\\Drivers\\DpInstExitCode2ExitCode.exe")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.InstallDriverPackageTests.getAdjustedExitCodeTests({ExitCodes = [|0; 0; 0; 0; 3010; 0; 0; 0; 0; 0|];
- ExpectedAdjustedExitCode = 3010;})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.mapResourceNamesToFileNamesTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.InstallDriverPackageTests.getAdjustedExitCodeTests({ExitCodes = [|0; 0; 0; 0; -2146232576; 0; 0; 0; 0; 0|];
- ExpectedAdjustedExitCode = 3010;})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.getPackageTemplateEmbeddedResourceNamesTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.InstallDriverPackageTests.getAdjustedExitCodeTests({ExitCodes = [|0; 0; 0; 0; 0; 0; 0; 0; 0; 0|];
- ExpectedAdjustedExitCode = 0;})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractPackageTemplateTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.InstallXmlTests.loadInstallXmlTest({IsSuccess = true;
- Expected =
-  {LogDirectory = "%public%\Logs";
-   LogFileName =
-    "MyCompany_Lenovo_ThinkPad_P50_20EQ0022MN_WIN10X64_Drivers_2019-03-20.log";
-   PackageName =
-    "MyCompany Lenovo ThinkPad P50 20EQ0022MN WIN10X64 Drivers 2019-03-20";
-   PackageVersion = "1.0";
-   PackageRevision = "000";
-   Publisher = "MyCompany";
-   ComputerVendor = "Lenovo";
-   ComputerModel = "20EQ0022MN";
-   ComputerSystemFamiliy = "ThinkPad P50";
-   OsShortName = "WIN10X64";};
- ExpectedErrorMessage = "N/A";})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Extract to folder that do not exist - Expect failure</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.loadLenovoCatalogTest({IsSuccess = true;
- Expected =
-  {Model = "M710q-SKL";
-   Family = "tc";
-   Os = "win764";
-   Build = "*";
-   Name = "ThinkCentre M710q - SKL";
-   DriverPacks =
-    [|{Id = "sccm";
-       Date = Some 2/1/2017 12:00:00 AM;
-       Url = "https://support.lenovo.com/downloads/ds120804";};
-      {Id = "WinPE 3.1 x64";
-       Date = None;
-       Url = "https://support.lenovo.com/downloads/ds105413";};
-      {Id = "WinPE 5";
-       Date = None;
-       Url = "no winpe";};
-      {Id = "WinPE 10";
-       Date = None;
-       Url = "http://support.lenovo.com/downloads/ds105415";}|];
-   Queries =
-    {ModelTypes =
-      [|ModelType "10QR"; ModelType "10MT"; ModelType "10MS"; ModelType "10MR";
-        ModelType "10MQ"|];
-     Version = "ThinkCentre M710q";
-     Smbios = "M1AK";};};
- ItemIndex = 12;
- ExpectedErrorMessage = "N/A";})</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Expect success</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.loadLenovoCatalogTest({IsSuccess = true;
- Expected =
-  {Model = "Tablet10";
-   Family = "len";
-   Os = "win10";
-   Build = "*";
-   Name = "Lenovo Tablet 10";
-   DriverPacks =
-    [|{Id = "sccm";
-       Date = Some 7/1/2018 12:00:00 AM;
-       Url = "https://support.lenovo.com/downloads/ds503143";};
-      {Id = "WinPE 10";
-       Date = None;
-       Url = "no winpe";}|];
-   Queries = {ModelTypes = [|ModelType "20L4"; ModelType "20L3"|];
-              Version = "Lenovo Tablet 10";
-              Smbios = "N29E";};};
- ItemIndex = 0;
- ExpectedErrorMessage = "N/A";})</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.loadLenovoCatalogTest({IsSuccess = true;
- Expected =
-  {Model = "M710q-SKL";
-   Family = "tc";
-   Os = "win764";
-   Build = "*";
-   Name = "ThinkCentre M710q - SKL";
-   DriverPacks =
-    [|{Id = "sccm";
-       Date = Some 01.02.2017 00.00.00;
-       Url = "https://support.lenovo.com/downloads/ds120804";};
-      {Id = "WinPE 3.1 x64";
-       Date = None;
-       Url = "https://support.lenovo.com/downloads/ds105413";};
-      {Id = "WinPE 5";
-       Date = None;
-       Url = "no winpe";};
-      {Id = "WinPE 10";
-       Date = None;
-       Url = "http://support.lenovo.com/downloads/ds105415";}|];
-   Queries =
-    {ModelTypes =
-      [|ModelType "10QR"; ModelType "10MT"; ModelType "10MS"; ModelType "10MR";
-        ModelType "10MQ"|];
-     Version = "ThinkCentre M710q";
-     Smbios = "M1AK";};};
- ItemIndex = 12;
- ExpectedErrorMessage = "N/A";})</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.loadLenovoCatalogTest({IsSuccess = true;
- Expected =
-  {Model = "Tablet10";
-   Family = "len";
-   Os = "win10";
-   Build = "*";
-   Name = "Lenovo Tablet 10";
-   DriverPacks =
-    [|{Id = "sccm";
-       Date = Some 01.07.2018 00.00.00;
-       Url = "https://support.lenovo.com/downloads/ds503143";};
-      {Id = "WinPE 10";
-       Date = None;
-       Url = "no winpe";}|];
-   Queries = {ModelTypes = [|ModelType "20L4"; ModelType "20L3"|];
-              Version = "Lenovo Tablet 10";
-              Smbios = "N29E";};};
- ItemIndex = 0;
- ExpectedErrorMessage = "N/A";})</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.SdpCatalogTests.getReleaseDateTest({SdpTestFile = "0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";
- IsSuccess = true;
- Expected =
-  {PackageId = "0e6cf4ac-2853-48aa-825b-8fe28206575f";
-   Title = "Realtek High Definition Audio Driver,6.0.1.8454,A02";
-   CreationDate = 03.10.2018 00.00.00;
-   Description =
-    "This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";
-   ProductName = "Drivers and Applications";
-   MoreInfoUrl =
-    "http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=99DDD";
-   UpdateSpecificData = {MsrcSeverity = Important;
-                         UpdateClassification = Updates;
-                         SecurityBulletinID = Some "99DDD";
-                         KBArticleID = Some "99DDD";};
-   IsInstallable = "";
-   IsInstalled = None;
-   InstallableItems =
-    [|{Id = "1";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "2_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 19.06.2017 08.22.57;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};};
-      {Id = "2";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "1_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 19.06.2018 08.22.57;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};};
-      {Id = "3";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "3_Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 19.06.2016 08.22.57;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};}|];};
- ExpectedErrorMessage = "N/A";})</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpTests({SdpTestFile = "0e6cf4ac-2853-48aa-825b-8fe28206575f.sdp";
- IsSuccess = true;
- Expected =
-  {PackageId = "0e6cf4ac-2853-48aa-825b-8fe28206575f";
-   Title = "Realtek High Definition Audio Driver,6.0.1.8454,A02";
-   CreationDate = 03.10.2018 00.00.00;
-   Description =
-    "This package contains the driver for Realtek High-Definition audio codec and is supported on Dell products that run the Windows 10 operating system. Audio driver is the software that helps your operating system to communicate effectively with audio devices such as sound cards and speakers. The package supports Windows 10 Fall Creators Update.";
-   ProductName = "Drivers and Applications";
-   MoreInfoUrl =
-    "http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=99DDD";
-   UpdateSpecificData = {MsrcSeverity = Important;
-                         UpdateClassification = Updates;
-                         SecurityBulletinID = Some "99DDD";
-                         KBArticleID = Some "99DDD";};
-   IsInstallable = "";
-   IsInstalled = None;
-   InstallableItems =
-    [|{Id = "3787be40-ec14-47c7-a24d-23210ef448e9";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = AlwaysRequiresReboot;};
-       UninstallProperties = None;
-       InstallerData =
-        CommandLineInstallerData
-          {Program =
-            "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-           Arguments = "/s";
-           RebootByDefault = false;
-           DefaultResult = Failed;
-           ReturnCodes = [|{Code = 0;
-                            Result = Succeeded;
-                            Reboot = false;}; {Code = 2;
-                                               Result = Succeeded;
-                                               Reboot = true;}|];};
-       OriginFile =
-        {Digest = "WCGlVdICgjVY0T0q3DMQE6jy8LY=";
-         FileName =
-          "Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Modified = 19.06.2018 08.22.57;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05035765M/5/Realtek-High-Definition-Audio-Driver_99DDD_WIN_6.0.1.8454_A02_03.EXE";
-         Size = 166945344L;};}|];};
- ExpectedErrorMessage = "N/A";})</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.SdpCatalogTests.loadSdpTests({SdpTestFile = "dc718411-a5f1-4b15-966a-63a77cbb156e.sdp";
- IsSuccess = true;
- Expected =
-  {PackageId = "dc718411-a5f1-4b15-966a-63a77cbb156e";
-   Title = "Dell OpenManage Inventory Agent (for Dell Business Client Systems)";
-   CreationDate = 24.01.2019 00.00.00;
-   Description =
-    "Dell OpenManage Inventory Agent is a data provider for Microsoft WMI to inventory information for Dell supported devices on Dell Precision workstations, OptiPlex desktops, and Latitude laptops. This service is run at boot time and then stopped automatically.";
-   ProductName = "Drivers and Applications";
-   MoreInfoUrl = "http://downloads.dell.com/cmsdk/DSIA_Readme.doc";
-   UpdateSpecificData = {MsrcSeverity = Important;
-                         UpdateClassification = Updates;
-                         SecurityBulletinID = Some "45YPT";
-                         KBArticleID = Some "45YPT";};
-   IsInstallable = "";
-   IsInstalled = None;
-   InstallableItems =
-    [|{Id = "5968b32a-dc30-4186-8652-ecc4a7cdc684";
-       ApplicabilityRules = {IsInstallable = Some "N/A";
-                             IsInstalled = Some "N/A";
-                             IsSuperseded = Some "N/A";};
-       InstallProperties = {CanRequestUserInput = false;
-                            RequiresNetworkConnectivity = false;
-                            Impact = Normal;
-                            RebootBehavior = NeverReboots;};
-       UninstallProperties = None;
-       InstallerData =
-        MsiInstallerData
-          {MsiFile = "DSIAPC_1.6.6.5.msi";
-           CommandLine = "Reboot=ReallySuppress";
-           UninstallCommandLine = None;
-           ProductCode = ProductCode "{FB2B7CC0-8307-47e6-A065-11015CC96B99}";};
-       OriginFile =
-        {Digest = "7sJyfjiOzAzMVjZ7FqJLS0hQsG0=";
-         FileName = "DSIAPC_1.6.6.5.msi";
-         Modified = 24.01.2019 08.52.15;
-         OriginUri =
-          "http://downloads.dell.com/FOLDER05427436M/1/DSIAPC_1.6.6.5.msi";
-         Size = 26825728L;};}|];};
- ExpectedErrorMessage = "N/A";})</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.BitLockerOperationsTest.isBitLockerEnabledTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellCommandUpdatesIntegrationTests.getLocalUpdatesBaseTest("07A7","WIN10X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellUpdatesTests.getSccmDriverPackageInfoTest("07A0","WIN10X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.DellUpdatesTests.getUpdates2Test("07A7","WIN10X64")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ExportRemoteUpdatesTests.exportRemoteUpdatesTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.downloadSccmDriverPackageTest("WIN10X64","83B3")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.extractSccmDriverPackageTest("WIN10X64","83B3")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000065111.sdp")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000081886.sdp")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.toPackageInfoTests("C:\\Temp\\DriverToolCache\\HpCatalogForSms.latest\\V2\\00004850-0000-0000-5350-000000094780.sdp")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.findSccmPackageInfoByNameAndOsAndBuildTest&lt;String,String,String,String&gt;("ThinkPad P50","win10","*","P50","ThinkPad P50","win10","*")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getSccmPackagesInfoTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getUniqueLenovoOperatingSystemTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WebParsingTests.getContentFromWebPagetest("https://support.lenovo.com/no/en/downloads/ds112090")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.CreateDriverPackageTests.downloadUpdateTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpCatalogTests.downloadSmsSdpCatalogTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.getLocalUpdatesTests</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.HpUpdatesTests.getRemoteUpdatesTests</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.InstallDriverPackageTests.copyDriversTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ManualWebTest.downloadFileTest("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB","c:\\temp\\7480-win10-A10-2CHK6.CAB")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.ModelCodeTests.ModuleCodeTest_Empty_ModuleCode_UseLocalIsTrue</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getDownloadLinksFromWebPageContentTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getLenovoSccmPackageDownloadUrlTest_Success("https://support.lenovo.com/no/en/downloads/ds540208","https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.txt","b0e8fe25ee16800a177a31a49a8ac2827b9f4e92b7d3a827b15707a6b3156f84","https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe","b165b8756735dc0e5bab30335a05217d6cce5ca7430821522e83182d1fbf8bab","WIN10X64","1809")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoCatalogTests.getSccmPackageDownloadInfosTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoUpdateTests.extractUpdateTest("nz3gs05w.exe","nz3gs05w.txt","nz3gs05w_2_.xml","ISDAS_NZ3GS","Intel® SGX Device and Software (Windows 10 Version 1709 or later) - 10 [64]","2.3.100.49777")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.LenovoUpdateTests.getRemoteUpdatesTests</TestName>
+        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractedEmbeddedResourceTest</TestName>
       </NamedTestSelector>
     </IgnoredTests>
   </Settings>

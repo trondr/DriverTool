@@ -6,8 +6,9 @@
     [<Category(TestCategory.UnitTests)>]
     module CryptographyTests =
         open DriverTool
-        open DriverTool
+        open DriverTool.Library.F
         open Init
+        open DriverTool.Library
                 
         [<Test>]
         [<TestCase("n20ku13w_x64.exe",true)>]

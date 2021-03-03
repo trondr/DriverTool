@@ -4,14 +4,17 @@ open NUnit.Framework
 
 [<TestFixture>]
 module DellUpdatesTests =
-    open DriverTool
-    open DriverTool.UpdatesContext
-    open Common.Logging
+    open DriverTool.Library.UpdatesContext    
     let logger = Common.Logging.Simple.ConsoleOutLogger("DellUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
+    open DriverTool.Library.F
+    open DriverTool.Library.Logging
+    open DriverTool.Library
+    open DriverTool.Library.ManufacturerTypes
     
     [<Test>]
     [<TestCase("FOLDER03578551M/1/Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE","FOLDER03578551M/1","Audio_Driver_D00J4_WN32_6.0.1.6102_A03.EXE")>]
     [<TestCase("FOLDER01766254M/1/9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE","FOLDER01766254M/1","9P33_Chipset_Driver_NNGJM_WN_9.4.0.1026_A00.EXE")>]
+    [<Category(TestCategory.UnitTests)>]
     let pathToDirectoryAndFileTests (path:string,expectedDirectory,expectedFileName) =
        let (actualDirectory,actualFileName) = DriverTool.DellUpdates.pathToDirectoryAndFile path
        Assert.AreEqual(expectedDirectory,actualDirectory,"Directory not expected")
@@ -22,11 +25,14 @@ module DellUpdatesTests =
     [<Category(TestCategory.IntegrationTests)>]
     let getUpdates2Test (modelCodeString,operatingSystemCodeString) =
         match(result{
+            let! manufacturer = getManufacturerForCurrentSystem()
             let! modelCode = ModelCode.create modelCodeString false
             let! operatingSystemCode = OperatingSystemCode.create operatingSystemCodeString false
-            let! logDirectory = FileSystem.path "%public%\Logs"
+            let! logDirectory = FileSystem.path @"c:\temp"
             let! patterns = (RegExp.toRegexPatterns [||] true)
-            let updatesRetrievalContext = toUpdatesRetrievalContext modelCode operatingSystemCode true logDirectory patterns
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer modelCode operatingSystemCode true logDirectory cacheFolderPath false patterns
             
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath
@@ -37,15 +43,15 @@ module DellUpdatesTests =
             System.Console.WriteLine("Number of software components: " + actual.Length.ToString())
             actual
             |>Seq.sortBy(fun p -> p.Name)
-            |>Seq.map (fun p -> System.Console.WriteLine((DriverTool.Logging.valueToString p)))
+            |>Seq.map (fun p -> System.Console.WriteLine((valueToString p)))
             |>Seq.toArray
             |>ignore
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)
-        |Error ex ->Assert.Fail(ex.Message)
+        |Result.Error ex ->Assert.Fail(ex.Message)
 
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open DriverTool
     open System
 
@@ -76,6 +82,7 @@ module DellUpdatesTests =
                     }
                 ReleaseDate= "";
                 PackageXmlName="";
+                ExternalFiles = None
             }
         
         seq{
@@ -100,4 +107,4 @@ module DellUpdatesTests =
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)
-        |Error ex ->Assert.Fail(ex.Message)
+        |Result.Error ex ->Assert.Fail(ex.Message)

@@ -6,5 +6,8 @@
     <HiddenComponentWarnings>
       <Value>PostBuildEventDisabled</Value>
     </HiddenComponentWarnings>
+    <IgnoredTests>
+      <AllTestsSelector />
+    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

@@ -4,16 +4,18 @@ module DellUpdates=
     
     open System
     open System.Xml.Linq
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
     open DriverTool.DellCatalog
     open DriverTool.DellSettings
-    open DriverTool.Web    
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.Web    
+    open DriverTool.Library.UpdatesContext
     open sdpeval.fsharp.Sdp    
     open FSharp.Collections.ParallelSeq
+    open DriverTool.Library.F
+    open DriverTool.Library
 
     type DellUpdates = class end
-    let logger = Logging.getLoggerByName(typeof<DellUpdates>.Name)
+    let logger = DriverTool.Library.Logging.getLoggerByName(typeof<DellUpdates>.Name)
 
     let downloadSdpFiles cacheFolderPath =
         result
@@ -57,6 +59,7 @@ module DellUpdates=
                                     }                                
                                 ReleaseDate= (getSdpReleaseDate sdp)|>toDateString
                                 PackageXmlName=sdp.PackageId + ".sdp";
+                                ExternalFiles = None
                            }
                     )
                 |>Seq.toArray
@@ -213,8 +216,9 @@ module DellUpdates=
         result{
             let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
             let! cabFilepath = FileOperations.ensureFileExtension ".cab" installerPath
-            let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath            
-            let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,destinationPath)
+            let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath
+            let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
+            let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,existingDestinationPath)
 
             let! copiedReadmeFilePath = 
                 FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
@@ -228,7 +232,7 @@ module DellUpdates=
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package.Category (toReleaseId downloadedPackageInfo)
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
+            let! packageFolderPath = DriverTool.Library.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
             let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)

@@ -2,13 +2,15 @@
 
 module HpUpdates =
     open System
-    open PackageXml
-    open DriverTool.Web
+    open DriverTool.Library.PackageXml
+    open DriverTool.Library.Web
     open DriverTool.HpCatalog
     open sdpeval.fsharp.Sdp
     open DriverTool.SdpUpdates
     open FSharp.Data
-    open DriverTool.UpdatesContext
+    open DriverTool.Library.UpdatesContext
+    open DriverTool.Library.F
+    open DriverTool.Library
         
     let toPackageInfos sdp  =
             let pacakgeInfos =
@@ -40,6 +42,7 @@ module HpUpdates =
                                     }
                                 ReleaseDate= (getSdpReleaseDate sdp)|>toDateString
                                 PackageXmlName=sdp.PackageId + ".sdp";
+                                ExternalFiles = None
                            }
                     )
                 |>Seq.toArray
@@ -97,7 +100,7 @@ module HpUpdates =
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
-            let! installerUri = DriverTool.Web.toUri sccmPackage.InstallerFile.Url
+            let! installerUri = DriverTool.Library.Web.toUri sccmPackage.InstallerFile.Url
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
             let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
@@ -115,8 +118,9 @@ module HpUpdates =
             let! installerPath = FileSystem.path downloadedSccmPackage.InstallerPath
             let! exeFilepath = FileOperations.ensureFileExtension ".exe" installerPath
             let! existingExeFilePath = FileOperations.ensureFileExists exeFilepath  
+            let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
             let arguments = sprintf "-PDF -F \"%s\" -S -E" (FileSystem.pathValue destinationPath)
-            let! exitCode = ProcessOperations.startConsoleProcess (installerPath,arguments,FileSystem.pathValue destinationPath,-1,null,null,false)
+            let! exitCode = ProcessOperations.startConsoleProcess (installerPath,arguments,FileSystem.pathValue existingDestinationPath,-1,null,null,false)
             
             let! copiedReadmeFilePath = 
                 FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
@@ -130,7 +134,7 @@ module HpUpdates =
     let extractUpdate (rootDirectory:FileSystem.Path, (prefix,downloadedPackageInfo:DownloadedPackageInfo)) =
         result{
             let packageFolderName = getPackageFolderName downloadedPackageInfo.Package.Category (toReleaseId downloadedPackageInfo)
-            let! packageFolderPath = DriverTool.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
+            let! packageFolderPath = DriverTool.Library.PathOperations.combine2Paths (FileSystem.pathValue rootDirectory, prefix + "_" + packageFolderName)
             let! existingPackageFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (packageFolderPath, true)            
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
             let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)

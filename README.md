@@ -5,7 +5,7 @@ Downloads drivers and software for current PC model and creates a driver package
 ## Command line help
 
 ```
-DriverTool 1.0.20026.44 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
+DriverTool 1.0.20336.46 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
 Copyright © github/trondr 2018-2019
 Usage: DriverTool.exe <command> [parameters]
 
@@ -276,10 +276,57 @@ DecompressDriverPackage         Decompress Drivers.zip to \Drivers folder.
 
    Example: DriverTool.exe DecompressDriverPackage /driverPackagePath="c:\temp\Drivers\SomeModel" 
    Example (alternative): DriverTool.exe DecompressDriverPackage /dpp="c:\temp\Drivers\SomeModel" 
-
  
 ```
 
+# Build Environment
+
+* From an admin command line run:
+```batch
+@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+choco feature enable -n allowGlobalConfirmation
+choco install git
+choco install git-credential-winstore
+choco install fake
+choco upgrade fake
+choco install windows-sdk-10-version-1903-all
+choco install windows-sdk-10-version-2004-all
+choco install netfx-4.7.2-devpack
+choco install netfx-4.8-devpack
+choco install visualstudio2019buildtools
+choco install wixtoolset
+choco insall nunit
+choco install lenovo-thinkvantage-system-update
+choco feature disable -n allowGlobalConfirmation
+```
+
+*From a new admin command line:
+
+dotnet new -i NUnit3.DotNetNew.Template
+
+* From a standard commmand line run:
+
+```batch
+mkdir c:\dev\github.trondr
+cd c:\dev\github.trondr
+git clone https://github.com/trondr/DriverTool.git .\DriverTool
+cd DriverTool
+Build.cmd
+```
+
+## Development Environment
+
+* From an admin command line run:
+
+```batch
+choco feature enable -n allowGlobalConfirmation
+choco install sourcetree
+choco install notepadplusplus
+choco install vscode	
+choco install visualstudio2019enterprise
+REM choco install visualstudio2019professional
+choco feature disable -n allowGlobalConfirmation
+```
 
 ## Build
 
@@ -287,6 +334,7 @@ DecompressDriverPackage         Decompress Drivers.zip to \Drivers folder.
 	```batch
 	@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 	```
+	
 * Install fake
 	
 	```batch

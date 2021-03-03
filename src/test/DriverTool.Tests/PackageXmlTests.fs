@@ -7,7 +7,7 @@ open NUnit.Framework
 [<Category(TestCategory.UnitTests)>]
 module PackageXmlTests=
     open System.Runtime.InteropServices
-    open DriverTool.PackageXml
+    open DriverTool.Library.PackageXml
 
     [<Test>]
     [<TestCase("SomeCategory","2019-08-09","SomeCategory_2019-08-09")>]
