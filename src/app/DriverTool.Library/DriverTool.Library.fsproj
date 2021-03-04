@@ -89,7 +89,6 @@
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="Cab.fs" />
-    <Compile Include="x86Host.fs" />
     <Compile Include="WebParsing.fs" />
     <Compile Include="Robocopy.fs" />
     <Compile Include="Requirements.fs" />

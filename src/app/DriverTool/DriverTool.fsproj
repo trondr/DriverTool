@@ -161,11 +161,6 @@
       <Project>{5c9696b4-d386-463d-8bde-1ec35901614a}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\DriverTool.x86.Client\DriverTool.x86.Client.csproj">
-      <Name>DriverTool.x86.Client</Name>
-      <Project>{4ea4967c-ee7f-4410-b588-f6c246211adb}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <Reference Include="Common.Logging">
       <HintPath>..\..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
     </Reference>

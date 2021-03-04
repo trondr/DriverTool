@@ -66,9 +66,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCodeString, operatingSystemString, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage, sccmPackageInstaller, sccmPackageReadme, sccmPackageReleased) =
-        DriverTool.Library.x86Host.startx86HostProcess()
         let result = genericLogger LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased)
-        DriverTool.Library.x86Host.stopx86HostProcess()
         result
     
     let installDriverPackageBase (driverPackagePathString) =
@@ -141,13 +139,4 @@ module CommandProviders =
         })with
         |Result.Ok v -> NCmdLiner.Result.Ok(0)
         |Result.Error ex -> NCmdLiner.Result.Ok(1)
-
-    let callWcfDemo () =
-        DriverTool.Library.x86Host.startx86HostProcess()        
-        logger.Warn("TO BE IMPLEMENTED. Start x86 host and call x86 Service methods. Demo:")
-        let url = "https://support.lenovo.com/no/en/downloads/ds112090";
-        printf "%s" (DriverTool.x86.Client.ToolService.GetWebPageContent(url))
-        DriverTool.Library.x86Host.stopx86HostProcess()
-        NCmdLiner.Result.Ok(0)
-
-        
+      
