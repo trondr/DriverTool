@@ -40,44 +40,6 @@ module LenovoCatalogTests=
         |Result.Ok v -> Assert.IsTrue(true)
         |Result.Error ex -> Assert.Fail(ex.Message)
 
-    //[<Test>]
-    //[<Category(TestCategory.IntegrationTests)>]
-    //[<Apartment(ApartmentState.STA)>]
-    //let getSccmPackageDownloadInfosTest () =
-    //    match(result{
-    //        use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
-    //        let! cacheFolderPath = cacheFolder.FolderPath
-    //        let sccmPackageInfos = getSccmPackageInfos cacheFolderPath
-    //        let res =
-    //            match sccmPackageInfos with
-    //            |Error ex -> 
-    //                Assert.Fail("Did not expect to fail. Error:" + ex.Message)
-    //                //Result.Error (new System.Exception("Did not expect to fail"))
-    //            |Ok products ->
-    //                let downloadInfosResult = 
-    //                    products
-    //                    |> getNRandomItems 4
-    //                    |> Seq.map (fun p -> 
-    //                                    getLenovoSccmPackageDownloadInfo  p.SccmDriverPackUrl.Value "WIN10X64" "*"
-    //                                    )
-    //                    |> toAccumulatedResult                
-    //                match downloadInfosResult with
-    //                |Ok dis -> 
-    //                    dis 
-    //                    |> Seq.map(fun di -> System.Console.WriteLine("{0};{1}",di.InstallerFile.Url,di.InstallerFile.Checksum))
-    //                    |> Seq.iter (fun p -> p)
-    //                    //|> ignore
-    //                |Error ex -> 
-    //                    Assert.IsTrue(ex.Message.Contains("Sccm package not found"))                
-    //            Assert.IsTrue(true)
-    //        return cacheFolderPath
-    //    })with
-    //    |Result.Ok v -> Assert.IsTrue(true)
-    //    |Result.Error ex -> Assert.Fail(ex.Message)
-        
-        
-        
-      
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
     let getUniqueLenovoOperatingSystemTest () =
@@ -315,52 +277,50 @@ module LenovoCatalogTests=
         |Error ex ->
             Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)       
 
-    //[<Test>]
-    //[<Category(TestCategory.UnitTests)>]
-    //[<TestCase("ds112090.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_t460s_w1064_1809_201810.exe")>]
-    //[<TestCase("ds540208.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe")>]
-    //[<TestCase("ds540208_v2.html","WIN10X64", "1903",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1903_201908.exe")>]
-    //[<TestCase("ds540208_v2.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201909.exe")>]
-    //[<TestCase("ds540208_v2.html","WIN10X64", "1803",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1803_201909.exe")>]
-    //[<TestCase("ds540208_v2.html","WIN10X64", "1709",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1709_201909.exe")>]    
-    //[<TestCase("ds540208.html","WIN10X64", "1903",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1903_201908.exe")>]
-    //[<TestCase("ds540208.html","WIN10X64", "1809",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_201908.exe")>]
-    //[<TestCase("ds540208.html","WIN10X64", "1803",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1803_201908.exe")>]
-    //[<TestCase("ds540208.html","WIN10X64", "1709",true,"https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1709_201908.exe")>]
-    //let getLenovoSccmPackageDownloadInfoFromContentTest (fileName:string, os:string, osbuild:string, expectedSucess:bool, expectedInstallerUrlString:string) =
-    //    match(result{
-    //        let! destinationFolderPath = FileSystem.path getTempPath
-    //        let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
-    //        Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
-    //        let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
-    //        let! info = getLenovoSccmPackageDownloadInfoFromContent content os osbuild
-    //        Assert.AreEqual(expectedInstallerUrlString,info.InstallerFile.Url)
-    //        return destinationFolderPath
-    //    }) with
-    //    |Ok v -> Assert.IsTrue(expectedSucess,sprintf "Expected failure but succeded instead." )
-    //    |Error ex ->
-    //        Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)      
-        
-    //[<Test>]
-    //[<Category(TestCategory.UnitTests)>]
-    //[<TestCase("ds112090.html", 3, true,"N/A", "https://support.lenovo.com/no/en/downloads/ds112090")>]
-    //[<TestCase("ds112090_MissingDownloadsTab.html", 0, false,"Download tabs ('downloadTabs') not found in html document.", "https://support.lenovo.com/no/en/downloads/ds112090")>]
-    //[<TestCase("ds112090_Missing_Downloads_Links.html", 0, false,"No download links were found beneath the downloads tab in the html document.", "https://support.lenovo.com/no/en/downloads/ds112090")>]
-    ////[<TestCase("ds112090_Invalid_Document.html", 0, false,"N/A.", "https://support.lenovo.com/no/en/downloads/ds112090")>]
+    [<Test>]
+    [<Category(TestCategory.IntegrationTests)>]
+    let getSccmPackageInfosv2Test () =
+        match(result{
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let! res = getSccmPackageInfosv2 cacheFolderPath
+            return res
+        }) with
+        |Result.Ok v -> 
+            Assert.IsTrue(v.Length > 0)            
+        |Result.Error ex -> Assert.Fail(ex.Message)        
+        ()
 
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("LenovoCatalog_catalogv2.xml","20L8","win10","1809","1809","https://download.lenovo.com/pccbbs/mobiles/tp_t480s_w1064_1809_202012.exe")>]    
+    [<TestCase("LenovoCatalog_catalogv2.xml","20L8","win10","20H2","2004","https://download.lenovo.com/pccbbs/mobiles/tp_t480s_w1064_2004_202012.exe")>]
+    [<TestCase("LenovoCatalog_catalogv2.xml","20FQ","win10","20H2","1909","https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20fb-20fc-x1yoga_mt20fq-20fr_w1064_1909_201911.exe")>]
+    [<TestCase("LenovoCatalog_catalogv2.xml","20QG","win10","*","2004","https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-20r1-20r2-x1yoga_mt20qf-20qg-20sa-20sb_w1064_2004_202009.exe")>]
+    [<TestCase("LenovoCatalog_catalogv2.xml","20QG","win10","1809","1809","https://download.lenovo.com/pccbbs/mobiles/tp_x1carbon_mt20qd-20qe-x1yoga_mt20qf-20qg_w1064_1809_202006.exe")>]
+    let findSccmPackageInfoByModelCode4AndOsAndBuildTest3 (fileName:string,modelCode:string,os:string,osBuild:string, expectedOsBuild, expectedUrl) =
+        match (result{
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath                        
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,cacheFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
+            let! lenovoCatalogModels = DriverTool.LenovoCatalogXml.loadLenovoCatalogv2 destinationFilePath
+            let products = getSccmPackageInfosFromLenovoCataloModels lenovoCatalogModels            
+            let actual = findSccmPackageInfoByModelCode4AndOsAndBuild logger modelCode os osBuild products
+            let eval =
+                match actual with
+                |Some p -> 
+                    Assert.AreEqual(os, p.Os,"Os is different")
+                    Assert.AreEqual(expectedOsBuild, optionToString p.OsBuild,"OsBuild is different")
+                    match p.SccmDriverPackUrl with
+                    |Some u -> Assert.AreEqual(expectedUrl,u,"Sccm driver package url was not expected")
+                    |None -> Assert.Fail(sprintf "Did not find sccm package url for %s %s" os osBuild)
+                |None -> Assert.Fail(sprintf "Did not find sccm info for %s %s" os osBuild)
+            Assert.IsTrue(actual.IsSome,sprintf "Did not find model %s %s %s" modelCode os osBuild) |> ignore
+            printfn "%A" actual
+            return actual
+        }) with        
+        |Ok _ -> ()
+        |Error e -> Assert.Fail(e.ToString())
     
-    //let getDownloadLinksFromWebPageContentTests (fileName:string, expectedCount:int, expectedSuccess:bool,expectedErrorMessage:string,source:string) =
-    //    match(result{
-    //        let! destinationFolderPath = FileSystem.path getTempPath
-    //        let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,destinationFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
-    //        Assert.IsTrue((fileExists destinationFilePath),sprintf "File does not exist: %s" (FileSystem.pathValue destinationFilePath))
-    //        let content = System.IO.File.ReadAllText((FileSystem.pathValue destinationFilePath))
-    //        let! actual = getDownloadLinksFromWebPageContent content
-    //        let actualArray = actual |> Seq.toArray
-    //        Assert.AreEqual(expectedCount,(Array.length actualArray),"Sccm package info count is not expected.")
-    //        return actual
-    //    }) with
-    //    |Ok v -> Assert.IsTrue(expectedSuccess,sprintf "Expected failure but succeded instead." )
-    //    |Error ex ->
-    //        Assert.IsFalse(expectedSuccess,sprintf "Expected success but failed instead: %s" ex.Message)
-    //        Assert.IsTrue(ex.Message.StartsWith(expectedErrorMessage),sprintf "Error message '%s' does not contain '%s'" ex.Message expectedErrorMessage)

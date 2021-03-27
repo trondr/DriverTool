@@ -126,7 +126,6 @@
     <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoCatalogXml.fs" />
     <Compile Include="LenovoCatalog.fs" />
-    <Compile Include="LenovoCatalogv2.fs" />
     <Compile Include="LenovoUpdates.fs" />
     <Compile Include="Updates.fs" />
     <Compile Include="ExportRemoteUpdates.fs" />

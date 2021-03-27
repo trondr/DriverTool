@@ -274,7 +274,7 @@ module LenovoUpdates =
     let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath)  : Result<SccmPackageInfo,Exception> =
         result
             {
-                let! products = DriverTool.LenovoCatalogv2.getSccmPackageInfosv2 cacheFolderPath
+                let! products = DriverTool.LenovoCatalog.getSccmPackageInfosv2 cacheFolderPath
                 let modeCode4 = (modelCode.Value.Substring(0,4))
                 let os = (DriverTool.LenovoCatalog.osShortNameToLenovoOs operatingSystemCode.Value)
                 let osBuild = OperatingSystem.getOsBuildForCurrentSystem

@@ -81,7 +81,6 @@
     <Compile Include="WebParsingTests.fs" />
     <Compile Include="LenovoCatalogXmlTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
-    <Compile Include="LenovoCatalogv2Tests.fs" />
     <Compile Include="LenovoUpdateTests.fs" />
     <Compile Include="PackageTemplateTests.fs" />
     <Compile Include="InstallDriverPackageTests.fs" />
