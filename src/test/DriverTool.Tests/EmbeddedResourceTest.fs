@@ -106,14 +106,14 @@ module EmbeddedResourceTest  =
         let resourceAssembly = typeof<DriverTool.Init.ThisAssembly>.Assembly
         let actual = DriverTool.Library.EmbeddedResource.getAllEmbeddedResourceNames resourceAssembly
         let allResourceNames = String.concat Environment.NewLine actual                
-        Assert.AreEqual(62,actual.Length,allResourceNames)
+        Assert.AreEqual(60,actual.Length,allResourceNames)
 
 
     [<Test>]
     let extractedEmbeddedResourceTest () =
         let extractAndDispose =            
             let resourceAssembly = typeof<DriverTool.Init.ThisAssembly>.Assembly
-            use extractedEmbeddedResource = new ExtractedEmbeddedResourceByFileName(resourceAssembly,"CorFlags.exe",logger)
+            use extractedEmbeddedResource = new ExtractedEmbeddedResourceByFileName(resourceAssembly,"DriverTool Disable BitLocker Protection.cmd",logger)
             match(result{
                 let! filePath1 = extractedEmbeddedResource.FilePath
                 Assert.IsTrue(System.IO.File.Exists(FileSystem.pathValue filePath1),sprintf "File does not exist: '%A'" filePath1)

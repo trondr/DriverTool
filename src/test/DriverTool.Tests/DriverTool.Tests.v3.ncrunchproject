@@ -161,9 +161,6 @@
       <NamedTestSelector>
         <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Expect success</TestName>
       </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractedEmbeddedResourceTest</TestName>
-      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
