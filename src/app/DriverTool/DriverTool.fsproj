@@ -223,7 +223,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.UpdateServices.Administration">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NCmdLiner">
@@ -233,7 +233,7 @@
       <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="sdpeval">
-      <HintPath>..\..\..\packages\sdpeval.1.0.19284.9\lib\net45\sdpeval.dll</HintPath>
+      <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="Serilog">
       <HintPath>..\..\..\packages\Serilog.2.0.0\lib\net45\Serilog.dll</HintPath>
