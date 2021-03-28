@@ -74,7 +74,7 @@ c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\te
 * Make any adjustments to driver package
 	* The downloaded updates are prepared in the folder: C:\Temp\D\<model>\<release date>-<version>\Script\Drivers
 	* Updates are installed in alphabetical order based on the folder name. To change the install order, change the prefix of the folder names accordingly.	Examples:
-```text
+	```text
 	  Fingerprint will be installed before audio
 	   ...\Drivers\010_Fingerprint_reader_Synaptics_Metallica_MOH_10_64_5.1.327.26
 	   ...\Drivers\020_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
@@ -82,13 +82,15 @@ c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\te
 	  Audio will be installed before fingerprint:
 	   ...\Drivers\007_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
 	   ...\Drivers\010_Fingerprint_reader_Synaptics_Metallica_MOH_10_64_5.1.327.26
-```
-	* Any folders prefixed with underscore (_) will be excluded from install. Example:	  
-```text
-	  Example: ..\Drivers\Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
+
+	```
+   	* Any folders prefixed with underscore (_) will be excluded from install. Example:	  
+
+	```text
+	      ...\Drivers\Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
 	   rename to:
-		...\Drivers\_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
-```
+	      ...\Drivers\_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
+	```
 * Remove any disabled update folders.
    * Removing disabled update folders will make driver package smaller.
 
