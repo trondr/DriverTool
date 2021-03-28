@@ -115,7 +115,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 14. If required, add any other updates to the Drivers folder.
 	* Typically new updates are deployed by Vendor and you need to update the driver package.
 	* Or you have connected hardware such as driver for a monitor that you need to add to the driver package.
-	* You can choose to manually add such updates to the ...\Drivers\<some folder>\ folder as long as you utilize the mechanism that DriverTool expects: (...\Drivers\<some folder>\DT-Install-Package.cmd)
+	* You can choose to manually add such updates to the ...\Drivers\\<some folder>\ folder as long as you utilize the mechanism that DriverTool expects: (...\Drivers\\<some folder>\DT-Install-Package.cmd)
       
 15. Compress Driver Package
 	* Run: c:\Temp\D\<model>\<release date>-<version>\Script\_Compress.cmd
