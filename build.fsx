@@ -30,7 +30,7 @@ let assemblyVersion =
     let minorVersion = "0"
     let now = System.DateTime.Now    
     let buildVersion = sprintf "%02d%03d" (now.Year - 2000) (now.DayOfYear) //Example: 19063
-    let revisionVersion = "50"
+    let revisionVersion = "52"
     sprintf "%s.%s.%s.%s" majorVersion minorVersion buildVersion revisionVersion //Example: 1.0.19063.1
 
 let getVersion file = 
