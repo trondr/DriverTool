@@ -55,9 +55,9 @@ module FileOperations =
     let writeContentToFile (logger:Common.Logging.ILog) filePath (content:string) =         
         try
             use sw = (new System.IO.StreamWriter(FileSystem.pathValue filePath))
-            logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))|>ignore))
+            if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))
             (sw.Write(content))            
-            logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Finished writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))|>ignore))
+            if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Finished writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))
             Result.Ok filePath
         with
         |ex -> Result.Error ex

@@ -6,17 +6,50 @@ namespace DriverTool.Library
         open System
         open System.IO         
         open System.Runtime.CompilerServices
-        open Common.Logging                
-        open System.Text.RegularExpressions        
-                
-        let configureLogging () =
-            log4net.GlobalContext.Properties.["LogFile"] <- getLogFilePath   
-            let appConfigFile = new FileInfo(getAppConfigFilePath)
-            let assembly = System.Reflection.Assembly.GetExecutingAssembly()
-            let loggerRepository = log4net.LogManager.GetRepository(assembly)
-            log4net.Config.XmlConfigurator.ConfigureAndWatch(loggerRepository,appConfigFile)
-            |>ignore
+        
+        open System.Text.RegularExpressions                
+        open Serilog
+        open Serilog.Configuration
+        open Serilog.Events
+        open Serilog.Formatting.Json
+        open Serilog.Sinks
+        open Serilog.Sinks.SystemConsole
+        open Common.Logging
+        
+        let toLogLevel logLevelValue =
+            match logLevelValue with
+            | "All" -> Common.Logging.LogLevel.All
+            | "Debug" -> Common.Logging.LogLevel.Debug
+            | "Error" -> Common.Logging.LogLevel.Error
+            | "Fatal" -> Common.Logging.LogLevel.Fatal
+            | "Info" -> Common.Logging.LogLevel.Info
+            | "Off" -> Common.Logging.LogLevel.Off
+            | "Trace" -> Common.Logging.LogLevel.Trace
+            | "Warn" -> Common.Logging.LogLevel.Warn
+            | _ -> failwith (sprintf "Invalid loglevel '%s' specified in app config. Valid log level values are: %s" logLevelValue (getEnumValuesToString typeof<Common.Logging.LogLevel>))
 
+        let toSerilogLogEventLevel commonLogingLogLevel =
+            match commonLogingLogLevel with            
+            | Common.Logging.LogLevel.Debug -> LogEventLevel.Debug
+            | Common.Logging.LogLevel.Error -> LogEventLevel.Error
+            | Common.Logging.LogLevel.Fatal -> LogEventLevel.Fatal
+            | Common.Logging.LogLevel.Info -> LogEventLevel.Information
+            | Common.Logging.LogLevel.Trace -> LogEventLevel.Verbose
+            | Common.Logging.LogLevel.Warn -> LogEventLevel.Warning            
+            | _ -> failwith (sprintf "Common logging LogLevel '%A' is not supported by SeriLog LogEventLevel." commonLogingLogLevel)
+
+        let configureLogging () =
+            let logLevel = getLogLevel |> toLogLevel |> toSerilogLogEventLevel
+            
+            let log = LoggerConfiguration()
+                        .MinimumLevel.Is(logLevel)
+                        .Enrich.FromLogContext()                      
+                        .WriteTo.Console()
+                        .WriteTo.File(getLogFilePath)
+                        .CreateLogger()
+            Log.Logger <- log
+            ()
+            
         let logFactory (loggerType:Type)=
             LogManager.GetLogger(loggerType)
 
@@ -36,11 +69,7 @@ namespace DriverTool.Library
         type LoggingExtensions() = 
             [<Extension>]
             static member inline Logger( obj : System.Object) =
-                LogManager.GetLogger(obj.GetType())
-
-        type Msg = System.Action<Common.Logging.FormatMessageHandler>
-        let msg message =
-            new Msg(fun m -> m.Invoke(message)|>ignore)
+                LogManager.GetLogger(obj.GetType())        
                 
         let getFunctionName func = 
             let functionName = 
@@ -124,13 +153,13 @@ namespace DriverTool.Library
             |Fatal -> logger.IsFatalEnabled
             |Debug -> logger.IsDebugEnabled
         
-        let log (logger:ILog) logLevel =
+        let log (logger:ILog) logLevel (message:obj) =
             match logLevel with
-            |Info -> logger.Info
-            |Warn -> logger.Warn
-            |Error -> logger.Error
-            |Fatal -> logger.Fatal
-            |Debug -> logger.Debug
+            |Info -> logger.Info(message)
+            |Warn -> logger.Warn(message)
+            |Error -> logger.Error(message)
+            |Fatal -> logger.Fatal(message)
+            |Debug -> logger.Debug(message)
         
         let genericLoggerResult logLevel func input : Result<'T,Exception> =
             let logger = getFunctionLogger func
@@ -143,7 +172,7 @@ namespace DriverTool.Library
                 let functionName = getFunctionName func
                 let parametersString = (getParametersString input)
                 functionCall <- sprintf "%s(%s)" functionName parametersString
-                writeLog (msg (sprintf "Call: %s" functionCall))
+                writeLog (sprintf "Call: %s" functionCall)
             
             let startTime = DateTime.Now
             
@@ -158,8 +187,8 @@ namespace DriverTool.Library
                     |Result.Error ex -> "ERROR: " + getAccumulatedExceptionMessages ex
                 let functionCallResult = sprintf "Return: %s -> %s (Duration: %s)" functionCall resultString (getDurationString duration)
                 match result with
-                |Ok _ -> writeLog (msg functionCallResult)
-                |Result.Error _ -> writeErrorLog (msg functionCallResult)
+                |Ok _ -> writeLog (functionCallResult)
+                |Result.Error _ -> writeErrorLog (functionCallResult)
             result
         
 
@@ -174,7 +203,7 @@ namespace DriverTool.Library
                 let functionName = getFunctionName func
                 let parametersString = (getParametersString input)
                 functionCall <- sprintf "%s(%s)" functionName  parametersString
-                writeLog (msg (sprintf "Call: %s" functionCall))
+                writeLog(sprintf "Call: %s" functionCall)
             
             let startTime = DateTime.Now
             let mutable returnValue = box null
@@ -186,47 +215,26 @@ namespace DriverTool.Library
                     let functionName = getFunctionName func
                     let parametersString = (getParametersString input)
                     functionCall <- sprintf "%s(%s)" functionName parametersString
-                    writeErrorLog (msg (sprintf "'%s' failed due to: %s" functionCall (ex.ToString())))
+                    writeErrorLog (sprintf "'%s' failed due to: %s" functionCall (ex.ToString()))
                     raise (sourceException ex)
             finally
                 let stopTime = DateTime.Now
                 let duration = stopTime - startTime
                 if(doLog) then                
                     let functionCallResult = sprintf "Return: %s -> %s (Duration: %s)" functionCall (resultToString returnValue) (getDurationString duration)
-                    writeLog (msg functionCallResult)
+                    writeLog (functionCallResult)
             unbox returnValue
     
-        let logSeq (logger:ILog) records  =
-            records
-            |> Seq.map  (fun dj -> 
-                                logger.Info(valueToString dj)
-                                dj
-                            )
-            |>Seq.toArray
-
-        let logSeqWithFormatString (logger:ILog) formatedSprintfF1 records  =
+        let logSeq (logger:ILog) logLevel (formatedSprintfF1:(string->string)) records  =
+            let writeLog = log logger logLevel
             records
             |> Seq.map  (fun r -> 
                                 let valueString = sprintf "%A" r
-                                logger.Info(msg (formatedSprintfF1 valueString))
+                                writeLog(formatedSprintfF1 valueString)
                                 r
                             )
             |>Seq.toArray
                 
-        let logSeqToConsoleWithFormatString formatStringF1 records  =
-            records
-            |> Seq.map  (fun dj -> 
-                                printfn formatStringF1 (valueToString dj)
-                                dj
-                            )
-        
-        let logSeqToConsole records =
-            logSeqToConsoleWithFormatString "%s" records
-
-        let logToConsole record =
-            printfn "%s" (valueToString record)
-            record
-        
         let throwExceptionWithLogging (logger:Common.Logging.ILog) (errorMessage:string) =
             logger.Error(errorMessage)
             failwith errorMessage

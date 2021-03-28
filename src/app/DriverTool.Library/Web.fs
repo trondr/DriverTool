@@ -68,7 +68,7 @@ module Web =
         | null -> null
         | url -> 
                 let webProxy = new WebProxy(url, byPassOnLocal, byPassList)
-                logger.Info(msg (sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList))
+                logger.Info(sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList)
                 webProxy
     
     let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
@@ -83,7 +83,7 @@ module Web =
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
             |Ok path -> 
-                logger.Info(msg (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path)))
+                logger.Info(sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path))
                 let downloadTask = webClient.DownloadFileTaskAsync(sourceUri.OriginalString,FileSystem.pathValue path)                
                 Async.AwaitTask downloadTask |> Async.RunSynchronously                
                 Result.Ok path      
@@ -121,7 +121,7 @@ module Web =
     let verifyDownloadBase (hasSameFileHashFunc: HasSameFileHashFunc, isTrustedFunc: IsTrustedFunc, logger: ILog , downloadInfo, ignoreVerificationErrors) = 
         match (hasSameFileHashFunc downloadInfo) with
         |true  -> 
-            logger.Info(msg (sprintf  "Destination file ('%A') hash match source file ('%A') hash." (downloadInfo.DestinationFile) (downloadInfo.SourceUri) ))
+            logger.Info(sprintf  "Destination file ('%A') hash match source file ('%A') hash." (downloadInfo.DestinationFile) (downloadInfo.SourceUri) )
             Result.Ok downloadInfo
         |false ->
             let msg1 = (sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue downloadInfo.DestinationFile) downloadInfo.SourceUri.OriginalString)
@@ -150,7 +150,7 @@ module Web =
                 verifyDownload logger downloadInfo ignoreVerificationErrors
             |Result.Error ex -> Result.Error (new Exception(sprintf "Failed to download '%A' due to: %s " downloadInfo.SourceUri ex.Message, ex))
         |false -> 
-            logger.Info(msg (sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile)))
+            logger.Info(sprintf "Destination file '%s' allready exists." (FileSystem.pathValue downloadInfo.DestinationFile))
             Result.Ok downloadInfo
 
     let toUriUnsafe url =

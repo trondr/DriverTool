@@ -41,7 +41,7 @@ module DirectoryOperations =
             directoryPathExists directoryPath
         match (not directoryExists && createIfNotExists) with
         |true->
-            logger.Info(msg (sprintf  "Creating directory: '%s'..." (FileSystem.pathValue directoryPath)))
+            logger.Info(sprintf  "Creating directory: '%s'..." (FileSystem.pathValue directoryPath))
             createDirectory directoryPath
         |false->
            match directoryExists with
@@ -157,7 +157,7 @@ module DirectoryOperations =
         member this.FolderPath = temporaryFolderPath
         interface IDisposable with
             member x.Dispose() = 
-                logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing folder '%A'" temporaryFolderPath))|>ignore))
+                if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Disposing folder '%A'" temporaryFolderPath))
                 match (result{
                     let! folderPath = temporaryFolderPath
                     let! deleted = deleteDirectory true folderPath

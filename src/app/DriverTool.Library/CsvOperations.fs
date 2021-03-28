@@ -6,8 +6,10 @@ module CsvOperations =
 
     let exportToCsvUnsafe (csvFilePath:FileSystem.Path, records) =
         use sw = new System.IO.StreamWriter(FileSystem.pathValue csvFilePath)
-        use csv = new CsvHelper.CsvWriter(sw, CultureInfo.InvariantCulture)
-        csv.Configuration.Delimiter <- ";"
+        
+        let csvConfiguration = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+        csvConfiguration.Delimiter <- ";"
+        use csv = new CsvHelper.CsvWriter(sw, csvConfiguration)
         csv.WriteRecords(records)
         csvFilePath
     

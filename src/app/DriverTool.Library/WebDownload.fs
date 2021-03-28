@@ -79,7 +79,7 @@ module WebDownload=
         | null -> null
         | url -> 
                 let webProxy = new WebProxy(url, byPassOnLocal, byPassList)
-                logger.Info(msg (sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList))
+                logger.Info(sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList)
                 webProxy
 
     /// <summary>
@@ -111,7 +111,7 @@ module WebDownload=
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
             |Ok path -> 
-                logger.Info(msg (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path)))
+                logger.Info(sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path))
                 let downloadTask = webClient.DownloadFileTaskAsync(sourceUri.OriginalString,FileSystem.pathValue path)                
                 Async.AwaitTask downloadTask |> Async.RunSynchronously                
                 Result.Ok path      
@@ -152,7 +152,7 @@ module WebDownload=
     let verifyDownload' (logger:Common.Logging.ILog) (hasSameFileHashFunc: HasSameFileHashFunc) (isTrustedFunc: IsTrustedFunc) ignoreVerificationErrors (webFileSource, webFileDestination)  = 
         match (hasSameFileHashFunc (webFileDestination.DestinationFile,webFileSource.Checksum,webFileSource.Size)) with
         |true  -> 
-            logger.Info(msg (sprintf  "Destination file ('%A') hash match source file ('%A') hash." webFileDestination webFileSource.Url ))
+            logger.Info(sprintf  "Destination file ('%A') hash match source file ('%A') hash." webFileDestination webFileSource.Url )
             Result.Ok (WebFile2.DownloadedWebFile webFileDestination)
         |false ->
             let msg1 = (sprintf "Destination file ('%s') hash does not match source file ('%s') hash. " (FileSystem.pathValue webFileDestination.DestinationFile) webFileSource.Url.OriginalString)
@@ -187,7 +187,7 @@ module WebDownload=
                 verifyDownload' ignoreVerificationErrors (webFileSource, webFileDestination) 
             |Result.Error ex -> Result.Error (new Exception((sprintf "Failed to download '%A' due to: %s " webFileSource.Url ex.Message), ex))
         |false -> 
-            logger.Info(msg (sprintf "Destination file '%s' allready exists." (FileSystem.pathValue webFileDestination.DestinationFile)))
+            logger.Info(sprintf "Destination file '%s' allready exists." (FileSystem.pathValue webFileDestination.DestinationFile))
             Result.Ok (WebFile2.DownloadedWebFile webFileDestination)
 
     let downloadIfDifferent ignoreVerificationErrors webFileDownload =

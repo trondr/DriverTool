@@ -33,6 +33,10 @@ module Configuration =
         let logFilePath = System.IO.Path.Combine(getLogDirectoryPath, getLogFileName)
         logFilePath
     
+    let getLogLevel =
+        let value = getValue "LogLevel"
+        value
+
     let getDownloadCacheDirectoryPathUnsafe =
         let expandedPath = getExpandedValue "DownloadCacheDirectoryPath"
         let path = System.IO.Path.GetFullPath(expandedPath)        

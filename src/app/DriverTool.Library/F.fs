@@ -228,20 +228,6 @@ module F=
        xs |> shuffleCrypto |> Seq.take n
     
 
-    let arrayToSeq (array:Array) =
-        seq{
-            for item in array do
-                yield item
-        }
-
-    let getEnumValuesToString (enumType) =
-        let enumValues = 
-            Enum.GetValues(enumType)
-            |>arrayToSeq
-            |>Seq.map(fun v -> v.ToString())
-            |>Seq.toArray
-        "[" + String.Join("|",enumValues) + "]"
-
     let optionToBoolean option = 
         match option with
         |None -> false

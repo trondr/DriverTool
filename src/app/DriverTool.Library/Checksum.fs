@@ -45,40 +45,40 @@ module Checksum=
         genericLogger LogLevel.Debug computeFileHashFromHashLengthBase filePath hashLength
  
     let hasSameFileHash'' (logger:Common.Logging.ILog) checkFileExists getFileSize computeFileHashFromHashLength (destinationFile:FileSystem.Path, sourceFileHash:string option, sourceFileSize:Int64 option) =
-        logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Checking if source and destination file (%A) has the same file hash (%A)." destinationFile sourceFileHash)|>ignore))
+        if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Checking if source and destination file (%A) has the same file hash (%A)." destinationFile sourceFileHash))
         let destinationFileExists = checkFileExists destinationFile        
         match destinationFileExists with
         | true ->
-            logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Destination file (%A) exists. Check if file hash is the same." destinationFile)|>ignore))
+            if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Destination file (%A) exists. Check if file hash is the same." destinationFile))
             let doCompareHash =
                 match sourceFileSize with
                 |Some sourceSize ->
                     let destinationSize = getFileSize destinationFile
                     let fileSizeIsEqual = (sourceSize = destinationSize)
-                    logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Comparing source and destination file size. Is equal: %b." fileSizeIsEqual)|>ignore))
+                    if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Comparing source and destination file size. Is equal: %b." fileSizeIsEqual))
                     fileSizeIsEqual
                 |None -> 
-                    logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Source file size has not been specified, force compare of source and destination hash.")|>ignore))
+                    if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Source file size has not been specified, force compare of source and destination hash."))
                     true
             let fileHashIsEqual =
                 match doCompareHash with
                 |false ->                     
-                    logger.Debug( new Msg(fun m -> m.Invoke(sprintf "File size was not equal, implying that file hash can not be equal. No neeed to invoke expensive computation of file hash. hasSameFileHash->false.")|>ignore))
+                    if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "File size was not equal, implying that file hash can not be equal. No neeed to invoke expensive computation of file hash. hasSameFileHash->false."))
                     false 
                 |true ->                    
-                    logger.Debug( new Msg(fun m -> m.Invoke(sprintf "File size is equal. Invoke computation of file hash to check if source file and destination file has the same file hash.")|>ignore))
+                    if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "File size is equal. Invoke computation of file hash to check if source file and destination file has the same file hash."))
                     match sourceFileHash with
                     |Some sh ->                        
                         let sourceHash = sh|>toLower
                         let destinationHash = computeFileHashFromHashLength destinationFile sourceHash.Length
-                        logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Comparing destination file (%A) hash [%s] and source file hash [%s]..." destinationFile destinationHash sourceHash)|>ignore))
+                        if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Comparing destination file (%A) hash [%s] and source file hash [%s]..." destinationFile destinationHash sourceHash))
                         (sourceHash = destinationHash)
                     |None -> 
-                        logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Source hash has not been specified. hasSameFileHash->false")|>ignore))
+                        if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Source hash has not been specified. hasSameFileHash->false"))
                         false                    
             fileHashIsEqual
         | false ->            
-            logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Destination file (%A) does not exist. hasSameFileHash->false." destinationFile)|>ignore))
+            if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Destination file (%A) does not exist. hasSameFileHash->false." destinationFile))
             false
 
     let hasSameFileHash' (filePath:FileSystem.Path, sourceFileHash:string option, fileSize:Int64 option) =
@@ -97,7 +97,7 @@ module Checksum=
                 |true ->                                  
                     let destinationHash = (computeFileHashFromHashLength destinationFilePath sourceFileHash.Length) |> toLower
                     let sourceHash = sourceFileHash|>toLower
-                    logger.Debug( new Msg(fun m -> m.Invoke(sprintf "Comparing destination file (%s) hash [%s] and source file hash [%s]..." (FileSystem.pathValue destinationFilePath) destinationHash sourceHash)|>ignore))
+                    if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Comparing destination file (%s) hash [%s] and source file hash [%s]..." (FileSystem.pathValue destinationFilePath) destinationHash sourceHash))
                     (sourceHash = destinationHash) || (String.IsNullOrWhiteSpace(sourceHash))
                 | false  -> false
             |false -> false

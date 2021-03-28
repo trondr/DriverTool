@@ -12,18 +12,6 @@ module Messages =
     open DriverTool.Library.PackageDefinition
     open DriverTool.Library.WebDownload
 
-    type LoggerName = LoggerName of string
-
-    type LogMessage =
-        |FatalMsg of LoggerName*Exception
-        |ErrorMsg of LoggerName*Exception        
-        |WarnMsg of LoggerName*Msg
-        |InfoMsg of LoggerName*string
-        |TraceMsg of LoggerName*Msg
-        |DebugMsg of LoggerName*Msg
-
-    type LogItem = {TimeStamp:DateTime;LoggerName:string;ThreadId:int;LogMessage:LogMessage}
-        
     type SccmPackageInfoDownloadContext = {
         Manufacturer:Manufacturer
         CacheFolderPath:FileSystem.Path

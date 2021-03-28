@@ -93,3 +93,34 @@ module LoggingTests =
         match actualResult with
         |Ok actual -> Assert.Fail("Test should not return ok result.")
         |Result.Error ex -> Assert.AreEqual(expected,ex.Message)
+
+    open DriverTool.Library.PackageXml
+
+    [<Test>]
+    let logComplexObjectTest1 () =
+        configureLogging()
+        let sccmPacage =
+            {
+                ReadmeFile =                                         
+                    {
+                    Url = "";
+                    Checksum = "";
+                    FileName = "";
+                    Size=0L;
+                    }
+                InstallerFile=
+                    {
+                        Url="";
+                        Checksum="{sometest}"
+                        FileName=""
+                        Size=0L
+                    }
+                Released=(new DateTime(2021,03,28))
+                Os= "WIN10"
+                OsBuild="20H2"
+            }        
+        Assert.DoesNotThrow(fun () -> logger.Info( sprintf "%A" sccmPacage))
+        Assert.DoesNotThrow(fun () -> logger.Info(sprintf "Sccm packge: %A" sccmPacage))
+        
+
+        ()

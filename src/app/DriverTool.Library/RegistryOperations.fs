@@ -23,7 +23,7 @@ module RegistryOperations =
 
     let openRegKeyUnsafe (regKeyPath:string, writeable:bool) =
         nullGuard regKeyPath "regKeyPath"
-        logger.Debug(new Msg(fun m ->m.Invoke((sprintf  "Opening registry key: [%s] (writeable: %b)" regKeyPath writeable))|>ignore))
+        if(logger.IsDebugEnabled) then ( logger.Debug(sprintf  "Opening registry key: [%s] (writeable: %b)" regKeyPath writeable))
         let (regHive,subPath) = parseRegKeyPath regKeyPath
         regHive.OpenSubKey(subPath,writeable)
     

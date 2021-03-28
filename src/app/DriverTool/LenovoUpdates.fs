@@ -214,7 +214,7 @@ module LenovoUpdates =
                     |Some d ->                    
                         let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
                         let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder (Some lsuPackages) detectionRule 
-                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating dependencies: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch))|>ignore))
+                        logger.Info(sprintf "Evaluating dependencies: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch)
                         isMatch
                     |None -> false
 
@@ -223,7 +223,7 @@ module LenovoUpdates =
                     |Some d ->                    
                         let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
                         let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder (Some lsuPackages) detectionRule 
-                        logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Evaluating detect install: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch))|>ignore))
+                        logger.Info(sprintf "Evaluating detect install: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch)
                         isMatch
                     |None -> false
                 (isDependent && isDetectedInstalled)
@@ -232,7 +232,7 @@ module LenovoUpdates =
         }) with
         |Result.Ok b -> b
         |Result.Error ex -> 
-            logger.Info(new Msg(fun m -> m.Invoke( (sprintf "Failed to evaluate if '%s' is installed. Return: false" packageInfo.PackageXmlName))|>ignore))
+            logger.Info(sprintf "Failed to evaluate if '%s' is installed. Return: false" packageInfo.PackageXmlName)
             false
 
     let getLsuPackages cacheFolderPath (packages:PackageInfo[]) =

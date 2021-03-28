@@ -63,9 +63,6 @@
         <FixtureName>DriverTool.Tests.ManualWebTest</FixtureName>
       </FixtureTestSelector>
       <FixtureTestSelector>
-        <FixtureName>DriverTool.Tests.LoggingTests</FixtureName>
-      </FixtureTestSelector>
-      <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.LenovoUpdateTests</FixtureName>
       </FixtureTestSelector>
       <FixtureTestSelector>

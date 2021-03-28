@@ -27,10 +27,10 @@ module EmbeddedResource =
         nullGuard assembly "assembly" |> ignore
         if(logger.IsDebugEnabled) then
             let resourceNames = assembly.GetManifestResourceNames()
-            logger.Debug( new Msg(fun m ->m.Invoke((sprintf "Assembly '%s' has %i embedded resources." assembly.FullName resourceNames.Length))|>ignore))
+            logger.Debug(sprintf "Assembly '%s' has %i embedded resources." assembly.FullName resourceNames.Length)
             resourceNames
                 |> Array.toSeq
-                |> Seq.map (fun rn -> logger.Debug(new Msg(fun m -> m.Invoke(sprintf "Embeded resource: %s"  rn)|>ignore)))
+                |> Seq.map (fun rn -> logger.Debug(sprintf "Embeded resource: %s"  rn))
                 |> Seq.toArray
                 |> ignore
         ()
@@ -105,7 +105,7 @@ module EmbeddedResource =
                 let! existingParentDirectoryPath = DirectoryOperations.ensureDirectoryExists true parentDirectoryPath
                 logger.Info("Verified that directory exists:" + FileSystem.pathValue existingParentDirectoryPath)
                 
-                logger.Info(msg (sprintf "Extracting resource '%s' -> '%s'" resourceName (FileSystem.pathValue destinationFilePath)))
+                logger.Info(sprintf "Extracting resource '%s' -> '%s'" resourceName (FileSystem.pathValue destinationFilePath))
                 let! fileResult = 
                     extractEmbeddedResourceInAssemblyToFile (resourceNameObject,resourceAssembly, destinationFilePath)
                 return fileResult
@@ -169,7 +169,7 @@ module EmbeddedResource =
         member this.FilePath = tempFilePath
         interface IDisposable with
             member x.Dispose() = 
-                logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing extracted embedded resource '%A'" tempFilePath))|>ignore))
+                if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Disposing extracted embedded resource '%A'" tempFilePath) )
                 match (result{
                     let! folderPath = tempFolderPath
                     let! deleted = DirectoryOperations.deleteDirectoryIfExists folderPath
@@ -197,7 +197,7 @@ module EmbeddedResource =
         member this.FilePath = tempFilePath
         interface IDisposable with
             member x.Dispose() = 
-                logger.Debug(new Msg(fun m -> m.Invoke((sprintf "Disposing extracted embedded resource '%A'" tempFilePath))|>ignore))
+                if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Disposing extracted embedded resource '%A'" tempFilePath))
                 match (result{
                     let! folderPath = tempFolderPath
                     let! deleted = DirectoryOperations.deleteDirectoryIfExists folderPath

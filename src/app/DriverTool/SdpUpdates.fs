@@ -78,7 +78,7 @@ module SdpUpdates =
     let localUpdatesFilter sdp =
         sdp.InstallableItems
         |>Seq.tryFind(fun ii ->                 
-                logger.Debug(new Msg(fun m -> m.Invoke( (sprintf "Evaluating 'IsInstalled' applicability rule for sdp '%s' " sdp.PackageId))|>ignore))
+                if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Evaluating 'IsInstalled' applicability rule for sdp '%s' " sdp.PackageId) )
                 let isInstalled =  evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstalled false
                 isInstalled
             )
@@ -92,7 +92,7 @@ module SdpUpdates =
     let remoteUpdatesFilter sdp =
         sdp.InstallableItems
         |>Seq.tryFind(fun ii -> 
-                logger.Debug(new Msg(fun m -> m.Invoke( (sprintf "Evaluating 'IsInstallable' applicability rule for sdp '%s' " sdp.PackageId))|>ignore))
+                if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Evaluating 'IsInstallable' applicability rule for sdp '%s' " sdp.PackageId))
                 let isInstallable = evaluateSdpApplicabilityRule ii.ApplicabilityRules.IsInstallable false                
                 isInstallable
             )

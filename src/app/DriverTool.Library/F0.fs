@@ -48,3 +48,17 @@ module F0=
     
     let toErrorResult message (innerException: System.Exception option) =
         Result.Error (toException message innerException)
+
+    let arrayToSeq (array:Array) =
+        seq{
+            for item in array do
+                yield item
+        }
+
+    let getEnumValuesToString (enumType) =
+        let enumValues = 
+            Enum.GetValues(enumType)
+            |>arrayToSeq
+            |>Seq.map(fun v -> v.ToString())
+            |>Seq.toArray
+        "[" + String.Join("|",enumValues) + "]"

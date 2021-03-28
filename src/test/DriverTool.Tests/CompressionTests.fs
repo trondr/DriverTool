@@ -117,8 +117,7 @@ module CompressionTests=
         |Result.Error ex -> 
             Assert.Fail("Should allways never fail.")
             ()
-
-        
+                    
     [<Test>]
     [<TestCase(true,false,true,"<No Error>",false,true,false,"Test1")>]
     [<TestCase(true,true,false,"Zip file allready exists",false,true,false,"Test2")>]
