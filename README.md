@@ -44,6 +44,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 	![GitHub Logo](/doc/images/InitialDriverPackage_CommandLine.png)
 	![GitHub Logo](/doc/images/InitialDriverPackage_Create.png)
 	![GitHub Logo](/doc/images/InitialDriverPackage_Root.png)
+	![GitHub Logo](/doc/images/InitialDriverPackage_Drivers.png)
 
 7. Install SCCM Package, Example:
 	```batch
@@ -71,6 +72,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 	```
 	* This will create a package only containing updates that were installed with the vendor update utility. 
 	* This package will be basis for import into SCCM after testing and any adjustments.
+	![GitHub Logo](/doc/images/DriverPackage_Root.png)
 	![GitHub Logo](/doc/images/DriverPackage_Drivers.png)
 	
 11. Make any adjustments to driver package
