@@ -8,7 +8,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyDescriptionAttribute("Host process providing DriverTool with 32-bit services.")>]
 [<assembly: AssemblyProductAttribute("DriverTool.x86.Host")>]
 [<assembly: AssemblyCompanyAttribute("github/trondr")>]
-[<assembly: AssemblyCopyrightAttribute("Copyright © github/trondr 2018-2019")>]
+[<assembly: AssemblyCopyrightAttribute("Copyright © github/trondr 2018-2021")>]
 [<assembly: AssemblyVersionAttribute("1.0.21087.50")>]
 [<assembly: AssemblyFileVersionAttribute("1.0.21087.50")>]
 [<assembly: ComVisibleAttribute(false)>]
@@ -21,7 +21,7 @@ module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyDescription = "Host process providing DriverTool with 32-bit services."
     let [<Literal>] AssemblyProduct = "DriverTool.x86.Host"
     let [<Literal>] AssemblyCompany = "github/trondr"
-    let [<Literal>] AssemblyCopyright = "Copyright © github/trondr 2018-2019"
+    let [<Literal>] AssemblyCopyright = "Copyright © github/trondr 2018-2021"
     let [<Literal>] AssemblyVersion = "1.0.21087.50"
     let [<Literal>] AssemblyFileVersion = "1.0.21087.50"
     let [<Literal>] ComVisible = false

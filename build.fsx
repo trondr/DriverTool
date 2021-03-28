@@ -51,13 +51,15 @@ Target.create "RestorePackages" (fun _ ->
 
 Target.create "BuildApp" (fun _ -> 
     Trace.trace "Building app..."
+    let now2 = System.DateTime.Now
+    let year = now2.Year.ToString()
     AssemblyInfoFile.createFSharp "./src/app/DriverTool/AssemblyInfo.fs"
         [
             AssemblyInfo.Title "DriverTool"
             AssemblyInfo.Description "Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application." 
             AssemblyInfo.Product "DriverTool"
             AssemblyInfo.Company "github/trondr"
-            AssemblyInfo.Copyright "Copyright \u00A9 github/trondr 2018-2019"
+            AssemblyInfo.Copyright (sprintf "Copyright \u00A9 github/trondr 2018-%s" year )
             AssemblyInfo.Version assemblyVersion
             AssemblyInfo.FileVersion assemblyVersion                        
             AssemblyInfo.ComVisible false
@@ -71,7 +73,7 @@ Target.create "BuildApp" (fun _ ->
             AssemblyInfo.Description "Library providing common DriverTool functionality."
             AssemblyInfo.Product "DriverTool.Library"
             AssemblyInfo.Company "github/trondr"
-            AssemblyInfo.Copyright "Copyright \u00A9 github/trondr 2018-2019"
+            AssemblyInfo.Copyright (sprintf "Copyright \u00A9 github/trondr 2018-%s" year )
             AssemblyInfo.Version assemblyVersion
             AssemblyInfo.FileVersion assemblyVersion                        
             AssemblyInfo.ComVisible false
@@ -85,7 +87,7 @@ Target.create "BuildApp" (fun _ ->
             AssemblyInfo.Description "Host process providing DriverTool with 32-bit services."
             AssemblyInfo.Product "DriverTool.x86.Host"
             AssemblyInfo.Company "github/trondr"
-            AssemblyInfo.Copyright "Copyright \u00A9 github/trondr 2018-2019"
+            AssemblyInfo.Copyright (sprintf "Copyright \u00A9 github/trondr 2018-%s" year )
             AssemblyInfo.Version assemblyVersion
             AssemblyInfo.FileVersion assemblyVersion                        
             AssemblyInfo.ComVisible false
