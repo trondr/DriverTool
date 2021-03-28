@@ -22,7 +22,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 	* The c:\temp working folder will be unaffected by a system restore.
   
 3. Install chocolatey package manager
-	* This will provide effective install of various tools. Alternatively you could prepare a USB stick with all the tools.
+	* This will provide effective install of various tools. Alternatively you could prepare a USB stick with the tools.
 	* Open powershell admin command prompt and run:
 	```batch
 	Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
@@ -54,7 +54,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
   
 8. Install vendor specific update utility.
 	* Lenovo System Update 
-		* choco install lenovo-thinkvantage-system-update)
+		* choco install lenovo-thinkvantage-system-update
 	* Dell Command Update
 		* choco install DellCommandUpdate
 	* HP Image Assistant 
@@ -115,16 +115,16 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 14. If required, add any other updates to the Drivers folder.
 	* Typically new updates are deployed by Vendor and you need to update the driver package.
 	* Or you have connected hardware such as driver for a monitor that you need to add to the driver package.
-	* You can choose to manually add such updates to the Drivers\<some new update folder> folder as long as you utilize the mechanism that DriverTool expects: (...\Drivers\<some folder>\DT-Install-Package.cmd)
+	* You can choose to manually add such updates to the ...\Drivers\<some folder>\ folder as long as you utilize the mechanism that DriverTool expects: (...\Drivers\<some folder>\DT-Install-Package.cmd)
       
 15. Compress Driver Package
-	* Run: cC:\Temp\D\<model>\<release date>-<version>\Script\_Compress.cmd
+	* Run: c:\Temp\D\<model>\<release date>-<version>\Script\_Compress.cmd
 	* Verify that Drivers.zip has been created.
 	* Delete folder: C:\Temp\D\<model>\<release date>-<version>\Script\Drivers
 
 16. Restore Windows from system restore snapshot.
 
-17. Test driver package, same as the exit code test step above.
+17. Test driver package, same as step 13.
 
 18. Install and run vendor system update utility to verify that all drivers have been installed by the driver package.
 
