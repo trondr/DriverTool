@@ -2,6 +2,129 @@
 
 Downloads drivers and software for current PC model and creates a driver package that can be imported into SCCM as a package or application.
 
+# Introduction
+
+If you are tasked with preparing a new PC model for operating system install using SCCM, DriverTool can provide the heavy lifting of finding, downloading and do the initial packaging of drivers and driver updates.
+
+When the heavy lifting is done you still have to test and make adjustments to the produced package. Also any firmware and BIOS updates need to be adjusted and packaged separately to be run unattended in the task sequence.
+
+Packaging and command line experience is required to use and understand this tool.
+
+DriverTool currently supports PCs from Dell, HP and Lenovo.
+
+# Overall Procedure
+
+* Install Windows 10 from original media
+   * Typically there will be uknown devices in Device Manager after operating system has been installed. 
+* Create system restore snapshot
+   * Before making any changes to the system after OS install, create a system restore snapshot. 
+   * This snapshot can be restored when testing driver package later in the procedure.
+   * The c:\temp working folder will be unaffected by a system restore.
+  
+* Install chocolatey package manager
+   * This will provide effective install of various tools. Alternatively you could prepare a USB stick with all the tools.
+   * Open powershell admin command prompt and run:
+   ```batch
+   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+   ```
+* Install Notepad++ if you prefer a more advanced text editor than Notepad.
+   * Open admin command prompt and run:
+   ```batch
+   choco install notepadplusplus
+   ```
+* Install DriverTool to c:\Temp\DriverTool
+	* Download from latest release from: https://github.com/trondr/DriverTool/releases
+* Create an initial driver package. This will download _all_ drivers and updates found for the current model. Including any Firmware and BIOS updates.
+```batch
+IF NOT EXIST "c:\temp" mkdir "c:\temp"
+IF NOT EXIST "c:\temp\DI" mkdir "c:\temp\DI"
+CD c:\temp
+"c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\DI" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="False"
+```
+![GitHub Logo](/doc/images/InitialDriverPackage_CommandLine.png)
+![GitHub Logo](/doc/images/InitialDriverPackage_Create.png)
+![GitHub Logo](/doc/images/InitialDriverPackage_Root.png)
+* Install SCCM Package, Example:
+```batch
+cd C:\temp\DI\20EQ0022MN\2021-03-05-1.0\Script\Drivers\005_Sccm_Package_2019_11_01
+c:\temp\DI\20EQ0022MN\2021-03-05-1.0\Script\Drivers\005_Sccm_Package_2019_11_01\DT-Install-Package.cmd
+```
+  * This will fill up the machine with vendor provided "injecteable" (INF) drivers. Device Manager will show less or no uknown devices after this step.
+  
+* Install vendor specific update utility.
+   * Lenovo System Update 
+      * choco install lenovo-thinkvantage-system-update)
+   * Dell Command Update
+      * choco install DellCommandUpdate
+   * HP Image Assistant 
+      * https://ftp.hp.com/pub/caps-softpaq/cmit/HPIA.html
+
+* Run vendor specific update utility and install all recommended updates _exluding_ BIOS and firmware.
+   * Do any necessary reboots and check that all devices are ok in Device Manager.
+   * BIOS and firmware must be installed in separate packages due to general requirement for hard reboot.
+
+* Create Driver Package based installed updates.
+```batch
+IF NOT EXIST "c:\temp\D" mkdir "c:\temp\D"
+c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\D" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']"
+```
+   * This will create a package only containing updates that were installed with the vendor update utility. 
+   * This package will be basis for import into SCCM after testing and any adjustments.
+
+* Make any adjustments to driver package
+	* The downloaded updates are prepared in the folder: C:\Temp\D\<model>\<release date>-<version>\Script\Drivers
+	* Updates are installed in alphabetical order based on the folder name. To change the install order, change the prefix of the folder names accordingly.	Examples:
+```text
+	  Fingerprint will be installed before audio
+	   ...\Drivers\010_Fingerprint_reader_Synaptics_Metallica_MOH_10_64_5.1.327.26
+	   ...\Drivers\020_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
+
+	  Audio will be installed before fingerprint:
+	   ...\Drivers\007_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
+	   ...\Drivers\010_Fingerprint_reader_Synaptics_Metallica_MOH_10_64_5.1.327.26
+```
+	* Any folders prefixed with underscore (_) will be excluded from install. Example:	  
+```text
+	  Example: ..\Drivers\Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
+	   rename to:
+		...\Drivers\_Audio_Realtek_Audio_Driver_10_64_6.0.1.8224
+```
+* Remove any disabled update folders.
+   * Removing disabled update folders will make driver package smaller.
+
+* Test driver package exit codes.
+   * Open Admin command prompt and change directory to example:
+	```text
+	c:\temp\DI\20EQ0022MN\2021-03-05-1.0\Script
+	```
+   * Install driver package. Example:   
+	```text
+	Install.cmd > "%public%\Logs\Lenovo ThinkPad P50 20EQ0022MN WIN10X64 20H2 Drivers 2021-03-05_1.0_Install.cmd.log"
+	```
+   * Check logs in '%public%\Logs' folder. Pay attention to exit codes other than 3010 and 0. If exit code is 259 (or in the area 250) this might indicate that this is a exit code from DPInst.exe. To solve this, uncomment the following lines after setup.exe in the corresponding DT-Install-Package.cmd
+   ```batch
+	Set DpInstExitCode=%errorlevel%
+	"%~dp0..\DpInstExitCode2ExitCode.exe" %DpInstExitCode%
+   ```
+   * Make any other necessary adjustments to DT-Install-Package.cmd. 
+   * Note that the original downladed update can be found in the 'c:\temp\DriverToolCache' folder.
+
+* If required, add any other updates to the Drivers folder.
+   * Typically new updates are deployed by Vendor and you need to update the driver package.
+   * Or you have connected hardware such as driver for a monitor that you need to add to the driver package.
+   * You can choose to manually add such updates to the Drivers\<some new update folder> folder as long as you utilize the mechanism that DriverTool expects: (...\Drivers\<some folder>\DT-Install-Package.cmd)
+      
+* Compress Driver Package
+   * Run: cC:\Temp\D\<model>\<release date>-<version>\Script\_Compress.cmd
+   * Verify that Drivers.zip has been created.
+   * Delete folder: C:\Temp\D\<model>\<release date>-<version>\Script\Drivers
+
+* Restore Windows from system restore snapshot.
+
+* Test driver package, same as the exit code test step above.
+
+* Install and run vendor system update utility to verify that all drivers have been installed by the driver package.
+
 ## Command line help
 
 ```
