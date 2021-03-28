@@ -67,7 +67,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 10. Create Driver Package based installed updates.
 	```batch
 	IF NOT EXIST "c:\temp\D" mkdir "c:\temp\D"
-	c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\D" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']"
+	"c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\D" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']"
 	```
 	* This will create a package only containing updates that were installed with the vendor update utility. 
 	* This package will be basis for import into SCCM after testing and any adjustments.
