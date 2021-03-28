@@ -30,7 +30,7 @@ let assemblyVersion =
     let minorVersion = "0"
     let now = System.DateTime.Now    
     let buildVersion = sprintf "%02d%03d" (now.Year - 2000) (now.DayOfYear) //Example: 19063
-    let revisionVersion = "46"
+    let revisionVersion = "48"
     sprintf "%s.%s.%s.%s" majorVersion minorVersion buildVersion revisionVersion //Example: 1.0.19063.1
 
 let getVersion file = 
@@ -135,6 +135,7 @@ Target.create "Publish" (fun _ ->
     let zipFile = System.IO.Path.Combine(artifactFolder,sprintf "DriverTool.%s.zip" assemblyVersion)
     files
     |> Fake.IO.Zip.createZip buildAppFolder zipFile (sprintf "DriverTool %s" assemblyVersion) 9 false 
+    Trace.trace (sprintf "Published: %s" zipFile)
 )
 
 Target.create "Default" (fun _ ->
