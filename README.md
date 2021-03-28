@@ -67,7 +67,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 10. Create Driver Package based installed updates.
 	```batch
 	IF NOT EXIST "c:\temp\D" mkdir "c:\temp\D"
-	c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\D" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']"
+	"c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\D" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']"
 	```
 	* This will create a package only containing updates that were installed with the vendor update utility. 
 	* This package will be basis for import into SCCM after testing and any adjustments.
@@ -116,7 +116,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 14. If required, add any other updates to the Drivers folder.
 	* Typically new updates are deployed by Vendor and you need to update the driver package.
 	* Or you have connected hardware such as driver for a monitor that you need to add to the driver package.
-	* You can choose to manually add such updates to the ...\Drivers\\<some folder>\ folder as long as you utilize the mechanism that DriverTool expects: (...\Drivers\\<some folder>\DT-Install-Package.cmd)
+	* You can choose to manually add such updates to the '...\Drivers\NNN_some update folder' folder as long as you utilize the mechanism that DriverTool expects: ('...\Drivers\NNN_some update folder\DT-Install-Package.cmd')
       
 15. Compress Driver Package
 	* Run: c:\Temp\D\<model>\<release date>-<version>\Script\_Compress.cmd
