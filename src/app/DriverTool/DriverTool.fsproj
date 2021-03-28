@@ -219,7 +219,7 @@
       <HintPath>..\..\..\packages\FsPickler.Json.5.3.2\lib\net45\FsPickler.Json.dll</HintPath>
     </Reference>
     <Reference Include="LsupEval">
-      <HintPath>..\..\..\packages\LsupEval.1.0.21064-alpha6\lib\net452\LsupEval.dll</HintPath>
+      <HintPath>..\..\..\packages\LsupEval.1.0.21087-alpha7\lib\net452\LsupEval.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.UpdateServices.Administration">

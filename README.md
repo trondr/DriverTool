@@ -71,7 +71,8 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 	```
 	* This will create a package only containing updates that were installed with the vendor update utility. 
 	* This package will be basis for import into SCCM after testing and any adjustments.
-
+	![GitHub Logo](/doc/images/DriverPackage_Drivers.png)
+	
 11. Make any adjustments to driver package
 	* The downloaded updates are prepared in the folder: C:\Temp\D\<model>\<release date>-<version>\Script\Drivers
 	* Updates are installed in alphabetical order based on the folder name. To change the install order, change the prefix of the folder names accordingly.	Examples:
