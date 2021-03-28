@@ -80,6 +80,10 @@ module HpCatalogTests =
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
     [<TestCase("WIN10X64","83B3")>]
+    [<TestCase("WIN10X64","854A")>]
+    [<TestCase("WIN10X64","854a")>]
+    [<TestCase("WIN10X64","85a2")>]
+    [<TestCase("WIN10X64","85a1")>]
     let getSccmDriverPackageInfoBase (operatingSystemCodeString:string,modelCodeString:string) =
         match(result
                 {

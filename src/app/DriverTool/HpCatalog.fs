@@ -147,9 +147,17 @@ module HpCatalog =
         let osBuild = OperatingSystem.getOsBuildFromName hpOsName
         (osCode,osBuild)
 
-    let isSupportedForModel (systemId, modelCode:ModelCode)=
-        modelCode.Value = systemId
+    let systemIdToModels (systemId:string) =
+        systemId.Replace(" ","").Trim().Split([|','|])
 
+    let isSupportedForModel (systemId:string, modelCode:ModelCode)=
+        let models = systemIdToModels (systemId.ToLowerInvariant())
+        let modelCodeLowerCase = modelCode.Value.ToLowerInvariant()
+        let found = models |> Array.tryFind(fun m -> modelCodeLowerCase = m)
+        match found with
+        | None -> false
+        |Some _ -> true
+        
     let isSupportedForOperatingSystem(hpOsName,operatingSystemCode:OperatingSystemCode) =
         let hpOsNameConverted = operatingSystemCodeToHpOsName operatingSystemCode
         Regex.Match(hpOsName,hpOsNameConverted,RegexOptions.IgnoreCase).Success

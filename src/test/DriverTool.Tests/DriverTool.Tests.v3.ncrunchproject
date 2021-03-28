@@ -80,9 +80,9 @@
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.HpUpdatesTests</FixtureName>
       </FixtureTestSelector>
-      <FixtureTestSelector>
-        <FixtureName>DriverTool.Tests.HpCatalogTests</FixtureName>
-      </FixtureTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.getSoftPaqsTest</TestName>
+      </NamedTestSelector>
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.FTests</FixtureName>
       </FixtureTestSelector>
@@ -158,6 +158,21 @@
       <NamedTestSelector>
         <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Expect success</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.getProductOSDriverPacksTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.downloadSmsSdpCatalogTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpCatalogTests.downloadDriverPackCatalogTest</TestName>
+      </NamedTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.LoggingTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.EmbeddedResourceTest</FixtureName>
+      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>
