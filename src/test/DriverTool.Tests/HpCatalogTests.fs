@@ -78,26 +78,48 @@ module HpCatalogTests =
          |Error e -> Assert.Fail(e.Message)
         
     [<Test>]
+
     [<Category(TestCategory.UnitTests)>]
-    [<TestCase("WIN10X64","83B3")>]
-    [<TestCase("WIN10X64","854A")>]
-    [<TestCase("WIN10X64","854a")>]
-    [<TestCase("WIN10X64","85a2")>]
-    [<TestCase("WIN10X64","85a1")>]
-    let getSccmDriverPackageInfoBase (operatingSystemCodeString:string,modelCodeString:string) =
+    [<TestCase("WIN10X64","83B3","1903")>]
+    [<TestCase("WIN10X64","854A","1903")>]
+    [<TestCase("WIN10X64","854a","1903")>]
+    [<TestCase("WIN10X64","85a2","1903")>]
+    [<TestCase("WIN10X64","85a1","1903")>]
+    
+    [<TestCase("WIN10X64","83B3","1909")>]
+    [<TestCase("WIN10X64","854A","1909")>]
+    [<TestCase("WIN10X64","854a","1909")>]
+    [<TestCase("WIN10X64","85a2","1909")>]
+    [<TestCase("WIN10X64","85a1","1909")>]
+    
+    [<TestCase("WIN10X64","83B3","2004")>]
+    [<TestCase("WIN10X64","854A","2004")>]
+    [<TestCase("WIN10X64","854a","2004")>]
+    [<TestCase("WIN10X64","85a2","2004")>]
+    [<TestCase("WIN10X64","85a1","2004")>]
+
+    [<TestCase("WIN10X64","83B3","20H2")>]
+    [<TestCase("WIN10X64","854A","20H2")>]
+    [<TestCase("WIN10X64","854a","20H2")>]
+    [<TestCase("WIN10X64","85a2","20H2")>]
+    [<TestCase("WIN10X64","85a1","20H2")>]
+    
+    let getSccmDriverPackageInfoBase (operatingSystemCodeString:string,modelCodeString:string,osBuild:string) =
         match(result
                 {
                     let! operatingSystemCode = (OperatingSystemCode.create operatingSystemCodeString false)
                     let! modelCode = (ModelCode.create modelCodeString false)
                     let! destinationFolderPath = FileSystem.path (System.IO.Path.GetTempPath())
                     let assembly = typeof<ThisTestAssembly>.Assembly
-                    let! extractedFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,"HPClientDriverPackCatalog.xml",assembly)
-                    let! actual = HpCatalog.getSccmDriverPackageInfoBase (extractedFilePath,modelCode,operatingSystemCode)
+                    let! extractedFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase ("HPClientDriverPackCatalog.xml",destinationFolderPath,sprintf "HPClientDriverPackCatalog_%s_%s.xml" modelCode.Value osBuild ,assembly)
+                    let! actual = HpCatalog.getSccmDriverPackageInfoBase (extractedFilePath,modelCode,operatingSystemCode,osBuild)
                     Assert.IsFalse(String.IsNullOrWhiteSpace( actual.InstallerFile.FileName), "InstallerFileName is empty")
-                    
+                    let! deleted = FileOperations.ensureFileDoesNotExist true extractedFilePath
                     return actual
                 }) with
-         |Ok _ -> Assert.IsTrue(true)
+         |Ok sp -> 
+            Assert.AreEqual(sp.OsBuild,osBuild,"OsBuild was not expected")
+            Assert.IsTrue(true)
          |Error e -> Assert.Fail(e.Message)
         
     [<Test>]

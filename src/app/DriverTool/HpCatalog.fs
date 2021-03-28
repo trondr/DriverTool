@@ -158,9 +158,9 @@ module HpCatalog =
         | None -> false
         |Some _ -> true
         
-    let isSupportedForOperatingSystem(hpOsName,operatingSystemCode:OperatingSystemCode) =
-        let hpOsNameConverted = operatingSystemCodeToHpOsName operatingSystemCode
-        Regex.Match(hpOsName,hpOsNameConverted,RegexOptions.IgnoreCase).Success
+    let isSupportedForOperatingSystem(hpOsName,operatingSystemCode:OperatingSystemCode,osBuild:string) =        
+        let (hpOsCode,hpOsBuild) = hpOsNameToOsCodeAndOsBuild hpOsName
+        (hpOsCode = operatingSystemCode.Value) && (hpOsBuild = osBuild)        
 
     let toSccmPackageInfo (softPaq:SoftPaq) (hpOsName:string) : SccmPackageInfo =
         
@@ -185,16 +185,15 @@ module HpCatalog =
             OsBuild=osBuild;
         }
 
-    let getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath:FileSystem.Path, modelCode: ModelCode, operatingSystemCode:OperatingSystemCode) =
+    let getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath:FileSystem.Path, modelCode: ModelCode, operatingSystemCode:OperatingSystemCode, osBuild:string) =
         result{
             let! existingDriverPackageCatalogXmlFilePath = FileOperations.ensureFileExists(driverPackCatalogXmlFilePath)
             let! softPaqs = getSoftPaqs existingDriverPackageCatalogXmlFilePath
-            let! productOSDriverPacks = getProductOSDriverPacks existingDriverPackageCatalogXmlFilePath
+            let! productOSDriverPacks = getProductOSDriverPacks existingDriverPackageCatalogXmlFilePath            
             let sccmDriverPackage =
                 productOSDriverPacks
                 |>Array.filter(fun osdp -> isSupportedForModel (osdp.SystemId, modelCode) )
-                |>Array.filter(fun osdp -> isSupportedForOperatingSystem (osdp.OSName,operatingSystemCode))
-                |>Array.tryFind(fun osdp -> true)
+                |>Array.tryFind(fun osdp -> isSupportedForOperatingSystem (osdp.OSName,operatingSystemCode,osBuild))                
             let! sccmPackageInfo =
                 match sccmDriverPackage with
                 |Some dp -> 
@@ -203,8 +202,8 @@ module HpCatalog =
                         |>Array.tryFind(fun sp -> sp.Id = dp.SoftPaqId)
                     match sccmpi with
                     |Some i -> Result.Ok (toSccmPackageInfo i dp.OSName)
-                    |None -> Result.Error (new Exception(sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' " modelCode.Value operatingSystemCode.Value))
-                |None -> Result.Error (new Exception(sprintf "Failed to find HP sccm driver package for model '%s' and operating system '%s' " modelCode.Value operatingSystemCode.Value))
+                    |None -> Result.Error (new Exception(sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' and os build '%s'" modelCode.Value operatingSystemCode.Value osBuild))
+                |None -> Result.Error (new Exception(sprintf "Failed to find HP sccm driver package for model '%s' and operating system '%s' and os build '%s' " modelCode.Value operatingSystemCode.Value osBuild))
             return sccmPackageInfo
         }
 

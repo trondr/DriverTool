@@ -93,7 +93,8 @@ module HpUpdates =
     let getSccmDriverPackageInfo (modelCode: ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path) =
         result{
             let! driverPackCatalogXmlFilePath = downloadDriverPackCatalog cacheFolderPath
-            let! sccmPackageInfo = getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath, modelCode, operatingSystemCode)
+            let osBuild = OperatingSystem.getOsBuildForCurrentSystem
+            let! sccmPackageInfo = getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath, modelCode, operatingSystemCode, osBuild)
             return sccmPackageInfo
         }
 

@@ -231,7 +231,7 @@ module OperatingSystem =
     
     let getOsBuildFromName name = 
         match name with
-        |Regex @"(\d{4})" [osBuild] -> osBuild
+        |Regex @"(\d{4}|\d{2}H\d)" [osBuild] -> osBuild
         | _ -> "*"
 
     let getOsBuildFromName2 name = 
