@@ -65,12 +65,12 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 	* Do any necessary reboots and check that all devices are ok in Device Manager.
 	* BIOS and firmware must be installed in separate packages due to general requirement for hard reboot.
 
-10. Create Driver Package based installed updates.
+10. Create Driver Package based on installed updates.
 	```batch
 	IF NOT EXIST "c:\temp\D" mkdir "c:\temp\D"
 	"c:\temp\DriverTool\DriverTool.exe" CreateDriverPackage /destinationFolder="c:\temp\D" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']"
 	```
-	* This will create a package only containing updates that were installed with the vendor update utility. 
+	* This will create a package containing updates that were installed with the vendor update utility. 
 	* This package will be basis for import into SCCM after testing and any adjustments.
 	![GitHub Logo](/doc/images/DriverPackage_Root.png)
 	![GitHub Logo](/doc/images/DriverPackage_Drivers.png)
