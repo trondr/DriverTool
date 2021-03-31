@@ -81,20 +81,6 @@ Target.create "BuildApp" (fun _ ->
             AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
         ]
 
-    AssemblyInfoFile.createFSharp "./src/app/DriverTool.x86.Host/AssemblyInfo.fs"
-        [
-            AssemblyInfo.Title "DriverTool.x86.Host"
-            AssemblyInfo.Description "Host process providing DriverTool with 32-bit services."
-            AssemblyInfo.Product "DriverTool.x86.Host"
-            AssemblyInfo.Company "github/trondr"
-            AssemblyInfo.Copyright (sprintf "Copyright \u00A9 github/trondr 2018-%s" year )
-            AssemblyInfo.Version assemblyVersion
-            AssemblyInfo.FileVersion assemblyVersion                        
-            AssemblyInfo.ComVisible false
-            AssemblyInfo.Guid "19822aea-c088-455d-b5a5-4738a3a9dba9"
-            AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
-        ]
-
     !! "src/app/**/*.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
