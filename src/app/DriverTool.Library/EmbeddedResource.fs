@@ -59,7 +59,7 @@ module EmbeddedResource =
                 FileOperations.ensureFileExists filePath
             |Result.Error ex -> Result.Error ex    
         with
-        | _ as ex -> Result.Error ex
+        | _ as ex -> Result.Error (toException (sprintf "Failed to extract embedded resource '%A' from assembly '%s' due to %s" resourceName assembly.FullName ex.Message) (Some ex))
         
     let resourceNameToPartialResourceNames (resourceName:string) =
         let split = resourceName.Split([|'.'|])
@@ -134,7 +134,7 @@ module EmbeddedResource =
         match resourceNames.Length > 0 with
         | true -> 
             extractEmbeddedResourceBase (resourceNames.[0],destinationFolderPath,destinationFileName, assembly)
-        | false -> raise (new Exception("File not found in embedded resource: " + fileName))
+        | false -> raise (new Exception(sprintf "File '%s' not found in embedded resource of assembly '%s'." fileName assembly.FullName))
 
     let extractEmbeddedResourceByFileName (resourceAssembly,fileName, destinationFolderPath:FileSystem.Path, destinationFileName) =        
         extractEmbeddedResourceByFileNameBase (fileName, destinationFolderPath, destinationFileName, resourceAssembly)

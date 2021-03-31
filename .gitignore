@@ -78,4 +78,6 @@ src/app/DriverTool.x86.Host/Libs/DriverTool.x86.Service.dll
 src/app/DriverTool/Libs/DriverTool.CSharpLib.dll
 src/app/DriverTool/Libs/DriverTool.x86.Client.dll
 src/app/DriverTool/Libs/DriverTool.x86.Service.dll
-
+src/app/DriverTool.Library/Libs/DriverTool.Library.dll
+src/app/DriverTool.Library/Libs/FSharp.Core.dll
+src/app/DriverTool.Library/Libs/Common.Logging.dll

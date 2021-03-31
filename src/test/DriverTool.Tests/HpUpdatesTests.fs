@@ -5,11 +5,11 @@ open NUnit.Framework
 [<TestFixture>]
 module HpUpdatesTests =
     open DriverTool
-    open System
-    type ThisAssembly = { Empty:string;}
+    open System    
     let logger = Common.Logging.Simple.ConsoleOutLogger("HpUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     open DriverTool.Library.F
     open DriverTool.Library
+    type ThisAssembly = { Empty:string;}
     
     [<Test>]
     [<TestCase("WIN10X64","83B3")>]

@@ -13,7 +13,7 @@ module CreateDriverPackage =
     open DriverTool.Library.PathOperations
     open DriverTool.Library.PackageDefinition
     open DriverTool.Library.Requirements
-    open DriverTool.PackageTemplate        
+    open DriverTool.Library.PackageTemplate        
     open DriverTool.Library.Logging
     open DriverTool.Library.F
     open DriverTool.Library

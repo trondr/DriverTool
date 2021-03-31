@@ -44,10 +44,78 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.dll" />
+    <EmbeddedResource Include="Libs\Common.Logging.Serilog.dll" />
+    <EmbeddedResource Include="Libs\CsvHelper.dll" />
+    <EmbeddedResource Include="Libs\Destructurama.FSharp.dll" />
+    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />    
+    <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Control.AsyncSeq.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Core.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.DesignTime.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Data.dll" />
+    <EmbeddedResource Include="Libs\FSharp.Quotations.Evaluator.dll" />
+    <EmbeddedResource Include="Libs\FSharpx.Async.dll" />
+    <EmbeddedResource Include="Libs\FSharpx.Collections.dll" />
+    <EmbeddedResource Include="Libs\FSharpx.Extras.dll" />
+    <EmbeddedResource Include="Libs\FsPickler.dll" />
+    <EmbeddedResource Include="Libs\FsPickler.Json.dll" />
+    <EmbeddedResource Include="Libs\Google.Protobuf.dll" />
+    <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
+    <EmbeddedResource Include="Libs\LsupEval.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Bcl.HashCode.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Abstractions.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.FileExtensions.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.Configuration.Json.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.FileProviders.Abstractions.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.FileProviders.Physical.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.FileSystemGlobbing.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.Primitives.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.UpdateServices.Administration.dll" />
+    <EmbeddedResource Include="Libs\NCmdLiner.dll" />
+    <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Libs\sdpeval.dll" />
+    <EmbeddedResource Include="Libs\Serilog.dll" />
+    <EmbeddedResource Include="Libs\Serilog.Formatting.Compact.dll" />
+    <EmbeddedResource Include="Libs\Serilog.Sinks.Console.dll" />
+    <EmbeddedResource Include="Libs\Serilog.Sinks.File.dll" />
+    <EmbeddedResource Include="Libs\Serilog.Sinks.RollingFile.dll" />
+    <EmbeddedResource Include="Libs\SharpYaml.dll" />
+    <EmbeddedResource Include="Libs\System.Buffers.dll" />
+    <EmbeddedResource Include="Libs\System.IO.dll" />
+    <EmbeddedResource Include="Libs\System.Management.Automation.dll" />
+    <EmbeddedResource Include="Libs\System.Memory.dll" />
+    <EmbeddedResource Include="Libs\System.Numerics.Vectors.dll" />
+    <EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
+    <EmbeddedResource Include="Libs\System.Runtime.dll" />
+    <EmbeddedResource Include="Libs\System.Security.Cryptography.Algorithms.dll" />
+    <EmbeddedResource Include="Libs\System.Security.Cryptography.Encoding.dll" />
+    <EmbeddedResource Include="Libs\System.Security.Cryptography.Primitives.dll" />
+    <EmbeddedResource Include="Libs\System.Text.Encodings.Web.dll" />
+    <EmbeddedResource Include="Libs\System.Text.Json.dll" />
+    <EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
+    <EmbeddedResource Include="Libs\System.ValueTuple.dll" />
+    <EmbeddedResource Include="PackageTemplate\Install.xml" />
+    <EmbeddedResource Include="PackageTemplate\Install.cmd" />
+    <EmbeddedResource Include="PackageTemplate\UnInstall.cmd" />
+    <EmbeddedResource Include="PackageTemplate\_Compress.cmd" />
+    <EmbeddedResource Include="PackageTemplate\_Decompress.cmd" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe.config" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DpInstExitCode2ExitCode.exe" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe.config" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\DriverTool.DupExitCode2ExitCode.exe" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\FSharp.Core.dll" />
+    <EmbeddedResource Include="PackageTemplate\Drivers\Drivers-README.txt" />
     <EmbeddedResource Include="Tools\7Zip\7za.exe" />
     <EmbeddedResource Include="Tools\7Zip\7zip.chm" />
     <EmbeddedResource Include="Tools\7Zip\License.txt" />
     <EmbeddedResource Include="Tools\7Zip\readme.txt" />
+    <EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
+    <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
     <Compile Include="AssemblyInfo.fs" />
@@ -94,8 +162,27 @@
     <Compile Include="Requirements.fs" />
     <Compile Include="Compression.fs" />
     <Compile Include="PackageDefintion.fs" />
-    <Compile Include="Run.fs" />
     <Compile Include="Messages.fs" />
+    <Compile Include="Init.fs" />
+    <Compile Include="SdpUpdates.fs" />
+    <Compile Include="HpCatalog.fs" />
+    <Compile Include="HpUpdates.fs" />
+    <Compile Include="DellSettings.fs" />
+    <Compile Include="DellCommandUpdate.fs" />
+    <Compile Include="DellCatalog.fs" />
+    <Compile Include="DellUpdates.fs" />
+    <Compile Include="LenovoCatalogXml.fs" />
+    <Compile Include="LenovoCatalog.fs" />
+    <Compile Include="LenovoUpdates.fs" />
+    <Compile Include="Updates.fs" />
+    <Compile Include="ExportRemoteUpdates.fs" />
+    <Compile Include="ExportLocalUpdates.fs" />
+    <Compile Include="PackageTemplate.fs" />
+    <Compile Include="Packaging.fs" />
+    <Compile Include="CreateDriverPackage.fs" />
+    <Compile Include="BitLockerOperations.fs" />
+    <Compile Include="InstallDriverPackage.fs" />
+    <Compile Include="CompressDriverPackage.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
@@ -113,14 +200,38 @@
     <Reference Include="Destructurama.FSharp">
       <HintPath>..\..\..\packages\Destructurama.FSharp.1.0.4\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10\Destructurama.FSharp.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Collections.ParallelSeq">
+      <HintPath>..\..\..\packages\FSharp.Collections.ParallelSeq.1.1.4\lib\net45\FSharp.Collections.ParallelSeq.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Configuration">
       <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Control.AsyncSeq">
+      <HintPath>..\..\..\packages\FSharp.Control.AsyncSeq.2.0.21\lib\net45\FSharp.Control.AsyncSeq.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\..\..\packages\FSharp.Core.4.7.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
       <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharpx.Async">
+      <HintPath>..\..\..\packages\FSharpx.Async.1.14.1\lib\net452\FSharpx.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharpx.Collections">
+      <HintPath>..\..\..\packages\FSharpx.Collections.2.1.2\lib\net45\FSharpx.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharpx.Extras">
+      <HintPath>..\..\..\packages\FSharpx.Extras.2.4.0\lib\net452\FSharpx.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="FsPickler">
+      <HintPath>..\..\..\packages\FsPickler.5.3.2\lib\net45\FsPickler.dll</HintPath>
+    </Reference>
+    <Reference Include="FsPickler.Json">
+      <HintPath>..\..\..\packages\FsPickler.Json.5.3.2\lib\net45\FsPickler.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="LsupEval">
+      <HintPath>..\..\..\packages\LsupEval.1.0.21087-alpha7\lib\net452\LsupEval.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces">
       <HintPath>..\..\..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -141,12 +252,18 @@
     <Reference Include="Microsoft.Extensions.Primitives">
       <HintPath>..\..\..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.UpdateServices.Administration">
+      <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NCmdLiner">
       <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net462\NCmdLiner.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="sdpeval">
+      <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\sdpeval.dll</HintPath>
     </Reference>
     <Reference Include="Serilog">
       <HintPath>..\..\..\packages\Serilog.2.8.0\lib\net46\Serilog.dll</HintPath>
@@ -174,6 +291,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation">
+      <HintPath>..\..\..\packages\System.Management.Automation.dll.10.0.10586.0\lib\net40\System.Management.Automation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Memory">
       <HintPath>..\..\..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -223,6 +344,10 @@
       <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
+exit /b 0</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

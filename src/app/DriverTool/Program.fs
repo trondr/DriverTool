@@ -13,8 +13,8 @@ let resolveEventHandler =
         |]
         
     let assemblyResolveHandler =
-        let resourceAssembly = typeof<DriverTool.Init.ThisAssembly>.Assembly
-        let resourceNameSpace = typeof<DriverTool.Init.ThisAssembly>.Namespace
+        let resourceAssembly = typeof<DriverTool.Library.Init.ThisAssembly>.Assembly
+        let resourceNameSpace = typeof<DriverTool.Library.Init.ThisAssembly>.Namespace
         DriverTool.Library.AssemblyResolver.assemblyResolveHandlerPartial resourceAssembly resourceNameSpace assemblySearchPaths
 
     new ResolveEventHandler(fun s e -> assemblyResolveHandler(s,e))

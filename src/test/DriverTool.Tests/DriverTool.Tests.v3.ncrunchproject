@@ -77,9 +77,6 @@
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.InstallDriverPackageTests</FixtureName>
       </FixtureTestSelector>
-      <FixtureTestSelector>
-        <FixtureName>DriverTool.Tests.HpUpdatesTests</FixtureName>
-      </FixtureTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.HpCatalogTests.getSoftPaqsTest</TestName>
       </NamedTestSelector>
@@ -95,9 +92,6 @@
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.EnvironmentTests</FixtureName>
       </FixtureTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 3</TestName>
-      </NamedTestSelector>
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.DirectoryOperationTests</FixtureName>
       </FixtureTestSelector>
@@ -132,33 +126,6 @@
         <FixtureName>DriverTool.Tests.AssemblyResolveTests</FixtureName>
       </FixtureTestSelector>
       <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 2</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToPotentialDirectoriesTest 1</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToFileNameTest("DriverTool.PackageTemplate.Install.xml","c:\\temp\\testpackage_1","c:\\temp\\testpackage_1\\Install.xml")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.resourceNameToFileNameTest("DriverTool.PackageTemplate.Drivers.DpInstExitCode2ExitCode.exe","c:\\temp\\testpackage_2","c:\\temp\\testpackage_2\\Drivers\\DpInstExitCode2ExitCode.exe")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.mapResourceNamesToFileNamesTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.getPackageTemplateEmbeddedResourceNamesTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractPackageTemplateTest</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Extract to folder that do not exist - Expect failure</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.EmbeddedResourceTest.extractEmbeddedResourceToFile - Expect success</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
         <TestName>DriverTool.Tests.HpCatalogTests.getProductOSDriverPacksTest</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
@@ -170,9 +137,27 @@
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.LoggingTests</FixtureName>
       </FixtureTestSelector>
-      <FixtureTestSelector>
-        <FixtureName>DriverTool.Tests.EmbeddedResourceTest</FixtureName>
-      </FixtureTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.ManualWebTest.downloadFileTest("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB","c:\\temp\\7480-win10-A10-2CHK6.CAB")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoUpdateTests.getRemoteUpdatesTests</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoUpdateTests.getRemoteUpdatesDownloadAllUpatesForAllModels</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoUpdateTests.getLocalUpdatesP50Test</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.InstallDriverPackageTests.copyDriversTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpUpdatesTests.getRemoteUpdatesTests</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.HpUpdatesTests.getLocalUpdatesTests</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

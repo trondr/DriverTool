@@ -1,4 +1,4 @@
-﻿namespace DriverTool
+﻿namespace DriverTool.Library
 
 module PackageTemplate =
     open DriverTool.Library.EmbeddedResource
@@ -6,8 +6,10 @@ module PackageTemplate =
     open DriverTool.Library.F
     open DriverTool.Library
         
+    let packageTempateResourceName = "DriverTool.Library.PackageTemplate"
+
     let isDriverPackageEmbeddedResourceName (resourceName:string) =
-        resourceName.StartsWith("DriverTool.PackageTemplate")
+        resourceName.StartsWith(packageTempateResourceName)
 
     let getPackageTemplateEmbeddedResourceNames () =
         let embeddedResourceNames =                 
@@ -17,8 +19,8 @@ module PackageTemplate =
     
     let resourceNameToDirectoryDictionary (destinationFolderPath:FileSystem.Path) = 
         dict[
-        "DriverTool.PackageTemplate", FileSystem.pathValue destinationFolderPath;        
-        "DriverTool.PackageTemplate.Drivers", (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,"Drivers"));        
+        packageTempateResourceName, FileSystem.pathValue destinationFolderPath;        
+        packageTempateResourceName + ".Drivers", (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,"Drivers"));
         ]
 
     let getParentDirectory (path:FileSystem.Path) = 
@@ -46,10 +48,10 @@ module PackageTemplate =
 
     let getDriverToolFiles () =
         result
-            {                
-                let! exeFilePath = FileSystem.path resourceAssembly.Location
-                let! exeFileConfigPath = FileSystem.path (resourceAssembly.Location + ".config")
-                let! exeFileDirectoryPath = FileSystem.path ((new System.IO.FileInfo(FileSystem.pathValue exeFilePath))).Directory.FullName
+            {
+                let! exeFileDirectoryPath = FileSystem.path ((new System.IO.FileInfo(resourceAssembly.Location)).Directory.FullName)
+                let! exeFilePath = PathOperations.combinePaths2 exeFileDirectoryPath "DriverTool.exe"
+                let! exeFileConfigPath = FileSystem.path (FileSystem.pathValue exeFilePath + ".config")
                 let! dllFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"DriverTool.Library.dll"))
                 let! extractedDllFilePath = extractIfNotExists dllFilePath
                 let! fsharpCoreDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"FSharp.Core.dll"))
@@ -58,8 +60,8 @@ module PackageTemplate =
                 let! extractedCommonLoggingDllPath = extractIfNotExists commonLoggingDllPath
                 let driverToolFiles =
                     [|
-                        yield exeFilePath
-                        yield exeFileConfigPath
+                        if(FileOperations.fileExists exeFilePath) then yield exeFilePath
+                        if(FileOperations.fileExists exeFileConfigPath) then yield exeFileConfigPath
                         yield extractedDllFilePath
                         yield extractedFSharpCoreDllPath
                         yield extractedCommonLoggingDllPath
