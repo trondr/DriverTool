@@ -12,7 +12,7 @@ Packaging and command line experience is required to use and understand this too
 
 DriverTool currently supports PCs from Dell, HP and Lenovo.
 
-# Overall Procedure
+# Procedure
 
 1. Install Windows 10 from original media
    * Typically there will be uknown devices in Device Manager after operating system has been installed. 
@@ -130,6 +130,53 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 17. Test driver package, same as step 13.
 
 18. Install and run vendor system update utility to verify that all drivers have been installed by the driver package.
+
+19. Manually split the driver package in two, one "DISM" package with CM device drivers and one Driver Updates package.
+A future version of DriverTool should probably do this for you. But for now you will have to do it manually.
+Copy the driver package to SCCM server. Your structure should look something like the following.
+
+   * DISM
+   ```text
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script-DISM
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script-DISM\Drivers
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script-DISM\Drivers\005_Sccm_Package_2019_11_01
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script-DISM\PackageDefinition-DISM.sms
+   ```
+   
+   * Driver Updates (Compressed)
+   ```text
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\_Compress.cmd
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\_Decompress.cmd
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\Drivers.zip
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\DriverTool
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\DriverTool\Common.Logging.dll
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\DriverTool\DriverTool.exe
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\DriverTool\DriverTool.exe.config
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\DriverTool\DriverTool.Library.dll
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\DriverTool\FSharp.Core.dll
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\Install.cmd
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\Install.xml
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\PackageDefinition.sms
+   \\CM01\PkgSrc$\Packages\Lenovo ThinkPad\P50 Drivers\1909-1.0\Script\UnInstall.cmd
+   ```
+
+20. Import the two packages using "Create Package from defintion..." by browsing to the PackageDefinition.sms and PackageDefinition-DISM.sms respectively.
+
+21. Add CM Device driver package to the task sequence in the Windows PE phace 
+
+![GitHub Logo](/doc/images/TaskSeqence-CM-Device-Drivers-Wmi-Query.png)
+![GitHub Logo](/doc/images/TaskSeqence-CM-Device-Drivers.png)
+
+22. Add the Driver Updates package to the task sequence in operating system phase. 
+As DriverTool does not calculate dependencies between updates it will in many cases be necessary to install driver updates package twice with a reboot between installs.
+
+![GitHub Logo](/doc/images/TaskSeqence-Device-Driver-Updates-Wmi-Query.png)
+![GitHub Logo](/doc/images/TaskSeqence-Device-Driver-Updates-1.png)
+![GitHub Logo](/doc/images/TaskSeqence-Device-Driver-Updates-Restart.png)
+![GitHub Logo](/doc/images/TaskSeqence-Device-Driver-Updates-2.png)
+
+23. Install Windows 10 on the PC model in question using the task sequence. Verify result by running vendor driver update utility and checking that no driver updates are required.
 
 ## Command line help
 
