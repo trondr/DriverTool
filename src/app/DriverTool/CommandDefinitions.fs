@@ -99,5 +99,10 @@ module Commands =
 #if DEBUG
         [<Command(Description="Download Lenovo Update Package Xmls for all models")>]
         static member DownloadLenovUpdatePackageXmls() : NCmdLiner.Result<int> =
-            CommandProviders.downloadLenovoUpdatePackageXmls()        
+            CommandProviders.downloadLenovoUpdatePackageXmls()
 #endif
+
+        [<Command(Description="Start user interface for download and packaging of CM device drivers into SCCM.")>]
+        static member CmUi() : NCmdLiner.Result<int> =
+            CommandProviders.cmUi()
+                     

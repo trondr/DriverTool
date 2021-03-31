@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-    <StartArguments>Help</StartArguments>
+    <StartArguments>CmUi</StartArguments>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>0025</WarningsAsErrors>
     <StartAction>Project</StartAction>
@@ -93,6 +93,11 @@
     <ProjectReference Include="..\DriverTool.Library\DriverTool.Library.fsproj">
       <Name>DriverTool.Library</Name>
       <Project>{5c9696b4-d386-463d-8bde-1ec35901614a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\DriverTool.UI\DriverTool.UI.csproj">
+      <Name>DriverTool.UI</Name>
+      <Project>{37a4e010-47d9-4610-afe4-5c7af9ea3f8f}</Project>
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="Common.Logging">

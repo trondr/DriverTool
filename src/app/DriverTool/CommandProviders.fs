@@ -139,4 +139,8 @@ module CommandProviders =
         })with
         |Result.Ok v -> NCmdLiner.Result.Ok(0)
         |Result.Error ex -> NCmdLiner.Result.Ok(1)
-      
+
+    ///Start CM device driver user interface.
+    let cmUi () =      
+      let exitCode = DriverTool.UI.StartUi.Start(logger)
+      NCmdLiner.Result.Ok(exitCode)

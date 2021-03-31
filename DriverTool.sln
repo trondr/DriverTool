@@ -18,6 +18,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.Tests", "src\tes
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DriverTool.Library", "src\app\DriverTool.Library\DriverTool.Library.fsproj", "{5C9696B4-D386-463D-8BDE-1EC35901614A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverTool.UI", "src\app\DriverTool.UI\DriverTool.UI.csproj", "{37A4E010-47D9-4610-AFE4-5C7AF9EA3F8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{5C9696B4-D386-463D-8BDE-1EC35901614A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C9696B4-D386-463D-8BDE-1EC35901614A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C9696B4-D386-463D-8BDE-1EC35901614A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37A4E010-47D9-4610-AFE4-5C7AF9EA3F8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37A4E010-47D9-4610-AFE4-5C7AF9EA3F8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37A4E010-47D9-4610-AFE4-5C7AF9EA3F8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37A4E010-47D9-4610-AFE4-5C7AF9EA3F8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
