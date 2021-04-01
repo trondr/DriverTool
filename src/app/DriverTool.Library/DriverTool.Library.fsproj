@@ -49,7 +49,7 @@
     <EmbeddedResource Include="Libs\Common.Logging.Serilog.dll" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\Destructurama.FSharp.dll" />
-    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />    
+    <EmbeddedResource Include="Libs\DriverTool.CSharpLib.dll" />
     <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
     <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
     <EmbeddedResource Include="Libs\FSharp.Control.AsyncSeq.dll" />
@@ -183,6 +183,8 @@
     <Compile Include="BitLockerOperations.fs" />
     <Compile Include="InstallDriverPackage.fs" />
     <Compile Include="CompressDriverPackage.fs" />
+    <Compile Include="CmUi\UiModels.fs" />
+    <Compile Include="CmUi\UiViewModels.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
@@ -256,6 +258,9 @@
       <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="MvvmHelpers">
+      <HintPath>..\..\..\packages\Refractored.MvvmHelpers.1.6.2\lib\net461\MvvmHelpers.dll</HintPath>
+    </Reference>
     <Reference Include="NCmdLiner">
       <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net462\NCmdLiner.dll</HintPath>
     </Reference>
@@ -331,6 +336,7 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj">
