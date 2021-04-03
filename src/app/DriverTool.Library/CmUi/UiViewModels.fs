@@ -33,8 +33,10 @@
     type CmPackagesViewModel() =
         inherit BaseViewModel()
     
-        let mutable cmPackages = new ObservableRangeCollection<CmPackageViewModel>()
-        let mutable selectedCmPackages = new ObservableRangeCollection<CmPackageViewModel>()
+        let mutable cmPackages = null
+        let mutable selectedCmPackages = null
+        let mutable tobePackagedCmPackages = null
+        let mutable selectedToBePackagedCmPackages = null
         let mutable searchText = "Lenovo"        
         let mutable logger: ILog = null
         let mutable packageCommand = null
@@ -81,15 +83,33 @@
                     cmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
                     cmPackages
                 |_ -> cmPackages
-                
+
         member this.SelectedCmPackages
             with get() = 
                 match selectedCmPackages with
                 | null ->
                     selectedCmPackages <- new ObservableRangeCollection<CmPackageViewModel>()                    
-                    selectedCmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
+                    selectedCmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
                     selectedCmPackages
                 |_ -> selectedCmPackages
+                
+        member this.ToBePackagedCmPackages
+            with get() = 
+                match tobePackagedCmPackages with
+                | null ->
+                    tobePackagedCmPackages <- new ObservableRangeCollection<CmPackageViewModel>()                    
+                    tobePackagedCmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
+                    tobePackagedCmPackages
+                |_ -> tobePackagedCmPackages
+
+        member this.SelectedToBePackagedCmPackages
+            with get() = 
+                match selectedToBePackagedCmPackages with
+                | null ->
+                    selectedToBePackagedCmPackages <- new ObservableRangeCollection<CmPackageViewModel>()                    
+                    selectedToBePackagedCmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
+                    selectedToBePackagedCmPackages
+                |_ -> selectedToBePackagedCmPackages
 
         member this.AddPackageCommand
             with get() =
@@ -100,7 +120,7 @@
                                                             |> Seq.toArray
                                                             |> Array.map(fun cmp -> 
                                                                                     logger.Info(sprintf "Adding %s" cmp.Model)
-                                                                                    this.SelectedCmPackages.Add(cmp)|> ignore
+                                                                                    this.ToBePackagedCmPackages.Add(cmp)|> ignore
                                                                                     cmp.IsSelected <- false
                                                                                     this.CmPackages.Remove(cmp)
                                                                             ) |> ignore
@@ -113,15 +133,15 @@
                 match removePackageCommand with
                 |null ->
                     removePackageCommand <- createCommand (fun _ -> 
-                                                            this.SelectedCmPackages.Where(fun cmp -> cmp.IsSelected)
+                                                            this.ToBePackagedCmPackages.Where(fun cmp -> cmp.IsSelected)
                                                             |> Seq.toArray
                                                             |> Array.map(fun cmp -> 
                                                                                     logger.Info(sprintf "Removing %s" cmp.Model)
-                                                                                    this.SelectedCmPackages.Remove(cmp)|> ignore
+                                                                                    this.ToBePackagedCmPackages.Remove(cmp)|> ignore
                                                                                     cmp.IsSelected <- false
                                                                                     this.CmPackages.Add(cmp)
                                                                             ) |> ignore
-                                                       ) (fun _ -> this.IsNotBusy && this.SelectedCmPackages.Where(fun cmp -> cmp.IsSelected).Count() > 0)
+                                                       ) (fun _ -> this.IsNotBusy && this.ToBePackagedCmPackages.Where(fun cmp -> cmp.IsSelected).Count() > 0)
                     removePackageCommand
                 |_ -> removePackageCommand
 
@@ -134,26 +154,20 @@
                                         this.IsBusy <- true
                                         async{
                                             logger.Warn("TODO: Packaging...")                                            
-                                            this.SelectedCmPackages.Where(fun cmp-> true) |> Seq.toArray |> Array.map(fun cmp -> 
+                                            this.ToBePackagedCmPackages.Where(fun cmp-> true) |> Seq.toArray |> Array.map(fun cmp -> 
                                             logger.Warn(sprintf "TODO: Packaging '%s'..." cmp.Model)
                                             Async.Sleep 3000 |> Async.RunSynchronously                                            
                                             ) |> ignore                                            
                                             logger.Warn("TODO: Packaging done!")
                                             updateUi (fun () -> this.IsBusy <- false)
                                         } |> Async.startAsPlainTask                                    
-                                    ) (fun _ -> this.IsNotBusy && this.SelectedCmPackages.Count > 0) (fun ex -> logger.Error(ex.Message))
+                                    ) (fun _ -> this.IsNotBusy && this.ToBePackagedCmPackages.Count > 0) (fun ex -> logger.Error(ex.Message))
                     packageCommand
                 | _ -> packageCommand
         
         member internal this.OnCollectionChanged sender e = 
-            this.PackageCommand.RaiseCanExecuteChanged()
-            this.AddPackageCommand.RaiseCanExecuteChanged()
-            this.RemovePackageCommand.RaiseCanExecuteChanged()            
+            this.RaiseCanExecuteChanged()            
             ()
-
-        member this.CanPackage
-            with get() =
-                this.IsNotBusy && this.SelectedCmPackages.Count > 0
 
         member this.IsBusy
             with get() = base.IsBusy
@@ -208,7 +222,7 @@
                 }
 
             base.CmPackages.AddRange([|new CmPackageViewModel(cmPackage1);new CmPackageViewModel(cmPackage2)|])
-            base.SelectedCmPackages.AddRange([|new CmPackageViewModel(cmPackage3)|])
+            base.ToBePackagedCmPackages.AddRange([|new CmPackageViewModel(cmPackage3)|])
 
 
         

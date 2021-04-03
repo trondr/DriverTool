@@ -26,7 +26,7 @@
 
         <TextBox Text="{Binding SearchText}" ToolTip="Search"></TextBox>
 
-        <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding CmPackages}">
+        <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding CmPackages}" local:ListViewExtensions.SelectedValues="{Binding SelectedCmPackages}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
@@ -48,7 +48,7 @@
 
         <Label Grid.Row="0" Grid.Column="2" Content="To be packaged:"></Label>
 
-        <ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedCmPackages}">
+        <ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding ToBePackagedCmPackages}" local:ListViewExtensions.SelectedValues="{Binding SelectedToBePackagedCmPackages}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>

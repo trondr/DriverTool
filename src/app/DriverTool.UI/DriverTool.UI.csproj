@@ -75,6 +75,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SelectedItemsBinder.cs" />
+    <Compile Include="ListViewExtensions.cs" />
     <Compile Include="LoggerTraceListener.cs" />
     <Compile Include="StartUI.cs" />
     <Page Include="MainWindow.xaml">
