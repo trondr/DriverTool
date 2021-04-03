@@ -12,7 +12,7 @@
     open System.Threading.Tasks    
     open MvvmHelpers.Commands
     open System.Linq
-
+    
     type CmPackageViewModel(cmPackage:CmPackage) =
         inherit BaseViewModel()
         let mutable isSelected = false
@@ -64,8 +64,6 @@
             let a = new System.Action<obj>(fun o -> action(o))            
             let c = new System.Func<obj,bool>(fun obj -> canExecute(obj))
             new Command(a,c)
-
-        let mutable timer = null
 
         do
             logger <- getLoggerByName "DriverTool.Library.CmUi"
