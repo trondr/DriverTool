@@ -8,10 +8,10 @@
         mc:Ignorable="d"
         Title="DriverTool - Packaging CM Device Drivers" Height="450" Width="800" Icon="NCmdLiner.ico">
     <Window.DataContext>
-        <viewModels:CmPackagesViewModel/>
+        <viewModels:ExampleCmPackagesViewModel/>
     </Window.DataContext>
 
-    <Grid d:DataContext="{d:DesignInstance Type=viewModels:ExmapleCmPackagesViewModel, IsDesignTimeCreatable=True}">
+    <Grid d:DataContext="{d:DesignInstance Type=viewModels:ExampleCmPackagesViewModel, IsDesignTimeCreatable=True}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -27,23 +27,33 @@
         <TextBox Text="{Binding SearchText}" ToolTip="Search"></TextBox>
 
         <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding CmPackages}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Manufacturer" DisplayMemberBinding="{Binding Manufacturer }"/>
-                        <GridViewColumn Header="Model" DisplayMemberBinding="{Binding Model }"/>
-                        <GridViewColumn Header="ModelCodes" DisplayMemberBinding="{Binding ModelCodes }"/>
-                    </GridView>
-                </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Manufacturer" DisplayMemberBinding="{Binding Manufacturer }"/>
+                    <GridViewColumn Header="Model" DisplayMemberBinding="{Binding Model }"/>
+                    <GridViewColumn Header="ModelCodes" DisplayMemberBinding="{Binding ModelCodes }"/>
+                </GridView>
+            </ListView.View>
         </ListView>
 
         <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-            <Button Content="-&gt;" Margin="10"/>
-            <Button Content="&lt;-" Margin="10"/>
+            <Button Content="-&gt;" Command="{Binding AddPackageCommand}" Margin="10"/>
+            <Button Content="&lt;-" Command="{Binding RemovePackageCommand}" Margin="10"/>
         </StackPanel>
 
         <Label Grid.Row="0" Grid.Column="2" Content="To be packaged:"></Label>
 
         <ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedCmPackages}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Manufacturer" DisplayMemberBinding="{Binding Manufacturer }"/>
@@ -58,7 +68,7 @@
         </StackPanel>
 
         <StackPanel Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Package" Margin="10"/>
+            <Button Content="Package" Command="{Binding PackageCommand}" Margin="10"/>
         </StackPanel>
     </Grid>
 </Window>

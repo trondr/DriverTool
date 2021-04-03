@@ -267,6 +267,8 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="sdpeval">
       <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\sdpeval.dll</HintPath>
     </Reference>

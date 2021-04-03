@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
+using DriverTool.Library.CmUi;
 
 namespace DriverTool.UI
 {
@@ -20,9 +11,28 @@ namespace DriverTool.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly DispatcherTimer _timer;
+
         public MainWindow()
         {
             InitializeComponent();
+            Closing += MainWindow_Closing;
+            _timer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 1) };
+            _timer.Tick += TimerOnTick;
+            _timer.Start();
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _timer?.Stop();
+        }
+
+        private void TimerOnTick(object sender, EventArgs e)
+        {
+            if (this.DataContext is CmPackagesViewModel viewModel)
+            {
+                viewModel.RaiseCanExecuteChanged();
+            }
         }
     }
 }
