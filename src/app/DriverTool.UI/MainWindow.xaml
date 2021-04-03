@@ -64,7 +64,7 @@
         </ListView>
 
         <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Load" Margin="10" ToolTip="Load models"/>
+            <Button Content="Load" Command="{Binding LoadCommand}" Margin="10" ToolTip="Load models"/>
         </StackPanel>
 
         <StackPanel Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">

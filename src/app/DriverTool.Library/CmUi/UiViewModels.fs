@@ -39,6 +39,7 @@
         let mutable selectedToBePackagedCmPackages = null
         let mutable searchText = "Lenovo"        
         let mutable logger: ILog = null
+        let mutable loadCommand = null
         let mutable packageCommand = null
         let mutable addPackageCommand = null
         let mutable removePackageCommand = null
@@ -111,6 +112,23 @@
                     selectedToBePackagedCmPackages
                 |_ -> selectedToBePackagedCmPackages
 
+        member this.LoadCommand
+            with get() =
+                match loadCommand with
+                |null ->
+                    loadCommand <- createAsyncCommand (fun _ -> 
+                        async{
+                            updateUi (fun () -> this.IsBusy <- true)
+                            logger.Warn("TODO: Loading...")
+                            Async.Sleep 3000 |> Async.RunSynchronously
+                            logger.Warn("TODO: Loading finished!")
+                            updateUi (fun () -> this.IsBusy <- false)
+                            }|> Async.startAsPlainTask
+                    ) (fun _ -> this.IsNotBusy) (fun ex -> logger.Error(ex.Message)) 
+                    loadCommand
+                |_ -> loadCommand
+
+
         member this.AddPackageCommand
             with get() =
                 match addPackageCommand with
@@ -153,7 +171,7 @@
                         createAsyncCommand (fun _ -> 
                                         this.IsBusy <- true
                                         async{
-                                            logger.Warn("TODO: Packaging...")                                            
+                                            logger.Warn("TODO: Packaging...")
                                             this.ToBePackagedCmPackages.Where(fun cmp-> true) |> Seq.toArray |> Array.map(fun cmp -> 
                                             logger.Warn(sprintf "TODO: Packaging '%s'..." cmp.Model)
                                             Async.Sleep 3000 |> Async.RunSynchronously                                            
@@ -176,6 +194,7 @@
                 this.RaiseCanExecuteChanged()
 
         member this.RaiseCanExecuteChanged() =
+            this.LoadCommand.RaiseCanExecuteChanged()
             this.PackageCommand.RaiseCanExecuteChanged()
             this.AddPackageCommand.RaiseCanExecuteChanged()
             this.RemovePackageCommand.RaiseCanExecuteChanged()
