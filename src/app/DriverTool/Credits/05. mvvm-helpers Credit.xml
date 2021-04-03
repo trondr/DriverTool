@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreditInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProductName>mvvm-helpers</ProductName>
+  <ProductHome>https://github.com/jamesmontemagno/mvvm-helpers</ProductHome>
+  <CreditText>DriverTool uses MvvmHelpers to build mvvm user interface.</CreditText>
+</CreditInfo>

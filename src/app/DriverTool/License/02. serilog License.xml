@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LicenseInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ProductName>Log4Net</ProductName>
-  <ProductHome>http://logging.apache.org/log4net/</ProductHome>
-  <License>Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0</License>
+  <ProductName>serilog</ProductName>
+  <ProductHome>https://github.com/serilog/serilog</ProductHome>
+  <License>Apache License, Version 2.0, January 2004, http://www.apache.org/licenses/ </License>
   <LicenseText>
-    Copyright 2001-2006 The Apache Software Foundation
+    Copyright 2013-2021 serilog
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
