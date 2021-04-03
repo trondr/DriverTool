@@ -98,6 +98,10 @@ module HpUpdates =
             return sccmPackageInfo
         }
 
+    let getSccmDriverPackageInfos () : Result<SccmPackageInfo[],Exception> =
+        logger.Warn("TODO: Loading HP Sccm Packages...")
+        Result.Ok [||]
+
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName

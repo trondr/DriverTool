@@ -311,6 +311,11 @@ module LenovoUpdates =
                                     }
                 return sccmPackage
             }
+
+    let getSccmDriverPackageInfos () : Result<SccmPackageInfo[],Exception> =
+        logger.Warn("TODO: Loading Lenovo Sccm Packages...")
+        Result.Ok [||]
+        
     
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{

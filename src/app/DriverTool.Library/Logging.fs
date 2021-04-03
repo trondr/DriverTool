@@ -49,6 +49,17 @@ namespace DriverTool.Library
                         .CreateLogger()
             Log.Logger <- log
             ()
+
+        let configureConsoleLogging () =
+            let logLevel = getLogLevel |> toLogLevel |> toSerilogLogEventLevel
+            
+            let log = LoggerConfiguration()
+                        .MinimumLevel.Is(logLevel)
+                        .Enrich.FromLogContext()                      
+                        .WriteTo.Console()                        
+                        .CreateLogger()
+            Log.Logger <- log
+            ()
             
         let logFactory (loggerType:Type)=
             LogManager.GetLogger(loggerType)

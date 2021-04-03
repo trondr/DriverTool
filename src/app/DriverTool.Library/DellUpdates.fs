@@ -195,6 +195,10 @@ module DellUpdates=
                 |None -> Result.Error (new Exception(sprintf "Failed to find Dell sccm driver package for model '%s' and operating system '%s' " modelCode.Value operatingSystemCode.Value))
             return sccmPackageInfo
         }
+
+    let getSccmDriverPackageInfos () : Result<SccmPackageInfo[],Exception> =
+        logger.Warn("TODO: Loading Dell Sccm Packages...")
+        Result.Ok [||]
     
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        

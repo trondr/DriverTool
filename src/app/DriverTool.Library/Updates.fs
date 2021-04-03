@@ -32,6 +32,11 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.getSccmDriverPackageInfo
         |Manufacturer.Lenovo _ -> LenovoUpdates.getSccmDriverPackageInfo
 
+    let getSccmPackagesFunc (manufacturer:Manufacturer) = 
+        match manufacturer with
+        |Manufacturer.Dell _ -> DellUpdates.getSccmDriverPackageInfos
+        |Manufacturer.HP _ -> HpUpdates.getSccmDriverPackageInfos
+        |Manufacturer.Lenovo _ -> LenovoUpdates.getSccmDriverPackageInfos
         
     let downloadSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with
