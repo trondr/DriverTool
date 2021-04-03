@@ -16,7 +16,9 @@ module UiModelsTests =
     [<Test>]
     let loadSccmPackagesTest () =
         match(result{
-            let! sccmPackages = loadSccmPackages()
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath
+            let! sccmPackages = loadSccmPackages(cacheFolderPath)
             return sccmPackages
         })with
         |Result.Ok ps -> Assert.IsTrue(ps.Length > 0, "Number of returned Sccm Packages are not greater than 0")

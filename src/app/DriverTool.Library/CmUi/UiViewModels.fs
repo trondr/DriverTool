@@ -12,6 +12,7 @@
     open System.Threading.Tasks    
     open MvvmHelpers.Commands
     open System.Linq
+    open DriverTool.Library.PackageXml
     
     type CmPackageViewModel(cmPackage:CmPackage) =
         inherit BaseViewModel()
@@ -64,10 +65,13 @@
             let a = new System.Action<obj>(fun o -> action(o))            
             let c = new System.Func<obj,bool>(fun obj -> canExecute(obj))
             new Command(a,c)
+                    
+        let toCmPackageViewModel cmPackage =
+            new CmPackageViewModel (cmPackage)
 
         do
             logger <- getLoggerByName "DriverTool.Library.CmUi"
-            base.Title <- "Sccm Packages"            
+            base.Title <- "Sccm Packages"
             
         member this.SearchText
             with get() = searchText
@@ -118,6 +122,19 @@
                         async{
                             updateUi (fun () -> this.IsBusy <- true)
                             logger.Warn("TODO: Loading...")
+                            
+                            match(result{
+                                let! cacheFolderPath = getCacheFolderPath()                                
+                                let! sccmPackages = (loadSccmPackages (cacheFolderPath))
+                                let cmPackageViewModels = sccmPackages |> Array.map toCmPackageViewModel
+                                updateUi (fun () -> 
+                                        this.CmPackages.ReplaceRange(cmPackageViewModels)
+                                    )
+                                return ()
+                            })with
+                            |Result.Ok _ -> logger.Info("Successfully loaded sccm packages")
+                            |Result.Error ex -> logger.Error(sprintf "Failed to load sccm packages due to %s" ex.Message)
+                            
                             Async.Sleep 3000 |> Async.RunSynchronously
                             logger.Warn("TODO: Loading finished!")
                             updateUi (fun () -> this.IsBusy <- false)

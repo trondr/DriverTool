@@ -196,7 +196,7 @@ module DellUpdates=
             return sccmPackageInfo
         }
 
-    let getSccmDriverPackageInfos () : Result<SccmPackageInfo[],Exception> =
+    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<CmPackage[],Exception> =
         logger.Warn("TODO: Loading Dell Sccm Packages...")
         Result.Ok [||]
     

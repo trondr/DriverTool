@@ -1,5 +1,7 @@
 ﻿namespace DriverTool
 
+open Microsoft.FSharp.Reflection
+
 module LenovoUpdates =    
     open System
     open DriverTool.Library.PackageXml
@@ -312,10 +314,45 @@ module LenovoUpdates =
                 return sccmPackage
             }
 
-    let getSccmDriverPackageInfos () : Result<SccmPackageInfo[],Exception> =
-        logger.Warn("TODO: Loading Lenovo Sccm Packages...")
-        Result.Ok [||]
-        
+    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<CmPackage[],Exception> =
+        logger.Info("Loading Lenovo Sccm Packages...")
+        result{
+            let! products = DriverTool.LenovoCatalog.getSccmPackageInfosv2 cacheFolderPath
+            let sccmPackages =
+                products |> Array.map (fun p ->                   
+                                            let readmeUrl =  p.SccmDriverPackUrl.Value.Replace(".exe",".txt")
+                                            let installerUrl = p.SccmDriverPackUrl.Value
+                                            let osBuild = p.OsBuild.Value
+                                            let cmPackage =
+                                                {
+                                                    Manufacturer= "Lenovo"
+                                                    Model=p.Model.Value
+                                                    ModelCodes=p.ModelCodes
+                                                    ReadmeFile =
+                                                        {
+                                                        Url = readmeUrl;
+                                                        Checksum = "";
+                                                        FileName = getFileNameFromUrl readmeUrl;
+                                                        Size=0L;
+                                                        }
+                                                    InstallerFile=
+                                                        {
+                                                            Url=installerUrl;
+                                                            Checksum=""
+                                                            FileName=getFileNameFromUrl installerUrl
+                                                            Size=0L
+                                                        }
+                                                    Released=(DriverTool.LenovoCatalog.getReleaseDateFromUrl installerUrl);
+                                                    Os= (DriverTool.LenovoCatalog.osShortNameToLenovoOs p.Os);
+                                                    OsBuild=osBuild
+                                                    WmiQuery="TODO: Calculate WmiQuery from model codes."
+                                                }
+                                            cmPackage
+                    )
+            logger.Warn("TODO: Lenovo: Calculate WmiQuery from model codes.")
+            logger.Info("Finished loading Lenovo Sccm Packages!")
+            return sccmPackages
+        }
     
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{

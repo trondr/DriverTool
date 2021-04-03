@@ -87,6 +87,18 @@ module PackageXml =
         OsBuild:string
     }
 
+    type CmPackage = {
+        Manufacturer:string
+        Model: string
+        ModelCodes: string[]
+        ReadmeFile:DriverTool.Library.Web.WebFile
+        InstallerFile:DriverTool.Library.Web.WebFile
+        Released:DateTime
+        Os:string
+        OsBuild:string
+        WmiQuery:string
+    }
+
     type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
 
     type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
