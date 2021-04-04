@@ -98,9 +98,49 @@ module HpUpdates =
             return sccmPackageInfo
         }
 
+    ///Parse DriverPackage xml element to CmPackage
+    let toCmPackage (softpacs:SoftPaq[]) (product:ProductOSDriverPack)  : Result<CmPackage,Exception> =
+        result{
+            let! cmPackage =
+                match(softpacs|>Array.tryFind(fun sp -> sp.Id = product.SoftPaqId))with
+                |Some p ->                     
+                    let (osCode,osBuild)= HpCatalog.hpOsNameToOsCodeAndOsBuild product.OSName
+                    Result.Ok 
+                            {
+                                Manufacturer= "HP"
+                                Model=product.SystemName
+                                ModelCodes=[|product.SystemId|]
+                                ReadmeFile = None
+                                InstallerFile =
+                                    {
+                                        Url=p.Url;
+                                        Checksum=p.MD5;
+                                        FileName=Web.getFileNameFromUrl p.Url;
+                                        Size=p.Size;
+                                    }
+                                Released=p.DateReleased|>DateTime.Parse;
+                                Os= osCode
+                                OsBuild=osBuild
+                                WmiQuery="TODO: Calculate WmiQuery from model codes."
+                            }
+                |None -> Result.Error (toException (sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' and os build '%s'" product.SystemName product.OSName "*") None)
+            return cmPackage
+        }
+        
     let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<CmPackage[],Exception> =
         logger.Warn("TODO: Loading HP Sccm Packages...")
-        Result.Ok [||]
+        result{
+            let! catalogPath = downloadDriverPackCatalog cacheFolderPath
+            let! (softpacs,products) = loadCatalog catalogPath
+            let! cmPackages = 
+                products
+                |> Array.filter (fun p -> isSupportedOs p.OSName)
+                |> Array.map (toCmPackage softpacs)
+                |> toAccumulatedResult
+            logger.Warn("TODO: HP: Calculate WmiQuery from model codes.")
+            logger.Info("TODO: Finished loading HP Sccm Packages!")
+            return cmPackages |> Seq.toArray
+        }
 
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
         result{                        

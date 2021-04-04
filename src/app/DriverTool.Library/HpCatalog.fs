@@ -132,6 +132,9 @@ module HpCatalog =
     open System.Text.RegularExpressions
     open PackageXml
 
+    let isSupportedOs (osName:string) =
+        osName.StartsWith("Windows 10 64-bit") || osName.StartsWith("Windows 10 32-bit")
+
     let operatingSystemCodeToHpOsName (operatingSystemCode:OperatingSystemCode) =
         match operatingSystemCode.Value with
         |"WIN10X64" -> "Windows 10 64-bit"
@@ -207,6 +210,13 @@ module HpCatalog =
             return sccmPackageInfo
         }
 
+    let loadCatalog (catalogPath:FileSystem.Path) : Result<SoftPaq[]*ProductOSDriverPack[],Exception> =
+        result{
+            let! existingDriverPackageCatalogXmlFilePath = FileOperations.ensureFileExists catalogPath
+            let! softPaqs = getSoftPaqs existingDriverPackageCatalogXmlFilePath
+            let! productOSDriverPacks = getProductOSDriverPacks existingDriverPackageCatalogXmlFilePath            
+            return (softPaqs,productOSDriverPacks)
+        }
     
     
     
