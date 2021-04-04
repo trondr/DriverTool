@@ -196,63 +196,16 @@ module DellUpdates=
             return sccmPackageInfo
         }
 
-    ///Parse info about supported models for the specified driverpackage element. Return an array of (modelCode,name) items.
-    let toSupportedModels (dp:XElement) =
-        dp
-            .Descendants(XName.Get("SupportedSystems",driverPackageXNamespace.NamespaceName))
-            .Descendants(XName.Get("Brand",driverPackageXNamespace.NamespaceName))
-            |>Seq.map(fun brand-> 
-                    brand.Descendants(XName.Get("Model",driverPackageXNamespace.NamespaceName))
-                    |>Seq.map(fun model-> 
-                                    let systemId = model.Attribute(XName.Get("systemID")).Value
-                                    let name = model.Attribute(XName.Get("name")).Value
-                                    (systemId,name)
-                              )
-                    |>Seq.toArray
-                )
-            |>Seq.concat
-            |>Seq.toArray
-     
-    ///Parse info about supported operating systems for the specified driverpackage element. Return an array of (osCode,osArchitecture) items.
-    let toSupportedOperatingSystems (dp:XElement) =
-        dp
-            .Descendants(XName.Get("SupportedOperatingSystems",driverPackageXNamespace.NamespaceName))
-            .Descendants(XName.Get("OperatingSystem",driverPackageXNamespace.NamespaceName))
-                |>Seq.map(fun os -> 
-                        let osCode = (getAttribute (os, "osCode"))
-                        let osArch = (getAttribute (os,"osArch"))
-                        (osCode,osArch)
-                        )
-                |>Seq.toArray
-
     ///Parse DriverPackage xml element to CmPackage
-    let toCmPackage (dp:XElement) : CmPackage =
-        let path = getAttribute(dp,"path")        
-        let (_, installerName) = pathToDirectoryAndFile path
-        let installerUrl = downloadsBaseUrl + "/" + path;
-        let installerCheckSum = getAttribute (dp,"hashMD5");
-        let models = toSupportedModels dp
-        let operatingSystems = toSupportedOperatingSystems dp
+    let toCmPackage (dp:DellDriverPackCatalog.DriverPackage) : CmPackage =        
         {
             Manufacturer= "Dell"
-            Model=models|> Array.map(fun (_,modelName) -> modelName)|>Array.distinct|> String.concat ", " //Comma separated list of distinct model names
-            ModelCodes=models |> Array.map(fun (modelCode,_) -> modelCode) // Array of model codes
-            ReadmeFile =
-                {
-                Url = "";
-                Checksum = "";
-                FileName = "";
-                Size=0L;
-                }
-            InstallerFile=
-                {
-                    Url=installerUrl;
-                    Checksum=installerCheckSum
-                    FileName=installerName
-                    Size=0L
-                }
+            Model=dp.Models|> Array.map(fun m -> m.Name)|>Array.distinct|> String.concat ", " //Comma separated list of distinct model names
+            ModelCodes=dp.Models |> Array.map(fun m -> m.Code) // Array of model codes
+            ReadmeFile = None
+            InstallerFile=dp.Installer                
             Released=DateTime.Now;
-            Os= operatingSystems |> Array.map (fun (osCode,osArch) -> sprintf "%s-%s" osCode osArch)|>Array.distinct |> String.concat ", "
+            Os= dp.OperatinSystems |> Array.map (fun os -> sprintf "%s-%s" os.OsCode os.OsArch)|>Array.distinct |> String.concat ", "
             OsBuild="*"
             WmiQuery="TODO: Calculate WmiQuery from model codes."
         }
@@ -262,21 +215,20 @@ module DellUpdates=
         logger.Info("Loading Dell Sccm Packages...")
         result{
             let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath
-            let xDocument = XDocument.Load(FileSystem.pathValue driverPackageCatalogXmlPath)            
+            let! driverPackages = DellDriverPackCatalog.loadCatalog driverPackageCatalogXmlPath            
             let cmPackages = 
-                xDocument.Descendants(XName.Get("DriverPackage",driverPackageXNamespace.NamespaceName))                
-                |>Seq.toArray
-                |>Seq.map(fun dp -> toCmPackage dp)
-                |>Seq.filter(fun cp -> cp.Os.Contains("Windows10"))
-                |>Seq.toArray
-                
+                driverPackages                
+                |>Seq.filter(fun dp -> dp.PackageType = "win")
+                |>Seq.map toCmPackage
+                |>Seq.filter(fun cp -> cp.Os.Contains("Windows10"))                
+                |>Seq.toArray                
             logger.Warn("TODO: Dell: Calculate WmiQuery from model codes.")
             logger.Info("Finished loading Dell Packages!")
             return cmPackages
         }
     
     let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
-        result{                        
+        result{
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
             let! installerUri = toUri sccmPackage.InstallerFile.Url
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}

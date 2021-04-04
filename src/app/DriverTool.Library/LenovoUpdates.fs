@@ -330,7 +330,7 @@ module LenovoUpdates =
                                                     Model=p.Model.Value
                                                     ModelCodes=p.ModelCodes
                                                     ReadmeFile =
-                                                        {
+                                                        Some {
                                                         Url = readmeUrl;
                                                         Checksum = "";
                                                         FileName = getFileNameFromUrl readmeUrl;

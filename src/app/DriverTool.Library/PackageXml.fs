@@ -92,7 +92,7 @@ module PackageXml =
         Manufacturer:string
         Model: string
         ModelCodes: string[]
-        ReadmeFile:DriverTool.Library.Web.WebFile
+        ReadmeFile:DriverTool.Library.Web.WebFile option
         InstallerFile:DriverTool.Library.Web.WebFile
         Released:DateTime
         Os:string

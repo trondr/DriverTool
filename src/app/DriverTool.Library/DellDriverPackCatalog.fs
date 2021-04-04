@@ -35,10 +35,9 @@ module DellDriverPackCatalog =
             Name:string
             Models:Model[]
             OperatinSystems:OperatingSystem[]
+            Installer:Web.WebFile
+            PackageType:string
         }
-
-    let getAttribute (xElement:XElement, attributeName:string) =        
-        xElement.Attribute(xnu attributeName).Value
 
     let toOperatingSystem (os:XElement) =
         result{
@@ -84,15 +83,35 @@ module DellDriverPackCatalog =
             |>Seq.toArray
             |> toAccumulatedResult
 
-    let toDriverPackage (dp:XElement) : Result<DriverPackage,Exception> =
+    let pathToDirectoryAndFile (path:string) =        
+        match path with
+        |Regex @"^(.+?)([^/]+)$" [directory;file] -> 
+            (directory.Trim('/'),file)
+        |_ -> raise (new Exception("Failed to get directory and file path from path: "+ path ))
+
+    let toDriverPackage baseLocationUrl (dp:XElement)  : Result<DriverPackage,Exception> =
         result{
             let! name = getElementValue dp (xn "Name")
             let! models = toModels dp
             let! operatingSystems = toSupportedOperatingSystems dp
+            let! path = getRequiredAttribute dp (xnu "path")
+            let installerUrl = baseLocationUrl + "/" + path;
+            let! installerCheckSum = getRequiredAttribute dp (xnu "hashMD5")
+            let! installerSize = getRequiredAttribute dp (xnu "size")
+            let (_, installerName) = pathToDirectoryAndFile path
+            let! packageType = getRequiredAttribute dp (xnu "type")
             let! driverPackage = Result.Ok {
                 Name = name.Trim()
                 Models = models |> Seq.toArray
                 OperatinSystems = operatingSystems |>Seq.toArray
+                Installer =                     
+                        {
+                            Url = installerUrl
+                            Checksum = installerCheckSum
+                            Size = installerSize |> Convert.ToInt64
+                            FileName=installerName
+                        }
+                PackageType=packageType
             }
             return driverPackage
         }
@@ -100,9 +119,11 @@ module DellDriverPackCatalog =
     let loadCatalog (catalogPath:FileSystem.Path) : Result<DriverPackage[],Exception> =
         result{
             let! xDocument = XmlHelper.loadXDocument catalogPath
+            let! baseLocation = getRequiredAttribute xDocument.Root (xnu "baseLocation")
+            let baseLocationUrl = "http://" + baseLocation
             let! driverPackages = 
                 xDocument |> getXDocumentDescendants (xn "DriverPackage")
-                |>Seq.map toDriverPackage
+                |>Seq.map (toDriverPackage baseLocationUrl)
                 |>toAccumulatedResult
             return driverPackages |> Seq.toArray
         }

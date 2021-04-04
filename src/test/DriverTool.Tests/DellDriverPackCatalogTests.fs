@@ -32,6 +32,10 @@ module DellDriverPackCatalogTests =
                 Assert.IsTrue(p.Models.Length >= 0,sprintf "No supported models for model '%A'" p)
 
                 Assert.IsTrue(p.OperatinSystems.Length > 0,sprintf "No supported operatingsystems for model '%A'" p)
+
+                Assert.IsTrue(p.Installer.Size > 0L, "Size of installer is not greater than 0.")
+
+                Assert.IsTrue(p.PackageType = "winpe" || p.PackageType = "win")
             ) |> ignore
             
             
