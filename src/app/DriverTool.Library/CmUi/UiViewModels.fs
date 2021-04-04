@@ -38,12 +38,13 @@
         let mutable selectedCmPackages = null
         let mutable tobePackagedCmPackages = null
         let mutable selectedToBePackagedCmPackages = null
-        let mutable searchText = "Lenovo"        
+        let mutable searchText=""
         let mutable logger: ILog = null
         let mutable loadCommand = null
         let mutable packageCommand = null
         let mutable addPackageCommand = null
         let mutable removePackageCommand = null
+        let mutable statusMessage = "Ready"
 
         let currentDispatcher =
             System.Windows.Application.Current.Dispatcher
@@ -77,6 +78,11 @@
             with get() = searchText
             and set(value) =
                 base.SetProperty(&searchText,value)|>ignore
+
+        member this.StatusMessage
+            with get() = statusMessage
+            and set(value) = 
+                base.SetProperty(&statusMessage,value)|>ignore
 
         member this.CmPackages
             with get() = 
@@ -121,6 +127,7 @@
                     loadCommand <- createAsyncCommand (fun _ -> 
                         async{
                             updateUi (fun () -> this.IsBusy <- true)
+                            updateUi (fun () -> this.StatusMessage <- "Loading information about CM driver packages for supported vendors...")
                             logger.Warn("TODO: Loading...")
                             
                             match(result{
@@ -138,6 +145,7 @@
                             Async.Sleep 3000 |> Async.RunSynchronously
                             logger.Warn("TODO: Loading finished!")
                             updateUi (fun () -> this.IsBusy <- false)
+                            updateUi (fun () -> this.StatusMessage <- "Ready")
                             }|> Async.startAsPlainTask
                     ) (fun _ -> this.IsNotBusy) (fun ex -> logger.Error(ex.Message)) 
                     loadCommand
@@ -186,6 +194,7 @@
                         createAsyncCommand (fun _ -> 
                                         this.IsBusy <- true
                                         async{
+                                            updateUi (fun () -> this.StatusMessage <- "Packaging CM drivers...")
                                             logger.Warn("TODO: Packaging...")
                                             this.ToBePackagedCmPackages.Where(fun cmp-> true) |> Seq.toArray |> Array.map(fun cmp -> 
                                             logger.Warn(sprintf "TODO: Packaging '%s'..." cmp.Model)
@@ -193,6 +202,7 @@
                                             ) |> ignore                                            
                                             logger.Warn("TODO: Packaging done!")
                                             updateUi (fun () -> this.IsBusy <- false)
+                                            updateUi (fun () -> this.StatusMessage <- "Ready")
                                         } |> Async.startAsPlainTask                                    
                                     ) (fun _ -> this.IsNotBusy && this.ToBePackagedCmPackages.Count > 0) (fun ex -> logger.Error(ex.Message))
                     packageCommand

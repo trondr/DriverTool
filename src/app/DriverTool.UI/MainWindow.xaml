@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:DriverTool.UI"
         xmlns:viewModels="clr-namespace:DriverTool.Library.CmUi;assembly=DriverTool.Library"
         mc:Ignorable="d"
-        Title="DriverTool - Packaging CM Device Drivers" Height="450" Width="800" Icon="NCmdLiner.ico">
+        Title="DriverTool - Packaging CM Device Drivers" 
+        Height="600"
+        Width="1024"
+        Icon="NCmdLiner.ico">
     <Window.DataContext>
         <viewModels:ExampleCmPackagesViewModel/>
     </Window.DataContext>
@@ -16,17 +19,34 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
+        <!--Source: https://stackoverflow.com/questions/833943/watermark-hint-text-placeholder-textbox-->
+        <Grid>
+            <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" Text="{Binding SearchText}"/>
+            <TextBlock IsHitTestVisible="False" Text="Search models" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
 
-        <TextBox Text="{Binding SearchText}" ToolTip="Search"></TextBox>
-
-        <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding CmPackages}" local:ListViewExtensions.SelectedValues="{Binding SelectedCmPackages}" >
+        <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding CmPackages}" local:ListViewExtensions.SelectedValues="{Binding SelectedCmPackages}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
@@ -63,12 +83,41 @@
             </ListView.View>
         </ListView>
 
-        <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Load" Command="{Binding LoadCommand}" Margin="10" ToolTip="Load models"/>
         </StackPanel>
 
-        <StackPanel Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Package" Command="{Binding PackageCommand}" Margin="10"/>
         </StackPanel>
+
+        <StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock Text="{Binding StatusMessage}"  />
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2">
+                <ProgressBar 
+                    IsIndeterminate="{Binding IsBusy}"
+                    Value="0" 
+                    Visibility="Visible" 
+                    Width="150" 
+                    Height="15" 
+                    Background="Transparent" BorderThickness="1"/>
+            </StatusBarItem>
+        </StatusBar>
+
     </Grid>
 </Window>
