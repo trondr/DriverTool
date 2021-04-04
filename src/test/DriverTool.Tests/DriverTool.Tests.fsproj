@@ -87,6 +87,7 @@
     <Compile Include="ProcessOperationsTests.fs" />
     <Compile Include="CryptographyTests.fs" />
     <Compile Include="AssemblyResolveTests.fs" />
+    <Compile Include="DellDriverPackCatalogTests.fs" />
     <Compile Include="DellUpdatesTests.fs" />
     <Compile Include="DellCommandUpdatesTests.fs" />
     <Compile Include="BitLockerOperationsTest.fs" />
@@ -112,6 +113,7 @@
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp95xxx.html" />
     <EmbeddedResource Include="TestData\HPCatalog\HP_sp99341.html" />
     <EmbeddedResource Include="TestData\Dell\ActivityLog.xml" />
+    <EmbeddedResource Include="TestData\Dell\DriverPackCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_v2.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_20FA_Win7.xml" />

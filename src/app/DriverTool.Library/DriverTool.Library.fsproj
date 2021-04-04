@@ -170,6 +170,7 @@
     <Compile Include="DellSettings.fs" />
     <Compile Include="DellCommandUpdate.fs" />
     <Compile Include="DellCatalog.fs" />
+    <Compile Include="DellDriverPackCatalog.fs" />
     <Compile Include="DellUpdates.fs" />
     <Compile Include="LenovoCatalogXml.fs" />
     <Compile Include="LenovoCatalog.fs" />
