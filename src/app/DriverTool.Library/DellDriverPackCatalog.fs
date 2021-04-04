@@ -40,19 +40,25 @@ module DellDriverPackCatalog =
     let getAttribute (xElement:XElement, attributeName:string) =        
         xElement.Attribute(xnu attributeName).Value
 
+    let toOperatingSystem (os:XElement) =
+        result{
+            let! osCode = getRequiredAttribute os (xnu "osCode")
+            let! osArch = getRequiredAttribute os (xnu "osArch")
+            return 
+                {
+                    OsCode = osCode
+                    OsArch = osArch
+                }
+        
+        }
+
     let toSupportedOperatingSystems (dp:XElement) =
         dp
             .Descendants(xn "SupportedOperatingSystems")
             .Descendants(xn "OperatingSystem")
-                |>Seq.map(fun os -> 
-                        let osCode = (getAttribute (os, "osCode"))
-                        let osArch = (getAttribute (os,"osArch"))
-                        {
-                            OsCode = osCode
-                            OsArch = osArch
-                        }
-                        )
+                |>Seq.map toOperatingSystem
                 |>Seq.toArray
+                |>toAccumulatedResult
 
     let toModel modelXElment =
         result {
@@ -82,11 +88,11 @@ module DellDriverPackCatalog =
         result{
             let! name = getElementValue dp (xn "Name")
             let! models = toModels dp
-            let operatingSystems = toSupportedOperatingSystems dp                                    
+            let! operatingSystems = toSupportedOperatingSystems dp
             let! driverPackage = Result.Ok {
                 Name = name.Trim()
                 Models = models |> Seq.toArray
-                OperatinSystems = operatingSystems
+                OperatinSystems = operatingSystems |>Seq.toArray
             }
             return driverPackage
         }
