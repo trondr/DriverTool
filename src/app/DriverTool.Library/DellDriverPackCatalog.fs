@@ -3,6 +3,7 @@
 module DellDriverPackCatalog =
     open System
     open System.Xml.Linq
+    open DriverTool.Library
     open DriverTool.Library.FileSystem
     open DriverTool.Library.XmlHelper
 
@@ -53,33 +54,38 @@ module DellDriverPackCatalog =
                         )
                 |>Seq.toArray
 
+    let toModel modelXElment =
+        result {
+           let! systemId = getRequiredAttribute modelXElment (xnu "systemID")
+           let! name = getRequiredAttribute modelXElment (xnu "name")
+           return 
+            {
+                Name = name
+                Code = systemId
+            }           
+        }
+
     let toModels (dp:XElement) =
         dp
             .Descendants(xn "SupportedSystems")
             .Descendants(xn "Brand")
             |>Seq.map(fun brand-> 
                     brand.Descendants(xn "Model")
-                    |>Seq.map(fun model-> 
-                                    let systemId = model.Attribute(xnu "systemID").Value
-                                    let name = model.Attribute(xnu "name").Value
-                                    {
-                                        Name = name
-                                        Code = systemId
-                                    }
-                              )
+                    |>Seq.map toModel
                     |>Seq.toArray
                 )
             |>Seq.concat
             |>Seq.toArray
+            |> toAccumulatedResult
 
     let toDriverPackage (dp:XElement) : Result<DriverPackage,Exception> =
         result{
             let! name = getElementValue dp (xn "Name")
-            let models = toModels dp
+            let! models = toModels dp
             let operatingSystems = toSupportedOperatingSystems dp                                    
             let! driverPackage = Result.Ok {
                 Name = name.Trim()
-                Models = models
+                Models = models |> Seq.toArray
                 OperatinSystems = operatingSystems
             }
             return driverPackage
