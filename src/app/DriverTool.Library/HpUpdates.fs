@@ -111,12 +111,18 @@ module HpUpdates =
                                 Manufacturer= "HP"
                                 Model=products|>Array.map(fun dp -> dp.SystemName) |> String.concat ", "
                                 ModelCodes=products|>Array.map(fun dp -> dp.SystemId.Split([|','|]) )|>Array.concat |> Array.map(fun s -> s.Trim())
-                                ReadmeFile = None
+                                ReadmeFile = 
+                                    Some {
+                                        Url = p.ReleaseNotesUrl
+                                        Checksum=""
+                                        FileName=Web.getFileNameFromUrl p.ReleaseNotesUrl
+                                        Size=0L
+                                    }
                                 InstallerFile =
                                     {
                                         Url=p.Url;
                                         Checksum=p.MD5;
-                                        FileName=Web.getFileNameFromUrl p.Url;
+                                        FileName=Web.getFileNameFromUrl p.Url
                                         Size=p.Size;
                                     }
                                 Released=p.DateReleased|>DateTime.Parse;
@@ -128,6 +134,7 @@ module HpUpdates =
             return cmPackage
         }
         
+    ///Get CM package infos for all HP models
     let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<CmPackage[],Exception> =
         logger.Info("Loading HP Sccm Packages...")
         result{
