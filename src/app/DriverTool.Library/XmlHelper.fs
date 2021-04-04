@@ -5,35 +5,53 @@
         open System.Xml.Linq
         open DriverTool.Library.FileSystem
 
-        let getOptionalAttribute (xElement:XElement) (attributeName:string) =        
+        ///Get XName. Allows writing: 'xElement.Element(xn "Name")' instead of: 'xElement.Element(XName.Get("Name"))'
+        let xn name = 
+            XName.Get(name)
+
+        ///Get XName with namespace. Allows writing: 'xElement.Element(xnn ns "Name")' instead of: 'xElement.Element(XName.Get("Name",ns))'
+        let xnn nameSpace name = 
+            XName.Get(name, nameSpace)
+
+        ///Get decendants from xDocument
+        let getDescendants elementName (xDocument:XDocument) =
+            xDocument.Descendants(elementName)
+        
+        ///Get optional attribute from xElement. Example: getOptionalAttribute xElement (xn "SystemId")
+        let getOptionalAttribute (xElement:XElement) attributeName =        
             match xElement with
             | null -> None
             |_ -> 
-                let attribute = xElement.Attribute(XName.Get(attributeName))            
+                let attribute = xElement.Attribute(attributeName)
                 match attribute with
                 |null -> None
                 |_ -> Some attribute.Value
 
-        let getRequiredAttribute (xElement:XElement) (attributeName:string) =
+        ///Get required attribute from xElement. Example: getRequiredAttribute xElement (xn "SystemId")
+        let getRequiredAttribute (xElement:XElement) (attributeName:XName) =
             match xElement with
-            | null -> Result.Error (new Exception(sprintf "Element is null. Failed to get attribute name '%s'" attributeName))
+            | null -> Result.Error (toException (sprintf "Element is null. Failed to get attribute name '%s'" attributeName.LocalName ) None)
             |_ -> 
-                let attribute = xElement.Attribute(XName.Get(attributeName))            
+                let attribute = xElement.Attribute(attributeName)            
                 match attribute with
-                |null -> Result.Error (new Exception(sprintf "Attribute '%s' not found on element: %A" attributeName xElement))
+                |null -> Result.Error (toException (sprintf "Attribute '%s' not found on element: %A" attributeName.LocalName xElement) None)
                 |_ -> Result.Ok attribute.Value
         
-        let getElementValue (parentXElement:XElement) (elementName:string) = 
+        ///Get value from xElement. Example: getElementValue xElement (xn "DisplayName")
+        let getElementValue (parentXElement:XElement) elementName = 
             match parentXElement with
-            | null -> Result.Error (new Exception(sprintf "Parent element is null. Failed to get element value '%s'" elementName))
+            | null -> Result.Error (toException (sprintf "Parent element is null. Failed to get element value '%A'" elementName) None)
             |_ -> 
-                let xElemement = parentXElement.Element(XName.Get(elementName))            
+                let xElemement = parentXElement.Element(elementName)
                 match xElemement with
-                |null -> Result.Error (new Exception(sprintf "Element '%s' not found on parent element: %A" elementName parentXElement))
+                |null -> Result.Error (toException (sprintf "Element '%A' not found on parent element: %A" elementName parentXElement) None)
                 |_ -> Result.Ok xElemement.Value
         
+        ///Load xml document
         let loadXDocument (xmlFilePath:Path) =
             try
                 Result.Ok (XDocument.Load(FileSystem.pathValue xmlFilePath))
             with
-            |ex -> Result.Error (new Exception(sprintf "Failed to load xml file '%A' due to: %s" xmlFilePath ex.Message, ex))
+            |ex -> Result.Error (toException (sprintf "Failed to load xml file '%A' due to: %s" xmlFilePath ex.Message) (Some ex))
+
+        

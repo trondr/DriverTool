@@ -6,6 +6,7 @@ module InstallXml =
     open DriverTool.Library.XmlToolKit
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.XmlHelper
     
     type InstallConfigurationData = {
         LogDirectory:string;
@@ -23,16 +24,17 @@ module InstallXml =
     let toInstallDataConfiguration (configurationXElement:XElement) = 
         result
             {
-                let! logDirectory = XmlHelper.getElementValue configurationXElement "LogDirectory"
-                let! logFileName = XmlHelper.getElementValue configurationXElement "LogFileName"
-                let! packageName = XmlHelper.getElementValue configurationXElement "PackageName"
-                let! packageVersion = XmlHelper.getElementValue configurationXElement "PackageVersion"
-                let! packageRevision = XmlHelper.getElementValue configurationXElement "PackageRevision"
-                let! publisher = XmlHelper.getElementValue configurationXElement "Publisher"
-                let! computerVendor = XmlHelper.getElementValue configurationXElement "ComputerVendor"
-                let! computerModel = XmlHelper.getElementValue configurationXElement "ComputerModel"
-                let! computerSystemFamiliy = XmlHelper.getElementValue configurationXElement "ComputerSystemFamiliy"
-                let! osShortName = XmlHelper.getElementValue configurationXElement "OsShortName"
+                let getConfigValue = XmlHelper.getElementValue configurationXElement
+                let! logDirectory = getConfigValue (xn "LogDirectory")
+                let! logFileName = getConfigValue (xn "LogFileName")
+                let! packageName = getConfigValue (xn "PackageName")
+                let! packageVersion = getConfigValue (xn "PackageVersion")
+                let! packageRevision = getConfigValue (xn "PackageRevision")
+                let! publisher = getConfigValue (xn "Publisher")
+                let! computerVendor = getConfigValue (xn "ComputerVendor")
+                let! computerModel = getConfigValue (xn "ComputerModel")
+                let! computerSystemFamiliy = getConfigValue (xn "ComputerSystemFamiliy")
+                let! osShortName = getConfigValue (xn "OsShortName")
                 return {
                     LogDirectory = logDirectory
                     LogFileName = logFileName

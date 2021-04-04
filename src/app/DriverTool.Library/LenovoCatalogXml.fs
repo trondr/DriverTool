@@ -5,6 +5,7 @@ module LenovoCatalogXml =
     open System.Xml.Linq    
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.XmlHelper
     
     type ModelType = ModelType of string
 
@@ -61,8 +62,8 @@ module LenovoCatalogXml =
     
     let toDriverPack (driverPackXElement:XElement) =
         result{
-            let! id = XmlHelper.getRequiredAttribute driverPackXElement "id"
-            let date = XmlHelper.getOptionalAttribute driverPackXElement "date"
+            let! id = XmlHelper.getRequiredAttribute driverPackXElement (xn "id")
+            let date = XmlHelper.getOptionalAttribute driverPackXElement (xn "date")
             let url = driverPackXElement.Value
             return 
                 {
@@ -93,8 +94,8 @@ module LenovoCatalogXml =
         result{
             let typeElements = queriesXElement.Descendants(XName.Get("Type"))
             let! modelTypes = typeElements|>Seq.map(fun t -> toModelType t) |> toAccumulatedResult
-            let! version = XmlHelper.getElementValue queriesXElement "Version"
-            let! smbios = XmlHelper.getElementValue queriesXElement "Smbios"
+            let! version = XmlHelper.getElementValue queriesXElement (xn "Version")
+            let! smbios = XmlHelper.getElementValue queriesXElement (xn "Smbios")
             return
                 {
                     ModelTypes=modelTypes |> Seq.toArray
@@ -105,11 +106,11 @@ module LenovoCatalogXml =
 
     let toProduct (productXElement:XElement) = 
         result{
-            let! model = XmlHelper.getRequiredAttribute productXElement "model"        
-            let! family = XmlHelper.getRequiredAttribute productXElement "family"
-            let! os = XmlHelper.getRequiredAttribute productXElement "os"
-            let! build = XmlHelper.getRequiredAttribute productXElement "build"
-            let! name = XmlHelper.getElementValue productXElement "Name"
+            let! model = XmlHelper.getRequiredAttribute productXElement (xn "model")
+            let! family = XmlHelper.getRequiredAttribute productXElement (xn "family")
+            let! os = XmlHelper.getRequiredAttribute productXElement (xn "os")
+            let! build = XmlHelper.getRequiredAttribute productXElement (xn "build")
+            let! name = XmlHelper.getElementValue productXElement (xn "Name")
             let! driverPacks = toDriverPacks productXElement
             let! queries = toQueries (productXElement.Element(XName.Get("Queries")))
             return {
@@ -152,7 +153,7 @@ module LenovoCatalogXml =
 
     let toSccmDriverPack (sccmXElement:XElement) =
         result{
-            let! version = XmlHelper.getRequiredAttribute sccmXElement "version"
+            let! version = XmlHelper.getRequiredAttribute sccmXElement (xn "version")
             let url = sccmXElement.Value
             return 
                 {
@@ -181,7 +182,7 @@ module LenovoCatalogXml =
 
     let toModel (modelXElement:XElement) =
         result{
-            let! name = XmlHelper.getRequiredAttribute modelXElement "name"
+            let! name = XmlHelper.getRequiredAttribute modelXElement (xn "name")
             let! modelTypes = toModelTypes modelXElement
             let! sccmDriverPacks = toSccmDriverPacks modelXElement
             return

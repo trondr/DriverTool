@@ -9,6 +9,10 @@ module LenovoUpdateTests =
     open DriverTool.Library.F
     open DriverTool.Library
     
+    [<SetUp>]    
+    let setup () =
+        DriverTool.Library.Logging.configureConsoleLogging()
+
     [<Test>]
     [<Category(TestCategory.IntegrationTests)>]
     [<TestCase("nz3gs05w.exe","nz3gs05w.txt","nz3gs05w_2_.xml",
@@ -94,7 +98,7 @@ module LenovoUpdateTests =
             return packageInfos
         })with
         |Result.Ok v -> Assert.IsTrue(false,"Did not fail as expected.")
-        |Result.Error ex -> Assert.AreEqual("Failed to download all package infos due to the following 1 error messages:\r\nUri 'https://download.lenovo.com/pccbbs/mobiles/n2hwe01w.txt' does not represent a xml file.",ex.Message)        
+        |Result.Error ex -> Assert.IsTrue(ex.Message.Contains("Failed to download all package infos"),ex.Message)
 
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.ManufacturerTypes

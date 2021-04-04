@@ -15,6 +15,7 @@ module LenovoUpdates =
     open DriverTool.Library.Logging
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.XmlHelper
     
     let logger = DriverTool.Library.Logging.getLoggerByName "LenovoUpdates"
                
@@ -34,10 +35,10 @@ module LenovoUpdates =
                     packagesXElement.Elements(XName.Get("package"))
                     |>Seq.map(fun p -> 
                             result{
-                                let! location = XmlHelper.getElementValue p "location"
-                                let! category = XmlHelper.getElementValue p "category"
-                                let! checksumValue = XmlHelper.getElementValue p "checksum"
-                                let! checksumType = XmlHelper.getRequiredAttribute (p.Element(XName.Get("checksum"))) "type"
+                                let! location = XmlHelper.getElementValue p (xn "location")
+                                let! category = XmlHelper.getElementValue p (xn "category")
+                                let! checksumValue = XmlHelper.getElementValue p (xn "checksum")
+                                let! checksumType = XmlHelper.getRequiredAttribute (p.Element(XName.Get("checksum"))) (xn "type")
                                 return {
                                     Location = location
                                     Category = category

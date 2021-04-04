@@ -5,6 +5,7 @@ module PackageXml =
     open DriverTool.Library.F0
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.XmlHelper
     open DriverTool.Library.Web
     open DriverTool.Library.WebDownload
     open System
@@ -232,9 +233,6 @@ module PackageXml =
                 Some (new Uri(sprintf "%s" baseUrl))
             |false ->
                 Some (new Uri(sprintf "%s/%s" baseUrl fileName))
-
-    let xn s = 
-        XName.Get(s)
 
     let toExternalFiles (packageXElement:XElement) (baseUrl:string) =
         let xExternal = packageXElement.Element(XName.Get("Files")).Element(XName.Get("External"))

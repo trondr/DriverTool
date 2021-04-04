@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Saved by DriverTool.InstallXml.saveInstallXml function.-->
+<configuration>
+  <LogDirectory Description="Store logs in this directory">%public%\Logs</LogDirectory>
+  <LogFileName>MyCompany_Lenovo_ThinkPad_P50_20EQ0022MN_WIN10X64_Drivers_2019-03-20.log</LogFileName>
+  <PackageName>MyCompany Lenovo ThinkPad P50 20EQ0022MN WIN10X64 Drivers 2019-03-20</PackageName>
+  <PackageVersion>1.0</PackageVersion>
+  <PackageRevision>000</PackageRevision>
+  <Publisher>MyCompany</Publisher>
+  <ComputerVendor>Lenovo</ComputerVendor>
+  <ComputerModel>20EQ0022MN</ComputerModel>
+  <ComputerSystemFamiliy>ThinkPad P50</ComputerSystemFamiliy>
+  <OsShortName>WIN10X64</OsShortName>
+</configuration>

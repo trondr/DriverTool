@@ -96,11 +96,14 @@
     <Compile Include="CreateDriverPackageTests.fs" />
     <Compile Include="CompressionTests.fs" />
     <Compile Include="XmlToolKitTests.fs" />
+    <Compile Include="XmlHelperTests.fs" />
     <Compile Include="PackageXmlTests.fs" />
     <Compile Include="InstallXmlTests.fs" />
     <Compile Include="RegExpTests.fs" />
     <Compile Include="CsvOperationTests.fs" />
     <Compile Include="UiModelsTests.fs" />
+    <Compile Include="_TemplateTests.fs" />	
+	<EmbeddedResource Include="TestData\TestDataXmlHelper.xml" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />
