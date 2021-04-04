@@ -99,17 +99,18 @@ module HpUpdates =
         }
 
     ///Parse DriverPackage xml element to CmPackage
-    let toCmPackage (softpacs:SoftPaq[]) (product:ProductOSDriverPack)  : Result<CmPackage,Exception> =
-        result{
+    let toCmPackage (softpacs:SoftPaq[]) (softpackIdByProduct:string*ProductOSDriverPack[])  : Result<CmPackage,Exception> =
+        result{            
             let! cmPackage =
-                match(softpacs|>Array.tryFind(fun sp -> sp.Id = product.SoftPaqId))with
+                let (softPackId,products) = softpackIdByProduct
+                match(softpacs|>Array.tryFind(fun sp -> sp.Id = softPackId))with
                 |Some p ->                     
-                    let (osCode,osBuild)= HpCatalog.hpOsNameToOsCodeAndOsBuild product.OSName
+                    let (osCode,osBuild)= HpCatalog.hpOsNameToOsCodeAndOsBuild products.[0].OSName
                     Result.Ok 
                             {
                                 Manufacturer= "HP"
-                                Model=product.SystemName
-                                ModelCodes=[|product.SystemId|]
+                                Model=products|>Array.map(fun dp -> dp.SystemName) |> String.concat ", "
+                                ModelCodes=products|>Array.map(fun dp -> dp.SystemId.Split([|','|]) )|>Array.concat |> Array.map(fun s -> s.Trim())
                                 ReadmeFile = None
                                 InstallerFile =
                                     {
@@ -123,22 +124,23 @@ module HpUpdates =
                                 OsBuild=osBuild
                                 WmiQuery="TODO: Calculate WmiQuery from model codes."
                             }
-                |None -> Result.Error (toException (sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' and os build '%s'" product.SystemName product.OSName "*") None)
+                |None -> Result.Error (toException (sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' and os build '%s'" products.[0].SystemName products.[0].OSName "*") None)
             return cmPackage
         }
         
     let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<CmPackage[],Exception> =
-        logger.Warn("TODO: Loading HP Sccm Packages...")
+        logger.Info("Loading HP Sccm Packages...")
         result{
             let! catalogPath = downloadDriverPackCatalog cacheFolderPath
             let! (softpacs,products) = loadCatalog catalogPath
             let! cmPackages = 
                 products
                 |> Array.filter (fun p -> isSupportedOs p.OSName)
-                |> Array.map (toCmPackage softpacs)
+                |> Array.groupBy(fun p -> p.SoftPaqId)
+                |> Array.map (fun g -> toCmPackage softpacs g)
                 |> toAccumulatedResult
             logger.Warn("TODO: HP: Calculate WmiQuery from model codes.")
-            logger.Info("TODO: Finished loading HP Sccm Packages!")
+            logger.Info("Finished loading HP Sccm Packages!")
             return cmPackages |> Seq.toArray
         }
 
