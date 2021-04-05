@@ -133,7 +133,8 @@
                 match cmPackagesViewSource with
                 |null ->
                     cmPackagesViewSource <- new System.Windows.Data.CollectionViewSource()
-                    cmPackagesViewSource.Source <- this.CmPackages                    
+                    cmPackagesViewSource.Source <- this.CmPackages
+                    cmPackagesViewSource.View.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
                     cmPackagesViewSource.Filter.AddHandler(new System.Windows.Data.FilterEventHandler(fun sender fe -> 
                     (
                         match fe.Item with

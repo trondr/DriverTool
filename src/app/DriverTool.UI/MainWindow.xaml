@@ -32,10 +32,15 @@
 
             <!--Source: https://stackoverflow.com/questions/833943/watermark-hint-text-placeholder-textbox-->
             <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
                 <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" 
                           Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged, Delay=500}"
                           ToolTip="Search filter based on model name, model codes or operating system build."
-                          />
+                />
                 <TextBlock IsHitTestVisible="False" Text="Search models" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
@@ -48,9 +53,16 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0">
+                    <TextBlock.Text >
+                        <MultiBinding StringFormat="{}#Models: {0}">
+                            <Binding Path="Items.Count" ElementName="CmPackagesListView" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </Grid>
 
-            <ListView Grid.Row="1" Grid.Column="0" Margin="2"
+            <ListView Grid.Row="1" Grid.Column="0" Margin="2" x:Name="CmPackagesListView"
                   ItemsSource="{Binding CmPackagesView}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedCmPackages}" 
                   SelectedItem="{Binding SelectedCmPackage}"
@@ -75,9 +87,22 @@
                 <Button Content="&lt;-" Command="{Binding RemovePackageCommand}" Margin="10" ToolTip="Remove model packaging list"/>
             </StackPanel>
 
-            <Label Grid.Row="0" Grid.Column="2" Content="To be packaged:"></Label>
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="To be packaged:"/>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0">
+                    <TextBlock.Text >
+                        <MultiBinding StringFormat="{}#Models: {0}">
+                            <Binding Path="Items.Count" ElementName="ToBePackagedCmPackagesListView" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Grid>
 
-            <ListView Grid.Row="1" Grid.Column="2" Margin="2"
+            <ListView Grid.Row="1" Grid.Column="2" Margin="2" x:Name="ToBePackagedCmPackagesListView"
                   ItemsSource="{Binding ToBePackagedCmPackages}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedToBePackagedCmPackages}"
                   SelectedItem="{Binding SelectedCmPackage}"
