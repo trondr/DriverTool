@@ -32,7 +32,7 @@ module UiModels =
         result{
             logger.Warn(sprintf "TODO: Packaging '%s'..." cmPackage.Model)
             let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(cmPackage.Manufacturer,false)
-            reportProgress true None (sprintf "TODO: Download CM Drivers for model %s" cmPackage.Model)            
+            reportProgress true None (sprintf "Downloading CM Drivers for model %s..." cmPackage.Model)
             let downloadCmPackage = DriverTool.Updates.downloadCmPackageFunc manufacturer
             let! downloadedCmPackage = downloadCmPackage (cacheFolderPath,cmPackage)
             reportProgress true None (sprintf "TODO: Extract CM Drivers for model %s" cmPackage.Model)
