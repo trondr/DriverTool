@@ -180,11 +180,8 @@
                 match loadCommand with
                 |null ->
                     loadCommand <- createAsyncCommand (fun _ -> 
-                        async{
-                            updateUi (fun () -> this.IsBusy <- true)
-                            updateUi (fun () -> this.StatusMessage <- "Loading information about CM driver packages for supported vendors...")
-                            logger.Warn("Loading CM driver package infos...")
-                            
+                        async{                            
+                            this.ReportProgress true None "Loading CM driver package infos from all supported vendors..."
                             match(result{
                                 let! cacheFolderPath = getCacheFolderPath()                                
                                 let! sccmPackages = (loadSccmPackages (cacheFolderPath))
@@ -194,13 +191,10 @@
                                     )
                                 return ()
                             })with
-                            |Result.Ok _ -> logger.Info("Successfully loaded sccm packages")
+                            |Result.Ok _ -> this.ReportProgress false None "Successfully loaded sccm packages"
                             |Result.Error ex -> logger.Error(sprintf "Failed to load sccm packages due to %s" ex.Message)
-                            
-                            Async.Sleep 3000 |> Async.RunSynchronously
-                            logger.Warn("Finished loading CM driver package infos!")
-                            updateUi (fun () -> this.IsBusy <- false)
-                            updateUi (fun () -> this.StatusMessage <- "Ready")
+                            this.ReportProgress false None "Done loading CM driver package infos!"                            
+                            this.ReportProgress false None "Ready"
                             }|> Async.startAsPlainTask
                     ) (fun _ -> this.IsNotBusy) (fun ex -> logger.Error(ex.Message)) 
                     loadCommand
@@ -288,6 +282,19 @@
             and set(value) =
                 base.IsBusy <- value
                 this.RaiseCanExecuteChanged()
+
+        member private this.ReportProgress (isBusy:bool) (percent:float option) (message:string) =
+            updateUi (fun () -> 
+                    if(message.Contains("TODO:")) then
+                        logger.Warn(message)
+                    else
+                        logger.Info(message)                    
+                    this.StatusMessage <- message
+                    this.IsBusy <- isBusy
+                    logger.Warn("TODO: Report progress percentage")
+                    ()
+                )
+            ()
 
         member this.RaiseCanExecuteChanged() =
             this.LoadCommand.RaiseCanExecuteChanged()
