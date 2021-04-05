@@ -12,11 +12,13 @@
     open System.Threading.Tasks    
     open MvvmHelpers.Commands
     open System.Linq
-    open DriverTool.Library.PackageXml
+    open DriverTool.Library.PackageXml    
+    open System.Windows
     
     type CmPackageViewModel(cmPackage:CmPackage) =
         inherit BaseViewModel()
         let mutable isSelected = false
+        let mutable info = null
         member this.Model = cmPackage.Model
         member this.ModelCodes = cmPackage.ModelCodes |> String.concat "|"
         member this.Manufacturer = cmPackage.Manufacturer
@@ -30,6 +32,28 @@
                 isSelected
             and set(value) =                
                 base.SetProperty(&isSelected,value)|>ignore
+        
+        override this.ToString() =            
+                match info with
+                | null -> 
+                    info <- 
+                        let sb = new System.Text.StringBuilder()
+                        sb.AppendFormat("Model(s): {0}", this.Model)
+                            .AppendLine()
+                            .AppendFormat("ModelCodes: {0}", this.ModelCodes)
+                            .AppendLine()
+                            .AppendFormat("Manufacturer: {0}", this.Manufacturer)
+                            .AppendLine()
+                            .AppendFormat("Operating System: {0} ({1})", this.Os, this.OsBuild)
+                            .AppendLine()
+                            .AppendFormat("Released: {0}", this.Released.ToString("yyyy-MM-dd"))
+                            .AppendLine()
+                            .Append(sprintf "InstallerFile: %A" this.InstallerFile)
+                            .AppendLine()
+                            .Append(sprintf "ReadmeFile: %A" this.ReadmeFile)
+                            .ToString()
+                    info
+                | _ -> info
 
     type CmPackagesViewModel() =
         inherit BaseViewModel()
@@ -44,7 +68,9 @@
         let mutable packageCommand = null
         let mutable addPackageCommand = null
         let mutable removePackageCommand = null
+        let mutable copyInfoCommand = null
         let mutable statusMessage = "Ready"
+        let mutable selectedCmPackage = null
 
         let currentDispatcher =
             System.Windows.Application.Current.Dispatcher
@@ -83,6 +109,11 @@
             with get() = statusMessage
             and set(value) = 
                 base.SetProperty(&statusMessage,value)|>ignore
+
+        member this.SelectedCmPackage
+            with get() = selectedCmPackage
+            and set(value) =
+                base.SetProperty(&selectedCmPackage,value)|>ignore
 
         member this.CmPackages
             with get() = 
@@ -208,6 +239,22 @@
                     packageCommand
                 | _ -> packageCommand
         
+        member this.CopyInfoCommand
+            with get() =
+                match copyInfoCommand with
+                |null ->
+                    copyInfoCommand <- createCommand (fun _ ->                                     
+                                    match selectedCmPackage with
+                                    |null -> 
+                                        ()
+                                    |_ ->                                                                     
+                                        let info = sprintf "%s" (selectedCmPackage.ToString())
+                                        logger.Info(info)
+                                        Clipboard.SetText(info)|>ignore
+                                  ) (fun _ -> this.IsNotBusy && this.SelectedCmPackage <> null)
+                    copyInfoCommand
+                |_ -> copyInfoCommand
+
         member internal this.OnCollectionChanged sender e = 
             this.RaiseCanExecuteChanged()            
             ()
@@ -223,6 +270,7 @@
             this.PackageCommand.RaiseCanExecuteChanged()
             this.AddPackageCommand.RaiseCanExecuteChanged()
             this.RemovePackageCommand.RaiseCanExecuteChanged()
+            this.CopyInfoCommand.RaiseCanExecuteChanged()
 
     type ExampleCmPackagesViewModel() =
         inherit  CmPackagesViewModel()
