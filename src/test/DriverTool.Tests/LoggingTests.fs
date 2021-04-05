@@ -70,30 +70,6 @@ module LoggingTests =
         let actual = getFuncLoggerName testFuncError
         Assert.AreEqual(expected, actual)
 
-    [<Test>]
-    let genericLoggerResultTest_Success () =
-        configureLogging()
-        let expected = "Status:OK"
-        let testFuncOk () : Result<_,Exception> =
-            System.Threading.Thread.Sleep(505)
-            Result.Ok expected
-        let actualResult = genericLoggerResult LogLevel.Info testFuncOk ()
-        match actualResult with
-        |Ok actual -> Assert.AreEqual(expected,actual)
-        |Result.Error ex -> Assert.Fail(ex.Message)
-    
-    [<Test>]
-    let genericLoggerResultTest_Error () =
-        configureLogging()
-        let expected = "Status:ERROR"
-        let testFuncError () : Result<_,Exception> =
-            System.Threading.Thread.Sleep(505)
-            Result.Error (new Exception(expected))
-        let actualResult = genericLoggerResult LogLevel.Info testFuncError ()
-        match actualResult with
-        |Ok actual -> Assert.Fail("Test should not return ok result.")
-        |Result.Error ex -> Assert.AreEqual(expected,ex.Message)
-
     open DriverTool.Library.PackageXml
 
     [<Test>]

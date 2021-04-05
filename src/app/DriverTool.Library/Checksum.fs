@@ -35,15 +35,12 @@ module Checksum=
     let toLower (text:string) =
         text.ToLower()
 
-    let computeFileHashFromHashLengthBase filePath hashLength =
+    let computeFileHashFromHashLength filePath hashLength =
         (getHashAlgorithmFromHashStringLength hashLength)                
         |> computeFileHash filePath
         |> fileHashToString
         |> toLower
-
-    let computeFileHashFromHashLength filePath hashLength =
-        genericLogger LogLevel.Debug computeFileHashFromHashLengthBase filePath hashLength
- 
+    
     let hasSameFileHash'' (logger:Common.Logging.ILog) checkFileExists getFileSize computeFileHashFromHashLength (destinationFile:FileSystem.Path, sourceFileHash:string option, sourceFileSize:Int64 option) =
         if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Checking if source and destination file (%A) has the same file hash (%A)." destinationFile sourceFileHash))
         let destinationFileExists = checkFileExists destinationFile        
@@ -84,8 +81,8 @@ module Checksum=
     let hasSameFileHash' (filePath:FileSystem.Path, sourceFileHash:string option, fileSize:Int64 option) =
         hasSameFileHash'' logger fileExists getFileSize computeFileHashFromHashLength (filePath, sourceFileHash, fileSize)
 
-    let hasSameFileHash2 (filePath:FileSystem.Path, crc:string option, fileSize:Int64 option) =
-        DriverTool.Library.Logging.genericLogger LogLevel.Debug hasSameFileHash' (filePath, crc, fileSize)
+    //let hasSameFileHash2 (filePath:FileSystem.Path, crc:string option, fileSize:Int64 option) =
+    //    DriverTool.Library.Logging.genericLogger LogLevel.Debug hasSameFileHash' (filePath, crc, fileSize)
         
     let hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (destinationFilePath:FileSystem.Path, sourceFileHash:string, sourceFileSize:Int64) =
             match(fileExists destinationFilePath) with
@@ -102,11 +99,11 @@ module Checksum=
                 | false  -> false
             |false -> false
 
-    let hasSameFileHashBase (filePath:FileSystem.Path, sourceFileHash:string, fileSize:Int64) =
+    let hasSameFileHash (filePath:FileSystem.Path, sourceFileHash:string, fileSize:Int64) =
         hasSameFileHashPartial fileExists getFileSize computeFileHashFromHashLength (filePath, sourceFileHash, fileSize)
 
-    let hasSameFileHash (filePath:FileSystem.Path, crc:string, fileSize:Int64) =
-        DriverTool.Library.Logging.genericLogger LogLevel.Debug hasSameFileHashBase (filePath, crc, fileSize)
+    //let hasSameFileHash (filePath:FileSystem.Path, crc:string, fileSize:Int64) =
+    //    DriverTool.Library.Logging.genericLogger LogLevel.Debug hasSameFileHashBase (filePath, crc, fileSize)
 
     let fileHashToBase64String fileHash = 
         Convert.ToBase64String(fileHash)

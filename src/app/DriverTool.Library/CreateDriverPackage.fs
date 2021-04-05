@@ -85,11 +85,8 @@ module CreateDriverPackage =
         }
 
 
-    let downloadUpdate' (downloadJob,ignoreVerificationErrors) =
-        DriverTool.Library.Web.downloadIfDifferent (logger, downloadJob,ignoreVerificationErrors)
-
     let downloadUpdate (downloadJob,ignoreVerificationErrors) =
-        genericLoggerResult LogLevel.Debug downloadUpdate' (downloadJob,ignoreVerificationErrors)
+        DriverTool.Library.Web.downloadIfDifferent (logger, downloadJob,ignoreVerificationErrors)
 
     let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
         packageInfos
@@ -178,7 +175,7 @@ module CreateDriverPackage =
     
     
 
-    let createDriverPackageBase (dpcc:DriverPackageCreationContext) =             
+    let createDriverPackage (dpcc:DriverPackageCreationContext) =             
             result {
                 let! requirementsAreFullfilled = assertDriverPackageCreateRequirements
                 logger.Info(sprintf "All create package requirements are fullfilled: %b" requirementsAreFullfilled)
@@ -292,6 +289,3 @@ module CreateDriverPackage =
                     |Result.Error ex -> Result.Error ex  
                 return! res
             }
-    
-    let createDriverPackage driverPackageCreationContext =
-        DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug createDriverPackageBase driverPackageCreationContext

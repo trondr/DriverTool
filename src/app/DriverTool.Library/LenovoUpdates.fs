@@ -167,7 +167,8 @@ module LenovoUpdates =
         &&                             
         (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Title))
 
-    let getRemoteUpdatesBase (logger, cacheFolderPath, (context:UpdatesRetrievalContext)) =
+    ///Get all updates for the current model from Lenovo remote web site
+    let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
         result{
             let modelInfoUri = getModelInfoUri context.Model context.OperatingSystem
             let! modelInfoXmlFilePath = getModelInfoXmlFilePath cacheFolderPath context.Model context.OperatingSystem            
@@ -190,10 +191,6 @@ module LenovoUpdates =
                 |>Seq.toArray
         }
 
-    ///Get all updates for the current model from Lenovo remote web site
-    let getRemoteUpdates logger cacheFolderPath (context:UpdatesRetrievalContext) =
-        DriverTool.Library.Logging.genericLoggerResult LogLevel.Debug getRemoteUpdatesBase (logger, cacheFolderPath, context)
-    
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
         if(actualModel.Value.StartsWith(model.Value)) then
             Result.Ok true

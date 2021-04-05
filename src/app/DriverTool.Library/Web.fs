@@ -112,34 +112,6 @@ module Web =
     let downloadIsRequired logger downloadInfo =        
         ((String.IsNullOrEmpty(downloadInfo.SourceChecksum) && (not (Cryptography.isTrusted downloadInfo.DestinationFile) ))||(not (hasSameFileHash downloadInfo))) && (not (useCachedVersion logger downloadInfo))
     
-
-    let useCachedVersion2' (logger:Common.Logging.ILog) (fileExists:string->bool) (destinationFile:FileSystem.Path) =
-        let useCachedVersionFilePath =((FileSystem.pathValue destinationFile) + ".usecachedversion")
-        let useCachedVersionFileExists = (fileExists useCachedVersionFilePath) 
-        let destinationFileExists = (fileExists (FileSystem.pathValue destinationFile))
-        let useCachedVersion = useCachedVersionFileExists && destinationFileExists          
-        match useCachedVersion with
-        |true -> 
-            logger.Warn(sprintf "Using cached version of '%A'. Skipping download." destinationFile)
-            true
-        |false -> 
-            false       
-
-    let useCachedVersion2 (destinationFile:FileSystem.Path) =        
-        useCachedVersion2' logger System.IO.File.Exists destinationFile
-
-    let downloadIsRequired2' (logger:Common.Logging.ILog) (hasSameFileHashF:(FileSystem.Path*string option*Int64 option->bool)) (useCachedVersionF:FileSystem.Path->bool) sourceChecksum sourceFileSize destinationFile =
-        let doNotUseCachedVersion = not (useCachedVersionF destinationFile)
-        let doesNotHaveSameFileHash = not (hasSameFileHashF (destinationFile, sourceChecksum, sourceFileSize))        
-        doesNotHaveSameFileHash && doNotUseCachedVersion
-
-    let downloadIsRequired2 sourceChecksum sourceFileSize destinationFile =
-        downloadIsRequired2' logger DriverTool.Library.Checksum.hasSameFileHash2 useCachedVersion2 sourceChecksum sourceFileSize destinationFile 
-
-
-
-
-
     type HasSameFileHashFunc = (DownloadInfo) -> bool
     type IsTrustedFunc = FileSystem.Path -> bool
 

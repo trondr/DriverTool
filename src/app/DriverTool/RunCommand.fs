@@ -13,11 +13,8 @@ module RunCommand =
     let applicationName =
         "DriverTool"
 
-    let runCommandBase args =        
+    let runCommand args =        
         configureLogging ()
         let logger = getLoggerByName applicationName        
         let exitCode = run applicationName applicationVersion logger (fun () -> NCmdLiner.CmdLinery.RunEx(typedefof<CommandDefinitions>, args, new NotepadMessenger()))        
-        exitCode
-    
-    let runCommand args =
-        Logging.genericLogger Logging.LogLevel.Info runCommandBase args
+        exitCode    

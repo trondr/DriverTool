@@ -108,12 +108,9 @@ module ProcessOperations =
         
         processExitData.ExitCode
     
-    let startConsoleProcessBase (filePath, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
+    let startConsoleProcess (filePath, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
         tryCatchWithMessage startConsoleProcessUnsafe (filePath, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments)
     
-    let startConsoleProcess (fileName, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) = 
-        DriverTool.Library.Logging.genericLoggerResult LogLevel.Info startConsoleProcessBase (fileName, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile)
-
     let startProcess fileName arguments (workingDirectory: FileSystem.Path option) waitForExit =
         try
             let startInfo = new ProcessStartInfo()            

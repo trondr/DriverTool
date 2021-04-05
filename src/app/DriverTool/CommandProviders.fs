@@ -22,7 +22,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let exportRemoteUdateInfo (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns) =
-        genericLogger LogLevel.Debug exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns)
+        exportRemoteUdateInfoBase (manufacturerString,modelCodeString, operatingSystemString, csvFilePathString, overwrite, excludeUpdatePatterns)
 
     let exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns) = 
         match (result{
@@ -38,7 +38,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let exportLocalUdateInfo (csvFilePathString, overwrite, excludeUpdatePatterns) =
-        genericLogger LogLevel.Debug exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns)
+        exportLocalUdateInfoBase (csvFilePathString, overwrite, excludeUpdatePatterns)
     
     let toDateTime dateString = 
         try
@@ -66,7 +66,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let createDriverPackage (packagePublisher, manufacturer, systemFamily, modelCodeString, operatingSystemString, destinationFolder, baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage, sccmPackageInstaller, sccmPackageReadme, sccmPackageReleased) =
-        let result = genericLogger LogLevel.Debug createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased)
+        let result = createDriverPackageBase (packagePublisher,manufacturer, systemFamily,modelCodeString, operatingSystemString, destinationFolder,baseOnLocallyInstalledUpdates, excludeUpdatePatterns, packageTypeName, excludeSccmPackage, doNotDownloadSccmPackage,sccmPackageInstaller,sccmPackageReadme, sccmPackageReleased)
         result
     
     let installDriverPackageBase (driverPackagePathString) =
@@ -79,7 +79,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let installDriverPackage(driverPackagePath) =
-        genericLogger LogLevel.Debug installDriverPackageBase (driverPackagePath)
+        installDriverPackageBase (driverPackagePath)
     
     let unInstallDriverPackageBase (driverPackagePathString) =
         match( result {
@@ -91,7 +91,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
 
     let unInstallDriverPackage(driverPackagePath) =
-        genericLogger LogLevel.Debug unInstallDriverPackageBase (driverPackagePath)
+        unInstallDriverPackageBase (driverPackagePath)
     
     let compressDriverPackageBase  (driverPackagePathString) =
         match( result {
@@ -103,7 +103,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
     
     let compressDriverPackage(driverPackagePath) =
-        genericLogger LogLevel.Debug compressDriverPackageBase (driverPackagePath)
+        compressDriverPackageBase (driverPackagePath)
 
     let decompressDriverPackageBase  (driverPackagePathString) =
         match( result {
@@ -115,7 +115,7 @@ module CommandProviders =
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
     
     let decompressDriverPackage(driverPackagePath) =
-        genericLogger LogLevel.Debug decompressDriverPackageBase (driverPackagePath)
+        decompressDriverPackageBase (driverPackagePath)
 
     let downloadLenovoUpdatePackageXmls() =
         match(result{
