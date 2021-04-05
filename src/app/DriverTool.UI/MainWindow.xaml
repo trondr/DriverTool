@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DriverTool.UI"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:viewModels="clr-namespace:DriverTool.Library.CmUi;assembly=DriverTool.Library"
         mc:Ignorable="d"
         Title="DriverTool - Packaging CM Device Drivers" 
@@ -15,6 +16,11 @@
     </Window.DataContext>
 
     <DockPanel d:DataContext="{d:DesignInstance Type=viewModels:ExampleCmPackagesViewModel, IsDesignTimeCreatable=True}" LastChildFill="True">
+        <i:Interaction.Triggers>
+            <i:EventTrigger>
+                <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

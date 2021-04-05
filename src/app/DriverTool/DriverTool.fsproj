@@ -119,6 +119,9 @@
       <HintPath>..\..\..\packages\FSharpx.Collections.2.1.2\lib\net45\FSharpx.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Expression.Interactions">
+      <HintPath>..\..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NCmdLiner">
       <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net452\NCmdLiner.dll</HintPath>
@@ -133,6 +136,9 @@
     <Reference Include="System.Management" />
     <Reference Include="System.ValueTuple">
       <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>..\..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
