@@ -14,191 +14,192 @@
         <viewModels:CmPackagesViewModel/>
     </Window.DataContext>
 
-    <Grid d:DataContext="{d:DesignInstance Type=viewModels:ExampleCmPackagesViewModel, IsDesignTimeCreatable=True}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="110"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="40" MaxWidth="40"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-
-        <!--Source: https://stackoverflow.com/questions/833943/watermark-hint-text-placeholder-textbox-->
+    <DockPanel d:DataContext="{d:DesignInstance Type=viewModels:ExampleCmPackagesViewModel, IsDesignTimeCreatable=True}" LastChildFill="True">
         <Grid>
-            <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged, Delay=500}"/>
-            <TextBlock IsHitTestVisible="False" Text="Search models" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-        </Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="300"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40" MaxWidth="40"/>
+                <ColumnDefinition Width="*"/>
+                <!--<ColumnDefinition Width="Auto"/>-->
+            </Grid.ColumnDefinitions>
 
-        <ListView Grid.Row="1" Grid.Column="0" 
+            <!--Source: https://stackoverflow.com/questions/833943/watermark-hint-text-placeholder-textbox-->
+            <Grid>
+                <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged, Delay=500}"/>
+                <TextBlock IsHitTestVisible="False" Text="Search models" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+
+            <ListView Grid.Row="1" Grid.Column="0" Margin="2"
                   ItemsSource="{Binding CmPackagesView}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedCmPackages}" 
                   SelectedItem="{Binding SelectedCmPackage}"
                   >
-            <ListView.ItemContainerStyle>
-                <Style TargetType="{x:Type ListViewItem}">
-                    <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Manufacturer" DisplayMemberBinding="{Binding Manufacturer }"/>
-                    <GridViewColumn Header="Model" DisplayMemberBinding="{Binding Model }"/>
-                    <GridViewColumn Header="ModelCodes" DisplayMemberBinding="{Binding ModelCodes }"/>
-                    <GridViewColumn Header="OsBuild" DisplayMemberBinding="{Binding OsBuild }"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Manufacturer" DisplayMemberBinding="{Binding Manufacturer }"/>
+                        <GridViewColumn Header="Model" DisplayMemberBinding="{Binding Model }"/>
+                        <GridViewColumn Header="ModelCodes" DisplayMemberBinding="{Binding ModelCodes }"/>
+                        <GridViewColumn Header="OsBuild" DisplayMemberBinding="{Binding OsBuild }"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
 
-        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-            <Button Content="-&gt;" Command="{Binding AddPackageCommand}" Margin="10"/>
-            <Button Content="&lt;-" Command="{Binding RemovePackageCommand}" Margin="10"/>
-        </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                <Button Content="-&gt;" Command="{Binding AddPackageCommand}" Margin="10"/>
+                <Button Content="&lt;-" Command="{Binding RemovePackageCommand}" Margin="10"/>
+            </StackPanel>
 
-        <Label Grid.Row="0" Grid.Column="2" Content="To be packaged:"></Label>
+            <Label Grid.Row="0" Grid.Column="2" Content="To be packaged:"></Label>
 
-        <ListView Grid.Row="1" Grid.Column="2" 
+            <ListView Grid.Row="1" Grid.Column="2" Margin="2"
                   ItemsSource="{Binding ToBePackagedCmPackages}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedToBePackagedCmPackages}"
                   SelectedItem="{Binding SelectedCmPackage}"
         >
-            <ListView.ItemContainerStyle>
-                <Style TargetType="{x:Type ListViewItem}">
-                    <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Manufacturer" DisplayMemberBinding="{Binding Manufacturer }"/>
-                    <GridViewColumn Header="Model" DisplayMemberBinding="{Binding Model }"/>
-                    <GridViewColumn Header="ModelCodes" DisplayMemberBinding="{Binding ModelCodes }"/>
-                    <GridViewColumn Header="OsBuild" DisplayMemberBinding="{Binding OsBuild }"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Manufacturer" DisplayMemberBinding="{Binding Manufacturer }"/>
+                        <GridViewColumn Header="Model" DisplayMemberBinding="{Binding Model }"/>
+                        <GridViewColumn Header="ModelCodes" DisplayMemberBinding="{Binding ModelCodes }"/>
+                        <GridViewColumn Header="OsBuild" DisplayMemberBinding="{Binding OsBuild }"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
 
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Load" Command="{Binding LoadCommand}" Margin="10" ToolTip="Load models"/>
-        </StackPanel>
+            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Load" Command="{Binding LoadCommand}" Margin="10" ToolTip="Load models"/>
+            </StackPanel>
 
-        <StackPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Package" Command="{Binding PackageCommand}" Margin="10"/>
-        </StackPanel>
+            <StackPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Package" Command="{Binding PackageCommand}" Margin="10"/>
+            </StackPanel>
 
-        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" >
-            <Grid.RowDefinitions>
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True">
-                <StackPanel MaxWidth="300" HorizontalAlignment="Left" MaxHeight="100" CanVerticallyScroll="True">
-                    <TextBlock TextWrapping="WrapWithOverflow">
-                        <TextBlock.Text >
-                            <MultiBinding StringFormat="Model(s): {0}">
-                                <Binding Path="SelectedCmPackage.Model" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                    
-                    <TextBlock TextWrapping="WrapWithOverflow">
-                        <TextBlock.Text >
-                            <MultiBinding StringFormat="Model Codes: {0}">
-                                <Binding Path="SelectedCmPackage.ModelCodes" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+                    <StackPanel MaxWidth="300" HorizontalAlignment="Left" MaxHeight="100" CanVerticallyScroll="True">
+                        <TextBlock TextWrapping="WrapWithOverflow">
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Model(s): {0}">
+                                    <Binding Path="SelectedCmPackage.Model" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
 
-                    <TextBlock>
-                        <TextBlock.Text >
-                            <MultiBinding StringFormat="Manufacturer: {0}">
-                                <Binding Path="SelectedCmPackage.Manufacturer" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                    <TextBlock>
-                        <TextBlock.Text >
-                            <MultiBinding StringFormat="Operating System: {0} ({1})">
-                                <Binding Path="SelectedCmPackage.Os" Mode="OneWay"/>
-                                <Binding Path="SelectedCmPackage.OsBuild" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                    <TextBlock>
-                        <TextBlock.Text >
-                            <MultiBinding StringFormat="Released: {0}">
-                                <Binding Path="SelectedCmPackage.Released" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
+                        <TextBlock TextWrapping="WrapWithOverflow">
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Model Codes: {0}">
+                                    <Binding Path="SelectedCmPackage.ModelCodes" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
 
-                    <TextBlock TextWrapping="WrapWithOverflow">
-                        <TextBlock.Text >
-                            <MultiBinding StringFormat="Installer: {0}">
-                                <Binding Path="SelectedCmPackage.InstallerFile" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
+                        <TextBlock>
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Manufacturer: {0}">
+                                    <Binding Path="SelectedCmPackage.Manufacturer" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock>
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Operating System: {0} ({1})">
+                                    <Binding Path="SelectedCmPackage.Os" Mode="OneWay"/>
+                                    <Binding Path="SelectedCmPackage.OsBuild" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock>
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Released: {0}">
+                                    <Binding Path="SelectedCmPackage.Released" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
 
-                    <TextBlock TextWrapping="WrapWithOverflow">
-                        <TextBlock.Text >
-                            <MultiBinding StringFormat="Readme: {0}">
-                                <Binding Path="SelectedCmPackage.ReadmeFile" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                </StackPanel>
-            </ScrollViewer>
+                        <TextBlock TextWrapping="WrapWithOverflow">
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Installer: {0}">
+                                    <Binding Path="SelectedCmPackage.InstallerFile" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
 
-            <Button Grid.Column="0" Content="Copy" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,30,15" Command="{Binding CopyInfoCommand}" />
-        </Grid>
+                        <TextBlock TextWrapping="WrapWithOverflow">
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Readme: {0}">
+                                    <Binding Path="SelectedCmPackage.ReadmeFile" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
 
-        <StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
-            <StatusBar.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                    </Grid>
-                </ItemsPanelTemplate>
-            </StatusBar.ItemsPanel>
-            <StatusBarItem Grid.Column="0">
-                <TextBlock Text="{Binding StatusMessage}"  />
-            </StatusBarItem>
-            <StatusBarItem Grid.Column="2">
-                <ProgressBar 
+                <Button Grid.Column="0" Content="Copy" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,30,15" Command="{Binding CopyInfoCommand}" />
+            </Grid>
+
+            <StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+                <StatusBarItem Grid.Column="0">
+                    <TextBlock Text="{Binding StatusMessage}"  />
+                </StatusBarItem>
+                <StatusBarItem Grid.Column="2">
+                    <ProgressBar 
                     IsIndeterminate="{Binding IsBusy}"
                     Value="0" 
                     Visibility="Visible" 
                     Width="150" 
                     Height="15" 
                     Background="Transparent" BorderThickness="1"/>
-            </StatusBarItem>
-        </StatusBar>
-
-    </Grid>
+                </StatusBarItem>
+            </StatusBar>
+        </Grid>
+    </DockPanel>
 </Window>
