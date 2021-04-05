@@ -20,7 +20,7 @@ module LenovoCatalog =
     let downloadCatalog cacheFolderPath =
         result {
             let! destinationFile = getLocalLenvoCatalogXmlFilePath cacheFolderPath
-            let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml"), true, destinationFile)
+            let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml")) true destinationFile
             return downloadResult
         }    
     
@@ -208,7 +208,7 @@ module LenovoCatalog =
     let downloadCatalogv2 cacheFolderPath =
         result {
             let! destinationFile = getLocalLenvoCatalogv2XmlFilePath cacheFolderPath
-            let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalogv2.xml"), true, destinationFile)
+            let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalogv2.xml")) true destinationFile
             return downloadResult
         }
 

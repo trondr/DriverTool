@@ -71,7 +71,7 @@ module Web =
                 logger.Info(sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList)
                 webProxy
     
-    let downloadFileBase (sourceUri:Uri, force, destinationFilePath:FileSystem.Path) =
+    let downloadFile (sourceUri:Uri) force (destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
             let webProxy = getWebProxy DriverTool.Library.Configuration.getWebProxyUrl DriverTool.Library.Configuration.getWebProxyByPassOnLocal DriverTool.Library.Configuration.getWebProxyByPassList
@@ -91,9 +91,6 @@ module Web =
         with
         | ex -> Result.Error (new Exception(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (getAccumulatedExceptionMessages ex), ex))
     
-    let downloadFile (sourceUri:Uri, force, destinationFilePath) =
-        genericLoggerResult LogLevel.Debug downloadFileBase (sourceUri, force, destinationFilePath)
-
     let hasSameFileHash downloadInfo =
         (DriverTool.Library.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
 
@@ -115,6 +112,34 @@ module Web =
     let downloadIsRequired logger downloadInfo =        
         ((String.IsNullOrEmpty(downloadInfo.SourceChecksum) && (not (Cryptography.isTrusted downloadInfo.DestinationFile) ))||(not (hasSameFileHash downloadInfo))) && (not (useCachedVersion logger downloadInfo))
     
+
+    let useCachedVersion2' (logger:Common.Logging.ILog) (fileExists:string->bool) (destinationFile:FileSystem.Path) =
+        let useCachedVersionFilePath =((FileSystem.pathValue destinationFile) + ".usecachedversion")
+        let useCachedVersionFileExists = (fileExists useCachedVersionFilePath) 
+        let destinationFileExists = (fileExists (FileSystem.pathValue destinationFile))
+        let useCachedVersion = useCachedVersionFileExists && destinationFileExists          
+        match useCachedVersion with
+        |true -> 
+            logger.Warn(sprintf "Using cached version of '%A'. Skipping download." destinationFile)
+            true
+        |false -> 
+            false       
+
+    let useCachedVersion2 (destinationFile:FileSystem.Path) =        
+        useCachedVersion2' logger System.IO.File.Exists destinationFile
+
+    let downloadIsRequired2' (logger:Common.Logging.ILog) (hasSameFileHashF:(FileSystem.Path*string option*Int64 option->bool)) (useCachedVersionF:FileSystem.Path->bool) sourceChecksum sourceFileSize destinationFile =
+        let doNotUseCachedVersion = not (useCachedVersionF destinationFile)
+        let doesNotHaveSameFileHash = not (hasSameFileHashF (destinationFile, sourceChecksum, sourceFileSize))        
+        doesNotHaveSameFileHash && doNotUseCachedVersion
+
+    let downloadIsRequired2 sourceChecksum sourceFileSize destinationFile =
+        downloadIsRequired2' logger DriverTool.Library.Checksum.hasSameFileHash2 useCachedVersion2 sourceChecksum sourceFileSize destinationFile 
+
+
+
+
+
     type HasSameFileHashFunc = (DownloadInfo) -> bool
     type IsTrustedFunc = FileSystem.Path -> bool
 
@@ -145,7 +170,7 @@ module Web =
     let downloadIfDifferent (logger, downloadInfo, ignoreVerificationErrors) =        
         match (downloadIsRequired logger downloadInfo) with
         |true -> 
-            match (downloadFile (downloadInfo.SourceUri, true, downloadInfo.DestinationFile)) with
+            match (downloadFile downloadInfo.SourceUri true downloadInfo.DestinationFile) with
             |Ok s -> 
                 verifyDownload logger downloadInfo ignoreVerificationErrors
             |Result.Error ex -> Result.Error (new Exception(sprintf "Failed to download '%A' due to: %s " downloadInfo.SourceUri ex.Message, ex))
@@ -175,3 +200,43 @@ module Web =
     let getFolderNameFromUrl (url:string) =
         let fileName = getFileNameFromUrl url
         url.Replace(fileName,"").Trim(System.IO.Path.AltDirectorySeparatorChar)
+
+    type WebFileSource = {Url:Uri; Checksum:string option; Size:Int64 option; FileName:string}
+    type WebFileDestination = {DestinationFile:FileSystem.Path}
+    type WebFileDownload = {Source:WebFileSource;Destination:WebFileDestination}
+
+    let toOptionalString value =
+        match value with
+        |null -> None
+        |value when String.IsNullOrWhiteSpace(value) -> None
+        |_ -> Some value
+    
+    let toOptionalSize size =
+        match size with
+        |size when size > 0L -> Some size
+        |_ -> None
+
+    let getFileNameFromUri (uri:Uri) =
+        System.IO.Path.GetFileName(uri.LocalPath)
+
+    let toWebFileSource url checksum size =
+        result{
+            let! uri = toUri url
+            let optionalChecksum = toOptionalString checksum
+            let optionalSize = toOptionalSize size
+            let fileName = getFileNameFromUri uri
+            let webFileSource =
+                {
+                    Url = uri
+                    Checksum = optionalChecksum
+                    Size = optionalSize
+                    FileName = fileName
+                }
+            return webFileSource
+        }
+
+    let toWebFileDownload url checksum size destinationFile =
+        result{
+            let! webFileSource = toWebFileSource url checksum size
+            return {Source=webFileSource;Destination={DestinationFile=destinationFile}}
+        }

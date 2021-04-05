@@ -8,7 +8,7 @@ open DriverTool.Library.F
 open DriverTool.Library
 open DriverTool.Library.ManufacturerTypes
 open DriverTool.Packaging
-open DriverTool.Library.WebDownload
+open DriverTool.Library.Web
 open DriverTool.Library.Messages
 
 [<TestFixture>]

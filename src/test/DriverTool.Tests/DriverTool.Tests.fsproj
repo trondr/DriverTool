@@ -77,7 +77,6 @@
     <Compile Include="PathTests.fs" />
     <Compile Include="WmiHelperTests.fs" />
     <Compile Include="WebTests.fs" />
-    <Compile Include="WebDownloadTests.fs" />
     <Compile Include="WebParsingTests.fs" />
     <Compile Include="LenovoCatalogXmlTests.fs" />
     <Compile Include="LenovoCatalogTests.fs" />
@@ -103,8 +102,8 @@
     <Compile Include="RegExpTests.fs" />
     <Compile Include="CsvOperationTests.fs" />
     <Compile Include="UiModelsTests.fs" />
-    <Compile Include="_TemplateTests.fs" />	
-	<EmbeddedResource Include="TestData\TestDataXmlHelper.xml" />
+    <Compile Include="_TemplateTests.fs" />
+    <EmbeddedResource Include="TestData\TestDataXmlHelper.xml" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64_tampered.exe" />
     <EmbeddedResource Include="TestData\HPCatalog\HPClientDriverPackCatalog.xml" />

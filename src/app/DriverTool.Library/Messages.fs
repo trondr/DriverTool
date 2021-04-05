@@ -10,7 +10,7 @@ module Messages =
     open DriverTool.Library.ManufacturerTypes
     open DriverTool.Library.PathOperations
     open DriverTool.Library.PackageDefinition
-    open DriverTool.Library.WebDownload
+    open DriverTool.Library.Web
 
     type SccmPackageInfoDownloadContext = {
         Manufacturer:Manufacturer

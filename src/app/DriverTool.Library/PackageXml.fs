@@ -7,7 +7,7 @@ module PackageXml =
     open DriverTool.Library
     open DriverTool.Library.XmlHelper
     open DriverTool.Library.Web
-    open DriverTool.Library.WebDownload
+    
     open System
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageXml"
         
@@ -193,7 +193,7 @@ module PackageXml =
                 let! destinationFile = getDestinationFilePath destinationDirectory packageFile
                 let webFileDestination = {DestinationFile=destinationFile}
                 let! sourceUrl = optionToResult (sprintf "Failed to get source url for package file: %A" packageFile) packageFile.Url 
-                let! webFileSource = (DriverTool.Library.WebDownload.toWebFileSource sourceUrl.OriginalString packageFile.Checksum packageFile.Size) 
+                let! webFileSource = (DriverTool.Library.Web.toWebFileSource sourceUrl.OriginalString packageFile.Checksum packageFile.Size) 
                 let webFileDownload = {Source=webFileSource;Destination=webFileDestination}
                 return webFileDownload            
             }

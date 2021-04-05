@@ -114,7 +114,7 @@ module LenovoUpdates =
                         |None -> Result.Error (toException (sprintf "Source url for external file '%s' has not been defined." f.Name) None)
                         |Some sourceUri->                                
                             result{
-                                let fileName = WebDownload.getFileNameFromUri sourceUri
+                                let fileName = Web.getFileNameFromUri sourceUri
                                 let! destinationFilePath = FileSystem.path (getDownloadCacheFilePath (FileSystem.pathValue cacheFolderPath) fileName)
                                 let downloadInfo = {SourceUri=sourceUri;SourceChecksum=f.Checksum;SourceFileSize=f.Size;DestinationFile=destinationFilePath;}
                                 let! downloadInfo2 = downloadIfDifferent (logger, downloadInfo, (ignoreVerificationErrors downloadInfo))

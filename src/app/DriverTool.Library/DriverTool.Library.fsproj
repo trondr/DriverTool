@@ -152,7 +152,6 @@
     <Compile Include="OperatingSystemCode.fs" />
     <Compile Include="RegExp.fs" />
     <Compile Include="Web.fs" />
-    <Compile Include="WebDownload.fs" />
     <Compile Include="UpdatesContext.fs" />
     <Compile Include="InstallXml.fs" />
     <Compile Include="PackageXml.fs" />

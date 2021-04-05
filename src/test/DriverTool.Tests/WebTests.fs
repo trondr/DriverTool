@@ -12,6 +12,10 @@ module WebTests =
     open DriverTool.Library.F
     open DriverTool.Library
 
+    [<SetUp>]    
+    let setup () =
+        DriverTool.Library.Logging.configureConsoleLogging()
+
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
     [<TestCase(true,true,true,true)>]
@@ -113,12 +117,155 @@ module WebTests =
         let actual =  DriverTool.Library.Web.useCachedVersionBase logger (stubFileExists destinationFileName useCacheVersionFileName) downloadInfo
         Assert.AreEqual(expected,actual,"")
 
+
+    //Source: https://stackoverflow.com/questions/1105593/get-file-name-from-uri-string-in-c-sharp
+    [<Test>]    
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase("","",false)>]
+    [<TestCase("test","test",false)>]
+    [<TestCase("/test","test",false)>]
+    [<TestCase("/test.xml","test.xml",false)>]
+    [<TestCase("/test.xml?q=1&x=3","test.xml",false)>]
+    [<TestCase("test.xml?q=1&x=3","test.xml",false)>]
+    [<TestCase("http://www.a.com/test.xml?q=1&x=3","test.xml",true)>]
+    [<TestCase("http://www.a.com/test.xml?q=1&x=3#aidjsf","test.xml",true)>]
+    [<TestCase("http://www.a.com/a/b/c/d","d",true)>]
+    [<TestCase("http://www.a.com/a/b/c/d/","",true)>]
+    let getFileNameFromUriTests (url:string, expectedFileName:string, isSuccess:bool) =
+        match(result{
+            let! uri = toUri url
+            let actualFileName = getFileNameFromUri uri
+            return actualFileName
+        }) with
+        |Result.Ok f ->
+            Assert.AreEqual(expectedFileName,f,"File name was not expected.")
+            Assert.IsTrue(isSuccess,"Expected to succede, but failed")
+        |Result.Error ex ->
+            Assert.IsFalse(isSuccess,sprintf "Expected to fail, but succeded. %s" ex.Message)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]    
+    let toOptionalStringTest_Null_None () =
+        let actual = toOptionalString null
+        Assert.AreEqual(None,actual)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]    
+    let toOptionalStringTest_EmptyString_None () =
+        let actual = toOptionalString ""
+        Assert.AreEqual(None,actual)
+    
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]    
+    let toOptionalStringTest_StringWithOnlyWhiteSpace_None () =
+        let actual = toOptionalString "   "
+        Assert.AreEqual(None,actual)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]    
+    let toOptionalStringTest_String_Some () =
+        let actual = toOptionalString "SomeString"
+        Assert.AreEqual(Some "SomeString",actual)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]     
+    let toOptionalSize_0_None () =
+        let actual = toOptionalSize 0L
+        Assert.AreEqual(None,actual)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]     
+    let toOptionalSize_Negative_None () =
+        let actual = toOptionalSize -12L
+        Assert.AreEqual(None,actual)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]     
+    let toOptionalSize_Postive_None () =
+        let actual = toOptionalSize 12L
+        Assert.AreEqual(Some 12L,actual)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]    
+    let toWebSourceFileTests_Fail () =
+        let isSuccess = false
+        match(result{
+            let url = ""
+            let size = 0L
+            let checksum = ""
+            let! actual = toWebFileSource url checksum size 
+            return actual
+        })with
+        |Result.Ok v ->            
+            Assert.IsTrue(isSuccess,sprintf "Expected to succede, but failed. %A" v)
+        |Result.Error ex ->
+            Assert.IsFalse(isSuccess,sprintf "Expected to fail, but succeded. %s" ex.Message)
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]    
+    let toWebSourceFileTests_Success () =
+        let isSuccess = true
+        match(result{
+            let url = "htt://some.com/test.xml"
+            let size = 0L
+            let checksum = ""
+            let! actual = toWebFileSource url checksum size 
+            return actual
+        })with
+        |Result.Ok actual ->            
+            let expected = {Url = new System.Uri("htt://some.com/test.xml");Checksum=None;Size=None;FileName="test.xml"}
+            Assert.AreEqual(expected,actual)
+            Assert.IsTrue(isSuccess,sprintf "Expected to succede, but failed. %A" actual)
+        |Result.Error ex ->
+            Assert.IsFalse(isSuccess,sprintf "Expected to fail, but succeded. %s" ex.Message)
+
+    module HasSameFileHash = 
+        [<Literal>]
+        let True = true
+        [<Literal>]
+        let False = false
+
+    module UseCachedVersion = 
+        [<Literal>]
+        let True = true
+        [<Literal>]
+        let False = false
+    
+    [<Test>]
+    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.False, UseCachedVersion.False, Expected.True)>]
+    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.False, UseCachedVersion.True, Expected.False)>]
+    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.True, UseCachedVersion.False, Expected.False)>]    
+    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.True, UseCachedVersion.True, Expected.False)>]
+
+    let downloadIsRequiredTests (destinationFile,doesHaveSameFileHash,doUseCachedVersion, expected) =
+        
+        let destinationFilePath = (FileSystem.pathUnSafe destinationFile)
+        let stubHasSameFileHash (destinationFilePath:FileSystem.Path,sourceChecksum:string option,sourceFileSize:System.Int64 option) =
+            doesHaveSameFileHash
+
+        let stubUseCachedVersion (destinationFile:FileSystem.Path) =
+            doUseCachedVersion
+
+        let downloadInfo =
+            {
+                SourceUri=new Uri("http://dummy")
+                SourceChecksum=""
+                SourceFileSize=0L
+                DestinationFile=FileSystem.pathUnSafe destinationFile
+            }
+        let actual = downloadIsRequired2' logger stubHasSameFileHash stubUseCachedVersion (Some "SomeDummyCheckSum") (Some 12345L) destinationFilePath
+        Assert.AreEqual(expected,actual,"")
+
 [<TestFixture>]
 module ManualWebTest =
     open DriverTool.Library.F
     open DriverTool.Library
     open DriverTool
     
+    [<SetUp>]    
+    let setup () =
+        DriverTool.Library.Logging.configureConsoleLogging()
+
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
     [<TestCase("http://downloads.dell.com/FOLDER05405866M/1/7480-win10-A10-2CHK6.CAB",@"c:\temp\7480-win10-A10-2CHK6.CAB")>]
@@ -128,10 +275,12 @@ module ManualWebTest =
                 {
                     let! uri = Web.toUri sourceUrl
                     let! destinationFilePath = FileSystem.path destinationFile
-                    let! downloadedDestinationFilePath = Web.downloadFile (uri,true,destinationFilePath)
+                    let! downloadedDestinationFilePath = Web.downloadFile uri true destinationFilePath
                     return downloadedDestinationFilePath
                 }
         match res with
         |Ok _ -> Assert.IsTrue(true)
         |Error ex -> Assert.Fail(ex.Message)
         ()
+
+
