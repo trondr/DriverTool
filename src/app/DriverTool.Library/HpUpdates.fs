@@ -166,12 +166,6 @@ module HpUpdates =
             }
         } 
 
-    let downloadCmPackage (cacheDirectory, cmPackage:CmPackage) =
-        result{            
-            let! notImplemented = Result.Error (toException "Not implemented" None)            
-            return notImplemented
-        }
-
     let extractSccmPackage (downloadedSccmPackage:DownloadedSccmPackageInfo, destinationPath:FileSystem.Path) =
         logger.Info("Extracting Sccm Driver Package ...")
         result{
