@@ -15,6 +15,7 @@
     open DriverTool.Library.PackageXml    
     open System.Windows
     
+    [<AllowNullLiteral>]
     type CmPackageViewModel(cmPackage:CmPackage) =
         inherit BaseViewModel()
         let mutable isSelected = false
@@ -70,8 +71,7 @@
         let mutable removePackageCommand = null
         let mutable copyInfoCommand = null
         let mutable statusMessage = "Ready"
-        let mutable selectedCmPackage = null
-
+        let mutable selectedCmPackage:CmPackageViewModel = null
         let currentDispatcher =
             System.Windows.Application.Current.Dispatcher
 
