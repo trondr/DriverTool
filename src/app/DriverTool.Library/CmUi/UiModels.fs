@@ -15,14 +15,15 @@ module UiModels =
         }
 
     let loadSccmPackages (cacheFolderPath:FileSystem.Path) =
-        let manufacturers = FSharpType.GetUnionCases typeof<ManufacturerTypes.Manufacturer>
-        let updateFunctions = manufacturers|> Array.map(fun m -> 
-                                                            let manufacturer = FSharpValue.MakeUnion(m,[|(m.Name:>obj)|]):?> ManufacturerTypes.Manufacturer
-                                                            let getFunc = DriverTool.Updates.getSccmPackagesFunc manufacturer
-                                                            getFunc                                                            
-                                                        )
         result{            
+            let manufacturers = FSharpType.GetUnionCases typeof<ManufacturerTypes.Manufacturer>
+            let updateFunctions = manufacturers|> Array.map(fun m -> 
+                                                                let manufacturer = FSharpValue.MakeUnion(m,[|(m.Name:>obj)|]):?> ManufacturerTypes.Manufacturer
+                                                                let getFunc = DriverTool.Updates.getSccmPackagesFunc manufacturer
+                                                                getFunc                                                            
+                                                            )
             let! sccmPackagesArray = updateFunctions |> Array.map (fun f -> f(cacheFolderPath)) |> toAccumulatedResult
             let sccmpackages = sccmPackagesArray |> Seq.toArray |> Array.concat
             return sccmpackages
         }
+    

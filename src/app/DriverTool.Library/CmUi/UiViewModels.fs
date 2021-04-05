@@ -183,7 +183,7 @@
                         async{
                             updateUi (fun () -> this.IsBusy <- true)
                             updateUi (fun () -> this.StatusMessage <- "Loading information about CM driver packages for supported vendors...")
-                            logger.Warn("TODO: Loading...")
+                            logger.Warn("Loading CM driver package infos...")
                             
                             match(result{
                                 let! cacheFolderPath = getCacheFolderPath()                                
@@ -198,7 +198,7 @@
                             |Result.Error ex -> logger.Error(sprintf "Failed to load sccm packages due to %s" ex.Message)
                             
                             Async.Sleep 3000 |> Async.RunSynchronously
-                            logger.Warn("TODO: Loading finished!")
+                            logger.Warn("Finished loading CM driver package infos!")
                             updateUi (fun () -> this.IsBusy <- false)
                             updateUi (fun () -> this.StatusMessage <- "Ready")
                             }|> Async.startAsPlainTask
