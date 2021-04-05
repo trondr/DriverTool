@@ -43,6 +43,12 @@ module Updates =
         |Manufacturer.Dell _ -> DellUpdates.downloadSccmPackage
         |Manufacturer.HP _ -> HpUpdates.downloadSccmPackage
         |Manufacturer.Lenovo _ -> LenovoUpdates.downloadSccmPackage
+
+    let downloadCmPackageFunc (manufacturer:Manufacturer) = 
+        match manufacturer with
+        |Manufacturer.Dell _ -> DellUpdates.downloadCmPackage
+        |Manufacturer.HP _ -> HpUpdates.downloadCmPackage
+        |Manufacturer.Lenovo _ -> LenovoUpdates.downloadCmPackage
         
     let extractSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with

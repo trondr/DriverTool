@@ -88,6 +88,10 @@ module PackageXml =
         OsBuild:string
     }
 
+    type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
+
+    type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
+
     type CmPackage = {
         Manufacturer:string
         Model: string
@@ -100,9 +104,9 @@ module PackageXml =
         WmiQuery:string
     }
 
-    type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
+    type DownloadedCmPackage = { InstallerPath:string; ReadmePath:string option; CmPackage:CmPackage}
 
-    type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
+    type ExtractedCmPackageInfo = { ExtractedDirectoryPath:string; DownloadedCmPackage:DownloadedCmPackage;}
     
     let getDestinationReadmePath destinationDirectory packageInfo =
         if(String.IsNullOrWhiteSpace(packageInfo.Readme.Name)) then

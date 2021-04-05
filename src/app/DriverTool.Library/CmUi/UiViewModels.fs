@@ -28,12 +28,26 @@
         member this.Released = cmPackage.Released
         member this.InstallerFile = cmPackage.InstallerFile
         member this.ReadmeFile = cmPackage.ReadmeFile
+        member this.WmiQuery = cmPackage.WmiQuery
         member this.IsSelected
             with get() =                
                 isSelected
             and set(value) =                
                 base.SetProperty(&isSelected,value)|>ignore
         
+        static member ToCmPackage(cmPackageViewModel: CmPackageViewModel) :CmPackage =
+            {
+                Model = cmPackageViewModel.Model
+                ModelCodes = cmPackageViewModel.ModelCodes.Split([|'|'|])
+                Manufacturer = cmPackageViewModel.Manufacturer
+                Os = cmPackageViewModel.Os
+                OsBuild = cmPackageViewModel.OsBuild
+                Released = cmPackageViewModel.Released
+                InstallerFile = cmPackageViewModel.InstallerFile
+                ReadmeFile = cmPackageViewModel.ReadmeFile
+                WmiQuery = cmPackageViewModel.WmiQuery
+            }
+
         override this.ToString() =            
                 match info with
                 | null -> 
@@ -55,6 +69,8 @@
                             .ToString()
                     info
                 | _ -> info
+
+
     
     type CmPackagesViewModel() =
         inherit BaseViewModel()
@@ -83,7 +99,7 @@
                 a.Invoke()
             else
                 currentDispatcher.BeginInvoke(DispatcherPriority.Background,a) |> ignore
-                    
+        
         let createAsyncCommand action canExecute onError =
             let a = new System.Func<Task>(fun o -> action(o))            
             let c = new System.Func<obj,bool>(fun obj -> canExecute(obj))
@@ -240,18 +256,29 @@
                 match packageCommand with
                 |null ->
                     packageCommand <-                    
-                        createAsyncCommand (fun _ -> 
-                                        this.IsBusy <- true
+                        createAsyncCommand (fun _ ->                                        
                                         async{
-                                            updateUi (fun () -> this.StatusMessage <- "Packaging CM drivers...")
-                                            logger.Warn("TODO: Packaging...")
-                                            this.ToBePackagedCmPackages.Where(fun cmp-> true) |> Seq.toArray |> Array.map(fun cmp -> 
-                                            logger.Warn(sprintf "TODO: Packaging '%s'..." cmp.Model)
-                                            Async.Sleep 3000 |> Async.RunSynchronously                                            
-                                            ) |> ignore                                            
-                                            logger.Warn("TODO: Packaging done!")
-                                            updateUi (fun () -> this.IsBusy <- false)
-                                            updateUi (fun () -> this.StatusMessage <- "Ready")
+                                            this.ReportProgress true None "TODO: Packaging CM driver packages..."
+                                            let logPackagingResult (r:Result<_,Exception>) =
+                                                match r with
+                                                |Result.Ok p -> this.ReportProgress true None (sprintf "Succesfully created CM driver package: %A" p)
+                                                |Result.Error ex -> logger.Error(sprintf "Failed to create CM driver package due to: %s" (getAccumulatedExceptionMessages ex))
+                                                r                                                                                                                                
+                                            match(result{
+                                                let! cacheFolderPath = getCacheFolderPath()                                
+                                                let! downloadedCmPackages =
+                                                    this.ToBePackagedCmPackages.Select(fun cmp-> cmp) 
+                                                    |> Seq.toArray 
+                                                    |> Seq.map CmPackageViewModel.ToCmPackage
+                                                    |> Seq.map (packageSccmPackage cacheFolderPath this.ReportProgress)
+                                                    |> Seq.map logPackagingResult                                                    
+                                                    |> toAccumulatedResult                                                    
+                                                return downloadedCmPackages |> Seq.toArray
+                                            })with
+                                            |Result.Ok _ -> this.ReportProgress false None "Successfully packaged CM packages"
+                                            |Result.Error ex -> logger.Error(sprintf "Failed to package CM driver packages due to %s" (getAccumulatedExceptionMessages ex))
+                                            this.ReportProgress true None "TODO: Done packaging CM driver packages!"
+                                            this.ReportProgress false None "Ready"                                            
                                         } |> Async.startAsPlainTask                                    
                                     ) (fun _ -> this.IsNotBusy && this.ToBePackagedCmPackages.Count > 0) (fun ex -> logger.Error(ex.Message))
                     packageCommand
