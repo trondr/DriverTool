@@ -31,7 +31,7 @@
 
         <!--Source: https://stackoverflow.com/questions/833943/watermark-hint-text-placeholder-textbox-->
         <Grid>
-            <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" Text="{Binding SearchText}"/>
+            <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged, Delay=500}"/>
             <TextBlock IsHitTestVisible="False" Text="Search models" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
@@ -47,7 +47,7 @@
         </Grid>
 
         <ListView Grid.Row="1" Grid.Column="0" 
-                  ItemsSource="{Binding CmPackages}" 
+                  ItemsSource="{Binding CmPackagesView}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedCmPackages}" 
                   SelectedItem="{Binding SelectedCmPackage}"
                   >

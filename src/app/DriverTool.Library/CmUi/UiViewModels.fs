@@ -72,6 +72,8 @@
         let mutable copyInfoCommand = null
         let mutable statusMessage = "Ready"
         let mutable selectedCmPackage:CmPackageViewModel = null
+        let mutable cmPackagesViewSource:System.Windows.Data.CollectionViewSource = null
+        
         let currentDispatcher =
             System.Windows.Application.Current.Dispatcher
 
@@ -103,7 +105,9 @@
         member this.SearchText
             with get() = searchText
             and set(value) =
-                base.SetProperty(&searchText,value)|>ignore
+                if(base.SetProperty(&searchText,value)) then
+                    this.CmPackagesView.Refresh()
+                    ()
 
         member this.StatusMessage
             with get() = statusMessage
@@ -123,6 +127,25 @@
                     cmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
                     cmPackages
                 |_ -> cmPackages
+
+        member this.CmPackagesView
+            with get(): System.ComponentModel.ICollectionView =
+                match cmPackagesViewSource with
+                |null ->
+                    cmPackagesViewSource <- new System.Windows.Data.CollectionViewSource()
+                    cmPackagesViewSource.Source <- this.CmPackages                    
+                    cmPackagesViewSource.Filter.AddHandler(new System.Windows.Data.FilterEventHandler(fun sender fe -> 
+                    (
+                        match fe.Item with
+                        | :? CmPackageViewModel -> 
+                            let cmPackage = fe.Item :?> CmPackageViewModel
+                            fe.Accepted <- 
+                                System.String.IsNullOrEmpty(this.SearchText) || cmPackage.Model.Contains(this.SearchText) || cmPackage.ModelCodes.Contains(this.SearchText) || cmPackage.OsBuild.Contains(this.SearchText)
+                            ()
+                        | _ -> ()
+                    )))
+                    cmPackagesViewSource.View 
+                |_ -> cmPackagesViewSource.View
 
         member this.SelectedCmPackages
             with get() = 
