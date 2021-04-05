@@ -55,7 +55,7 @@
                             .ToString()
                     info
                 | _ -> info
-
+    
     type CmPackagesViewModel() =
         inherit BaseViewModel()
     
