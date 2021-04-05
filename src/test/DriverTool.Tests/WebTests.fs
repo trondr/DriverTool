@@ -231,31 +231,6 @@ module WebTests =
         [<Literal>]
         let False = false
     
-    [<Test>]
-    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.False, UseCachedVersion.False, Expected.True)>]
-    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.False, UseCachedVersion.True, Expected.False)>]
-    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.True, UseCachedVersion.False, Expected.False)>]    
-    [<TestCase("c:\\temp\\file1.txt",HasSameFileHash.True, UseCachedVersion.True, Expected.False)>]
-
-    let downloadIsRequiredTests (destinationFile,doesHaveSameFileHash,doUseCachedVersion, expected) =
-        
-        let destinationFilePath = (FileSystem.pathUnSafe destinationFile)
-        let stubHasSameFileHash (destinationFilePath:FileSystem.Path,sourceChecksum:string option,sourceFileSize:System.Int64 option) =
-            doesHaveSameFileHash
-
-        let stubUseCachedVersion (destinationFile:FileSystem.Path) =
-            doUseCachedVersion
-
-        let downloadInfo =
-            {
-                SourceUri=new Uri("http://dummy")
-                SourceChecksum=""
-                SourceFileSize=0L
-                DestinationFile=FileSystem.pathUnSafe destinationFile
-            }
-        let actual = downloadIsRequired2' logger stubHasSameFileHash stubUseCachedVersion (Some "SomeDummyCheckSum") (Some 12345L) destinationFilePath
-        Assert.AreEqual(expected,actual,"")
-
 [<TestFixture>]
 module ManualWebTest =
     open DriverTool.Library.F
