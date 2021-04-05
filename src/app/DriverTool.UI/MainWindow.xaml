@@ -32,7 +32,10 @@
 
             <!--Source: https://stackoverflow.com/questions/833943/watermark-hint-text-placeholder-textbox-->
             <Grid>
-                <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged, Delay=500}"/>
+                <TextBox  Width="250"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTextBox" Margin="5" 
+                          Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                          ToolTip="Search filter based on model name, model codes or operating system build."
+                          />
                 <TextBlock IsHitTestVisible="False" Text="Search models" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
@@ -68,8 +71,8 @@
             </ListView>
 
             <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
-                <Button Content="-&gt;" Command="{Binding AddPackageCommand}" Margin="10"/>
-                <Button Content="&lt;-" Command="{Binding RemovePackageCommand}" Margin="10"/>
+                <Button Content="-&gt;" Command="{Binding AddPackageCommand}" Margin="10" ToolTip="Add model to packaging list"/>
+                <Button Content="&lt;-" Command="{Binding RemovePackageCommand}" Margin="10" ToolTip="Remove model packaging list"/>
             </StackPanel>
 
             <Label Grid.Row="0" Grid.Column="2" Content="To be packaged:"></Label>
@@ -78,6 +81,7 @@
                   ItemsSource="{Binding ToBePackagedCmPackages}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedToBePackagedCmPackages}"
                   SelectedItem="{Binding SelectedCmPackage}"
+                  ToolTip="Package CM package for this list of models."
         >
                 <ListView.ItemContainerStyle>
                     <Style TargetType="{x:Type ListViewItem}">
@@ -95,11 +99,11 @@
             </ListView>
 
             <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Load" Command="{Binding LoadCommand}" Margin="10" ToolTip="Load models"/>
+                <Button Content="Load" Command="{Binding LoadCommand}" Margin="10" ToolTip="Load models from vendor web sites"/>
             </StackPanel>
 
             <StackPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Package" Command="{Binding PackageCommand}" Margin="10"/>
+                <Button Content="Package" Command="{Binding PackageCommand}" Margin="10" ToolTip="Download and package CM drivers for all listed models."/>
             </StackPanel>
 
             <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" >
@@ -170,7 +174,7 @@
                     </StackPanel>
                 </ScrollViewer>
 
-                <Button Grid.Column="0" Content="Copy" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,30,15" Command="{Binding CopyInfoCommand}" />
+                <Button Grid.Column="0" Content="Copy" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,30,15" Command="{Binding CopyInfoCommand}" ToolTip="Copy model info to clipboard and to console window."/>
             </Grid>
 
             <StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
