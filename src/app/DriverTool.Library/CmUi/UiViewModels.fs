@@ -124,7 +124,7 @@
                 match cmPackages with
                 | null ->
                     cmPackages <- new ObservableRangeCollection<CmPackageViewModel>()                    
-                    cmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
+                    cmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
                     cmPackages
                 |_ -> cmPackages
 
@@ -145,7 +145,7 @@
                             ()
                         | _ -> ()
                     )))
-                    cmPackagesViewSource.View 
+                    cmPackagesViewSource.View
                 |_ -> cmPackagesViewSource.View
 
         member this.SelectedCmPackages
@@ -279,7 +279,7 @@
                     copyInfoCommand
                 |_ -> copyInfoCommand
 
-        member internal this.OnCollectionChanged sender e = 
+        member internal this.OnCollectionChanged sender e =            
             this.RaiseCanExecuteChanged()            
             ()
 
