@@ -248,15 +248,21 @@ module DellUpdates=
             let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath
             let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
             let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,existingDestinationPath)
-
-            let! copiedReadmeFilePath = 
-                FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
-
+            let! copiedReadmeFilePath = FileOperations.copyFileIfExists downloadedSccmPackage.ReadmePath destinationPath
             return (destinationPath,copiedReadmeFilePath)
         }
 
     let extractCmPackage (downloadedCmPackage:DownloadedCmPackage) (destinationPath:FileSystem.Path) =
-        Result.Error (toException "Not Implemented" None)
+        logger.Info("Extract Sccm Driver Package CAB...")
+        result{
+            let! installerPath = FileSystem.path downloadedCmPackage.InstallerPath
+            let! cabFilepath = FileOperations.ensureFileExtension ".cab" installerPath
+            let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath
+            let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
+            let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,existingDestinationPath)
+            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedCmPackage.ReadmePath destinationPath
+            return (destinationPath)
+        }
 
     let toReleaseId downloadedPackageInfo =
         sprintf "%s-%s" (downloadedPackageInfo.Package.Installer.Name.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate

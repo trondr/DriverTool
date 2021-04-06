@@ -35,7 +35,11 @@ module UiModels =
             
             logger.Warn("Preparing package folder...")
             let! destinationRootFolderPath = FileSystem.path @"c:\temp\D"
-            let packageName = sprintf "%s %s %s CM Drivers 1.0" cmPackage.Manufacturer (cmPackage.ModelCodes.[0]) cmPackage.OsBuild
+            let osBuild = 
+                match(cmPackage.OsBuild)with
+                |"*" -> "All"
+                |_ -> cmPackage.OsBuild
+            let packageName = sprintf "%s %s %s CM Drivers 1.0" cmPackage.Manufacturer (cmPackage.ModelCodes.[0]) osBuild
             let! packageFolderPath = 
                 PathOperations.combinePaths2 destinationRootFolderPath packageName
                 |>DirectoryOperations.ensureFolderPathExists' true (Some "Package folder does not exist.")

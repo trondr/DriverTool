@@ -264,4 +264,20 @@ module FileOperations =
         |Result.Ok p -> Result.Ok p
         |Result.Error _ ->            
             Result.Ok destinationFolderPath
-     
+    
+    let copyFileIfExists' sourceFile destinationFolderPath = 
+        match sourceFile with
+        | Some sf ->
+            match(result{
+                let! sourceFilePath = FileSystem.path sf
+                let! existingSourceFilePath = FileSystem.existingFilePath sourceFilePath
+                let! verifiedSourceFilePath = FileSystem.path (FileSystem.pathValue existingSourceFilePath)
+                let fileName = PathOperations.getFileNameFromPath sourceFilePath
+                let! destinationFilePath = PathOperations.combinePaths2 destinationFolderPath fileName    
+                let! copiedFilePath = copyFile true verifiedSourceFilePath destinationFilePath
+                return copiedFilePath
+            }) with
+            |Result.Ok p -> Result.Ok p
+            |Result.Error _ ->            
+                Result.Ok destinationFolderPath
+        |None -> Result.Ok destinationFolderPath

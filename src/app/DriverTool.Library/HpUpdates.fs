@@ -195,11 +195,7 @@ module HpUpdates =
             let! exitCode = 
                 ProcessOperations.startConsoleProcess' (installerPath,arguments1,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0|])
                 |>ProcessOperations.onError ProcessOperations.startConsoleProcess' (installerPath,arguments2,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0|])
-            let! copiedReadmeFile =
-                match downloadedCmPackage.ReadmePath with
-                |Some rf ->             
-                    FileOperations.copyFileIfExists rf destinationPath
-                |None -> FileSystem.path downloadedCmPackage.InstallerPath
+            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedCmPackage.ReadmePath destinationPath            
             return (destinationPath)
         }
 

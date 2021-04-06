@@ -395,11 +395,8 @@ module LenovoUpdates =
                     |Ok _ -> Result.Ok destinationPath
                     |Result.Error ex -> Result.Error (toException  ("Failed to extract CM package due to: " + ex.Message) (Some ex))
                 |Result.Error ex -> Result.Error (toException  ("CM package installer not found due to: " + ex.Message) (Some ex))
-            let! copiedReadmeFilePath =
-                match downloadedCmPackage.ReadmePath with
-                | Some rf -> (FileOperations.copyFileIfExists rf destinationPath)
-                | None -> FileSystem.path downloadedCmPackage.InstallerPath  //If readme is not defined return the installer file.
-            return (installerExtractedFolder)
+            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedCmPackage.ReadmePath destinationPath
+            return (destinationPath)
         }        
         
     let toReleaseId downloadedPackageInfo =
