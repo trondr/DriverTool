@@ -48,12 +48,12 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.downloadSccmPackage
         |Manufacturer.Lenovo _ -> LenovoUpdates.downloadSccmPackage
 
-    let downloadCmPackage (cacheDirectory, cmPackage:CmPackage) =
+    let downloadCmPackage cacheDirectory reportProgress (cmPackage:CmPackage) =
         result{
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory cmPackage.InstallerFile.FileName
             let! installerUri = toUri cmPackage.InstallerFile.Url
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = cmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
+            let! installerInfo = Web.downloadIfDifferent logger reportProgress installerDownloadInfo false
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
             let! readmePath =
                 match cmPackage.ReadmeFile with
@@ -62,7 +62,7 @@ module Updates =
                         let! readmeDestinationFilePath = PathOperations.combinePaths2 cacheDirectory readmeFile.FileName
                         let! readmeUri = toUri readmeFile.Url
                         let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = readmeFile.Checksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
-                        let! readmeInfo = Web.downloadIfDifferent (logger,readmeDownloadInfo,false)
+                        let! readmeInfo = Web.downloadIfDifferent logger reportProgress readmeDownloadInfo false
                         let readmePath = FileSystem.pathValue readmeInfo.DestinationFile
                         return Some readmePath
                     }

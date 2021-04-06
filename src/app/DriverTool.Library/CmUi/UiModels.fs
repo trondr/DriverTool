@@ -34,7 +34,7 @@ module UiModels =
             let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(cmPackage.Manufacturer,false)
             reportProgress true None (sprintf "Downloading CM Drivers for model %s..." cmPackage.Model)
             let downloadCmPackage = DriverTool.Updates.downloadCmPackageFunc manufacturer
-            let! downloadedCmPackage = downloadCmPackage (cacheFolderPath,cmPackage)
+            let! downloadedCmPackage = downloadCmPackage cacheFolderPath reportProgress cmPackage
             reportProgress true None (sprintf "TODO: Extract CM Drivers for model %s" cmPackage.Model)
             reportProgress true None (sprintf "TODO: Package CM Drivers for model %s" cmPackage.Model)
             let! notImplemented = Result.Error (toException "Not implemented" None)            

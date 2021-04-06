@@ -96,7 +96,7 @@ module LenovoUpdates =
                 let sourceUri = new Uri(packageXmlInfo.Location)
                 let! destinationFilePath = getTempXmlFilePathFromUri cacheFolderPath sourceUri
                 let downloadInfo = {SourceUri=sourceUri;SourceChecksum=packageXmlInfo.CheckSum;SourceFileSize=0L;DestinationFile=destinationFilePath;}                
-                let! downloadInfo2 = downloadIfDifferent (logger, downloadInfo, (ignoreVerificationErrors downloadInfo))
+                let! downloadInfo2 = downloadIfDifferent logger reportProgressStdOut downloadInfo (ignoreVerificationErrors downloadInfo)
                 let dpi = packageXmlInfo2downloadedPackageXmlInfo (packageXmlInfo, downloadInfo2.DestinationFile)
                 return dpi
             }
@@ -117,7 +117,7 @@ module LenovoUpdates =
                                 let fileName = Web.getFileNameFromUri sourceUri
                                 let! destinationFilePath = FileSystem.path (getDownloadCacheFilePath (FileSystem.pathValue cacheFolderPath) fileName)
                                 let downloadInfo = {SourceUri=sourceUri;SourceChecksum=f.Checksum;SourceFileSize=f.Size;DestinationFile=destinationFilePath;}
-                                let! downloadInfo2 = downloadIfDifferent (logger, downloadInfo, (ignoreVerificationErrors downloadInfo))
+                                let! downloadInfo2 = downloadIfDifferent logger reportProgressStdOut downloadInfo (ignoreVerificationErrors downloadInfo)
                                 return downloadInfo2
                             }
                         )                    
@@ -173,7 +173,7 @@ module LenovoUpdates =
             let modelInfoUri = getModelInfoUri context.Model context.OperatingSystem
             let! modelInfoXmlFilePath = getModelInfoXmlFilePath cacheFolderPath context.Model context.OperatingSystem            
             let downloadInfo = DriverTool.Library.Web.toDownloadInfo modelInfoUri String.Empty 0L modelInfoXmlFilePath                
-            let! downloadedInfo = DriverTool.Library.Web.downloadIfDifferent (logger, downloadInfo,true)
+            let! downloadedInfo = DriverTool.Library.Web.downloadIfDifferent logger reportProgressStdOut downloadInfo true
             let! packageXmlInfos = loadPackagesXml downloadedInfo.DestinationFile
             let! downloadedPackageXmls = downloadPackageXmls cacheFolderPath packageXmlInfos
             let! packageInfos = 
@@ -357,13 +357,13 @@ module LenovoUpdates =
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
             let! installerUri = toUri sccmPackage.InstallerFile.Url
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
+            let! installerInfo = Web.downloadIfDifferent logger reportProgressStdOut installerDownloadInfo false
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             let! readmeDestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.ReadmeFile.FileName
             let! readmeUri = toUri sccmPackage.ReadmeFile.Url
             let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeFile.Checksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
-            let! readmeInfo = Web.downloadIfDifferent (logger,readmeDownloadInfo,false)
+            let! readmeInfo = Web.downloadIfDifferent logger reportProgressStdOut readmeDownloadInfo false
             let readmePath = FileSystem.pathValue readmeInfo.DestinationFile
 
             return {

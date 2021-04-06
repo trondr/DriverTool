@@ -86,7 +86,7 @@ module CreateDriverPackage =
 
 
     let downloadUpdate (downloadJob,ignoreVerificationErrors) =
-        DriverTool.Library.Web.downloadIfDifferent (logger, downloadJob,ignoreVerificationErrors)
+        DriverTool.Library.Web.downloadIfDifferent logger reportProgressStdOut downloadJob ignoreVerificationErrors
 
     let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
         packageInfos

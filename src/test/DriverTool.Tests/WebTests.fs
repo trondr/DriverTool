@@ -11,6 +11,7 @@ module WebTests =
     open System
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Logging
 
     [<SetUp>]    
     let setup () =
@@ -43,19 +44,19 @@ module WebTests =
                             DestinationFile=destinationFilePath       
                         }
 
-                    let actual = DriverTool.Library.Web.verifyDownloadBase (hasSameFileHasStub,isTrustedStub,loggerStub,downloadInfo,ignoreVerificationErrors)
+                    let actual = DriverTool.Library.Web.verifyDownloadBase hasSameFileHasStub isTrustedStub loggerStub downloadInfo ignoreVerificationErrors
                     let result = 
                         match actual with
-                        |Ok _ ->
+                        |Result.Ok _ ->
                             Assert.IsTrue(expected,"Did not return expected error")
                             ()
-                        |Error ex -> 
+                        |Result.Error ex -> 
                             Assert.IsFalse(expected,"Did not succeed due to: " + ex.Message)
                     return result
                 }
         match res with
-        |Ok _ -> Assert.IsTrue(true)
-        |Error ex -> Assert.Fail(ex.Message)
+        |Result.Ok _ -> Assert.IsTrue(true)
+        |Result.Error ex -> Assert.Fail(ex.Message)
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -235,7 +236,7 @@ module WebTests =
 module ManualWebTest =
     open DriverTool.Library.F
     open DriverTool.Library
-    open DriverTool
+    open DriverTool.Library.Logging
     
     [<SetUp>]    
     let setup () =
@@ -250,12 +251,15 @@ module ManualWebTest =
                 {
                     let! uri = Web.toUri sourceUrl
                     let! destinationFilePath = FileSystem.path destinationFile
-                    let! downloadedDestinationFilePath = Web.downloadFile uri true destinationFilePath
+                    let! downloadedDestinationFilePath = Web.downloadFile reportProgressStdOut uri true destinationFilePath
                     return downloadedDestinationFilePath
                 }
         match res with
-        |Ok _ -> Assert.IsTrue(true)
-        |Error ex -> Assert.Fail(ex.Message)
+        |Result.Ok _ -> Assert.IsTrue(true)
+        |Result.Error ex -> Assert.Fail(ex.Message)
         ()
+               
+            
+
 
 

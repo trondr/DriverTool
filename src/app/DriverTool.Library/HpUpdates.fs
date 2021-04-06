@@ -11,6 +11,7 @@ module HpUpdates =
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Logging
         
     let toPackageInfos sdp  =
             let pacakgeInfos =
@@ -156,7 +157,7 @@ module HpUpdates =
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
             let! installerUri = DriverTool.Library.Web.toUri sccmPackage.InstallerFile.Url
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (logger,installerDownloadInfo,false)
+            let! installerInfo = Web.downloadIfDifferent logger reportProgressStdOut installerDownloadInfo false
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             return {

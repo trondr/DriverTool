@@ -7,6 +7,7 @@ module DellCatalog =
     open System
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Logging
     open DriverTool.Library.Environment
     
     let expandExe =
@@ -29,7 +30,7 @@ module DellCatalog =
             let! existingHpCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (nonExistingHpCatalogDestinationFolderPath,true) 
             let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue cachedFolderPath,DriverTool.DellSettings.smsSdpCatalogCabFileName)
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
-            let! downloadResult = Web.downloadFile (new Uri(DriverTool.DellSettings.smsSdpCatalog)) true nonExistingDestinationCabFile
+            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri(DriverTool.DellSettings.smsSdpCatalog)) true nonExistingDestinationCabFile
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            
             let! expandResult = expandSmsSdpCabFile (existingDestinationCabFile, existingHpCatalogDestinationFolderPath)                        
             return existingHpCatalogDestinationFolderPath
@@ -45,7 +46,7 @@ module DellCatalog =
         result {
             let! destinationCabFile = getLocalDriverPackageCatalogCabFilePath cachedFolderPath
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
-            let! downloadResult = Web.downloadFile (new Uri(DriverTool.DellSettings.driverPackageCatalogCab)) true nonExistingDestinationCabFile
+            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri(DriverTool.DellSettings.driverPackageCatalogCab)) true nonExistingDestinationCabFile
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            
             let! expandResult = expandCabFile (existingDestinationCabFile, cachedFolderPath)
             let! driverPackageCatalogXmlPath = getLocalDriverPackageXmlFilePath cachedFolderPath

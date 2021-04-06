@@ -71,26 +71,29 @@ module Web =
                 logger.Info(sprintf "WebProxy='%s', BypassOnlocal=%b, ByPassList=%A" url byPassOnLocal byPassList)
                 webProxy
     
-    let downloadFile (sourceUri:Uri) force (destinationFilePath:FileSystem.Path) =
+    let downloadFile reportProgress (sourceUri:Uri) force (destinationFilePath:FileSystem.Path) =
         try
             use webClient = new WebClient()
             let webProxy = getWebProxy DriverTool.Library.Configuration.getWebProxyUrl DriverTool.Library.Configuration.getWebProxyByPassOnLocal DriverTool.Library.Configuration.getWebProxyByPassList
             webClient.Proxy <- webProxy
-            use disposable = 
-                webClient.DownloadProgressChanged.Subscribe (fun progress -> printProgress sourceUri.OriginalString progress)
+            use subscription = webClient.DownloadProgressChanged.Subscribe (fun progress -> 
+                    let percentage = (float progress.BytesReceived) / (float progress.TotalBytesToReceive) * 100.0
+                    reportProgress true (Some percentage) (sprintf "Downloading '%s'..." sourceUri.OriginalString)
+                )
             let webHeaderCollection = new WebHeaderCollection()
-            webHeaderCollection.Add("User-Agent", "DriverTool/1.0") 
+            webHeaderCollection.Add("User-Agent", "DriverTool/1.0")
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
             |Ok path -> 
-                logger.Info(sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path))
+                reportProgress true (Some 0.0) (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path))
                 let downloadTask = webClient.DownloadFileTaskAsync(sourceUri.OriginalString,FileSystem.pathValue path)                
-                Async.AwaitTask downloadTask |> Async.RunSynchronously                
+                Async.AwaitTask downloadTask |> Async.RunSynchronously            
+                reportProgress false (Some 100.0) sourceUri.OriginalString
                 Result.Ok path      
-            |Result.Error ex -> Result.Error (new Exception((sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)), ex))
+            |Result.Error ex -> toErrorResult ex (Some(sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)))
         with
-        | ex -> Result.Error (new Exception(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (getAccumulatedExceptionMessages ex), ex))
-    
+        | ex -> toErrorResult ex (Some(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (getAccumulatedExceptionMessages ex)))
+
     let hasSameFileHash downloadInfo =
         (DriverTool.Library.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
 
@@ -115,7 +118,7 @@ module Web =
     type HasSameFileHashFunc = (DownloadInfo) -> bool
     type IsTrustedFunc = FileSystem.Path -> bool
 
-    let verifyDownloadBase (hasSameFileHashFunc: HasSameFileHashFunc, isTrustedFunc: IsTrustedFunc, logger: ILog , downloadInfo, ignoreVerificationErrors) = 
+    let verifyDownloadBase (hasSameFileHashFunc: HasSameFileHashFunc) (isTrustedFunc: IsTrustedFunc) (logger: ILog) downloadInfo ignoreVerificationErrors = 
         match (hasSameFileHashFunc downloadInfo) with
         |true  -> 
             logger.Info(sprintf  "Destination file ('%A') hash match source file ('%A') hash." (downloadInfo.DestinationFile) (downloadInfo.SourceUri) )
@@ -137,12 +140,12 @@ module Web =
 
 
     let verifyDownload logger downloadInfo ignoreVerificationErrors =
-        verifyDownloadBase (hasSameFileHash,Cryptography.isTrusted,logger,downloadInfo,ignoreVerificationErrors)
+        verifyDownloadBase hasSameFileHash Cryptography.isTrusted logger downloadInfo ignoreVerificationErrors
 
-    let downloadIfDifferent (logger, downloadInfo, ignoreVerificationErrors) =        
+    let downloadIfDifferent logger reportProgress downloadInfo ignoreVerificationErrors =        
         match (downloadIsRequired logger downloadInfo) with
         |true -> 
-            match (downloadFile downloadInfo.SourceUri true downloadInfo.DestinationFile) with
+            match (downloadFile reportProgress downloadInfo.SourceUri true downloadInfo.DestinationFile) with
             |Ok s -> 
                 verifyDownload logger downloadInfo ignoreVerificationErrors
             |Result.Error ex -> Result.Error (new Exception(sprintf "Failed to download '%A' due to: %s " downloadInfo.SourceUri ex.Message, ex))
@@ -156,12 +159,12 @@ module Web =
     let toUri url =
         tryCatch (Some (sprintf "Failed to create uri '%s'." url)) toUriUnsafe url 
 
-    let downloadWebFile (logger,destinationFolderPath:FileSystem.Path) (webFile:WebFile) =
+    let downloadWebFile logger reportProgress (destinationFolderPath:FileSystem.Path) (webFile:WebFile) =
         result{
             let! destinationFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,webFile.FileName))
             let! sourceUri = toUri webFile.Url
             let downloadInfo = { SourceUri = sourceUri;SourceChecksum = webFile.Checksum;SourceFileSize = webFile.Size;DestinationFile = destinationFilePath}
-            let! downloadedInfo = downloadIfDifferent (logger,downloadInfo,false)            
+            let! downloadedInfo = downloadIfDifferent logger reportProgress downloadInfo false
             return downloadedInfo
         }
 

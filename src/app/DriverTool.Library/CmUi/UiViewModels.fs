@@ -89,6 +89,8 @@
         let mutable statusMessage = "Ready"
         let mutable selectedCmPackage:CmPackageViewModel = null
         let mutable cmPackagesViewSource:System.Windows.Data.CollectionViewSource = null
+        let mutable progressValue = 0.0
+        let mutable progressIsIndeterminate = false
         
         let currentDispatcher =
             System.Windows.Application.Current.Dispatcher
@@ -310,15 +312,32 @@
                 base.IsBusy <- value
                 this.RaiseCanExecuteChanged()
 
+        member this.ProgressValue
+            with get() = progressValue
+            and set(value) =
+                base.SetProperty(&progressValue,value)|>ignore
+
+        member this.ProgressIsIndeterminate
+            with get() = progressIsIndeterminate
+            and set(value) =
+                base.SetProperty(&progressIsIndeterminate,value)|>ignore
+
         member private this.ReportProgress (isBusy:bool) (percent:float option) (message:string) =
             updateUi (fun () -> 
-                    if(message.Contains("TODO:")) then
-                        logger.Warn(message)
-                    else
-                        logger.Info(message)                    
-                    this.StatusMessage <- message
                     this.IsBusy <- isBusy
-                    logger.Warn("TODO: Report progress percentage")
+                    match percent with
+                    |Some p ->
+                        this.ProgressValue <- p
+                        this.ProgressIsIndeterminate <-false
+                        reportProgressStdOut isBusy percent message
+                    |None ->
+                        this.ProgressValue <- 0.0
+                        this.ProgressIsIndeterminate <-isBusy
+                        if(message.Contains("TODO:")) then
+                            logger.Warn(message)
+                        else
+                            logger.Info(message)                        
+                    this.StatusMessage <- message
                     ()
                 )
             ()

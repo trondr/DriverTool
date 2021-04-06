@@ -13,6 +13,7 @@ module DellUpdates=
     open FSharp.Collections.ParallelSeq
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Logging
 
     type DellUpdates = class end
     let logger = DriverTool.Library.Logging.getLoggerByName(typeof<DellUpdates>.Name)
@@ -232,7 +233,7 @@ module DellUpdates=
             let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
             let! installerUri = toUri sccmPackage.InstallerFile.Url
             let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent (logger, installerDownloadInfo,false)
+            let! installerInfo = Web.downloadIfDifferent logger reportProgressStdOut installerDownloadInfo false
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             return {

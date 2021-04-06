@@ -11,6 +11,7 @@ module LenovoCatalog =
     open DriverTool.Library.F0
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Logging
 
     let logger = DriverTool.Library.Logging.getLoggerByName "LenovoCatalog"
 
@@ -20,7 +21,7 @@ module LenovoCatalog =
     let downloadCatalog cacheFolderPath =
         result {
             let! destinationFile = getLocalLenvoCatalogXmlFilePath cacheFolderPath
-            let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml")) true destinationFile
+            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml")) true destinationFile
             return downloadResult
         }    
     
@@ -86,8 +87,8 @@ module LenovoCatalog =
 
     let getReleaseDateFromUrl (url:string) =
         match (tryCatch (Some (sprintf "Failed to get release date from url '%s'." url)) getReleaseDateFromUrlBase url) with
-        |Ok r -> r
-        |Error ex -> raise ex
+        |Result.Ok r -> r
+        |Result.Error ex -> raise ex
     
     type DownloadType = |Unknown = 0|Readme = 1|Installer = 2
 
@@ -208,7 +209,7 @@ module LenovoCatalog =
     let downloadCatalogv2 cacheFolderPath =
         result {
             let! destinationFile = getLocalLenvoCatalogv2XmlFilePath cacheFolderPath
-            let! downloadResult = Web.downloadFile (new Uri("https://download.lenovo.com/cdrt/td/catalogv2.xml")) true destinationFile
+            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri("https://download.lenovo.com/cdrt/td/catalogv2.xml")) true destinationFile
             return downloadResult
         }
 

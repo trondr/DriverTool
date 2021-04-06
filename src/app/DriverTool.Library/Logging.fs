@@ -185,3 +185,22 @@ namespace DriverTool.Library
         let throwExceptionWithLogging (logger:Common.Logging.ILog) (errorMessage:string) =
             logger.Error(errorMessage)
             failwith errorMessage
+        
+        /// Make sure progress info is output to the console in a nice and orderly fashion from multiple threads.
+        let progressActor = 
+            MailboxProcessor.Start(fun inbox -> 
+                let rec messageLoop() = async{
+                    let! msg = inbox.Receive()
+                    printf "%s" msg
+                    return! messageLoop()
+                    }        
+                messageLoop()
+                )
+
+        ///Report progress to stdout
+        let reportProgressStdOut isBusy percentage message =
+            match percentage with
+            |Some p ->
+                progressActor.Post (sprintf "%.2f: %-47s (IsBusy: %b)\r" p message isBusy)
+            |None -> 
+                progressActor.Post (sprintf "%-47s (IsBusy: %b)\r" message isBusy)
