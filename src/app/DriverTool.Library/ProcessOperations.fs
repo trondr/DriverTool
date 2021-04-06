@@ -113,6 +113,24 @@ module ProcessOperations =
         let message = (Some (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments))
         tryCatch7 message startConsoleProcessUnsafe filePath arguments workingDirectory timeout inputData logFileName appendToLogFile
     
+    let startConsoleProcess' (filePath, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile, successExitCodes) =
+        result{
+            let! exitCode = startConsoleProcess (filePath, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) 
+            let optionalSuccess = successExitCodes|>Array.tryFind(fun ec -> ec = exitCode)
+            let! exitCodeResult = 
+                match optionalSuccess with
+                |Some ec -> Result.Ok ec
+                |None -> Result.Error (toException (sprintf "ERROR: '%s' %s (Exit Code: %d)" (FileSystem.pathValue filePath) arguments exitCode) None)
+            return exitCodeResult
+        }
+
+
+    let onError f i r =
+        match r with
+        |Result.Ok _ -> r
+        |Result.Error _ ->
+            f i
+
     let startProcess fileName arguments (workingDirectory: FileSystem.Path option) waitForExit =
         try
             let startInfo = new ProcessStartInfo()            

@@ -183,7 +183,25 @@ module HpUpdates =
         }
 
     let extractCmPackage (downloadedCmPackage:DownloadedCmPackage) (destinationPath:FileSystem.Path) =
-        Result.Error (toException "Not Implemented" None)
+        logger.Info("Extracting CM Driver Package ...")
+        result{
+            let! installerPath = FileSystem.path downloadedCmPackage.InstallerPath
+            let! exeFilepath = FileOperations.ensureFileExtension ".exe" installerPath
+            let! existingExeFilePath = FileOperations.ensureFileExists exeFilepath  
+            let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
+            //There are two different kinds of CM packages for HP. Trying first one set of command line arguments, if that fails try the other.
+            let arguments1 = sprintf "-PDF -F \"%s\" -S -E" (FileSystem.pathValue destinationPath)
+            let arguments2 = sprintf "/s /e /f \"%s\"" (FileSystem.pathValue destinationPath)
+            let! exitCode = 
+                ProcessOperations.startConsoleProcess' (installerPath,arguments1,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0|])
+                |>ProcessOperations.onError ProcessOperations.startConsoleProcess' (installerPath,arguments2,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0|])
+            let! copiedReadmeFile =
+                match downloadedCmPackage.ReadmePath with
+                |Some rf ->             
+                    FileOperations.copyFileIfExists rf destinationPath
+                |None -> FileSystem.path downloadedCmPackage.InstallerPath
+            return (destinationPath)
+        }
 
     let toReleaseId downloadedPackageInfo =
         sprintf "%s-%s" (downloadedPackageInfo.Package.Installer.Name.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate
