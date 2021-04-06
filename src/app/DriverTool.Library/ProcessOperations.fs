@@ -48,7 +48,7 @@ module ProcessOperations =
         if (not (String.IsNullOrWhiteSpace(processExitData.StdError))) then
             writeToLog logger.Error processExitData.StdError
 
-    let startConsoleProcessUnsafe (fileName, arguments, workingDirectory, timeout:int, inputData, logFileName, appendToLogFile) =
+    let startConsoleProcessUnsafe fileName arguments workingDirectory timeout inputData logFileName appendToLogFile =
         let startInfo = new ProcessStartInfo()
         startInfo.CreateNoWindow <- true
         startInfo.UseShellExecute <- false
@@ -109,7 +109,8 @@ module ProcessOperations =
         processExitData.ExitCode
     
     let startConsoleProcess (filePath, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
-        tryCatch (Some (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments)) startConsoleProcessUnsafe (filePath, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) 
+        let message = (Some (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments))
+        tryCatch7 message startConsoleProcessUnsafe filePath arguments workingDirectory timeout inputData logFileName appendToLogFile
     
     let startProcess fileName arguments (workingDirectory: FileSystem.Path option) waitForExit =
         try
