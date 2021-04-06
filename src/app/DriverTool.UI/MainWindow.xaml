@@ -226,13 +226,32 @@
                     <TextBlock Text="{Binding StatusMessage}"  />
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="2">
+                    <Grid>
                     <ProgressBar 
-                    IsIndeterminate="{Binding ProgressIsIndeterminate}"
-                    Value="{Binding ProgressValue}"
-                    Visibility="Visible" 
-                    Width="150" 
-                    Height="15" 
-                    Background="Transparent" BorderThickness="1"/>
+                        IsIndeterminate="{Binding ProgressIsIndeterminate}"
+                        Value="{Binding ProgressValue}"
+                        Visibility="Visible" 
+                        Width="150" 
+                        Height="15" 
+                        Background="Transparent" BorderThickness="1"
+                        x:Name="DtProgressBar"
+                        />
+                        <TextBlock Text="{Binding ElementName=DtProgressBar, Path=Value, StringFormat={}{0:0}%}" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center" >
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=DtProgressBar, Path=Value}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                    
                 </StatusBarItem>
             </StatusBar>
         </Grid>
