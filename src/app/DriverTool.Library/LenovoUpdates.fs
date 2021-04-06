@@ -352,18 +352,11 @@ module LenovoUpdates =
             return sccmPackages
         }
     
-    let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
-        result{
-            let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
-            let! installerUri = toUri sccmPackage.InstallerFile.Url
-            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent logger reportProgressStdOut installerDownloadInfo false
-            let installerPath = FileSystem.pathValue installerInfo.DestinationFile
-
-            let! readmeDestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.ReadmeFile.FileName
-            let! readmeUri = toUri sccmPackage.ReadmeFile.Url
-            let readmeDownloadInfo = { SourceUri = readmeUri;SourceChecksum = sccmPackage.ReadmeFile.Checksum;SourceFileSize = 0L;DestinationFile = readmeDestinationFilePath}
-            let! readmeInfo = Web.downloadIfDifferent logger reportProgressStdOut readmeDownloadInfo false
+    let downloadSccmPackage (cacheFolderPath, sccmPackage:SccmPackageInfo) =
+        result{            
+            let! installerInfo = Web.downloadWebFile logger reportProgressStdOut cacheFolderPath sccmPackage.InstallerFile
+            let installerPath = FileSystem.pathValue installerInfo.DestinationFile            
+            let! readmeInfo = Web.downloadWebFile logger reportProgressStdOut cacheFolderPath sccmPackage.ReadmeFile            
             let readmePath = FileSystem.pathValue readmeInfo.DestinationFile
 
             return {

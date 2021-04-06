@@ -228,12 +228,9 @@ module DellUpdates=
             return cmPackages
         }
     
-    let downloadSccmPackage (cacheDirectory, sccmPackage:SccmPackageInfo) =
-        result{
-            let! installerdestinationFilePath = PathOperations.combinePaths2 cacheDirectory sccmPackage.InstallerFile.FileName
-            let! installerUri = toUri sccmPackage.InstallerFile.Url
-            let installerDownloadInfo = { SourceUri = installerUri;SourceChecksum = sccmPackage.InstallerFile.Checksum;SourceFileSize = 0L;DestinationFile = installerdestinationFilePath}
-            let! installerInfo = Web.downloadIfDifferent logger reportProgressStdOut installerDownloadInfo false
+    let downloadSccmPackage (cacheFolderPath, sccmPackage:SccmPackageInfo) =
+        result{            
+            let! installerInfo = Web.downloadWebFile logger reportProgressStdOut cacheFolderPath sccmPackage.InstallerFile
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             return {
