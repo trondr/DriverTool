@@ -110,7 +110,7 @@ module HpUpdates =
                     Result.Ok 
                             {
                                 Manufacturer= "HP"
-                                Model=products|>Array.map(fun dp -> dp.SystemName) |> String.concat ", "
+                                Model=products|>Array.map(fun dp -> dp.SystemName) |>Array.distinct |> String.concat ", "
                                 ModelCodes=products|>Array.map(fun dp -> dp.SystemId.Split([|','|]) )|>Array.concat |> Array.map(fun s -> s.Trim())
                                 ReadmeFile = 
                                     Some {
