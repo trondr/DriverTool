@@ -60,14 +60,6 @@ module WebTests =
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
-    [<TestCase(30,30,100,"Test message"," 30% (        30 of        100): Test message                                   \r")>]
-    let progressMessageTest (percentage,count,totalCount,message,expectedProgressMessage)=
-        let actual = progressMessage percentage count totalCount message
-        Assert.AreEqual(expectedProgressMessage,actual)
-        
-
-    [<Test>]
-    [<Category(TestCategory.UnitTests)>]
     [<TestCase("http://ftp.hp.com/pub/softpaq/sp65001-65500/sp65001.html","sp65001.html")>]
     let getFileNameFromUrlTests (url, expected) =
         let actual = Web.getFileNameFromUrl url

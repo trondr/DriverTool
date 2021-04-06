@@ -40,28 +40,6 @@ module Web =
         | XmlFile _ -> true
         | _ -> false
     
-    //open FSharp.Control.Reactive
-
-
-    /// <summary>
-    /// progressActor makes sure progress info is output to the console nicely and orderly from multiple threads.
-    /// </summary>
-    let progressActor = 
-        MailboxProcessor.Start(fun inbox -> 
-            let rec messageLoop() = async{
-                let! msg = inbox.Receive()
-                printf "%s" msg
-                return! messageLoop()
-                }        
-            messageLoop()
-            )
-
-    let progressMessage percentage count totalCount msg =
-        sprintf "%3i%% (%10i of %10i): %-47s\r" percentage count totalCount msg
-        
-    let printProgress sourceUri (progress:DownloadProgressChangedEventArgs) = 
-        progressActor.Post (progressMessage progress.ProgressPercentage progress.BytesReceived progress.TotalBytesToReceive sourceUri)
-
     let getWebProxy (webProxyUrl:string) (byPassOnLocal:bool) (byPassList:string[]) = 
         match webProxyUrl with
         | "" -> null
