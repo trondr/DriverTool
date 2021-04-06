@@ -194,7 +194,7 @@ module HpUpdates =
             let arguments2 = sprintf "/s /e /f \"%s\"" (FileSystem.pathValue destinationPath)
             let! exitCode = 
                 ProcessOperations.startConsoleProcess' (installerPath,arguments1,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0|])
-                |>ProcessOperations.onError ProcessOperations.startConsoleProcess' (installerPath,arguments2,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0|])
+                |>ProcessOperations.onError ProcessOperations.startConsoleProcess' (installerPath,arguments2,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0;1168|])
             let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedCmPackage.ReadmePath destinationPath            
             return (destinationPath)
         }
