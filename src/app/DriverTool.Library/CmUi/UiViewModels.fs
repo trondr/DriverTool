@@ -50,7 +50,7 @@
 
         override this.ToString() =            
                 match info with
-                | null -> 
+                | null ->                    
                     info <- 
                         let sb = new System.Text.StringBuilder()
                         sb.AppendFormat("Model(s): {0}", this.Model)
@@ -115,8 +115,8 @@
             new CmPackageViewModel (cmPackage)
 
         do
-            logger <- getLoggerByName "DriverTool.Library.CmUi"
-            base.Title <- "Sccm Packages"
+            logger <- Logger<CmPackagesViewModel>()
+            base.Title <- "DriverTool - CM Device Drivers Packaging"
             
         member this.SearchText
             with get() = searchText

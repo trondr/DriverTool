@@ -7,7 +7,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:viewModels="clr-namespace:DriverTool.Library.CmUi;assembly=DriverTool.Library"
         mc:Ignorable="d"
-        Title="DriverTool - Packaging CM Device Drivers" 
+        Title="{Binding Title}"
         Height="600"
         Width="1024"
         Icon="NCmdLiner.ico">

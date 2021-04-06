@@ -67,7 +67,7 @@ namespace DriverTool.Library
         let cachedLogFactory =
             memoize logFactory
             
-        let Logger<'T> = 
+        let Logger<'T>() = 
             cachedLogFactory(typeof<'T>)
 
         type System.Object with
