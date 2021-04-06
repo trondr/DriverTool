@@ -30,8 +30,8 @@ module DirectoryOperations =
             |false -> 
                 folderPath
      
-    let deleteDirectory force (folderPath:FileSystem.Path) =
-        tryCatch2 deleteDirectoryUnsafe force folderPath
+    let deleteDirectory force (folderPath:FileSystem.Path) =        
+        tryCatch2 (Some (sprintf "Failed to delete directory '%A'" folderPath)) deleteDirectoryUnsafe force folderPath
 
     let directoryPathExists (directoryPath:FileSystem.Path) =
         System.IO.Directory.Exists(FileSystem.pathValue directoryPath)
@@ -84,7 +84,7 @@ module DirectoryOperations =
         System.IO.Directory.GetDirectories(directory)
     
     let getSubDirectories directory =
-        tryCatch getSubDirectoriesUnsafe directory
+        tryCatch (Some(sprintf "Failed to get sub directories: '%s'" directory)) getSubDirectoriesUnsafe directory
 
     let getSubDirectoryPaths directoryPath =
         result{
@@ -143,7 +143,7 @@ module DirectoryOperations =
             reraise()
 
     let moveDirectory sourceFolderPath destinationFolderPath =
-        tryCatch2 moveDirectoryUnsafe sourceFolderPath destinationFolderPath
+        tryCatch2 None moveDirectoryUnsafe sourceFolderPath destinationFolderPath
         
     [<AllowNullLiteral>]
     type TemporaryFolder(logger:Common.Logging.ILog)=

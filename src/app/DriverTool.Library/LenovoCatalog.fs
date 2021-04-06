@@ -85,7 +85,7 @@ module LenovoCatalog =
             (new DateTime(1970,01,01))
 
     let getReleaseDateFromUrl (url:string) =
-        match (tryCatchWithMessage getReleaseDateFromUrlBase url (sprintf "Failed to get release date from url '%s'." url)) with
+        match (tryCatch (Some (sprintf "Failed to get release date from url '%s'." url)) getReleaseDateFromUrlBase url) with
         |Ok r -> r
         |Error ex -> raise ex
     

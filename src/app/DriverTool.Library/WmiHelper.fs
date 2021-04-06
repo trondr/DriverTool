@@ -20,7 +20,7 @@ module WmiHelper =
                     |> Seq.head
                 Result.Ok (value :?> 'T)
         with
-           | _ as ex -> toErrorResult (sprintf "Failed to get wmi property for class '%s' property name '%s'" className propertyName) (Some ex)
+           | _ as ex -> toErrorResult ex (Some(sprintf "Failed to get wmi property for class '%s' property name '%s'" className propertyName))
     
     let getWmiProperty (nameSpace:string) (className : string) (propertyName : string) : Result<'T, Exception> = 
         try
@@ -40,5 +40,5 @@ module WmiHelper =
                     |> Seq.head
                 Result.Ok (value :?> 'T)
         with
-           | _ as ex -> toErrorResult (sprintf "Failed to get wmi property for namespace '%s' class '%s' property name '%s'" nameSpace className propertyName) (Some ex)
+           | _ as ex -> toErrorResult ex (Some(sprintf "Failed to get wmi property for namespace '%s' class '%s' property name '%s'" nameSpace className propertyName))
 

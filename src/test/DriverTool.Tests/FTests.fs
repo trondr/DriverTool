@@ -12,7 +12,7 @@ module FTests =
     let tryCatchSuccessTest() =
         let testfunctionSuccess p1 =                
             "test value" + p1
-        let actualResult = tryCatch testfunctionSuccess ""
+        let actualResult = tryCatch None testfunctionSuccess ""
         match actualResult with
         |Ok actual -> Assert.AreEqual("test value",actual,"Unexpected value")
         |Error e -> Assert.Fail(sprintf "This test failed unexpectedly due: %s" e.Message)        
@@ -23,7 +23,7 @@ module FTests =
         let testfunctionSuccess p1 =    
             raise (new System.Exception("test"))
             "test value" + p1
-        let actualResult = tryCatch testfunctionSuccess ""
+        let actualResult = tryCatch None testfunctionSuccess ""
         match actualResult with
         |Ok _ -> Assert.Fail("This test should have failed")
         |Error e -> Assert.AreEqual("test",e.Message,"Unexpected exception message")    
@@ -35,7 +35,7 @@ module FTests =
         let testFunctionN number =
             raise(new Exception(errorMessage + number.ToString()))
             number + 1
-        let res = tryCatchWithMessage testFunctionN 10 "Dummy message."
+        let res = tryCatch (Some "Dummy message.") testFunctionN 10
         match res with
         |Ok v -> Assert.AreEqual(11,v)
         |Error ex -> 
@@ -56,7 +56,7 @@ module FTests =
         
                 Result.Ok (functionThatThrows())
             with
-            |ex -> toErrorResult "Test Message." (Some ex)
+            |ex -> toErrorResult ex  (Some "Test Message.")
 
         match actual with
         |Ok v -> Assert.Fail("Expected error result, got success result")

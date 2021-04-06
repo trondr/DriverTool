@@ -18,45 +18,54 @@ module F=
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     let (|?) lhs rhs = (if lhs = null then rhs else lhs)
-    
-    let tryCatch<'T, 'R> f  (t:'T) : Result<'R, Exception> =
+
+    let tryCatch<'T, 'R> (message:string option) f  (t:'T) : Result<'R, Exception> =
         try
             Result.Ok (f t)
         with
-            | ex -> Result.Error (sourceException ex)
+            | ex -> toErrorResult ex message
 
-    let tryCatchWithMessage<'T,'R> f (t:'T) message : Result<'R, Exception> =
-        try
-            Result.Ok (f t)
-        with
-            | ex -> toErrorResult message (Some ex)
-
-    let tryCatch2<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) : Result<'R, Exception> =
+    let tryCatch2<'T1,'T2, 'R> (message:string option) f (t1:'T1) (t2:'T2) : Result<'R, Exception> =
         try
             Result.Ok (f t1 t2)
         with
-            | ex -> Result.Error (sourceException ex)
+            | ex -> toErrorResult ex message
 
-    let tryCatch2WithMessage<'T1,'T2, 'R> f  (t1:'T1) (t2:'T2) message : Result<'R, Exception> =
-        try
-            Result.Ok (f t1 t2)
-        with
-            | ex -> toErrorResult message (Some ex)
-
-    let tryCatch3<'T1,'T2, 'T3, 'R> f  (t1:'T1) (t2:'T2) (t3:'T3) : Result<'R, Exception> =
+    let tryCatch3<'T1,'T2, 'T3, 'R> (message:string option) f (t1:'T1) (t2:'T2) (t3:'T3) : Result<'R, Exception> =
         try
             Result.Ok (f t1 t2 t3)
         with
-            | ex -> Result.Error (sourceException ex)
+            | ex -> toErrorResult ex message
 
-    let tryCatch3WithMessage<'T1,'T2, 'T3, 'R> f  (t1:'T1) (t2:'T2) (t3:'T3) message : Result<'R, Exception> =
+    let tryCatch4<'T1,'T2, 'T3, 'T4, 'R> (message:string option) f (t1:'T1) (t2:'T2) (t3:'T3) (t4:'T4) : Result<'R, Exception> =
         try
-            Result.Ok (f t1 t2 t3)
+            Result.Ok (f t1 t2 t3 t4)
         with
-            | ex ->                
-                toErrorResult message (Some ex)
+            | ex -> toErrorResult ex message
 
+    let tryCatch5<'T1,'T2, 'T3, 'T4, 'T5, 'R> (message:string option) f (t1:'T1) (t2:'T2) (t3:'T3) (t4:'T4) (t5:'T5) : Result<'R, Exception> =
+        try
+            Result.Ok (f t1 t2 t3 t4 t5)
+        with
+            | ex -> toErrorResult ex message
 
+    let tryCatch6<'T1,'T2, 'T3, 'T4, 'T5, 'T6, 'R> (message:string option) f (t1:'T1) (t2:'T2) (t3:'T3) (t4:'T4) (t5:'T5) (t6:'T6) : Result<'R, Exception> =
+        try
+            Result.Ok (f t1 t2 t3 t4 t5 t6)
+        with
+            | ex -> toErrorResult ex message
+
+    let tryCatch7<'T1,'T2, 'T3, 'T4, 'T5, 'T6, 'T7, 'R> (message:string option) f (t1:'T1) (t2:'T2) (t3:'T3) (t4:'T4) (t5:'T5) (t6:'T6) (t7:'T7) : Result<'R, Exception> =
+        try
+            Result.Ok (f t1 t2 t3 t4 t5 t6 t7)
+        with
+            | ex -> toErrorResult ex message
+
+    let tryCatch8<'T1,'T2, 'T3, 'T4, 'T5, 'T6, 'T7, 'T8, 'R> (message:string option) f (t1:'T1) (t2:'T2) (t3:'T3) (t4:'T4) (t5:'T5) (t6:'T6) (t7:'T7) (t8:'T8) : Result<'R, Exception> =
+        try
+            Result.Ok (f t1 t2 t3 t4 t5 t6 t7 t8)
+        with
+            | ex -> toErrorResult ex message
 
     //Source: http://www.fssnip.net/7UJ/title/ResultBuilder-Computational-Expression
     let ofOption error = function Some s -> Ok s | None -> Error error
@@ -127,7 +136,7 @@ module F=
                 let allValues = getAllValues resultsArray
                 Result.Ok allValues
             | _ -> 
-                toErrorResult (String.Join<string>(" ", allExceptionMessages)) None
+                toErrorResult (toException (String.Join<string>(" ", allExceptionMessages)) None) None
         accumulatedResult
 
     let getAllErrorMessages (results:seq<Result<'T,Exception>>) =         
@@ -184,7 +193,7 @@ module F=
     let nullGuardResult (obj: 'T when 'T : not struct, argumentName:string) =
         match obj with
         |Null -> 
-            toErrorResult (sprintf "Value '%s' cannot be null." argumentName) None            
+            toErrorResult (toException (sprintf "Value '%s' cannot be null." argumentName) None) None
         |NotNull v -> Result.Ok v
 
     let nullGuard (obj: 'T when 'T : not struct) (argumentName:string) =

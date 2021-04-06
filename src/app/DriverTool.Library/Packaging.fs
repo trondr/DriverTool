@@ -26,7 +26,7 @@ module Packaging=
         filePath
     
     let writeTextToFile (filePath:FileSystem.Path) (text:string) =
-        tryCatch writeTextToFileUnsafe (filePath, text)
+        tryCatch None writeTextToFileUnsafe (filePath, text)
 
     let createInstallScriptFileContent (packageIsUsingDpInst:bool, installCommandLine:string,manufacturer:Manufacturer, logDirectory:FileSystem.Path) =
         let sb = new StringBuilder()

@@ -109,7 +109,7 @@ module ProcessOperations =
         processExitData.ExitCode
     
     let startConsoleProcess (filePath, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
-        tryCatchWithMessage startConsoleProcessUnsafe (filePath, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments)
+        tryCatch (Some (sprintf "Start of console process ('%s' %s) failed." (FileSystem.pathValue filePath) arguments)) startConsoleProcessUnsafe (filePath, arguments, workingDirectory,timeout, inputData, logFileName, appendToLogFile) 
     
     let startProcess fileName arguments (workingDirectory: FileSystem.Path option) waitForExit =
         try

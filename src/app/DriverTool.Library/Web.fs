@@ -154,7 +154,7 @@ module Web =
         new Uri(url)
     
     let toUri url =
-        tryCatchWithMessage toUriUnsafe url (sprintf "Failed to create uri '%s'." url)
+        tryCatch (Some (sprintf "Failed to create uri '%s'." url)) toUriUnsafe url 
 
     let downloadWebFile (logger,destinationFolderPath:FileSystem.Path) (webFile:WebFile) =
         result{

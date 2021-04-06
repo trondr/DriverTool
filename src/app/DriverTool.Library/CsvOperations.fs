@@ -14,5 +14,5 @@ module CsvOperations =
         csvFilePath
     
     let exportToCsv (csvFilePath:FileSystem.Path, records) =
-        tryCatch exportToCsvUnsafe (csvFilePath, records)
+        tryCatch (Some (sprintf "Failed to export records to csv file '%A'" csvFilePath)) exportToCsvUnsafe (csvFilePath, records)
         

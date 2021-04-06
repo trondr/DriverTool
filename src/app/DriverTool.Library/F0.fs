@@ -32,9 +32,9 @@ module F0=
     open System
 
     let rec getAccumulatedExceptionMessages (ex: Exception) =
-                match ex.InnerException with
-                | null -> ex.Message
-                | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
+        match ex.InnerException with
+        | null -> ex.Message
+        | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
 
     let sourceException ex = 
         System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).SourceException
@@ -46,8 +46,10 @@ module F0=
         |None ->
             (new System.Exception(message))
     
-    let toErrorResult message (innerException: System.Exception option) =
-        Result.Error (toException message innerException)
+    let toErrorResult ex message =
+           match message with
+           |Some m -> Result.Error (toException m (Some ex))
+           |None -> Result.Error (sourceException ex)
 
     let arrayToSeq (array:Array) =
         seq{

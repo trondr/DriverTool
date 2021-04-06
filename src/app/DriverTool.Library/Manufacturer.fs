@@ -39,7 +39,7 @@ module ManufacturerTypes =
         |_ -> raise (new InvalidManufacturerException(sprintf "Manufacturer '%s' is not supported." manufacturer))
      
     let manufacturerStringToManufacturerBase (wmiManufacturerValueFunc:WmiManufacturerValueFunc,manufacturer:string,defaultToLocal) =
-        tryCatch manufacturerStringToManufacturerUnsafeBase (wmiManufacturerValueFunc,manufacturer,defaultToLocal)
+        tryCatch None manufacturerStringToManufacturerUnsafeBase (wmiManufacturerValueFunc,manufacturer,defaultToLocal)
 
     let manufacturerStringToManufacturer (manufacturer:string,defaultToLocal) =
         manufacturerStringToManufacturerBase (getWmiManufacturerForCurrentSystem,manufacturer,defaultToLocal)

@@ -24,7 +24,7 @@ module RegExp =
                 |>Array.map(fun p -> (new Regex(p,regexOptions)))
             Result.Ok regPatterns                
         with
-        |ex -> toErrorResult (sprintf "Failed to convert list of patterns to RegEx patterns") (Some ex)
+        |ex -> toErrorResult ex (Some (sprintf "Failed to convert list of patterns to RegEx patterns"))
 
     /// <summary>
     /// If any of the regular expressions match the input text, return true

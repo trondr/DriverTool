@@ -203,7 +203,7 @@ module InstallDriverPackage =
         ()
     
     let resetConfigFlags (): Result<unit,Exception> =
-        tryCatchWithMessage resetConfigFlagsUnsafe (()) "Failed to reset config flags."
+        tryCatch (Some "Failed to reset config flags.") resetConfigFlagsUnsafe (()) 
 
     let installDriverPackage (driverPackagePath:FileSystem.Path) =
         result{

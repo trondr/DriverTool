@@ -12,12 +12,10 @@ module FileOperations =
 
     let deleteFileUnsafe path  =
         System.IO.File.Delete (FileSystem.pathValue path)
+        path
 
     let deleteFile path = 
-        let deleteFileResult = tryCatch deleteFileUnsafe path
-        match deleteFileResult with
-        | Result.Ok _ -> Result.Ok path
-        | Result.Error ex -> Result.Error ex
+        tryCatch (Some (sprintf "Failed to delete file: %A" path)) deleteFileUnsafe path
 
     type FileExistsException(message : string) =
         inherit Exception(message)    
@@ -74,7 +72,7 @@ module FileOperations =
         destinationFilePath
     
     let copyFile force sourceFilePath destinationFilePath =
-        tryCatch3WithMessage copyFileUnsafe force sourceFilePath destinationFilePath (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)
+        tryCatch3 (Some (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)) copyFileUnsafe force sourceFilePath destinationFilePath 
 
     let copyFilePaths (destinationFolderPath) (files:seq<Path>) =
         files
@@ -178,7 +176,7 @@ module FileOperations =
         isEqual
 
     let compareFile filePath1 filePath2 =
-        tryCatchWithMessage compareFileUnsafe (filePath1, filePath2) (sprintf "Failed to compare files: '%A' <-> %A. " filePath1 filePath2)
+        tryCatch (Some (sprintf "Failed to compare files: '%A' <-> %A. " filePath1 filePath2)) compareFileUnsafe (filePath1, filePath2)
 
     let compareDirectory directoryPath1 directoryPath2 =
         imperative{

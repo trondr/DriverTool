@@ -115,7 +115,7 @@ module DellUpdates=
         |_ -> raise (new Exception(sprintf "Failed to convert os short name '%s' to Dell oscode. Only WIN10X64 and WIN10X86 are supported os shortnames." operatingSystemCode.Value))
 
     let osCodeToDellOsCodeAndArchitecture (operatingSystemCode:OperatingSystemCode) =
-        tryCatch osCodeToDellOsCodeAndArchitectureUnsafe operatingSystemCode
+        tryCatch None osCodeToDellOsCodeAndArchitectureUnsafe operatingSystemCode
 
     let driverPackageXNamespace =
         XNamespace.Get("openmanage/cm/dm")

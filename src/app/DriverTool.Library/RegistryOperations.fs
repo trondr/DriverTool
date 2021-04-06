@@ -28,7 +28,7 @@ module RegistryOperations =
         regHive.OpenSubKey(subPath,writeable)
     
     let openRegKey (regKeyPath:string, writeable:bool) =
-        tryCatch openRegKeyUnsafe  (regKeyPath, writeable)
+        tryCatch None openRegKeyUnsafe  (regKeyPath, writeable)
     
     let openRegKeyOptionalBase (regKeyPath:string, writeable:bool) loggerIsEnabled logWrite =
         let regKeyResult = openRegKey (regKeyPath,writeable)
