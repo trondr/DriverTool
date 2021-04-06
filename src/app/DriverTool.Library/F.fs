@@ -322,3 +322,10 @@ module F=
             date1
         else
             date2
+
+    /// Euclidean remainder, the proper modulo operation. Source: https://stackoverflow.com/questions/35848489/f-integer-integer-is-calculated-how/35848799
+    let inline (%!) a b = (a % b + b) % b
+
+    ///Rounds a float to a specified number of digits
+    let round (value:float) (digits:int) =
+        System.Math.Round (value, digits)
