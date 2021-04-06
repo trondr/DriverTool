@@ -182,6 +182,9 @@ module HpUpdates =
             return (destinationPath,copiedReadmeFilePath)
         }
 
+    let extractCmPackage (downloadedCmPackage:DownloadedCmPackage) (destinationPath:FileSystem.Path) =
+        Result.Error (toException "Not Implemented" None)
+
     let toReleaseId downloadedPackageInfo =
         sprintf "%s-%s" (downloadedPackageInfo.Package.Installer.Name.Replace(".exe","")) downloadedPackageInfo.Package.ReleaseDate
 

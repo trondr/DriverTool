@@ -80,6 +80,13 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.extractSccmPackage
         |Manufacturer.Lenovo _->  LenovoUpdates.extractSccmPackage
         
+    let extractCmPackageFunc (manufacturer:Manufacturer) = 
+        match manufacturer with
+        |Manufacturer.Dell _ -> DellUpdates.extractCmPackage
+        |Manufacturer.HP _ -> HpUpdates.extractCmPackage
+        |Manufacturer.Lenovo _->  LenovoUpdates.extractCmPackage
+
+
     let extractUpdateFunc (manufacturer:Manufacturer) = 
         match manufacturer with
         |Manufacturer.Dell _ -> DellUpdates.extractUpdate

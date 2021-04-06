@@ -33,12 +33,12 @@ module DirectoryOperations =
     let deleteDirectory force (folderPath:FileSystem.Path) =        
         tryCatch2 (Some (sprintf "Failed to delete directory '%A'" folderPath)) deleteDirectoryUnsafe force folderPath
 
-    let directoryPathExists (directoryPath:FileSystem.Path) =
+    let folderPathExists (directoryPath:FileSystem.Path) =
         System.IO.Directory.Exists(FileSystem.pathValue directoryPath)
 
     let ensureDirectoryExistsWithMessage createIfNotExists message directoryPath =
         let directoryExists = 
-            directoryPathExists directoryPath
+            folderPathExists directoryPath
         match (not directoryExists && createIfNotExists) with
         |true->
             logger.Info(sprintf  "Creating directory: '%s'..." (FileSystem.pathValue directoryPath))
@@ -51,17 +51,17 @@ module DirectoryOperations =
     let ensureDirectoryExists createIfNotExists directoryPath =
         ensureDirectoryExistsWithMessage createIfNotExists String.Empty directoryPath
     
-    let directoryIsEmpty directoryPath =
-         match (directoryPathExists directoryPath) with
+    let folderPathIsEmpty folderPath =
+         match (folderPathExists folderPath) with
          |true ->
-             let isEmpty = not (System.IO.Directory.GetDirectories(FileSystem.pathValue directoryPath).Length > 0 || System.IO.Directory.GetFiles(FileSystem.pathValue directoryPath).Length > 0)
+             let isEmpty = not (System.IO.Directory.GetDirectories(FileSystem.pathValue folderPath).Length > 0 || System.IO.Directory.GetFiles(FileSystem.pathValue folderPath).Length > 0)
              isEmpty
          |false -> true
     
     let ensureDirectoryExistsAndIsEmptyWithMessage  message (directoryPath:FileSystem.Path) createIfNotExists =
         match (ensureDirectoryExists createIfNotExists directoryPath) with
         |Ok dp -> 
-            match (directoryIsEmpty dp) with
+            match (folderPathIsEmpty dp) with
             |true -> Result.Ok dp
             |false -> Result.Error (new Exception(sprintf "Directory '%s' is not empty. %s" (FileSystem.pathValue dp) message))
         |Result.Error ex -> Result.Error ex
@@ -69,8 +69,38 @@ module DirectoryOperations =
     let ensureDirectoryExistsAndIsEmpty (directoryPath:FileSystem.Path, createIfNotExists) =
         ensureDirectoryExistsAndIsEmptyWithMessage String.Empty directoryPath createIfNotExists
 
+    let optionToString message =
+        match message with
+        |Some m -> m
+        |None -> String.Empty
+
+    let ensureFolderPathIsEmpty' message folderPath =
+        match folderPath with
+        |Result.Error _ -> folderPath
+        |Result.Ok fp ->
+            match (folderPathIsEmpty fp) with
+            |true -> Result.Ok fp
+            |false -> toErrorResult (toException (sprintf "Folder '%A' is not empty." fp) None) message 
+
+    let ensureFolderPathExists' force message folderPath =
+        match folderPath with
+        |Result.Error _ -> folderPath
+        |Result.Ok fp ->
+            match (folderPathExists fp) with
+            |true -> Result.Ok fp
+            |false -> 
+                match force with
+                |true -> createDirectory fp
+                |false ->            
+                    toErrorResult (toException (sprintf "Folder path  '%A' does not exist" fp) None) message
+
+    let ensurefolderPathExistsIsEmpty' force (message:string option) folderPath =
+        folderPath
+        |>ensureFolderPathExists' force message
+        |>ensureFolderPathIsEmpty' message
+
     let ensureDirectoryNotExistsWithMessage message (directoryPath:FileSystem.Path) =
-        match directoryPathExists(directoryPath) with
+        match folderPathExists(directoryPath) with
         |true -> Result.Error (new Exception(sprintf "Directory '%s' allready exists. %s" (FileSystem.pathValue directoryPath) message))
         |false -> Result.Ok directoryPath
     
@@ -127,7 +157,7 @@ module DirectoryOperations =
         |ex -> Result.Error (new Exception(sprintf "Failed to find files in folder '%s' due to: %s" (FileSystem.pathValue folder) ex.Message,ex))
     
     let deleteDirectoryIfExists folderPath =
-        match (directoryPathExists folderPath) with
+        match (folderPathExists folderPath) with
         |true -> 
             deleteDirectory true folderPath                                    
         |false -> 

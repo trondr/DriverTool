@@ -131,7 +131,7 @@ module CompressionTests=
                     use sourceTemporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! sourceTemporaryFolderPath = sourceTemporaryFolder.FolderPath
                     let! testSourceFolderPath = createTestFolder sourceFolderExists sourceTemporaryFolderPath
-                    Assert.AreEqual(sourceFolderExists, DirectoryOperations.directoryPathExists testSourceFolderPath,"Expected source folder existance zipFolder: " + sourceFolderExists.ToString())
+                    Assert.AreEqual(sourceFolderExists, DirectoryOperations.folderPathExists testSourceFolderPath,"Expected source folder existance zipFolder: " + sourceFolderExists.ToString())
                     
                     use zipFileTemporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! ziptFileTemporaryFolderPath = zipFileTemporaryFolder.FolderPath
