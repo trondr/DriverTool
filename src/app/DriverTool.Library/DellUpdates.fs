@@ -199,16 +199,18 @@ module DellUpdates=
 
     ///Parse DriverPackage xml element to CmPackage
     let toCmPackage (dp:DellDriverPackCatalog.DriverPackage) : CmPackage =        
+        let modelCodes = dp.Models |> Array.map(fun m -> m.Code) // Array of model codes
         {
             Manufacturer= "Dell"
             Model=dp.Models|> Array.map(fun m -> m.Name)|>Array.distinct|> String.concat ", " //Comma separated list of distinct model names
-            ModelCodes=dp.Models |> Array.map(fun m -> m.Code) // Array of model codes
+            ModelCodes=modelCodes
             ReadmeFile = None
             InstallerFile=dp.Installer                
             Released=DateTime.Now;
             Os= dp.OperatinSystems |> Array.map (fun os -> sprintf "%s-%s" os.OsCode os.OsArch)|>Array.distinct |> String.concat ", "
             OsBuild="*"
-            WmiQuery="TODO: Calculate WmiQuery from model codes."
+            ModelWmiQuery=toModelCodesWqlQuery modelCodes
+            ManufacturerWmiQuery = toManufacturerWqlQuery "Dell"
         }
 
     ///Download sccm driver package info from Dell web site and parse the downloaded xml into array of CmPackages
@@ -223,7 +225,7 @@ module DellUpdates=
                 |>Seq.map toCmPackage
                 |>Seq.filter(fun cp -> cp.Os.Contains("Windows10"))                
                 |>Seq.toArray                
-            logger.Warn("TODO: Dell: Calculate WmiQuery from model codes.")
+            logger.Warn("TODO: Dell: Verify WmiQuery from model codes and manufacturer.")
             logger.Info("Finished loading Dell Packages!")
             return cmPackages
         }

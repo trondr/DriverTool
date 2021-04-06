@@ -343,11 +343,11 @@ module LenovoUpdates =
                                                     Released=(DriverTool.LenovoCatalog.getReleaseDateFromUrl installerUrl);
                                                     Os= (DriverTool.LenovoCatalog.osShortNameToLenovoOs p.Os);
                                                     OsBuild=osBuild
-                                                    WmiQuery="TODO: Calculate WmiQuery from model codes."
+                                                    ModelWmiQuery=toModelCodesWqlQuery p.ModelCodes
+                                                    ManufacturerWmiQuery= toManufacturerWqlQuery "Lenovo"
                                                 }
                                             cmPackage
-                    )
-            logger.Warn("TODO: Lenovo: Calculate WmiQuery from model codes.")
+                    )            
             logger.Info("Finished loading Lenovo Sccm Packages!")
             return sccmPackages
         }

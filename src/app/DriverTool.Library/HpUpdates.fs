@@ -107,11 +107,12 @@ module HpUpdates =
                 match(softpacs|>Array.tryFind(fun sp -> sp.Id = softPackId))with
                 |Some p ->                     
                     let (osCode,osBuild)= HpCatalog.hpOsNameToOsCodeAndOsBuild products.[0].OSName
-                    Result.Ok 
+                    let modelCodes = products|>Array.map(fun dp -> dp.SystemId.Split([|','|]) )|>Array.concat |> Array.map(fun s -> s.Trim())
+                    Result.Ok                             
                             {
                                 Manufacturer= "HP"
                                 Model=products|>Array.map(fun dp -> dp.SystemName) |>Array.distinct |> String.concat ", "
-                                ModelCodes=products|>Array.map(fun dp -> dp.SystemId.Split([|','|]) )|>Array.concat |> Array.map(fun s -> s.Trim())
+                                ModelCodes= modelCodes
                                 ReadmeFile = 
                                     Some {
                                         Url = p.ReleaseNotesUrl
@@ -129,7 +130,8 @@ module HpUpdates =
                                 Released=p.DateReleased|>DateTime.Parse;
                                 Os= osCode
                                 OsBuild=osBuild
-                                WmiQuery="TODO: Calculate WmiQuery from model codes."
+                                ModelWmiQuery=toModelCodesWqlQuery modelCodes
+                                ManufacturerWmiQuery=toManufacturerWqlQuery "HP"
                             }
                 |None -> Result.Error (toException (sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' and os build '%s'" products.[0].SystemName products.[0].OSName "*") None)
             return cmPackage

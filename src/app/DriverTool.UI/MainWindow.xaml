@@ -202,6 +202,23 @@
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
+
+                        <TextBlock TextWrapping="WrapWithOverflow">
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Manufacturer WmiQuery: {0}">
+                                    <Binding Path="SelectedCmPackage.ManufacturerWmiQuery" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="WrapWithOverflow">
+                            <TextBlock.Text >
+                                <MultiBinding StringFormat="Model WmiQuery: {0}">
+                                    <Binding Path="SelectedCmPackage.ModelWmiQuery" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        
                     </StackPanel>
                 </ScrollViewer>
 

@@ -28,7 +28,8 @@
         member this.Released = cmPackage.Released
         member this.InstallerFile = cmPackage.InstallerFile
         member this.ReadmeFile = cmPackage.ReadmeFile
-        member this.WmiQuery = cmPackage.WmiQuery
+        member this.ModelWmiQuery = cmPackage.ModelWmiQuery
+        member this.ManufacturerWmiQuery = cmPackage.ManufacturerWmiQuery
         member this.IsSelected
             with get() =                
                 isSelected
@@ -45,7 +46,8 @@
                 Released = cmPackageViewModel.Released
                 InstallerFile = cmPackageViewModel.InstallerFile
                 ReadmeFile = cmPackageViewModel.ReadmeFile
-                WmiQuery = cmPackageViewModel.WmiQuery
+                ModelWmiQuery = cmPackageViewModel.ModelWmiQuery
+                ManufacturerWmiQuery = cmPackageViewModel.ManufacturerWmiQuery
             }
 
         override this.ToString() =            
@@ -66,6 +68,10 @@
                             .Append(sprintf "InstallerFile: %A" this.InstallerFile)
                             .AppendLine()
                             .Append(sprintf "ReadmeFile: %A" this.ReadmeFile)
+                            .AppendLine()
+                            .Append(sprintf "ManufacturerWmiQuery: %A" this.ManufacturerWmiQuery)
+                            .AppendLine()
+                            .Append(sprintf "ModelWmiQuery: %A" this.ModelWmiQuery)
                             .ToString()
                     info
                 | _ -> info
@@ -362,7 +368,17 @@
                     InstallerFile = {Url = "https://download.lenovo.com/pccbbs/mobiles/tp_t480s_w1064_1909_202012.exe";Checksum="";Size=0L;FileName="tp_t480s_w1064_1909_202012.exe"}
                     ReadmeFile = Some {Url = "https://download.lenovo.com/pccbbs/mobiles/tp_t480s_w1064_1909_202012.txt";Checksum="";Size=0L;FileName="tp_t480s_w1064_1909_202012.txt"}
                     Released = new DateTime (2020,12,01)
-                    WmiQuery = "SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20L7%\") OR (Name LIKE \"20L8%\")"
+                    ModelWmiQuery = 
+                        {
+                            NameSpace = "root\cimv2"
+                            Query="SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20L7%\") OR (Name LIKE \"20L8%\")"
+                        }
+                    ManufacturerWmiQuery=
+                        {
+                            NameSpace=""
+                            Query=""
+                        }
+
                 }
             let cmPackage2 =
                 {                    
@@ -374,7 +390,17 @@
                     InstallerFile = {Url = "https://download.lenovo.com/pccbbs/mobiles/tp_x1extreme_mt20qv-20qw-p1_mt20qt-20qu_w1064_1909_202009.exe";Checksum="";Size=0L;FileName="tp_x1extreme_mt20qv-20qw-p1_mt20qt-20qu_w1064_1909_202009.exe"}
                     ReadmeFile = Some {Url = "https://download.lenovo.com/pccbbs/mobiles/tp_x1extreme_mt20qv-20qw-p1_mt20qt-20qu_w1064_1909_202009.txt";Checksum="";Size=0L;FileName="tp_x1extreme_mt20qv-20qw-p1_mt20qt-20qu_w1064_1909_202009.txt"}
                     Released = new DateTime (2020,09,01)
-                    WmiQuery = "SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20QW%\") OR (Name LIKE \"20QV%\")"
+                    ModelWmiQuery = 
+                        {
+                            NameSpace = "root\cimv2"
+                            Query="SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20QW%\") OR (Name LIKE \"20QV%\")"
+                        }
+                    ManufacturerWmiQuery=
+                        {
+                            NameSpace=""
+                            Query=""
+                        }
+                    
                 }
 
             let cmPackage3 =
@@ -387,7 +413,16 @@
                     InstallerFile = {Url = "https://download.lenovo.com/pccbbs/mobiles/tp_x1yoga_mt20jd-20je-20jf-20jg_w1064_1909_201911.exe";Checksum="";Size=0L;FileName="tp_x1yoga_mt20jd-20je-20jf-20jg_w1064_1909_201911.exe"}
                     ReadmeFile = Some {Url = "https://download.lenovo.com/pccbbs/mobiles/tp_x1yoga_mt20jd-20je-20jf-20jg_w1064_1909_201911.txt";Checksum="";Size=0L;FileName="tp_x1yoga_mt20jd-20je-20jf-20jg_w1064_1909_201911.txt"}
                     Released = new DateTime (2019,11,01)
-                    WmiQuery = "SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20JE%\") OR (Name LIKE \"20JG%\") OR (Name LIKE \"20JD%\") OR (Name LIKE \"20JF%\")"
+                    ModelWmiQuery = 
+                        {
+                            NameSpace = "root\cimv2"
+                            Query="SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20JE%\") OR (Name LIKE \"20JG%\") OR (Name LIKE \"20JD%\") OR (Name LIKE \"20JF%\")"
+                        }
+                    ManufacturerWmiQuery=
+                        {
+                            NameSpace=""
+                            Query=""
+                        }
                 }
 
             base.CmPackages.AddRange([|new CmPackageViewModel(cmPackage1);new CmPackageViewModel(cmPackage2)|])

@@ -92,6 +92,11 @@ module PackageXml =
 
     type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
 
+    type WmiQuery = {
+        NameSpace :string
+        Query :string
+    }
+
     type CmPackage = {
         Manufacturer:string
         Model: string
@@ -101,13 +106,34 @@ module PackageXml =
         Released:DateTime
         Os:string
         OsBuild:string
-        WmiQuery:string
+        ModelWmiQuery:WmiQuery
+        ManufacturerWmiQuery:WmiQuery
     }
 
     type DownloadedCmPackage = { InstallerPath:string; ReadmePath:string option; CmPackage:CmPackage}
 
     type ExtractedCmPackageInfo = { ExtractedDirectoryPath:string; DownloadedCmPackage:DownloadedCmPackage;}
     
+    ///Convert list of model codes to a wql query that can be used as condition in model specific SCCM task sequence step
+    let toModelCodesWqlQuery (modelCodes:string[]) =
+        let whereCondition =
+            (modelCodes 
+            |> Array.map(fun mc -> sprintf "(BaseBoardProduct like '%s%%')" mc)
+            |> String.concat " or ").Trim()        
+        let query = sprintf "select BaseBoardProduct from MS_SystemInformation where %s" whereCondition
+        {
+            NameSpace = "root/WMI"
+            Query=query
+        }
+
+    ///Convert manufacturer name to a wql query that can be used as condition for a manufacturer specific group in SCCM task sequence
+    let toManufacturerWqlQuery manufacturer =
+        let query = sprintf "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='%s'" manufacturer 
+        {
+            NameSpace = "root/WMI"
+            Query=query
+        }
+
     let getDestinationReadmePath destinationDirectory packageInfo =
         if(String.IsNullOrWhiteSpace(packageInfo.Readme.Name)) then
             String.Empty
