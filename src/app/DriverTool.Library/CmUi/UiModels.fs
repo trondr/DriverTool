@@ -6,6 +6,7 @@ module UiModels =
     open System
     open Microsoft.FSharp.Reflection
     open DriverTool.Library.PackageXml
+    open DriverTool.Library.PackageDefinition
 
     let getCacheFolderPath () =
         result{
@@ -30,7 +31,7 @@ module UiModels =
     /// Package CM drivers
     let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (cmPackage:CmPackage) : Result<DownloadedCmPackage,Exception> =
         result{
-            logger.Warn(sprintf "TODO: Packaging '%s'..." cmPackage.Model)
+            logger.Warn(sprintf "TODO: Packaging '%s' (%A)..." cmPackage.Model cmPackage)
             let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(cmPackage.Manufacturer,false)
             
             logger.Warn("Preparing package folder...")
@@ -39,7 +40,8 @@ module UiModels =
                 match(cmPackage.OsBuild)with
                 |"*" -> "All"
                 |_ -> cmPackage.OsBuild
-            let packageName = sprintf "%s %s %s CM Drivers 1.0" cmPackage.Manufacturer (cmPackage.ModelCodes.[0]) osBuild
+            let packageVersion = (cmPackage.Released.ToString("yyyy-MM-dd"))
+            let packageName = sprintf "%s %s %s CM Drivers %s" cmPackage.Manufacturer (cmPackage.ModelCodes.[0]) osBuild packageVersion
             let! packageFolderPath = 
                 PathOperations.combinePaths2 destinationRootFolderPath packageName
                 |>DirectoryOperations.ensureFolderPathExists' true (Some "Package folder does not exist.")
@@ -51,16 +53,34 @@ module UiModels =
                 PathOperations.combinePaths2 packageScriptsFolderPath "Drivers"
                 |> DirectoryOperations.ensureFolderPathExists' true (Some "Package drivers folder does not exist.")
                         
-            reportProgress true None (sprintf "Downloading CM Drivers for model %s..." cmPackage.Model)
+            reportProgress true None (sprintf "Downloading CM Drivers for model '%s'..." cmPackage.Model)
             let downloadCmPackage = DriverTool.Updates.downloadCmPackageFunc manufacturer
             let! downloadedCmPackage = downloadCmPackage cacheFolderPath reportProgress cmPackage
-            reportProgress true None (sprintf "TODO: Extract CM Drivers for model %s" cmPackage.Model)
+            
+            reportProgress true None (sprintf "Extracting CM Drivers for model '%s'..." cmPackage.Model)
             let extractCmPackage = DriverTool.Updates.extractCmPackageFunc manufacturer
             
             let cmDriversFolderName = "005_CM_Package_" + downloadedCmPackage.CmPackage.Released.ToString("yyyy_MM_dd")
             let! cmDriversFolderPath = 
                 PathOperations.combinePaths2 packageDriversFolderPath cmDriversFolderName                
             let! extractedCmPackageFolder = extractCmPackage downloadedCmPackage cmDriversFolderPath
+
+            logger.Info("Create PackageDefinition-DISM.sms")
+            let packageDefintionDism:PackageDefinition =
+                {
+                    Name=packageName;
+                    Version=cmPackage.Released.ToString("yyyy-MM-dd");
+                    Publisher="TODO";
+                    Language="EN";
+                    InstallCommandLine = "DISM.exe /Image:%OSDisk%\\ /Add-Driver /Driver:.\\Drivers\\" + cmDriversFolderName + "\\ /Recurse";
+                    UnInstallCommandLine = ""
+                    RegistryValue=""
+                    RegistryValueIs64Bit=""
+                }
+            let! packageDefinitionDimsSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue packageScriptsFolderPath,"PackageDefinition-DISM.sms"))            
+            let! packageDefintionDismWriteResult = packageDefintionDism |> writePackageDefinitionDismToFile packageDefinitionDimsSmsPath
+                                    
+            logger.Info(sprintf "Created PackageDefinition-DISM.sms: %A" packageDefintionDismWriteResult)
 
             reportProgress true None (sprintf "TODO: Package CM Drivers for model %s" cmPackage.Model)
             let! notImplemented = Result.Error (toException "Not implemented" None)            

@@ -87,11 +87,11 @@ RegistryValueIs64Bit={7}
 Version=2.0
 
 [Package Definition]
-Name={0} {1} DISM
+Name={0}
 Version={1}
 Publisher={2}
 Language={3}
-Comment=Insert Drivers into the offline
+Comment=Inject Drivers into the offline operating system in the Windows PE phase of the OSD using DISM
 Programs=INSTALL-DISM
 
 [INSTALL-DISM]
@@ -103,7 +103,7 @@ AdminRightsRequired=True
 UseInstallAccount=True
 Run=Minimized
 Icon=App.ico
-Comment=Insert drivers into the off line operating system in the Windows PE phase using DISM.exe
+Comment=Inject Drivers into the offline operating system in the Windows PE phase of the OSD using DISM
 
             """
         String.Format(contentFormatString,
