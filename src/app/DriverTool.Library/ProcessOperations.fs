@@ -38,7 +38,7 @@ module ProcessOperations =
             |>ignore
 
         if(logger.IsDebugEnabled) then ( logger.Debug("writeToLog command line"))
-        writeToLog logger.Info (sprintf "'%s' %s" (FileSystem.pathValue processExitData.FileName) processExitData.Arguments)
+        writeToLog logger.Info (sprintf "STOP: '%s' %s (Exit Code: %d)" (FileSystem.pathValue processExitData.FileName) processExitData.Arguments processExitData.ExitCode)        
         
         if(logger.IsDebugEnabled) then ( logger.Debug("writeToLog StdOutput"))
         if (not (String.IsNullOrWhiteSpace(processExitData.StdOutput))) then
@@ -49,6 +49,7 @@ module ProcessOperations =
             writeToLog logger.Error processExitData.StdError
 
     let startConsoleProcessUnsafe fileName arguments workingDirectory timeout inputData logFileName appendToLogFile =
+        logger.Info (sprintf "START: '%s' %s" (FileSystem.pathValue fileName) arguments)
         let startInfo = new ProcessStartInfo()
         startInfo.CreateNoWindow <- true
         startInfo.UseShellExecute <- false
@@ -105,7 +106,7 @@ module ProcessOperations =
             }
         
         writeProcessExitDataToLog processExitData logFileName appendToLogFile            
-        
+        logger.Info(sprintf "Exit: ")
         processExitData.ExitCode
     
     let startConsoleProcess (filePath, arguments, workingDirectory,timeout:int, inputData, logFileName, appendToLogFile) =
