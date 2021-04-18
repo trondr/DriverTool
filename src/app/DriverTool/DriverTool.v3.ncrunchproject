@@ -5,6 +5,7 @@
     </AdditionalFilesToIncludeForProject>
     <HiddenComponentWarnings>
       <Value>PostBuildEventDisabled</Value>
+      <Value>UnnecessaryFileIncludeWarning</Value>
     </HiddenComponentWarnings>
     <IgnoredTests>
       <AllTestsSelector />
