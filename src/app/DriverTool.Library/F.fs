@@ -68,7 +68,7 @@ module F=
             | ex -> toErrorResult ex message
 
     //Source: http://www.fssnip.net/7UJ/title/ResultBuilder-Computational-Expression
-    let ofOption error = function Some s -> Ok s | None -> Error error
+    let ofOption error = function Some s -> Result.Ok s | None -> Result.Error error
     //Source: http://www.fssnip.net/7UJ/title/ResultBuilder-Computational-Expression
     type ResultBuilder() =
         member __.Return(x) = Ok x
@@ -110,16 +110,16 @@ module F=
     let getAllExceptions (results:seq<Result<_,Exception>>) =
             let f = fun (r:Result<_,Exception>) ->
                 match r with
-                |Error ex -> Some(getAccumulatedExceptionMessages ex)
-                |Ok v -> None
+                |Result.Error ex -> Some(getAccumulatedExceptionMessages ex)
+                |Result.Ok v -> None
             results 
             |> Seq.choose f
     
     let getAllValues (results:seq<Result<_,Exception>>) =
         let f = fun (r:Result<_,Exception>) ->
             match r with
-            |Error ex -> None
-            |Ok v -> Some(v)
+            |Result.Error ex -> None
+            |Result.Ok v -> Some(v)
         results 
         |> Seq.choose f
 
@@ -143,11 +143,11 @@ module F=
         results
         |> Seq.filter (fun dpi -> 
                             match dpi with
-                            |Error _ -> true
+                            |Result.Error _ -> true
                             | _ -> false)
         |> Seq.map (fun dpi -> 
                         match dpi with
-                        |Error ex -> getAccumulatedExceptionMessages ex
+                        |Result.Error ex -> getAccumulatedExceptionMessages ex
                         | _ -> String.Empty)
 
     let getAllSuccesses (results:seq<Result<'T,Exception>>) =
@@ -207,8 +207,8 @@ module F=
                 |NotNull v -> 
                     let result = validator value
                     match result with
-                    |Ok vr -> success vr
-                    |Error ex -> failure ex
+                    |Result.Ok vr -> success vr
+                    |Result.Error ex -> failure ex
         
     let createGeneric validator (value:'T) =
         let success v = Result.Ok v
@@ -249,8 +249,8 @@ module F=
 
     let resultToOption (logger:ILog) (result : Result<_,Exception>) =
         match result with
-        |Ok s -> Some s
-        |Error ex -> 
+        |Result.Ok s -> Some s
+        |Result.Error ex -> 
             logger.Error(ex.Message)
             None
 
