@@ -304,12 +304,15 @@ module F=
     let toDateString (dateTime:DateTime) =
         dateTime.ToString("yyyy-MM-dd")
 
-    let toDateTime dateString = 
+    let toDateTime onError cultureInfo dateString =                     
         try
-            System.DateTime.Parse(dateString)
+            match cultureInfo with
+            |Some ci ->
+                System.DateTime.Parse(dateString, ci)
+            |None ->
+                System.DateTime.Parse(dateString)
         with            
-        |_ ->   
-            DateTime.MinValue
+        | ex -> onError(ex)
 
     let listToSequence (list:System.Collections.IList) =
         seq{

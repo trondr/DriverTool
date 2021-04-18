@@ -1,5 +1,7 @@
 ﻿namespace DriverTool
 
+open System.Globalization
+
 module HpUpdates =
     open System
     open DriverTool.Library.PackageXml
@@ -99,6 +101,15 @@ module HpUpdates =
             return sccmPackageInfo
         }
 
+    /// Convert from US date format to DateTime. The developers at HP chose for some reason to use a localized ("en-US") date format in the xml file.
+    let toHPReleaseDateTime dateTimeString =
+        let cultureInfo = (Some (new CultureInfo("en-US")))
+        let onError = (fun (ex:Exception) ->             
+            logger.Warn (sprintf "Failed to convert '%s' to DateTime. %s" dateTimeString ex.Message)
+            new DateTime(1970,1,1) //Return a "Null" date if coversion fails.
+            )
+        F.toDateTime onError cultureInfo dateTimeString 
+
     ///Parse DriverPackage xml element to CmPackage
     let toCmPackage (softpacs:SoftPaq[]) (softpackIdByProduct:string*ProductOSDriverPack[])  : Result<CmPackage,Exception> =
         result{            
@@ -127,7 +138,7 @@ module HpUpdates =
                                         FileName=Web.getFileNameFromUrl p.Url
                                         Size=p.Size;
                                     }
-                                Released=p.DateReleased|>DateTime.Parse;
+                                Released=p.DateReleased|> toHPReleaseDateTime
                                 Os= osCode
                                 OsBuild=osBuild
                                 ModelWmiQuery=toModelCodesWqlQuery modelCodes
