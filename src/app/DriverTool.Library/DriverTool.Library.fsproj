@@ -45,7 +45,6 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
-    <EmbeddedResource Include="Libs\Common.Logging.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Serilog.dll" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\Destructurama.FSharp.dll" />
@@ -53,7 +52,6 @@
     <EmbeddedResource Include="Libs\FSharp.Collections.ParallelSeq.dll" />
     <EmbeddedResource Include="Libs\FSharp.Configuration.dll" />
     <EmbeddedResource Include="Libs\FSharp.Control.AsyncSeq.dll" />
-    <EmbeddedResource Include="Libs\FSharp.Core.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.DesignTime.dll" />
     <EmbeddedResource Include="Libs\FSharp.Data.dll" />
     <EmbeddedResource Include="Libs\FSharp.Quotations.Evaluator.dll" />
