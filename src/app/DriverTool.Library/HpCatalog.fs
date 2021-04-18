@@ -1,5 +1,7 @@
 ﻿namespace DriverTool
 
+open System.Globalization
+
 module HpCatalog =
     let soruceDriverPackCatalogCab = "https://ftp.hp.com/pub/caps-softpaq/cmit/HPClientDriverPackCatalog.cab"
     let platformListCab = "https://ftp.hp.com/pub/caps-softpaq/cmit/imagepal/ref/platformList.cab"
@@ -166,6 +168,15 @@ module HpCatalog =
         let (hpOsCode,hpOsBuild) = hpOsNameToOsCodeAndOsBuild hpOsName
         (hpOsCode = operatingSystemCode.Value) && (hpOsBuild = osBuild)        
 
+    /// Convert from US date format to DateTime. The developers at HP chose for some reason to use a localized ("en-US") date format in the xml file.
+    let toHPReleaseDateTime dateTimeString =
+        let cultureInfo = (Some (new CultureInfo("en-US")))
+        let onError = (fun (ex:Exception) ->             
+            logger.Warn (sprintf "Failed to convert '%s' to DateTime. %s" dateTimeString ex.Message)
+            new DateTime(1970,1,1) //Return a "Null" date if coversion fails.
+            )
+        F.toDateTime onError cultureInfo dateTimeString
+
     let toSccmPackageInfo (softPaq:SoftPaq) (hpOsName:string) : SccmPackageInfo =
         
         let (osCode,osBuild)= hpOsNameToOsCodeAndOsBuild hpOsName
@@ -184,7 +195,7 @@ module HpCatalog =
                     FileName=Web.getFileNameFromUrl softPaq.Url;
                     Size=softPaq.Size;
                 }
-            Released=softPaq.DateReleased|>DateTime.Parse;
+            Released=softPaq.DateReleased|>toHPReleaseDateTime
             Os=osCode;
             OsBuild=osBuild;
         }
