@@ -108,7 +108,7 @@ module EmbeddedResourceTest  =
         let resourceAssembly = typeof<DriverTool.Library.Init.ThisAssembly>.Assembly
         let actual = DriverTool.Library.EmbeddedResource.getAllEmbeddedResourceNames resourceAssembly
         let allResourceNames = String.concat Environment.NewLine actual                
-        Assert.AreEqual(72,actual.Length,allResourceNames)
+        Assert.AreEqual(78,actual.Length,allResourceNames)
 
 
     [<Test>]

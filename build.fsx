@@ -114,6 +114,9 @@ Target.create "Publish" (fun _ ->
         [|
             System.IO.Path.Combine(buildAppFolder,"DriverTool.exe")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.pdb")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.UI.dll")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.UI.dll.config")
+            System.IO.Path.Combine(buildAppFolder,"DriverTool.UI.pdb")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.exe.config")            
             System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.dll")
             System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.pdb")            
