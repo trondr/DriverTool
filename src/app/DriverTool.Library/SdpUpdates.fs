@@ -38,6 +38,7 @@ module SdpUpdates =
     /// <summary>
     /// Copy sdp file to the download cache. The sdp file will later be copied from the download cache to the final driver package.
     /// </summary>
+    /// <param name="cachedFolderPath"></param>
     /// <param name="sourceFilePath"></param>
     let copyFileToDownloadCacheDirectoryPath cachedFolderPath sourceFilePath =
         result
@@ -51,6 +52,7 @@ module SdpUpdates =
     /// <summary>
     /// Copy sdp files to download cache. The sdp files will later be copied from the download cache to the final driver package.
     /// </summary>
+    /// <param name="cachedFolderPath"></param>
     /// <param name="packageInfos"></param>
     /// <param name="sourceFilePaths"></param>
     let copySdpFilesToDownloadCache cachedFolderPath packageInfos sourceFilePaths =
