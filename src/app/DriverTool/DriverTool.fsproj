@@ -12,9 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Data\Lenovo\n1cww12w_2_.xml" />
-    <EmbeddedResource Include="Data\Lenovo\20FA_Win7.xml" />
-    <EmbeddedResource Include="Data\Lenovo\catalog.xml" />
     <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\02. serilog Credit.xml" />
     <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />
