@@ -332,3 +332,12 @@ module F=
     ///Rounds a float to a specified number of digits
     let round (value:float) (digits:int) =
         System.Math.Round (value, digits)
+
+    ///Convert text string to array of string lines
+    let textToLines (text:string) =
+        (text.Split([|Environment.NewLine|],StringSplitOptions.RemoveEmptyEntries))
+
+    ///Convert array of string lines to text string
+    let linesToText (lines:string array) =
+        lines
+        |>String.concat Environment.NewLine

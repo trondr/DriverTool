@@ -15,19 +15,15 @@ module PowerShellHelper =
                 yield pso
         }
 
-    ///Run PowerShell commands
-    let runPowerShell (action:PowerShell->Collection<PSObject>) =
+    ///Run PowerShell commands unsafe
+    let runPowerShellUnsafe (action:PowerShell->Collection<PSObject>) =
         use powershell = PowerShell.Create(RunspaceMode.NewRunspace)
         action(powershell)
 
-    ///Convert text string to array of string lines
-    let textToLines (text:string) =
-        (text.Split([|Environment.NewLine|],StringSplitOptions.RemoveEmptyEntries))
-
-    ///Convert array of string lines to text string
-    let linesToText (lines:string array) =
-        lines
-        |>String.concat Environment.NewLine
+    ///Run PowerShell commands
+    let runPowerShell (action:PowerShell->Collection<PSObject>) =
+        let message = sprintf "Failed to run PowerShell commands."
+        tryCatch (Some message) runPowerShellUnsafe action
 
     ///Remove commented lines from PowerShell script
     let removeComments (script:String) =
@@ -45,27 +41,35 @@ module PowerShellHelper =
         Array.append (Array.append [|startTransScript|] scriptLines) [|stopTransScript|]
         |>linesToText
 
-    ///Run PowerShell script
-    let runPowerShellScript script (variables:Dictionary<string,obj>) =
+    ///Run PowerShell script unsafe
+    let runPowerShellScriptUnsafe script (variables:Dictionary<string,obj>) =
         use runspace = RunspaceFactory.CreateRunspace()
         runspace.Open()
         use pipeline = runspace.CreatePipeline()
         let preparedScript = 
             script
             |> removeComments
-            //|> addTranscriptLogging
+            |> addTranscriptLogging
         pipeline.Commands.AddScript(preparedScript)
         variables |> Seq.map (fun kvp -> 
                 runspace.SessionStateProxy.SetVariable(kvp.Key,kvp.Value)
             ) |> Seq.iter id
-        let output = pipeline.Invoke() |> toSeq
+        let output = pipeline.Invoke() |> toSeq |> Seq.toArray
         runspace.Close()
         output
 
-    let getFirstValue script =
-        let variables = new Dictionary<string, obj>()
-        let value = 
-            (runPowerShellScript script variables)            
-            |>Seq.toArray
-            |>Array.head
-        value.ToString()
+    ///Run PowwerShell script
+    let runPowerShellScript script (variables:Dictionary<string,obj>) =
+        let message = sprintf "Failed to run PowerShell script:%s%s" Environment.NewLine script
+        tryCatch2 (Some message) runPowerShellScriptUnsafe script variables
+
+    ///Get first string value returned by PowerShell script
+    let getFirstStringValue script =
+        result{
+            let variables = new Dictionary<string, obj>()
+            let! values = (runPowerShellScript script variables)
+            let message = sprintf "Failed to get first string value from the return value of PowerShell script: %s%s" Environment.NewLine script
+            let! firstValue = tryCatch (Some message) Array.head values
+            return firstValue.ToString()
+        }
+        
