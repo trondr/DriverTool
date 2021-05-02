@@ -1,8 +1,11 @@
 ﻿namespace DriverTool.Library
 
+open System
+
 module WrappedString =
     
     //Credits: https://fsharpforfunandprofit.com/posts/designing-with-types-more-semantic-types/
+    open System.Text
 
     type IWrappedString =
         abstract Value :string
@@ -53,6 +56,11 @@ module String127 =
     let create =
         WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 127) String127
 
+    let toOptionalString (s:String127) =
+        match s with        
+        |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
+        |_ -> Some s
+
 module String50 =
     type String50 = private String50 of string with
         interface WrappedString.IWrappedString with
@@ -62,6 +70,11 @@ module String50 =
     let create =
         WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 50) String50
 
+    let toOptionalString (s:String50) =
+        match s with        
+        |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
+        |_ -> Some s
+
 module String32 =
     type String32 = private String32 of string with
         interface WrappedString.IWrappedString with
@@ -70,3 +83,8 @@ module String32 =
                     this in s
     let create =
         WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 32) String32
+
+    let toOptionalString (s:String32) =
+        match s with        
+        |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
+        |_ -> Some s

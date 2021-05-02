@@ -341,3 +341,9 @@ module F=
     let linesToText (lines:string array) =
         lines
         |>String.concat Environment.NewLine
+
+    let toOptionalString value =
+        match value with
+        |null -> None
+        |value when String.IsNullOrWhiteSpace(value) -> None
+        |_ -> Some value
