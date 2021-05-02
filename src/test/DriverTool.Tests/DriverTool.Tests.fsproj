@@ -102,6 +102,7 @@
     <Compile Include="RegExpTests.fs" />
     <Compile Include="CsvOperationTests.fs" />
     <Compile Include="UiModelsTests.fs" />
+    <Compile Include="SccmTests.fs" />
     <Compile Include="_TemplateTests.fs" />
     <EmbeddedResource Include="TestData\TestDataXmlHelper.xml" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
