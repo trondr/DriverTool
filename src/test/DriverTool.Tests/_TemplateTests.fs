@@ -19,5 +19,5 @@ module _TemplateTests=
             return actual
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error ex -> Assert.Fail(ex.Message)
+        |Result.Error ex -> Assert.Fail(getAccumulatedExceptionMessages ex)
 
