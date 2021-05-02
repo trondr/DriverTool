@@ -12,14 +12,14 @@ module WrappedString =
 
     let create canonicalize (validate:string->Result<string,System.Exception>) cstor (s:string) =
         match s with
-        |null -> Result.Error (new System.Exception(sprintf "Argument is null or empty: %s" (nameof s)))
+        |null -> Result.Error (new System.Exception(sprintf "Failed to create wrapped string. Argument is null or empty: %s" (nameof s)))
         | _ ->
             result{
                 let s' = canonicalize s
                 let! s'' = validate s'
                 return (cstor s'')
             }
-    
+            
     /// Apply the given function to the wrapped value
     let apply f (s:IWrappedString) =
         s.Value |> f
@@ -55,7 +55,7 @@ module String127 =
                     this in s
     let create =
         WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 127) String127
-
+    
     let toOptionalString (s:String127) =
         match s with        
         |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None

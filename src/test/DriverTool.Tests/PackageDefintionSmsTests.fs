@@ -14,15 +14,17 @@ module PackageDefintionSmsTests=
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
-    let writeToFileTest () =
+    let writeToFileAndReadFromFileTest () =
         match(result{
             let! filePath = FileSystem.path "c:\\temp\\Example_PackageDefinition.sms"
-            let! installProgram = createSmsProgram "INSTALL" "Install.cmd > %public%\\Logs\\Install.cmd.log" "" SmsCanRunWhen.AnyUserStatus true true SmsProgramMode.Hidden "Install application"
-            let! unInstallProgram = createSmsProgram "UNINSTALL" "Uninstall.cmd > %public%\\Logs\\Uninstall.cmd.log" "" SmsCanRunWhen.AnyUserStatus true true SmsProgramMode.Hidden "Uninstall application"
-            let! packageDefinition = createSmsPackageDefinition "Example Application" "1.0" (Some "App.ico") "trondr" "EN" "Example Application" [|installProgram;unInstallProgram|]
-            let! actual = writeToFile logger filePath packageDefinition 
-            return actual
+            let! installProgram = createSmsProgram "INSTALL" "Install.cmd > %public%\\Logs\\Install.cmd.log" "" SmsCanRunWhen.AnyUserStatus true true (Some SmsProgramMode.Hidden) "Install application"
+            let! unInstallProgram = createSmsProgram "UNINSTALL" "Uninstall.cmd > %public%\\Logs\\Uninstall.cmd.log" "" SmsCanRunWhen.AnyUserStatus true true (Some SmsProgramMode.Hidden) "Uninstall application"
+            let! expected = createSmsPackageDefinition "Example Application" "1.0" (Some "App.ico") "trondr" "EN" false "Example Application" [|installProgram;unInstallProgram|]
+            let! path = writeToFile logger filePath expected
+            let! actual2 = readFromFile filePath
+            Assert.AreEqual(expected,actual2)
+            return actual2
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error ex -> Assert.Fail(ex.Message)
+        |Result.Error ex -> Assert.Fail(getAccumulatedExceptionMessages ex)
 
