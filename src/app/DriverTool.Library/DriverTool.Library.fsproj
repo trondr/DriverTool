@@ -62,6 +62,7 @@
     <EmbeddedResource Include="Libs\FsPickler.dll" />
     <EmbeddedResource Include="Libs\FsPickler.Json.dll" />
     <EmbeddedResource Include="Libs\Google.Protobuf.dll" />
+	<EmbeddedResource Include="Libs\INIFileParser.dll" />
     <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
     <EmbeddedResource Include="Libs\LsupEval.dll" />
     <EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
@@ -128,6 +129,7 @@
     <Compile Include="Logging.fs" />
     <Compile Include="F.fs" />
     <Compile Include="Async.fs" />
+    <Compile Include="WrappedString.fs" />
     <Compile Include="Paths.fs" />
     <Compile Include="FileSystem.fs" />
     <Compile Include="PathOperations.fs" />
@@ -164,6 +166,7 @@
     <Compile Include="Robocopy.fs" />
     <Compile Include="Requirements.fs" />
     <Compile Include="Compression.fs" />
+    <Compile Include="PackageDefinitionSms.fs" />
     <Compile Include="PackageDefintion.fs" />
     <Compile Include="Messages.fs" />
     <Compile Include="Init.fs" />
@@ -237,6 +240,9 @@
     </Reference>
     <Reference Include="FsPickler.Json">
       <HintPath>..\..\..\packages\FsPickler.Json.5.3.2\lib\net45\FsPickler.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="INIFileParser">
+      <HintPath>..\..\..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
     </Reference>
     <Reference Include="LsupEval">
       <HintPath>..\..\..\packages\LsupEval.1.0.21087-alpha7\lib\net452\LsupEval.dll</HintPath>
