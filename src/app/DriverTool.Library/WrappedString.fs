@@ -47,6 +47,34 @@ module WrappedString =
         |true -> Result.Ok s
         |false -> Result.Error (toException (sprintf "String '%s' exceeds maximum lenght of %d." s len) None)
 
+module String512 =
+    type String512 = private String512 of string with
+        interface WrappedString.IWrappedString with
+            member this.Value =              
+                let (String512 s) = 
+                    this in s
+    let create =
+        WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 512) String512
+    
+    let toOptionalString (s:String512) =
+        match s with        
+        |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
+        |_ -> Some s
+
+module String255 =
+    type String255 = private String255 of string with
+        interface WrappedString.IWrappedString with
+            member this.Value =              
+                let (String255 s) = 
+                    this in s
+    let create =
+        WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 255) String255
+    
+    let toOptionalString (s:String255) =
+        match s with        
+        |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
+        |_ -> Some s
+
 module String127 =
     type String127 = private String127 of string with
         interface WrappedString.IWrappedString with
@@ -57,6 +85,34 @@ module String127 =
         WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 127) String127
     
     let toOptionalString (s:String127) =
+        match s with        
+        |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
+        |_ -> Some s
+
+module String100 =
+    type String100 = private String100 of string with
+        interface WrappedString.IWrappedString with
+            member this.Value =              
+                let (String100 s) = 
+                    this in s
+    let create =
+        WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 100) String100
+
+    let toOptionalString (s:String100) =
+        match s with        
+        |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
+        |_ -> Some s
+
+module String64 =
+    type String64 = private String64 of string with
+        interface WrappedString.IWrappedString with
+            member this.Value =              
+                let (String64 s) = 
+                    this in s
+    let create =
+        WrappedString.create WrappedString.singleLineTrimmed (WrappedString.lengthValidator 64) String64
+
+    let toOptionalString (s:String64) =
         match s with        
         |v when String.IsNullOrWhiteSpace(WrappedString.value v) -> None
         |_ -> Some s

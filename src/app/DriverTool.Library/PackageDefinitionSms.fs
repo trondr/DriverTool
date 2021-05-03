@@ -8,7 +8,12 @@ module PackageDefinitionSms =
     open DriverTool.Library
     open DriverTool.Library.String32
     open DriverTool.Library.String50
+    open DriverTool.Library.String64
+    open DriverTool.Library.String100
     open DriverTool.Library.String127
+    open DriverTool.Library.String255
+    open DriverTool.Library.String512
+
 
     type SmsProgramMode = Minimized|Maximized|Hidden
         
@@ -121,11 +126,11 @@ module PackageDefinitionSms =
 
     type SmsProgram =
         {
-            Name:String50
+            Name:String100
             Icon:string option
-            Comment:String127 option
-            Commandline:String127
-            StartIn:String127
+            Comment:String255 option
+            Commandline:String255
+            StartIn:String255
             Run:SmsProgramMode option
             AfterRunning:SmsAfterRunningAction option
             EstimatedDiskSpace:SmsEstimatedDiskSpace option
@@ -145,18 +150,18 @@ module PackageDefinitionSms =
 
     let createSmsProgram name commandLine startIn canRunWhen adminRightsRequired useInstallAccount programMode comment =
         result{
-            let! name50 = DriverTool.Library.String50.create name
-            let! comment127 = DriverTool.Library.String127.create comment
-            let! commandLine127 = DriverTool.Library.String127.create commandLine
-            let! startIn127 = DriverTool.Library.String127.create startIn
+            let! name100 = DriverTool.Library.String100.create name
+            let! comment255 = DriverTool.Library.String255.create comment
+            let! commandLine255 = DriverTool.Library.String255.create commandLine
+            let! startIn255 = DriverTool.Library.String255.create startIn
 
             let smsProgram =
                 {
-                    Name=name50
+                    Name=name100
                     Icon=None
-                    Comment=Some comment127
-                    Commandline=commandLine127
-                    StartIn=startIn127
+                    Comment=Some comment255
+                    Commandline=commandLine255
+                    StartIn=startIn255
                     Run=programMode
                     AfterRunning=None
                     EstimatedDiskSpace=None
@@ -184,12 +189,12 @@ module PackageDefinitionSms =
 
     type  SmsPackageDefinition =
         {
-            Name:String50
-            Version:String32 option
+            Name:String255
+            Version:String64 option
             Icon:string option
-            Publisher:String32
-            Language:String32
-            Comment:String127 option
+            Publisher:String64
+            Language:String64
+            Comment:String512 option
             ContainsNoFiles:bool
             Programs:SmsProgram[]
         }
@@ -197,21 +202,21 @@ module PackageDefinitionSms =
 
     let createSmsPackageDefinition name version icon publisher language containsNoFiles comment programs =
         result{
-            let! name50 = DriverTool.Library.String50.create name
-            let! version32 = DriverTool.Library.String32.create version
-            let! publisher32 = DriverTool.Library.String32.create publisher
-            let! language32 = DriverTool.Library.String32.create language
-            let! comment127 = DriverTool.Library.String127.create comment
+            let! name255 = DriverTool.Library.String255.create name
+            let! version64 = DriverTool.Library.String64.create version
+            let! publisher64 = DriverTool.Library.String64.create publisher
+            let! language64 = DriverTool.Library.String64.create language
+            let! comment512 = DriverTool.Library.String512.create comment
             let! smsPrograms = validatePrograms programs
 
             let smsPackageDefinition =
                 {
-                    Name = name50
-                    Version=String32.toOptionalString version32
+                    Name = name255
+                    Version=String64.toOptionalString version64
                     Icon=icon
-                    Publisher=publisher32
-                    Language=language32
-                    Comment=String127.toOptionalString comment127
+                    Publisher=publisher64
+                    Language=language64
+                    Comment=String512.toOptionalString comment512
                     ContainsNoFiles=containsNoFiles
                     Programs=smsPrograms
                 }       
@@ -330,18 +335,18 @@ module PackageDefinitionSms =
 
     let toSmsProgram (programSection:KeyDataCollection) =
         result{
-            let! name50 = String50.create (programSection.["Name"])
-            let! commandLine127 = String127.create (programSection.["Commandline"])
-            let! comment127 = String127.create (readSectionValue programSection "Comment" String.Empty)
-            let! startIn127 = String127.create (readSectionValue programSection "StartIn" String.Empty)            
+            let! name100 = String100.create (programSection.["Name"])
+            let! commandLine255 = String255.create (programSection.["Commandline"])
+            let! comment255 = String255.create (readSectionValue programSection "Comment" String.Empty)
+            let! startIn255 = String255.create (readSectionValue programSection "StartIn" String.Empty)            
             let! additionalProgramRequirements127 = String127.create (readSectionValue programSection "AdditionalProgramRequirements" String.Empty)
             let smsProgram =
               {
-                Name=name50
+                Name=name100
                 Icon=F.toOptionalString (programSection.["Icon"])
-                Comment=String127.toOptionalString comment127
-                Commandline=commandLine127
-                StartIn=startIn127
+                Comment=String255.toOptionalString comment255
+                Commandline=commandLine255
+                StartIn=startIn255
                 Run=smsProgramModeFromString (programSection.["Run"])
                 AfterRunning=smsAfterRunningActionFromString (programSection.["AfterRunning"])
                 EstimatedDiskSpace=smsEstimatedDiskSpaceFromString (programSection.["EstimatedDiskSpace"])
