@@ -194,7 +194,7 @@ module PackageDefinitionSms =
             Icon:string option
             Publisher:String64
             Language:String64
-            Comment:String512 option
+            Comment:String512
             ContainsNoFiles:bool
             Programs:SmsProgram[]
         }
@@ -216,7 +216,7 @@ module PackageDefinitionSms =
                     Icon=icon
                     Publisher=publisher64
                     Language=language64
-                    Comment=String512.toOptionalString comment512
+                    Comment=comment512
                     ContainsNoFiles=containsNoFiles
                     Programs=smsPrograms
                 }       
@@ -263,10 +263,8 @@ module PackageDefinitionSms =
             |false  -> yield "ContainsNoFiles=False"
             |true   -> yield "ContainsNoFiles=True"
 
-            match smsPackageDefinition.Comment with
-            |Some comment ->
-                yield sprintf "Comment=%s" (WrappedString.value comment)
-            |None -> ()
+            yield sprintf "Comment=%s" (WrappedString.value smsPackageDefinition.Comment)
+            
             let programNames = smsPackageDefinition.Programs |> Array.map(fun p -> WrappedString.value p.Name) |> String.concat ","
             yield sprintf "Programs=%s" programNames
 
