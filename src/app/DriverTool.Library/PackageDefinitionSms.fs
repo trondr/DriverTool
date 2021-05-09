@@ -5,7 +5,7 @@ open DriverTool.Library
 module PackageDefinitionSms =
     open System
     open System.Text
-    open DriverTool.Library
+    open DriverTool.Library.Logging
     open DriverTool.Library.String32
     open DriverTool.Library.String50
     open DriverTool.Library.String64
@@ -14,14 +14,16 @@ module PackageDefinitionSms =
     open DriverTool.Library.String255
     open DriverTool.Library.String512
 
+    let logger = Logger.Logger()
 
-    type SmsProgramMode = Minimized|Maximized|Hidden
+    type SmsProgramMode = Minimized|Maximized|Hidden|Normal
         
     let smsProgramModeToString smsProgramMode =
         match smsProgramMode with
         |Minimized -> "Minimized"
         |Maximized -> "Maximized"
         |Hidden -> "Hidden"
+        |Normal -> "Normal"
 
     let smsProgramModeFromString smsProgramMode =
         let value = F.toOptionalString smsProgramMode        
@@ -31,6 +33,7 @@ module PackageDefinitionSms =
             |"Minimized" -> Some SmsProgramMode.Minimized
             |"Maximized" -> Some SmsProgramMode.Maximized
             |"Hidden" -> Some SmsProgramMode.Hidden
+            |"Normal" -> Some SmsProgramMode.Normal
             |_ -> raise (toException ("Invalid ProgramMode: " + pm) None)
         |None -> None
 
@@ -148,7 +151,7 @@ module PackageDefinitionSms =
             Disabled:bool
         }
 
-    let createSmsProgram name commandLine startIn canRunWhen adminRightsRequired useInstallAccount programMode comment =
+    let createSmsProgram name commandLine startIn canRunWhen adminRightsRequired useInstallAccount userInputRequired programMode comment =
         result{
             let! name100 = DriverTool.Library.String100.create name
             let! comment255 = DriverTool.Library.String255.create comment
@@ -168,7 +171,7 @@ module PackageDefinitionSms =
                     EstimatedRunTime = None
                     AdditionalProgramRequirements=None
                     CanRunWhen=canRunWhen
-                    UserInputRequired=false
+                    UserInputRequired=userInputRequired
                     AdminRightsRequired=adminRightsRequired
                     UseInstallAccount=useInstallAccount
                     DriveLetterConnection=false
@@ -232,12 +235,15 @@ module PackageDefinitionSms =
         |false -> "False"
 
     let smsBoolFromString (value:string) defaultValue =
-        match (value.ToLowerInvariant()) with
-        |"true" -> true
-        |"false" -> false
-        |_ ->             
-            logger.Warn("Invalid boolean value: " + value)
-            defaultValue            
+        match value with
+        |null -> defaultValue
+        |_ ->
+            match (value.ToLowerInvariant()) with
+            |"true" -> true
+            |"false" -> false
+            |_ ->
+                logger.Warn("Invalid boolean value: " + value)
+                defaultValue            
 
     let toIniString (smsPackageDefinition:SmsPackageDefinition) =
         seq{
@@ -326,6 +332,7 @@ module PackageDefinitionSms =
     open IniParser
 
     let readSectionValue (section:KeyDataCollection) valueName defaultValue =
+        if(logger.IsDebugEnabled) then logger.Debug(sprintf "Reading section value '%s'" valueName)
         let value = section.[valueName]
         match value with
         |null -> defaultValue
@@ -334,7 +341,7 @@ module PackageDefinitionSms =
     let toSmsProgram (programSection:KeyDataCollection) =
         result{
             let! name100 = String100.create (programSection.["Name"])
-            let! commandLine255 = String255.create (programSection.["Commandline"])
+            let! commandLine255 = String255.create (programSection.["CommandLine"])
             let! comment255 = String255.create (readSectionValue programSection "Comment" String.Empty)
             let! startIn255 = String255.create (readSectionValue programSection "StartIn" String.Empty)            
             let! additionalProgramRequirements127 = String127.create (readSectionValue programSection "AdditionalProgramRequirements" String.Empty)
@@ -364,6 +371,7 @@ module PackageDefinitionSms =
             return smsProgram
         }
 
+    ///Parse package definition ini, throw exception in case of invalid data.
     let fromIniStringUnsafe (packageDefinitonIniString:string) : SmsPackageDefinition =        
         let iniDataParser = new Parser.IniDataParser()
         let iniData = iniDataParser.Parse(packageDefinitonIniString)
@@ -391,6 +399,7 @@ module PackageDefinitionSms =
         |Result.Ok pd -> pd
         |Result.Error ex -> raise ex
 
+    ///Parse package definition ini, return package definition result
     let fromIniString (packageDefinitonIniString:string) =
         let message = sprintf "Failed to parse ini data: %s%s" Environment.NewLine packageDefinitonIniString
         tryCatch (Some message) fromIniStringUnsafe packageDefinitonIniString
@@ -401,6 +410,7 @@ module PackageDefinitionSms =
         |>toIniString
         |>FileOperations.writeContentToFile logger filePath        
 
+    ///Read package definition from file
     let readFromFile filePath =
         result{
             let! iniData = FileOperations.readContentFromFile filePath

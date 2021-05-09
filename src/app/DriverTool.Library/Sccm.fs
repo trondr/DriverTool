@@ -53,13 +53,84 @@ module Sccm =
             return out        
         }
 
+    open DriverTool.Library.PackageDefinitionSms
+
+    ///Build New-CMProgram PowerShell command
+    let toNewCmProgramPSCommand packageId (program:SmsProgram) =        
+        let newCMProgramPSCommand =
+            seq{
+                yield "New-CMProgram"
+                yield (sprintf "-PackageId \"%s\"" packageId)
+                yield (sprintf "-StandardProgramName '%s'" (WrappedString.value program.Name))
+                yield (sprintf "-CommandLine '%s'" (WrappedString.value program.Commandline))
+                yield   match (WrappedString.value program.StartIn) with
+                        |"" -> ""
+                        |_ -> (sprintf "-WorkingDirectory '%s'" (WrappedString.value program.StartIn))
+                yield (sprintf "-UserInteraction:$%b" (program.UserInputRequired))
+                yield   match program.AdminRightsRequired with
+                        |true -> "-RunMode RunWithAdministrativeRights"
+                        |false -> "-RunMode RunWithUserRights"
+                yield   match program.Run with
+                        |Some runType -> 
+                            (sprintf "-RunType %s" (smsProgramModeToString runType))
+                        |None -> "-RunType Normal"
+                yield   match program.CanRunWhen with
+                        |AnyUserStatus -> "-ProgramRunType WhetherOrNotUserIsLoggedOn"
+                        |NoUserLoggedOn -> "-ProgramRunType OnlyWhenNoUserIsLoggedOn"
+                        |UserLoggedOn -> "-ProgramRunType OnlyWhenUserIsLoggedOn"
+                
+                yield   match program.DriveLetterConnection with
+                        |true -> 
+                            match program.SpecifyDrive with
+                            |Some drive ->
+                                match program.ReconnectDriveAtLogon with
+                                |true -> (sprintf "-DriveMode RequiresSpecificDriveLetter -DriveLetter '%s' -Reconnect" drive)
+                                |false -> (sprintf "-DriveMode RequiresSpecificDriveLetter -DriveLetter '%s'" drive)
+                            |None ->
+                                match program.ReconnectDriveAtLogon with
+                                |true -> "-DriveMode RequiresDriveLetter -Reconnect"
+                                |false -> "-DriveMode RequiresDriveLetter"
+                        |false -> "-DriveMode RunWithUnc"
+                
+                match program.Comment with
+                |Some c -> yield (sprintf "| Set-CMProgram -Comment '%s' -StandardProgram" (WrappedString.value c))
+                |None -> yield String.Empty
+            }
+            |>Seq.toArray
+            |>String.concat " " 
+        newCMProgramPSCommand
+
+    ///Build New-CMPackage PowerShell command
+    let toCmPackagePSCommand (packageDefinition:SmsPackageDefinition) sourceFolderPath =
+        let newCMPackagePSCommand =
+            seq{
+                yield "New-CMPackage"
+                yield (sprintf "-Name '%s'" (WrappedString.value packageDefinition.Name))
+                yield (sprintf "-Description '%s'" (WrappedString.value packageDefinition.Comment))
+                yield (sprintf "-Path '%s'" (sourceFolderPath))
+                yield   match packageDefinition.Version with
+                        |Some v -> (sprintf "-Version '%s'" (WrappedString.value v))
+                        |None -> String.Empty
+                yield (sprintf "-Manufacturer '%s'" (WrappedString.value packageDefinition.Publisher))
+                yield (sprintf "-Language '%s'" (WrappedString.value packageDefinition.Language))
+            }
+            |>Seq.toArray
+            |>String.concat " "
+        newCMPackagePSCommand
+
     ///Create SCCM package from package definition sms file
     let createPackageFromDefinition packageDefinitionSms sourceFolderPath =
         result{
+            let! packageDefinitionSmsFilePath = FileSystem.path packageDefinitionSms
+            let! packageDefinition = PackageDefinitionSms.readFromFile packageDefinitionSmsFilePath
             let script = 
-                [|
-                    sprintf "New-CMPackage -FromDefinition -PackageDefinitionName \"%s\" -SourceFileType AlwaysObtainSourceFile -SourceFolderPath \"%s\" -SourceFolderPathType UncNetworkPath" packageDefinitionSms sourceFolderPath
-                |]|>linesToText
+                seq{                    
+                    yield (sprintf "$package = %s" (toCmPackagePSCommand packageDefinition sourceFolderPath))
+                    for program in packageDefinition.Programs do
+                        yield toNewCmProgramPSCommand "$($package.PackageId)" program
+                }
+                |>Seq.toArray
+                |>linesToText
             let! siteCode = getAssignedSite()
             let! siteServer = getSiteServer()
             let! out = runCmPowerShellScript script siteCode siteServer

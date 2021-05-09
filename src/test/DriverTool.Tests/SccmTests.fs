@@ -4,7 +4,7 @@ open System.Management.Automation
 open NUnit.Framework
 
 [<TestFixture>]
-[<Category(TestCategory.ManualTests)>]
+[<Category(TestCategory.UnitTests)>]
 module SccmTests=
     open DriverTool.Library
     open DriverTool.Library.Sccm
@@ -49,3 +49,27 @@ module SccmTests=
         })with
         |Result.Ok a -> Assert.IsTrue(true)
         |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)
+
+    open DriverTool.Library.PackageDefinitionSms
+
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    let toNewCmProgramPSCommandTest () =
+        match(result{
+            let expected = "New-CMProgram -PackageId \"TST123456\" -StandardProgramName 'INSTALL' -CommandLine 'Install.cmd' -WorkingDirectory '' -UserInteraction:$false -RunMode RunWithAdministrativeRights -RunType Hidden -ProgramRunType WhetherOrNotUserIsLoggedOn -DriveMode RunWithUnc | Set-CMProgram -Comment 'This is an example program' -StandardProgram"
+            let testPackageId = "TST123456"
+            let! testprogram = createSmsProgram "INSTALL" "Install.cmd" "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "This is an example program"
+            let actual = Sccm.toNewCmProgramPSCommand testPackageId testprogram
+            Assert.AreEqual(expected,actual,"New-CMProgram powershell command was not as expected.")
+            return testprogram
+        })with
+        |Result.Ok a -> Assert.IsTrue(true)
+        |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)
+
+//[-AddSupportedOperatingSystemPlatform <IResultObject[]>]
+//[-DiskSpaceRequirement <String>]
+//[-DiskSpaceUnit <DiskSpaceUnitType>]
+//[-Duration <Int32>]
+//[-DisableWildcardHandling]
+//[-ForceWildcardHandling]
+//[-WhatIf]
