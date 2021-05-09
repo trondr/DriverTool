@@ -4,7 +4,6 @@ open System.Management.Automation
 open NUnit.Framework
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
 module SccmTests=
     open DriverTool.Library
     open DriverTool.Library.Sccm
@@ -56,7 +55,7 @@ module SccmTests=
     [<Category(TestCategory.UnitTests)>]
     let toNewCmProgramPSCommandTest () =
         match(result{
-            let expected = "New-CMProgram -PackageId \"TST123456\" -StandardProgramName 'INSTALL' -CommandLine 'Install.cmd' -WorkingDirectory '' -UserInteraction:$false -RunMode RunWithAdministrativeRights -RunType Hidden -ProgramRunType WhetherOrNotUserIsLoggedOn -DriveMode RunWithUnc | Set-CMProgram -Comment 'This is an example program' -StandardProgram"
+            let expected = "New-CMProgram -PackageId \"TST123456\" -StandardProgramName 'INSTALL' -CommandLine 'Install.cmd' -UserInteraction:$false -RunMode RunWithAdministrativeRights -RunType Hidden -ProgramRunType WhetherOrNotUserIsLoggedOn -DriveMode RunWithUnc | Set-CMProgram -Comment 'This is an example program' -StandardProgram"
             let testPackageId = "TST123456"
             let! testprogram = createSmsProgram "INSTALL" "Install.cmd" "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "This is an example program"
             let actual = Sccm.toNewCmProgramPSCommand testPackageId testprogram

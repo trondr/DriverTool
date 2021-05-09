@@ -27,7 +27,7 @@ module Sccm =
         raise (new NotImplementedException())
 
     ///Load ConfigurationManager module and run CM powershell script
-    let runCmPowerShellScript script siteCode siteServer =
+    let runCmPowerShellScript' script siteCode siteServer =
         result{
             let cmScript = 
                 seq{             
@@ -53,7 +53,36 @@ module Sccm =
             return out        
         }
 
+    let runCmPowerShellScript script =
+        result{
+            let! siteCode = getAssignedSite()
+            let! siteServer = getSiteServer()
+            let! out = runCmPowerShellScript' script siteCode siteServer
+            return out
+        }
+
     open DriverTool.Library.PackageDefinitionSms
+
+    ///Check if package exists
+    let cmPackageExists packageName =
+        match(result{            
+            let! out = runCmPowerShellScript (sprintf "Get-CMPackage -Name '%s' -Fast" packageName)
+            return out            
+        })with
+        |Result.Ok packages -> (packages.Length > 0)
+        |Result.Error ex ->
+            logger.Warn(sprintf "Failed to check if package '%s' exists in Configuration Manager due to: %s" packageName (getAccumulatedExceptionMessages ex))
+            false
+
+    let ensureCmPackageExists packageName =
+        match(cmPackageExists packageName)with
+        |true -> Result.Ok true
+        |false -> Result.Error (toException (sprintf "CM Package does not exist: %s" packageName) None)
+
+    let ensureCmPackageDoesNotExist packageName =
+        match(cmPackageExists packageName)with
+        |true -> Result.Error (toException (sprintf "CM Package allready exist: %s" packageName) None)
+        |false -> Result.Ok true
 
     ///Build New-CMProgram PowerShell command
     let toNewCmProgramPSCommand packageId (program:SmsProgram) =        
@@ -97,7 +126,8 @@ module Sccm =
                 |None -> yield String.Empty
             }
             |>Seq.toArray
-            |>String.concat " " 
+            |>Seq.filter (fun s -> not (String.IsNullOrWhiteSpace(s)))
+            |>String.concat " "
         newCMProgramPSCommand
 
     ///Build New-CMPackage PowerShell command
@@ -123,20 +153,19 @@ module Sccm =
         result{
             let! packageDefinitionSmsFilePath = FileSystem.path packageDefinitionSms
             let! packageDefinition = PackageDefinitionSms.readFromFile packageDefinitionSmsFilePath
+            let! ensurePackageNotAllreadyExists = ensureCmPackageDoesNotExist (WrappedString.value packageDefinition.Name)                
             let script = 
                 seq{                    
                     yield (sprintf "$package = %s" (toCmPackagePSCommand packageDefinition sourceFolderPath))
+                    yield ("$package | Set-CMPackage -EnableBinaryDeltaReplication $true")
                     for program in packageDefinition.Programs do
                         yield toNewCmProgramPSCommand "$($package.PackageId)" program
                 }
                 |>Seq.toArray
-                |>linesToText
-            let! siteCode = getAssignedSite()
-            let! siteServer = getSiteServer()
-            let! out = runCmPowerShellScript script siteCode siteServer
+                |>linesToText            
+            let! out = runCmPowerShellScript script
             return out        
         }
-        
 
     ///Create custom task sequence and add CM driver packages
     let createCustomTaskSequence name cmDriverPackages =
