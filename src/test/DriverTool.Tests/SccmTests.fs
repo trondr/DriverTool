@@ -41,9 +41,10 @@ module SccmTests=
     [<Category(TestCategory.ManualTests)>]
     let createPackageFromDefinitionTest () =
         match(result{            
-            let sourceFolderPath = "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\1.0\\Scripts"
-            let packageDefinitionSms = "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\1.0\\Scripts\\PackageDefinition.sms"
-            let! actual = createPackageFromDefinition packageDefinitionSms sourceFolderPath           
+            let! sourceFolderPath = FileSystem.path "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\1.0\\Scripts"
+            let! packageDefinitionSmsFilePath = FileSystem.path "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\1.0\\Scripts\\PackageDefinition.sms"
+            let! packageDefinition = PackageDefinitionSms.readFromFile packageDefinitionSmsFilePath
+            let! actual = createPackageFromDefinition sourceFolderPath packageDefinition
             return actual
         })with
         |Result.Ok a -> Assert.IsTrue(true)
@@ -65,10 +66,26 @@ module SccmTests=
         |Result.Ok a -> Assert.IsTrue(true)
         |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)
 
-//[-AddSupportedOperatingSystemPlatform <IResultObject[]>]
-//[-DiskSpaceRequirement <String>]
-//[-DiskSpaceUnit <DiskSpaceUnitType>]
-//[-Duration <Int32>]
-//[-DisableWildcardHandling]
-//[-ForceWildcardHandling]
-//[-WhatIf]
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let createCustomTaskSequenceTest () =
+        match(result{                        
+            let! packageDefinitionSmsFilePath1 = FileSystem.path "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\1.0\\Scripts\\PackageDefinition.sms"
+            let! packageDefinitionSmsFilePath2 = FileSystem.path "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\2.0\\Scripts\\PackageDefinition.sms"
+            let packageDefinitionSmsFilePaths = [|packageDefinitionSmsFilePath1;packageDefinitionSmsFilePath2|]
+            //let! cmpackages = 
+            //    packageDefinitionSmsFilePaths
+            //    |>Array.map(fun fp ->
+            //        result{
+            //            let! packageDefinition = PackageDefinitionSms.readFromFile fp
+            //            let! sourceFolderPath = FileOperations.getParentPath fp
+            //            let! actual = createPackageFromDefinition sourceFolderPath packageDefinition
+            //            return actual
+            //        }
+            //    )
+            //    |>toAccumulatedResult            
+            let! actual = createCustomTaskSequence "Example Task Sequence 1.0" "Example Description" [|packageDefinitionSmsFilePath1;packageDefinitionSmsFilePath2|]
+            return actual
+        })with
+        |Result.Ok a -> Assert.IsTrue(true)
+        |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)

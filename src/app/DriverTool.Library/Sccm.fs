@@ -149,14 +149,12 @@ module Sccm =
         newCMPackagePSCommand
 
     ///Create SCCM package from package definition sms file
-    let createPackageFromDefinition packageDefinitionSms sourceFolderPath =
-        result{
-            let! packageDefinitionSmsFilePath = FileSystem.path packageDefinitionSms
-            let! packageDefinition = PackageDefinitionSms.readFromFile packageDefinitionSmsFilePath
-            let! ensurePackageNotAllreadyExists = ensureCmPackageDoesNotExist (WrappedString.value packageDefinition.Name)                
+    let createPackageFromDefinition sourceFolderPath packageDefinition =
+        result{                        
+            let! ensurePackageNotAllreadyExists = ensureCmPackageDoesNotExist (WrappedString.value packageDefinition.Name)
             let script = 
                 seq{                    
-                    yield (sprintf "$package = %s" (toCmPackagePSCommand packageDefinition sourceFolderPath))
+                    yield (sprintf "$package = %s" (toCmPackagePSCommand packageDefinition (FileSystem.pathValue sourceFolderPath)))
                     yield ("$package | Set-CMPackage -EnableBinaryDeltaReplication $true")
                     for program in packageDefinition.Programs do
                         yield toNewCmProgramPSCommand "$($package.PackageId)" program
@@ -167,6 +165,68 @@ module Sccm =
             return out        
         }
 
-    ///Create custom task sequence and add CM driver packages
-    let createCustomTaskSequence name cmDriverPackages =
-        raise (new NotImplementedException())
+    ///Check if task sequence exists
+    let cmTaskSequenceExists name =
+        match(result{            
+            let! out = runCmPowerShellScript (sprintf "Get-CMTaskSequence -Name '%s'" name)
+            return out            
+        })with
+        |Result.Ok packages -> (packages.Length > 0)
+        |Result.Error ex ->
+            logger.Warn(sprintf "Failed to check if task sequence '%s' exists in Configuration Manager due to: %s" name (getAccumulatedExceptionMessages ex))
+            false
+
+    let ensureCmTaskSequenceExists name =
+        match(cmTaskSequenceExists name)with
+        |true -> Result.Ok true
+        |false -> Result.Error (toException (sprintf "CM Task Sequence does not exist: %s" name) None)
+
+    let ensureCmTaskSequenceDoesNotExist name =
+        match(cmTaskSequenceExists name)with
+        |true -> Result.Error (toException (sprintf "CM Task Sequence allready exist: %s" name) None)
+        |false -> Result.Ok true
+
+
+    ///Create custom task sequence from package definitions.
+    let createCustomTaskSequence name description (packageDefinitionSmsFilePaths:FileSystem.Path[]) =
+        result{
+            let! ensureCustomTaskSequenceNotAllreadyExists = ensureCmTaskSequenceDoesNotExist name
+            let! packageDefinitions = 
+                packageDefinitionSmsFilePaths
+                |>Array.map(fun f -> 
+                        result{
+                            let! sourceFolderPath = FileOperations.getParentPath f
+                            let! pdf = PackageDefinitionSms.readFromFile f
+                            return (sourceFolderPath,pdf)
+                        }                        
+                    )
+                |>toAccumulatedResult
+            let! ensureCmPackagesExists =
+                packageDefinitions
+                |>Seq.toArray
+                |>Array.map (fun (_,p) -> ensureCmPackageExists (WrappedString.value p.Name))
+                |>toAccumulatedResult
+            
+            let script =
+                seq{
+                    yield sprintf "$taskSequence = New-CMTaskSequence -CustomTaskSequence -Name '%s' -Description '%s'" name description
+                }
+                |>Seq.toArray
+                |>String.concat Environment.NewLine
+            let! out = runCmPowerShellScript script
+            return out
+
+        }
+
+        //New-CMTaskSequence
+        //[-BootImagePackageId <String>]
+        //[-CustomTaskSequence]
+        //[-Description <String>]
+        //[-HighPerformance <Boolean>]
+        //-Name <String>
+        //[-DisableWildcardHandling]
+        //[-ForceWildcardHandling]
+        //[-WhatIf]
+        //[-Confirm]
+        //[<CommonParameters>]
+        

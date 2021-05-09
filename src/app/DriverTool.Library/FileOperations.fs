@@ -281,3 +281,10 @@ module FileOperations =
             |Result.Error _ ->            
                 Result.Ok destinationFolderPath
         |None -> Result.Ok destinationFolderPath
+
+    let getParentPath' filePath =
+        let fileInfo = new System.IO.FileInfo(FileSystem.pathValue filePath)
+        FileSystem.pathUnSafe fileInfo.Directory.FullName
+
+    let getParentPath filePath =
+        tryCatch (Some (sprintf "Failed to get parent directory of '%s'" (FileSystem.pathValue filePath))) getParentPath' filePath
