@@ -200,16 +200,17 @@ module DellUpdates=
     ///Parse DriverPackage xml element to CmPackage
     let toCmPackage (dp:DellDriverPackCatalog.DriverPackage) : CmPackage =        
         let modelCodes = dp.Models |> Array.map(fun m -> m.Code) // Array of model codes
+        let modelName = dp.Models|> Array.map(fun m -> m.Name)|>Array.distinct|> String.concat ", " //Comma separated list of distinct model names
         {
             Manufacturer= "Dell"
-            Model=dp.Models|> Array.map(fun m -> m.Name)|>Array.distinct|> String.concat ", " //Comma separated list of distinct model names
+            Model=modelName
             ModelCodes=modelCodes
             ReadmeFile = None
             InstallerFile=dp.Installer                
             Released=DateTime.Now;
             Os= dp.OperatinSystems |> Array.map (fun os -> sprintf "%s-%s" os.OsCode os.OsArch)|>Array.distinct |> String.concat ", "
             OsBuild="*"
-            ModelWmiQuery=toModelCodesWqlQuery modelCodes
+            ModelWmiQuery=toModelCodesWqlQuery modelName modelCodes
             ManufacturerWmiQuery = toManufacturerWqlQuery "Dell"
         }
 

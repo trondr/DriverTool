@@ -93,6 +93,7 @@ module PackageXml =
     type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
 
     type WmiQuery = {
+        Name:string
         NameSpace :string
         Query :string
     }
@@ -115,13 +116,14 @@ module PackageXml =
     type ExtractedCmPackageInfo = { ExtractedDirectoryPath:string; DownloadedCmPackage:DownloadedCmPackage;}
     
     ///Convert list of model codes to a wql query that can be used as condition in model specific SCCM task sequence step
-    let toModelCodesWqlQuery (modelCodes:string[]) =
+    let toModelCodesWqlQuery name (modelCodes:string[]) =
         let whereCondition =
             (modelCodes 
             |> Array.map(fun mc -> sprintf "(BaseBoardProduct like '%s%%')" mc)
             |> String.concat " or ").Trim()        
         let query = sprintf "select BaseBoardProduct from MS_SystemInformation where %s" whereCondition
         {
+            Name = name
             NameSpace = "root/WMI"
             Query=query
         }
@@ -130,6 +132,7 @@ module PackageXml =
     let toManufacturerWqlQuery manufacturer =
         let query = sprintf "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='%s'" manufacturer 
         {
+            Name = manufacturer
             NameSpace = "root/WMI"
             Query=query
         }

@@ -200,10 +200,12 @@ module PackageDefinitionSms =
             Comment:String512
             ContainsNoFiles:bool
             Programs:SmsProgram[]
+            ManufacturerWmiQuery:PackageXml.WmiQuery
+            ModelWmiQuery:PackageXml.WmiQuery
         }
 
 
-    let createSmsPackageDefinition name version icon publisher language containsNoFiles comment programs =
+    let createSmsPackageDefinition name version icon publisher language containsNoFiles comment programs manufacturerWmiQuery modelWmiQuery=
         result{
             let! name255 = DriverTool.Library.String255.create name
             let! version64 = DriverTool.Library.String64.create version
@@ -222,7 +224,9 @@ module PackageDefinitionSms =
                     Comment=comment512
                     ContainsNoFiles=containsNoFiles
                     Programs=smsPrograms
-                }       
+                    ManufacturerWmiQuery=manufacturerWmiQuery
+                    ModelWmiQuery=modelWmiQuery
+                }
             return smsPackageDefinition
         }
 
@@ -325,8 +329,20 @@ module PackageDefinitionSms =
 
                 match program.Comment with
                 |Some comment -> yield sprintf "Comment=%s" (WrappedString.value comment)
-                |None -> ()                
-                    
+                |None -> ()
+            
+            yield ""
+            yield "[ManufacturerWmiQuery]"
+            yield (sprintf "Name=%s" smsPackageDefinition.ManufacturerWmiQuery.Name)
+            yield (sprintf "NameSpace=%s" smsPackageDefinition.ManufacturerWmiQuery.NameSpace)
+            yield (sprintf "Query=%s" smsPackageDefinition.ManufacturerWmiQuery.Query)
+
+            yield ""
+            yield "[ModelWmiQuery]"
+            yield (sprintf "Name=%s" smsPackageDefinition.ModelWmiQuery.Name)
+            yield (sprintf "NameSpace=%s" smsPackageDefinition.ModelWmiQuery.NameSpace)
+            yield (sprintf "Query=%s" smsPackageDefinition.ModelWmiQuery.Query)
+            
         } |> Seq.toArray |> linesToText
             
     open IniParser

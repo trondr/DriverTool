@@ -370,11 +370,13 @@
                     Released = new DateTime (2020,12,01)
                     ModelWmiQuery = 
                         {
+                            Name = "ThinkPad T480S Type 20L7 20L8"
                             NameSpace = "root\cimv2"
                             Query="SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20L7%\") OR (Name LIKE \"20L8%\")"
                         }
                     ManufacturerWmiQuery=
                         {
+                            Name = "Lenovo"
                             NameSpace=""
                             Query=""
                         }
@@ -392,11 +394,13 @@
                     Released = new DateTime (2020,09,01)
                     ModelWmiQuery = 
                         {
+                            Name = "ThinkPad X1 EXTREME Gen 2"
                             NameSpace = "root\cimv2"
                             Query="SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20QW%\") OR (Name LIKE \"20QV%\")"
                         }
                     ManufacturerWmiQuery=
                         {
+                            Name = "Lenovo"
                             NameSpace=""
                             Query=""
                         }
@@ -415,11 +419,13 @@
                     Released = new DateTime (2019,11,01)
                     ModelWmiQuery = 
                         {
+                            Name = "ThinkPad X1 Yoga Type 20JD 20JE 20JF 20JG"
                             NameSpace = "root\cimv2"
                             Query="SELECT * FROM Win32_ComputerSystemProduct WHERE ( (Name LIKE \"20JE%\") OR (Name LIKE \"20JG%\") OR (Name LIKE \"20JD%\") OR (Name LIKE \"20JF%\")"
                         }
                     ManufacturerWmiQuery=
                         {
+                            Name = "Lenovo"
                             NameSpace=""
                             Query=""
                         }

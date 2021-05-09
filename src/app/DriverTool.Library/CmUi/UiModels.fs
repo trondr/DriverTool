@@ -28,6 +28,8 @@ module UiModels =
             return sccmpackages
         }
 
+    open DriverTool.Library.PackageDefinitionSms
+
     /// Package CM drivers
     let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (cmPackage:CmPackage) : Result<DownloadedCmPackage,Exception> =
         result{
@@ -65,26 +67,16 @@ module UiModels =
                 PathOperations.combinePaths2 packageDriversFolderPath cmDriversFolderName                
             let! extractedCmPackageFolder = extractCmPackage downloadedCmPackage cmDriversFolderPath
 
-            logger.Info("Create PackageDefinition-DISM.sms")
-            let packageDefintionDism:PackageDefinition =
-                {
-                    Name=packageName;
-                    Version=cmPackage.Released.ToString("yyyy-MM-dd");
-                    Publisher="TODO";
-                    Language="EN";
-                    InstallCommandLine = "DISM.exe /Image:%OSDisk%\\ /Add-Driver /Driver:.\\Drivers\\" + cmDriversFolderName + "\\ /Recurse";
-                    UnInstallCommandLine = ""
-                    RegistryValue=""
-                    RegistryValueIs64Bit=""
-                }
-            let! packageDefinitionDimsSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue packageScriptsFolderPath,"PackageDefinition-DISM.sms"))            
-            let! packageDefintionDismWriteResult = packageDefintionDism |> writePackageDefinitionDismToFile packageDefinitionDimsSmsPath
-                                    
-            logger.Info(sprintf "Created PackageDefinition-DISM.sms: %A" packageDefintionDismWriteResult)
+            logger.Info("Create PackageDefinition-DISM.sms")            
+            let! dismProgram = PackageDefinitionSms.createSmsProgram "INSTALL-OFFLINE-OS" ("DISM.exe /Image:%OSDisk%\\ /Add-Driver /Driver:.\\Drivers\\" + cmDriversFolderName + "\\ /Recurse") "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "Install INF drivers into the offline operating system using DISM in the WinPE phase of the OSD."
+            let! pnpUtilProgram = PackageDefinitionSms.createSmsProgram "INSTALL-ONLINE-OS" ("pnputil.exe /add-driver .\\Drivers\\" + cmDriversFolderName + "\\*.inf /install /subdirs") "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "Install INF drivers into the online operating system using PnPUtil."
+            let! packageDefinition = PackageDefinitionSms.createSmsPackageDefinition packageName (cmPackage.Released.ToString("yyyy-MM-dd")) None cmPackage.Manufacturer "EN" false "Install INF drivers." [|dismProgram;pnpUtilProgram|] cmPackage.ManufacturerWmiQuery cmPackage.ModelWmiQuery
+            let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue packageScriptsFolderPath,"PackageDefinition.sms"))
+            let! packageDefintionWriteResult = packageDefinition |> writeToFile logger packageDefinitionSmsPath
+            logger.Info(sprintf "Created PackageDefinition.sms: %A" packageDefintionWriteResult)
 
-            reportProgress true None (sprintf "TODO: Package CM Drivers for model %s" cmPackage.Model)
-            let! notImplemented = Result.Error (toException "Not implemented" None)            
-            return notImplemented
+            reportProgress true None (sprintf "Finished packaging INF drivers for model %s" cmPackage.Model)            
+            return downloadedCmPackage
         }
 
         
