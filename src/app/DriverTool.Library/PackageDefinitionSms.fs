@@ -282,7 +282,7 @@ module PackageDefinitionSms =
                 yield ""
                 yield sprintf "[%s]" (WrappedString.value program.Name)
                 yield sprintf "Name=%s" (WrappedString.value program.Name)
-                yield sprintf "Commandline=%s" (WrappedString.value program.Commandline)
+                yield sprintf "CommandLine=%s" (WrappedString.value program.Commandline)
                 yield sprintf "StartIn=%s" (WrappedString.value program.StartIn)
                 yield sprintf "Assignment=%s" (smsAssignmentToString program.Assignment)
                 yield sprintf "CanRunWhen=%s" (smsCanRunWhenToString program.CanRunWhen)
@@ -347,69 +347,125 @@ module PackageDefinitionSms =
             
     open IniParser
 
-    let readSectionValue (section:KeyDataCollection) valueName defaultValue =
-        if(logger.IsDebugEnabled) then logger.Debug(sprintf "Reading section value '%s'" valueName)
-        let value = section.[valueName]
-        match value with
-        |null -> defaultValue
-        |_ -> value
+    let readIniValue' (iniData:IniData) sectionName valueName defaultValue =
+        let section = iniData.Sections.[sectionName]
+        match section with
+        |null -> 
+            logger.Warn(sprintf "Section '[%s]' does not exist." sectionName)
+            defaultValue
+        |_ ->
+            let value = section.[valueName]
+            match value with
+            |null -> 
+                logger.Warn(sprintf "Section value '[%s]%s' does not exist." sectionName valueName)
+                defaultValue
+            |v -> v
 
-    let toSmsProgram (programSection:KeyDataCollection) =
-        result{
-            let! name100 = String100.create (programSection.["Name"])
-            let! commandLine255 = String255.create (programSection.["CommandLine"])
-            let! comment255 = String255.create (readSectionValue programSection "Comment" String.Empty)
-            let! startIn255 = String255.create (readSectionValue programSection "StartIn" String.Empty)            
-            let! additionalProgramRequirements127 = String127.create (readSectionValue programSection "AdditionalProgramRequirements" String.Empty)
+    let readIniValue iniData sectionName valueName defaultValue =
+        tryCatch4 (Some (sprintf "Failed to read ini value: [%s]%s" sectionName valueName)) readIniValue' iniData sectionName valueName defaultValue
+
+    let toSmsProgram (iniData:IniData) programSectionName =
+        result{            
+            let! name = readIniValue iniData programSectionName "Name" String.Empty
+            let! name100 = String100.create name
+            let! commandLine = readIniValue iniData programSectionName "CommandLine" String.Empty
+            let! commandLine255 = String255.create commandLine
+            let! comment = readIniValue iniData programSectionName "Comment" String.Empty
+            let! comment255 = String255.create comment
+            let! startIn = readIniValue iniData programSectionName "StartIn" String.Empty
+            let! startIn255 = String255.create startIn
+            let! icon = readIniValue iniData programSectionName "Icon" String.Empty
+            let! additionalProgramRequirements = readIniValue iniData programSectionName "AdditionalProgramRequirements" String.Empty
+            let! additionalProgramRequirements127 = String127.create additionalProgramRequirements
+            let! run = readIniValue iniData programSectionName "Run" String.Empty
+            let! afterRunning = readIniValue iniData programSectionName "AfterRunning" String.Empty
+            let! estimatedDiskSpace = readIniValue iniData programSectionName "EstimatedDiskSpace" String.Empty
+            let! estimatedRunTime = readIniValue iniData programSectionName "EstimatedRunTime" String.Empty
+            let! canRunWhen = readIniValue iniData programSectionName "CanRunWhen" String.Empty
+            let! userInputRequired = readIniValue iniData programSectionName "UserInputRequired" String.Empty
+            let! adminRightsRequired = readIniValue iniData programSectionName "AdminRightsRequired" String.Empty
+            let! useInstallAccount = readIniValue iniData programSectionName "UseInstallAccount" String.Empty
+            let! driveLetterConnection = readIniValue iniData programSectionName "DriveLetterConnection" String.Empty
+            let! specifyDrive = readIniValue iniData programSectionName "SpecifyDrive" String.Empty
+            let! reconnectDriveAtLogon = readIniValue iniData programSectionName "ReconnectDriveAtLogon" String.Empty
+            let! dependentProgram = readIniValue iniData programSectionName "DependentProgram" String.Empty
+            let! assignment = readIniValue iniData programSectionName "Assignment" String.Empty
+            let! disabled = readIniValue iniData programSectionName "Disabled" String.Empty
             let smsProgram =
               {
                 Name=name100
-                Icon=F.toOptionalString (programSection.["Icon"])
+                Icon=F.toOptionalString icon
                 Comment=String255.toOptionalString comment255
                 Commandline=commandLine255
                 StartIn=startIn255
-                Run=smsProgramModeFromString (programSection.["Run"])
-                AfterRunning=smsAfterRunningActionFromString (programSection.["AfterRunning"])
-                EstimatedDiskSpace=smsEstimatedDiskSpaceFromString (programSection.["EstimatedDiskSpace"])
-                EstimatedRunTime = smsEstimatedRuntimeFromString (programSection.["EstimatedRunTime"])
+                Run=smsProgramModeFromString run
+                AfterRunning=smsAfterRunningActionFromString afterRunning
+                EstimatedDiskSpace=smsEstimatedDiskSpaceFromString estimatedDiskSpace
+                EstimatedRunTime = smsEstimatedRuntimeFromString estimatedRunTime
                 AdditionalProgramRequirements=(String127.toOptionalString additionalProgramRequirements127)
-                CanRunWhen=smsCanRunWhenFromString (programSection.["CanRunWhen"])
-                UserInputRequired=smsBoolFromString (programSection.["UserInputRequired"]) false
-                AdminRightsRequired=smsBoolFromString (programSection.["AdminRightsRequired"]) false
-                UseInstallAccount=smsBoolFromString (programSection.["UseInstallAccount"]) false
-                DriveLetterConnection=smsBoolFromString (programSection.["DriveLetterConnection"]) false
-                SpecifyDrive=F.toOptionalString (programSection.["SpecifyDrive"])
-                ReconnectDriveAtLogon=smsBoolFromString (programSection.["ReconnectDriveAtLogon"]) false
-                DependentProgram=programSection.["DependentProgram"]
-                Assignment=smsAssignmentFromString (programSection.["Assignment"])
-                Disabled=smsBoolFromString (programSection.["Disabled"]) false
+                CanRunWhen=smsCanRunWhenFromString canRunWhen
+                UserInputRequired=smsBoolFromString userInputRequired false
+                AdminRightsRequired=smsBoolFromString adminRightsRequired false
+                UseInstallAccount=smsBoolFromString useInstallAccount false
+                DriveLetterConnection=smsBoolFromString driveLetterConnection false
+                SpecifyDrive=F.toOptionalString specifyDrive
+                ReconnectDriveAtLogon=smsBoolFromString reconnectDriveAtLogon false
+                DependentProgram=dependentProgram
+                Assignment=smsAssignmentFromString assignment
+                Disabled=smsBoolFromString disabled false
                 }
             return smsProgram
         }
+    open DriverTool.Library.PackageXml
 
     ///Parse package definition ini, throw exception in case of invalid data.
     let fromIniStringUnsafe (packageDefinitonIniString:string) : SmsPackageDefinition =        
         let iniDataParser = new Parser.IniDataParser()
         let iniData = iniDataParser.Parse(packageDefinitonIniString)
-        let packageDefinitionSection = iniData.Sections.["Package Definition"]
-        let programSectionNames = packageDefinitionSection.["Programs"].Split([|','|])|>Array.map(fun s -> s.Trim())        
-        match(result
-        {        
+        let packageDefinitionSectionName = "Package Definition"        
+        match(result{        
+            let! programSectionNames' = readIniValue iniData packageDefinitionSectionName "Programs" String.Empty
+            let programSectionNames = programSectionNames'.Split([|','|])|>Array.map(fun s -> s.Trim())
+            
             let! smsPrograms =
                 programSectionNames
-                |>Array.map(fun psn -> 
-                    let programSection = iniData.Sections.[psn]
-                    let smsProgram = toSmsProgram programSection
+                |>Array.map(fun psn ->                     
+                    let smsProgram = toSmsProgram iniData psn
                     smsProgram
                 )|>toAccumulatedResult
-            let name = packageDefinitionSection.["Name"]
-            let version = packageDefinitionSection.["Version"]
-            let icon = F.toOptionalString (packageDefinitionSection.["Icon"])
-            let publisher = packageDefinitionSection.["Publisher"]
-            let language = packageDefinitionSection.["Language"]
-            let containsNoFiles = smsBoolFromString packageDefinitionSection.["ContainsNoFiles"] false
-            let comment = packageDefinitionSection.["Comment"]        
-            let! smsPackageDefinition = createSmsPackageDefinition name version icon publisher language containsNoFiles comment (smsPrograms|>Seq.toArray)
+            
+            let! name = readIniValue iniData packageDefinitionSectionName "Name" String.Empty
+            let! version = readIniValue iniData packageDefinitionSectionName "Version" String.Empty
+            let! icon = readIniValue iniData packageDefinitionSectionName "Icon" String.Empty
+            let! publisher = readIniValue iniData packageDefinitionSectionName "Publisher" String.Empty
+            let! language = readIniValue iniData packageDefinitionSectionName "Language" String.Empty
+            let! containsNoFiles' = readIniValue iniData packageDefinitionSectionName "ContainsNoFiles" String.Empty
+            let containsNoFiles = smsBoolFromString containsNoFiles' false
+            let! comment = readIniValue iniData packageDefinitionSectionName "Comment" String.Empty
+            
+            let manufacturerWmiQuerySectionName = "ManufacturerWmiQuery"
+            let! manufacturerWmiQueryName = readIniValue iniData manufacturerWmiQuerySectionName "Name" String.Empty
+            let! manufacturerWmiQueryNameSpace = readIniValue iniData manufacturerWmiQuerySectionName "NameSpace" String.Empty
+            let! manufacturerWmiQueryQuery = readIniValue iniData manufacturerWmiQuerySectionName "Query" String.Empty
+            let manufacturerWmiQuery =
+                {
+                    Name = manufacturerWmiQueryName
+                    NameSpace = manufacturerWmiQueryNameSpace
+                    Query = manufacturerWmiQueryQuery
+                }
+
+            let manufacturerWmiQuerySectionName = "ModelWmiQuery"
+            let! modelWmiQueryName = readIniValue iniData manufacturerWmiQuerySectionName "Name" String.Empty
+            let! modelWmiQueryNameSpace = readIniValue iniData manufacturerWmiQuerySectionName "NameSpace" String.Empty
+            let! modelWmiQueryQuery = readIniValue iniData manufacturerWmiQuerySectionName "Query" String.Empty
+
+            let modelWmiQuery =
+                {
+                    Name = modelWmiQueryName
+                    NameSpace = modelWmiQueryNameSpace
+                    Query = modelWmiQueryQuery
+                }
+            let! smsPackageDefinition = createSmsPackageDefinition name version (F.toOptionalString icon) publisher language containsNoFiles comment (smsPrograms|>Seq.toArray) manufacturerWmiQuery modelWmiQuery
             return smsPackageDefinition
         })with
         |Result.Ok pd -> pd
