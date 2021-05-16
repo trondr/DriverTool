@@ -68,23 +68,37 @@ module SccmTests=
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
+    [<Timeout(600000)>]
     let createCustomTaskSequenceTest () =
         match(result{                        
             let! packageDefinitionSmsFilePath1 = FileSystem.path "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\1.0\\Scripts\\PackageDefinition.sms"
             let! packageDefinitionSmsFilePath2 = FileSystem.path "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\2.0\\Scripts\\PackageDefinition.sms"
-            let packageDefinitionSmsFilePaths = [|packageDefinitionSmsFilePath1;packageDefinitionSmsFilePath2|]
-            //let! cmpackages = 
-            //    packageDefinitionSmsFilePaths
-            //    |>Array.map(fun fp ->
-            //        result{
-            //            let! packageDefinition = PackageDefinitionSms.readFromFile fp
-            //            let! sourceFolderPath = FileOperations.getParentPath fp
-            //            let! actual = createPackageFromDefinition sourceFolderPath packageDefinition
-            //            return actual
-            //        }
-            //    )
-            //    |>toAccumulatedResult            
-            let! actual = createCustomTaskSequence "Example Task Sequence 1.0" "Example Description" "INSTALL-OFFLINE-OS" [|packageDefinitionSmsFilePath1;packageDefinitionSmsFilePath2|]
+            let! packageDefinitionSmsFilePath3 = FileSystem.path "\\\\TETA410-CM01\\PkgSrc$\\Packages\\Example Package\\3.0\\Scripts\\PackageDefinition.sms"
+            let packageDefinitionSmsFilePaths = [|packageDefinitionSmsFilePath1;packageDefinitionSmsFilePath2;packageDefinitionSmsFilePath3|]
+            
+            let! packageDefinitions = 
+                packageDefinitionSmsFilePaths
+                |>Array.map(fun fp -> 
+                                result{
+                                    let! packageDefinition = PackageDefinitionSms.readFromFile fp
+                                    let! sourceFolderPath = FileOperations.getParentPath fp
+                                    return (sourceFolderPath,packageDefinition)
+                                })                
+                |>toAccumulatedResult
+                
+            let! cmPackages =
+                packageDefinitions
+                |>Seq.toArray
+                |>Array.filter(fun (_,p) -> not (cmPackageExists  (WrappedString.value p.Name)))
+                |>Array.map(fun (fp,p) -> 
+                            result{                                
+                                let! actual = createPackageFromDefinition fp p
+                                return actual
+                            })
+                |>toAccumulatedResult
+            let cmPackages = cmPackages |>Seq.toArray
+            logger.Info(sprintf "All '%d' packages exists. Ready to create custom task sequence" (Array.length cmPackages))
+            let! actual = createCustomTaskSequence "Example Task Sequence 1.0" "Example Description" "INSTALL-OFFLINE-OS" packageDefinitionSmsFilePaths
             return actual
         })with
         |Result.Ok a -> Assert.IsTrue(true)
