@@ -186,48 +186,22 @@ module Sccm =
         |true -> Result.Error (toException (sprintf "CM Task Sequence allready exist: %s" name) None)
         |false -> Result.Ok true
 
-
-    ///Create custom task sequence from package definitions.
-    let createCustomTaskSequence name description (packageDefinitionSmsFilePaths:FileSystem.Path[]) =
+    let toCustomTaskSequenceScript name description programName packageDefinitions =
         result{
-            let! ensureCustomTaskSequenceNotAllreadyExists = ensureCmTaskSequenceDoesNotExist name
-            let! packageDefinitions = 
-                packageDefinitionSmsFilePaths
-                |>Array.map(fun f -> 
-                        result{
-                            let! sourceFolderPath = FileOperations.getParentPath f
-                            let! pdf = PackageDefinitionSms.readFromFile f
-                            return (sourceFolderPath,pdf)
-                        }                        
-                    )
-                |>toAccumulatedResult
-            let! ensureCmPackagesExists =
-                packageDefinitions
-                |>Seq.toArray
-                |>Array.map (fun (_,p) -> ensureCmPackageExists (WrappedString.value p.Name))
-                |>toAccumulatedResult
-            
             let uniqueManufacturerWmiQueries = 
                 packageDefinitions
-                |>Seq.map(fun (sp,package)->package.ManufacturerWmiQuery)                
+                |>Seq.map(fun package ->package.ManufacturerWmiQuery)                
                 |>Seq.distinctBy(fun m-> m.Name)
                 |>Seq.toArray
-
-            let packages = 
-                packageDefinitions
-                |>Seq.map(fun (sp,package) -> package)
-                |>Seq.toArray
-
             let script =
                 seq{
                     yield "$ManufacturerGroups = @()"
-                    for wmiQuery in uniqueManufacturerWmiQueries do
-                        
-                        let vendorPackages = packages|>Array.filter(fun p -> p.ManufacturerWmiQuery.Name = wmiQuery.Name)
+                    for wmiQuery in uniqueManufacturerWmiQueries do                        
+                        let vendorPackages = packageDefinitions|>Array.filter(fun p -> p.ManufacturerWmiQuery.Name = wmiQuery.Name)
                         yield "$ModelGroups = @()"
                         for package in vendorPackages do
                             yield sprintf "$package = Get-CMPackage -Name '%s' -Fast" (WrappedString.value package.Name)
-                            let installProgram = package.Programs|>Array.filter(fun program -> WrappedString.value(program.Name) = "INSTALL-OFFLINE-OS") |>Array.head
+                            let installProgram = package.Programs|>Array.filter(fun program -> WrappedString.value(program.Name) = programName) |>Array.head
                             yield   match installProgram.Comment with
                                     |Some c -> 
                                         sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\" -CommandLine '%s' -SuccessCode @(0,3010) -Description \"%s\"" (WrappedString.value package.Name) (WrappedString.value installProgram.Commandline) (WrappedString.value c)
@@ -246,6 +220,36 @@ module Sccm =
                 }
                 |>Seq.toArray
                 |>String.concat Environment.NewLine
+            return script        
+        }
+
+
+    ///Create custom task sequence from package definitions.
+    let createCustomTaskSequence name description programName (packageDefinitionSmsFilePaths:FileSystem.Path[]) =
+        result{
+            let! ensureCustomTaskSequenceNotAllreadyExists = ensureCmTaskSequenceDoesNotExist name
+            let! packageDefinitions = 
+                packageDefinitionSmsFilePaths
+                |>Array.map(fun f -> 
+                        result{
+                            let! sourceFolderPath = FileOperations.getParentPath f
+                            let! pdf = PackageDefinitionSms.readFromFile f
+                            return (sourceFolderPath,pdf)
+                        }                        
+                    )
+                |>toAccumulatedResult
+            let! ensureCmPackagesExists =
+                packageDefinitions
+                |>Seq.toArray
+                |>Array.map (fun (_,p) -> ensureCmPackageExists (WrappedString.value p.Name))
+                |>toAccumulatedResult
+            
+            let packages = 
+                packageDefinitions
+                |>Seq.map(fun (sp,package) -> package)
+                |>Seq.toArray
+
+            let! script = toCustomTaskSequenceScript name description programName packages                
             let! out = runCmPowerShellScript script
             return out
 
