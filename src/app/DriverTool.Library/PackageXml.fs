@@ -124,7 +124,7 @@ module PackageXml =
         let query = sprintf "select BaseBoardProduct from MS_SystemInformation where %s" whereCondition
         {
             Name = name
-            NameSpace = "root/WMI"
+            NameSpace = "root\\WMI"
             Query=query
         }
 
@@ -133,7 +133,7 @@ module PackageXml =
         let query = sprintf "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='%s'" manufacturer 
         {
             Name = manufacturer
-            NameSpace = "root/WMI"
+            NameSpace = "root\\WMI"
             Query=query
         }
 
