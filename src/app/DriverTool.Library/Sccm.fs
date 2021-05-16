@@ -207,9 +207,42 @@ module Sccm =
                 |>Array.map (fun (_,p) -> ensureCmPackageExists (WrappedString.value p.Name))
                 |>toAccumulatedResult
             
+            let uniqueManufacturerWmiQueries = 
+                packageDefinitions
+                |>Seq.map(fun (sp,package)->package.ManufacturerWmiQuery)                
+                |>Seq.distinctBy(fun m-> m.Name)
+                |>Seq.toArray
+
+            let packages = 
+                packageDefinitions
+                |>Seq.map(fun (sp,package) -> package)
+                |>Seq.toArray
+
             let script =
                 seq{
+                    
+                    for wmiQuery in uniqueManufacturerWmiQueries do
+                        yield sprintf "$%sGroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" wmiQuery.Name wmiQuery.NameSpace wmiQuery.Query //Example: $LenovoGroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Query "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='Lenovo'"
+                        let vendorPackages = packages|>Array.filter(fun p -> p.ManufacturerWmiQuery.Name = wmiQuery.Name)
+                        yield "$ModelGroups = @()"
+                        for package in vendorPackages do
+                            yield sprintf "$package = Get-CMPackage -Name '%s' -Fast" (WrappedString.value package.Name)
+                            let installProgram = package.Programs|>Array.filter(fun program -> WrappedString.value(program.Name) = "INSTALL-OFFLINE-OS") |>Array.head
+                            yield   match installProgram.Comment with
+                                    |Some c -> 
+                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\" -CommandLine '%s' -SuccessCode @(0,3010) -Description \"%s\"" (WrappedString.value package.Name) (WrappedString.value installProgram.Commandline) (WrappedString.value c)
+                                    |None ->
+                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\"  -CommandLine '%s' -SuccessCode @(0,3010)" (WrappedString.value package.Name) (WrappedString.value installProgram.Commandline)
+                            yield "$restartStep = New-CMTSStepReboot -Name \"Restart\" -RunAfterRestart \"HardDisk\" -NotificationMessage \"A new Microsoft Windows operating system is being installed. The computer must restart to continue.\" -MessageTimeout 3"
+                            
+                            yield sprintf "$ModelGroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" package.ModelWmiQuery.NameSpace package.ModelWmiQuery.Query
+                            yield sprintf "$ModelGroups += New-CMTaskSequenceGroup -Name '%s' -Condition @($ModelGroupCondition) -Step @($commandLineStep,$restartStep)" package.ModelWmiQuery.Name
+
+                        yield sprintf "$%sGroup = New-CMTaskSequenceGroup -Name '%s' -Description 'Manufacturer %s' -Condition @($%sGroupCondition) -Step @($ModelGroups)" wmiQuery.Name wmiQuery.Name wmiQuery.Name wmiQuery.Name //Example: $LenovoGroup = New-CMTaskSequenceGroup -Name 'Lenovo' -Description 'Manufacturer Lenovo' -Condition @($LenovoGroupCondition) -Step @($commandLineStep)
+                    let manufacturerGroups = uniqueManufacturerWmiQueries|>Seq.map(fun w-> sprintf "$%sGroup" w.Name)|>String.concat ","
+                    yield sprintf "$ApplyDriversGroup = New-CMTaskSequenceGroup -Name 'Apply Drivers' -Description 'Apply drivers to the offline operating system.' -Step @(%s)" manufacturerGroups
                     yield sprintf "$taskSequence = New-CMTaskSequence -CustomTaskSequence -Name '%s' -Description '%s'" name description
+                    yield sprintf "Add-CMTaskSequenceStep -TaskSequenceName '%s' -Step @($ApplyDriversGroup)" name
                 }
                 |>Seq.toArray
                 |>String.concat Environment.NewLine
