@@ -48,7 +48,7 @@ module Sccm =
                 }
                 |>Seq.toArray
                 |> linesToText
-            let variables = new Dictionary<string, obj>()
+            let variables = new Dictionary<string, obj>()            
             let! out = PowerShellHelper.runPowerShellScript cmScript variables
             return out        
         }
@@ -220,9 +220,9 @@ module Sccm =
 
             let script =
                 seq{
-                    
+                    yield "$ManufacturerGroups = @()"
                     for wmiQuery in uniqueManufacturerWmiQueries do
-                        yield sprintf "$%sGroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" wmiQuery.Name wmiQuery.NameSpace wmiQuery.Query //Example: $LenovoGroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Query "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='Lenovo'"
+                        
                         let vendorPackages = packages|>Array.filter(fun p -> p.ManufacturerWmiQuery.Name = wmiQuery.Name)
                         yield "$ModelGroups = @()"
                         for package in vendorPackages do
@@ -238,9 +238,9 @@ module Sccm =
                             yield sprintf "$ModelGroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" package.ModelWmiQuery.NameSpace package.ModelWmiQuery.Query
                             yield sprintf "$ModelGroups += New-CMTaskSequenceGroup -Name '%s' -Condition @($ModelGroupCondition) -Step @($commandLineStep,$restartStep)" package.ModelWmiQuery.Name
 
-                        yield sprintf "$%sGroup = New-CMTaskSequenceGroup -Name '%s' -Description 'Manufacturer %s' -Condition @($%sGroupCondition) -Step @($ModelGroups)" wmiQuery.Name wmiQuery.Name wmiQuery.Name wmiQuery.Name //Example: $LenovoGroup = New-CMTaskSequenceGroup -Name 'Lenovo' -Description 'Manufacturer Lenovo' -Condition @($LenovoGroupCondition) -Step @($commandLineStep)
-                    let manufacturerGroups = uniqueManufacturerWmiQueries|>Seq.map(fun w-> sprintf "$%sGroup" w.Name)|>String.concat ","
-                    yield sprintf "$ApplyDriversGroup = New-CMTaskSequenceGroup -Name 'Apply Drivers' -Description 'Apply drivers to the offline operating system.' -Step @(%s)" manufacturerGroups
+                        yield sprintf "$GroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" wmiQuery.NameSpace wmiQuery.Query
+                        yield sprintf "$ManufacturerGroups += New-CMTaskSequenceGroup -Name '%s' -Description 'Manufacturer %s' -Condition @($GroupCondition) -Step @($ModelGroups)" wmiQuery.Name wmiQuery.Name
+                    yield "$ApplyDriversGroup = New-CMTaskSequenceGroup -Name 'Apply Drivers' -Description 'Apply drivers to the offline operating system.' -Step @($ManufacturerGroups)"
                     yield sprintf "$taskSequence = New-CMTaskSequence -CustomTaskSequence -Name '%s' -Description '%s'" name description
                     yield sprintf "Add-CMTaskSequenceStep -TaskSequenceName '%s' -Step @($ApplyDriversGroup)" name
                 }
@@ -250,16 +250,4 @@ module Sccm =
             return out
 
         }
-
-        //New-CMTaskSequence
-        //[-BootImagePackageId <String>]
-        //[-CustomTaskSequence]
-        //[-Description <String>]
-        //[-HighPerformance <Boolean>]
-        //-Name <String>
-        //[-DisableWildcardHandling]
-        //[-ForceWildcardHandling]
-        //[-WhatIf]
-        //[-Confirm]
-        //[<CommonParameters>]
-        
+     
