@@ -261,6 +261,10 @@ module F=
         |Result.Error ex ->
             raise ex
             
+    let booleanToResult message b =
+        match b with
+        |true -> Result.Ok true
+        |false -> Result.Error (toException message None)
 
     open System.Collections.Generic
 
