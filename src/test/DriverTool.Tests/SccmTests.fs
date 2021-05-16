@@ -121,11 +121,16 @@ $ModelGroups += New-CMTaskSequenceGroup -Name 'Lenovo ThinkPad X1 Yoga' -Conditi
 $GroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Query "select where Lenovo"
 $ManufacturerGroups += New-CMTaskSequenceGroup -Name 'Lenovo' -Description 'Manufacturer Lenovo' -Condition @($GroupCondition) -Step @($ModelGroups)
 $ModelGroups = @()
-$package = Get-CMPackage -Name 'Example Application 2' -Fast
-$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name "Example Application 2" -CommandLine 'Install.cmd > %public%\Logs\Install.cmd.log' -SuccessCode @(0,3010) -Description "Install application"
+$package = Get-CMPackage -Name 'Example Application 2.1' -Fast
+$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name "Example Application 2.1" -CommandLine 'Install.cmd > %public%\Logs\Install.cmd.log' -SuccessCode @(0,3010) -Description "Install application"
 $restartStep = New-CMTSStepReboot -Name "Restart" -RunAfterRestart "HardDisk" -NotificationMessage "A new Microsoft Windows operating system is being installed. The computer must restart to continue." -MessageTimeout 3
 $ModelGroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Query "select where HP EliteBook 830"
 $ModelGroups += New-CMTaskSequenceGroup -Name 'HP EliteBook 830' -Condition @($ModelGroupCondition) -Step @($commandLineStep,$restartStep)
+$package = Get-CMPackage -Name 'Example Application 2.2' -Fast
+$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name "Example Application 2.2" -CommandLine 'Install.cmd > %public%\Logs\Install.cmd.log' -SuccessCode @(0,3010) -Description "Install application"
+$restartStep = New-CMTSStepReboot -Name "Restart" -RunAfterRestart "HardDisk" -NotificationMessage "A new Microsoft Windows operating system is being installed. The computer must restart to continue." -MessageTimeout 3
+$ModelGroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Query "select where HP EliteBook 840"
+$ModelGroups += New-CMTaskSequenceGroup -Name 'HP EliteBook 840' -Condition @($ModelGroupCondition) -Step @($commandLineStep,$restartStep)
 $GroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Query "select where HP"
 $ManufacturerGroups += New-CMTaskSequenceGroup -Name 'HP' -Description 'Manufacturer HP' -Condition @($GroupCondition) -Step @($ModelGroups)
 $ModelGroups = @()
@@ -145,9 +150,10 @@ Add-CMTaskSequenceStep -TaskSequenceName 'Example TS 1.0' -Step @($ApplyDriversG
         match(result{
             let programName = "INSTALL-OFFLINE-OS"
             let! packageDefinition1 = createTestPackageDefinition "Example Application 1" programName "Lenovo" "Lenovo ThinkPad X1 Yoga"
-            let! packageDefinition2 = createTestPackageDefinition "Example Application 2" programName "HP" "HP EliteBook 830"
-            let! packageDefinition3 = createTestPackageDefinition "Example Application 3" programName "Dell" "Dell Latitude 550"            
-            let! actual = toCustomTaskSequenceScript "Example TS 1.0" "Example Custom Task Sequence" programName [|packageDefinition1;packageDefinition2;packageDefinition3|]
+            let! packageDefinition2 = createTestPackageDefinition "Example Application 2.1" programName "HP" "HP EliteBook 830"
+            let! packageDefinition3 = createTestPackageDefinition "Example Application 2.2" programName "HP" "HP EliteBook 840"
+            let! packageDefinition4 = createTestPackageDefinition "Example Application 3" programName "Dell" "Dell Latitude 550"            
+            let! actual = toCustomTaskSequenceScript "Example TS 1.0" "Example Custom Task Sequence" programName [|packageDefinition1;packageDefinition2;packageDefinition3;packageDefinition4|]
             Assert.AreEqual(expected,actual,"Custom task sequence PowerShell script was not as expected.")
             return actual
         })with
