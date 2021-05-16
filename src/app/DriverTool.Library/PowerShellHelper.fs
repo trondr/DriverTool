@@ -60,6 +60,7 @@ module PowerShellHelper =
 
     ///Run PowwerShell script
     let runPowerShellScript script (variables:Dictionary<string,obj>) =
+        if(logger.IsDebugEnabled) then(logger.Debug(sprintf "Running PowershellScript:%s%s" System.Environment.NewLine script)) else ()
         let message = sprintf "Failed to run PowerShell script:%s%s" Environment.NewLine script
         tryCatch2 (Some message) runPowerShellScriptUnsafe script variables
 
