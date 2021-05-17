@@ -26,49 +26,100 @@ module Sccm =
     let loadCmPowerShellModule () = 
         raise (new NotImplementedException())
 
-    ///Load ConfigurationManager module and run CM powershell script
-    let runCmPowerShellScript' script siteCode siteServer =
-        result{
-            let cmScript = 
-                seq{             
-                    yield sprintf "$SiteCode=\"%s\"" siteCode
-                    yield sprintf "$SiteServer=\"%s\"" siteServer
-                    yield "$initParams = @{}"
-                    if(logger.IsDebugEnabled) then
-                        yield "$initParams.Add(\"Verbose\", $true)"
-                        yield "$initParams.Add(\"ErrorAction\", \"Stop\")"
-                    yield "if((Get-Module ConfigurationManager) -eq $null) {"
-                    yield "    Import-Module \"$($ENV:SMS_ADMIN_UI_PATH)\..\ConfigurationManager.psd1\" @initParams"
-                    yield "}"
-                    yield "if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {"
-                    yield "New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $SiteServer @initParams"
-                    yield "}"
-                    yield "Set-Location \"$($SiteCode):\\\" @initParams"
-                    yield script
-                }
-                |>Seq.toArray
-                |> linesToText
-            let variables = new Dictionary<string, obj>()            
-            let! out = PowerShellHelper.runPowerShellScript cmScript variables
-            return out        
+    ///Build CM PowerShell startup script
+    let cmPowerShellStartupScript siteCode siteServer =
+        seq{             
+            yield sprintf "$SiteCode=\"%s\"" siteCode
+            yield sprintf "$SiteServer=\"%s\"" siteServer
+            yield "$initParams = @{}"
+            if(logger.IsDebugEnabled) then
+                yield "$initParams.Add(\"Verbose\", $true)"
+                yield "$initParams.Add(\"ErrorAction\", \"Stop\")"
+            yield "if((Get-Module ConfigurationManager) -eq $null) {"
+            yield "    Import-Module \"$($ENV:SMS_ADMIN_UI_PATH)\..\ConfigurationManager.psd1\" @initParams"
+            yield "}"
+            yield "if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {"
+            yield "New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $SiteServer @initParams"
+            yield "}"
+            yield "Set-Location \"$($SiteCode):\\\" @initParams"            
         }
         |>Seq.toArray
         |>String.concat Environment.NewLine
 
-    let runCmPowerShellScript script =
-        result{
-            let! siteCode = getAssignedSite()
-            let! siteServer = getSiteServer()
-            let! out = runCmPowerShellScript' script siteCode siteServer
-            return out
-        }
+
+    open System.Management.Automation
+    open System.Management.Automation.Runspaces
+    open System.Collections.ObjectModel
+
+    let createRunSpaceUnsafe startupScript =
+        let initialSessionState = System.Management.Automation.Runspaces.InitialSessionState.CreateDefault2()
+        initialSessionState.StartupScripts.Add(startupScript)|> ignore        
+        let runspace = RunspaceFactory.CreateRunspace(initialSessionState)
+        runspace.Open()
+        use pipeline = runspace.CreatePipeline()
+        let preparedStartupScript = 
+            startupScript
+            |> removeComments
+            |> addTranscriptLogging
+        pipeline.Commands.AddScript(preparedStartupScript)
+        pipeline.Invoke() |> toSeq |> Seq.toArray |>ignore
+        runspace
+
+    let createRunSpace startupScript =
+        tryCatch (Some (sprintf "Failed to create PowerShell runspace.")) createRunSpaceUnsafe startupScript
+
+    let runPowerShellScriptInRunspaceUnsafe (runspace:Runspace) script (variables:Dictionary<string,obj>) =        
+        use pipeline = runspace.CreatePipeline()
+        let preparedScript = script|> removeComments
+        pipeline.Commands.AddScript(preparedScript)
+        variables |> Seq.map (fun kvp -> 
+                runspace.SessionStateProxy.SetVariable(kvp.Key,kvp.Value)
+            ) |> Seq.iter id
+        let output = pipeline.Invoke() |> toSeq |> Seq.toArray        
+        output
+    
+    let runPowerShellScriptInRunspace (runspace:Runspace) script (variables:Dictionary<string,obj>) =
+        tryCatch3 (Some "Failed to run PowerShell script.") runPowerShellScriptInRunspaceUnsafe runspace script variables
+
+    type CMPowerShellSession private () =
+        let mutable runSpace :Runspace = null
+        static let instance = CMPowerShellSession()
+        static member Instance = instance        
+        member this.RunSpace
+            with get() =
+                match runSpace with
+                |null ->
+                    result{
+                        let! siteCode = getAssignedSite()
+                        let! siteServer = getSiteServer()
+                        let startupScript = cmPowerShellStartupScript siteCode siteServer
+                        let! rs = createRunSpace startupScript
+                        runSpace <- rs                        
+                        return runSpace
+                    }
+                |_ -> Result.Ok runSpace
+            
+        member this.RunScriptEx script (variables:Dictionary<string,obj>) =
+            result{
+                let! runSpace = this.RunSpace
+                let! output = runPowerShellScriptInRunspace runSpace script variables
+                return output
+            }
+
+        member this.RunScript script =
+            result{
+                let! runSpace = this.RunSpace
+                let variables = new Dictionary<string, obj>()
+                let! output = runPowerShellScriptInRunspace runSpace script variables
+                return output
+            }
 
     open DriverTool.Library.PackageDefinitionSms
 
     ///Check if package exists
     let cmPackageExists packageName =
-        match(result{            
-            let! out = runCmPowerShellScript (sprintf "Get-CMPackage -Name '%s' -Fast" packageName)
+        match(result{                        
+            let! out = CMPowerShellSession.Instance.RunScript (sprintf "Get-CMPackage -Name '%s' -Fast" packageName)
             return out            
         })with
         |Result.Ok packages -> (packages.Length > 0)
@@ -162,15 +213,15 @@ module Sccm =
                         yield toNewCmProgramPSCommand "$($package.PackageId)" program
                 }
                 |>Seq.toArray
-            let! out = runCmPowerShellScript script
-            return out        
                 |>String.concat Environment.NewLine             
+            let! out = CMPowerShellSession.Instance.RunScript script
+            return out
         }
 
     ///Check if task sequence exists
     let cmTaskSequenceExists name =
         match(result{            
-            let! out = runCmPowerShellScript (sprintf "Get-CMTaskSequence -Name '%s'" name)
+            let! out = CMPowerShellSession.Instance.RunScript (sprintf "Get-CMTaskSequence -Name '%s'" name)
             return out            
         })with
         |Result.Ok packages -> (packages.Length > 0)
@@ -259,8 +310,7 @@ module Sccm =
                 |>toAccumulatedResult
             logger.Info(sprintf "All packages exist: %b" (ensureCmPackagesExists|>Seq.forall(fun p -> p)))            
             let! script = toCustomTaskSequenceScript name description programName packageDefinitions                
-            let! out = runCmPowerShellScript script
+            let! out = CMPowerShellSession.Instance.RunScript script
             return out
-
         }
      

@@ -36,6 +36,21 @@ module SccmTests=
         |Result.Ok a -> Assert.IsTrue(true)
         |Result.Error (ex:exn) -> Assert.Fail(ex.Message)
 
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let cmPackageExistsTest() =
+        match(result{
+            let expected = true
+            let actual = cmPackageExists "Example Package 1.0"
+            Assert.AreEqual(expected,actual)
+            let actual = cmPackageExists "Example Package 1.0"
+            Assert.AreEqual(expected,actual)
+            let actual = cmPackageExists "Example Package 1.0"
+            Assert.AreEqual(expected,actual)
+            return actual
+        })with
+        |Result.Ok a -> Assert.IsTrue(true)
+        |Result.Error (ex:exn) -> Assert.Fail(ex.Message)
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
