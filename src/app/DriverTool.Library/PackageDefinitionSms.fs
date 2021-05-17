@@ -343,7 +343,7 @@ module PackageDefinitionSms =
             yield (sprintf "NameSpace=%s" smsPackageDefinition.ModelWmiQuery.NameSpace)
             yield (sprintf "Query=%s" smsPackageDefinition.ModelWmiQuery.Query)
             
-        } |> Seq.toArray |> linesToText
+        } |> Seq.toArray |>String.concat Environment.NewLine
             
     open IniParser
 

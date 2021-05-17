@@ -30,7 +30,7 @@ module PowerShellHelper =
             script
             |>textToLines
             |> Array.filter (fun line -> not (line.Trim().StartsWith("#"))) //Filter out commented lines
-            |> linesToText //Put the script back together
+            |>String.concat Environment.NewLine //Put the script back together
 
     /// Start and stop transcript logging
     let addTranscriptLogging script = 
@@ -39,7 +39,7 @@ module PowerShellHelper =
         let stopTransScript = "Stop-TranScript|Out-Null"
         let scriptLines = (script|>textToLines)
         Array.append (Array.append [|startTransScript|] scriptLines) [|stopTransScript|]
-        |>linesToText
+        |>String.concat Environment.NewLine
 
     ///Run PowerShell script unsafe
     let runPowerShellScriptUnsafe script (variables:Dictionary<string,obj>) =

@@ -341,10 +341,10 @@ module F=
     let textToLines (text:string) =
         (text.Split([|Environment.NewLine|],StringSplitOptions.RemoveEmptyEntries))
 
-    ///Convert array of string lines to text string
-    let linesToText (lines:string array) =
-        lines
-        |>String.concat Environment.NewLine
+    /////Convert array of string lines to text string
+    //let linesToText (lines:string array) =
+    //    lines
+    //    |>String.concat Environment.NewLine
 
     let toOptionalString value =
         match value with

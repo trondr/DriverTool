@@ -11,7 +11,7 @@ module Sccm =
                 [|
                     "$SCCMSiteCode = New-Object -ComObject \"Microsoft.SMS.Client\""
                     "$SCCMSiteCode.GetAssignedSite()"
-                |]|>linesToText
+                |]|>String.concat Environment.NewLine
         getFirstStringValue script
     
     let getSiteServer () =
@@ -19,7 +19,7 @@ module Sccm =
             [|
                 "$SCCMSiteCode = New-Object -ComObject \"Microsoft.SMS.Client\""
                 "$SCCMSiteCode.GetCurrentManagementPoint()"
-            |]|>linesToText
+            |]|>String.concat Environment.NewLine
         getFirstStringValue script
 
     ///Load ConfigurationManager module
@@ -52,6 +52,8 @@ module Sccm =
             let! out = PowerShellHelper.runPowerShellScript cmScript variables
             return out        
         }
+        |>Seq.toArray
+        |>String.concat Environment.NewLine
 
     let runCmPowerShellScript script =
         result{
@@ -160,9 +162,9 @@ module Sccm =
                         yield toNewCmProgramPSCommand "$($package.PackageId)" program
                 }
                 |>Seq.toArray
-                |>linesToText            
             let! out = runCmPowerShellScript script
             return out        
+                |>String.concat Environment.NewLine             
         }
 
     ///Check if task sequence exists
