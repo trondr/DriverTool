@@ -45,7 +45,6 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
-    <EmbeddedResource Include="Libs\Common.Logging.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Serilog.dll" />
     <EmbeddedResource Include="Libs\CsvHelper.dll" />
     <EmbeddedResource Include="Libs\Destructurama.FSharp.dll" />
