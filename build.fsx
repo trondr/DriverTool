@@ -104,7 +104,7 @@ Target.create "Test" (fun _ ->
     Trace.trace "Testing app..."    
     !! ("build/test/**/*.Tests.dll")    
     |> NUnit3.run (fun p ->
-        {p with ToolPath = nunitConsoleRunner;Where = "cat==UnitTests";TraceLevel=NUnit3.NUnit3TraceLevel.Verbose})
+        {p with ToolPath = nunitConsoleRunner;Where = "cat==UnitTests";TraceLevel=NUnit3.NUnit3TraceLevel.Off})
 )
 
 Target.create "Publish" (fun _ ->
