@@ -345,7 +345,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Text.Encodings.Web">
-      <HintPath>..\..\..\packages\System.Text.Encodings.Web.5.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Text.Encodings.Web.5.0.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Json">
       <HintPath>..\..\..\packages\System.Text.Json.5.0.0\lib\net461\System.Text.Json.dll</HintPath>
