@@ -3,13 +3,13 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net472</TargetFramework>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <AssemblyVersion>1.0.21119.58</AssemblyVersion>
-    <FileVersion>1.0.21119.58</FileVersion>
-    <Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
-    <Copyright>Copyright © github/trondr 2018-2021</Copyright>
+    <AssemblyVersion>1.0.21290.60</AssemblyVersion>
+    <FileVersion>1.0.21290.60</FileVersion>
+    <!--<Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
+    <Copyright>Copyright © github/trondr 2018-2021</Copyright>-->
     <Company>github/trondr</Company>
     <Authors>github/trondr</Authors>
-    <Version>1.0.21119.58</Version> 
+    <Version>1.0.21290.60</Version> 
 
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
