@@ -121,7 +121,7 @@ DriverTool currently supports PCs from Dell, HP and Lenovo.
 	* You can choose to manually add such updates to the '...\Drivers\NNN_some update folder' folder as long as you utilize the mechanism that DriverTool expects: ('...\Drivers\NNN_some update folder\DT-Install-Package.cmd')
       
 15. Compress Driver Package
-	* Run: c:\Temp\D\<model>\<release date>-<version>\Script\_Compress.cmd
+	* Run: c:\Temp\D\<model>\<release date>-<version>\Script\\_Compress.cmd
 	* Verify that Drivers.zip has been created.
 	* Delete folder: C:\Temp\D\<model>\<release date>-<version>\Script\Drivers
 
