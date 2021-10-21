@@ -93,7 +93,7 @@ Target.create "BuildTest" (fun _ ->
         |> Trace.logItems "BuildTest-Output: "
 )
 
-let nunitConsoleRunner =
+let nunitConsoleRunner() =
     let consoleRunner = 
         !! "packages/**/nunit3-console.exe"
         |> Seq.head
@@ -104,7 +104,7 @@ Target.create "Test" (fun _ ->
     Trace.trace "Testing app..."    
     !! ("build/test/**/*.Tests.dll")    
     |> NUnit3.run (fun p ->
-        {p with ToolPath = nunitConsoleRunner;Where = "cat==UnitTests";TraceLevel=NUnit3.NUnit3TraceLevel.Off})
+        {p with ToolPath = nunitConsoleRunner();Where = "cat==UnitTests";TraceLevel=NUnit3.NUnit3TraceLevel.Off})
 )
 
 Target.create "Publish" (fun _ ->
