@@ -81,9 +81,23 @@ Target.create "BuildApp" (fun _ ->
             AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
         ]
 
-    !! "src/app/**/*.fsproj"
+    !! "src/app/**/DriverTool.CSharpLib.csproj"
+    |> MSBuild.runRelease id buildAppFolder "Build"
+    |> Trace.logItems "BuildApp-Output: "
+
+    !! "src/app/**/DriverTool.Library.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
+
+    !! "src/app/**/DriverTool.UI.csproj"
+    |> MSBuild.runRelease id buildAppFolder "Build"
+    |> Trace.logItems "BuildApp-Output: "
+
+    !! "src/app/**/DriverTool.fsproj"
+    |> MSBuild.runRelease id buildAppFolder "Build"
+    |> Trace.logItems "BuildApp-Output: "
+
+    
 )
 
 Target.create "BuildTest" (fun _ -> 
