@@ -46,45 +46,19 @@ module PackageTemplate =
                 return extractedFilepath
             }
 
-    let getDriverToolFiles () =
-        result
-            {
-                let! exeFileDirectoryPath = FileSystem.path ((new System.IO.FileInfo(resourceAssembly.Location)).Directory.FullName)
-                let! exeFilePath = PathOperations.combinePaths2 exeFileDirectoryPath "DriverTool.exe"
-                let! exeFileConfigPath = FileSystem.path (FileSystem.pathValue exeFilePath + ".config")
-                let! dllFilePath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"DriverTool.Library.dll"))
-                let! extractedDllFilePath = extractIfNotExists dllFilePath
-                let! fsharpCoreDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"FSharp.Core.dll"))
-                let! extractedFSharpCoreDllPath = extractIfNotExists fsharpCoreDllPath
-                let! commonLoggingDllPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue exeFileDirectoryPath,"Common.Logging.dll"))                
-                let! extractedCommonLoggingDllPath = extractIfNotExists commonLoggingDllPath
-                let driverToolFiles =
-                    [|
-                        if(FileOperations.fileExists exeFilePath) then yield exeFilePath
-                        if(FileOperations.fileExists exeFileConfigPath) then yield exeFileConfigPath
-                        yield extractedDllFilePath
-                        yield extractedFSharpCoreDllPath
-                        yield extractedCommonLoggingDllPath
-                    |]
-                return driverToolFiles 
-            }
-        
     let toResult toValue fromValue  =
         match fromValue with
         |Ok _ -> Result.Ok toValue
         |Result.Error ex -> Result.Error ex
         
-
     let copyDriverToolToDriverPackage (destinationFolderPath:FileSystem.Path) =
         result{
             logger.Info("Copy DriverTool.exe to driver package so that it can handle install and uninstall of the driver package.")
             let! driverToolFolderPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue destinationFolderPath,"DriverTool"))
-            let! existingDriverToolDirectoryPath = DriverTool.Library.DirectoryOperations.ensureDirectoryExists true driverToolFolderPath
-            let! driverToolFiles = getDriverToolFiles ()
-            let! driverToolFilesCopied = 
-                driverToolFiles
-                |> (DriverTool.Library.FileOperations.copyFilePaths existingDriverToolDirectoryPath)                            
-            return driverToolFilesCopied
+            let! existingDriverToolDirectoryPath = DriverTool.Library.DirectoryOperations.ensureDirectoryExists true driverToolFolderPath            
+            let! exeFileDirectoryPath = FileSystem.path ((new System.IO.FileInfo(resourceAssembly.Location)).Directory.FullName)
+            let! copyResult = Robocopy.roboCopy (exeFileDirectoryPath,existingDriverToolDirectoryPath,"*.* /MIR")
+            return copyResult
         }
 
     let extractPackageTemplate (destinationFolderPath:FileSystem.Path) =
@@ -97,7 +71,7 @@ module PackageTemplate =
                         extractEmbededResouceToFile (resourceAssembly,resourceName, fileName)
                     )
                 |> toAccumulatedResult
-            let! copiedFiles = copyDriverToolToDriverPackage destinationFolderPath
-            let files = Seq.append extractedFiles copiedFiles
-            return files
+            let! copyExitCode = copyDriverToolToDriverPackage destinationFolderPath
+            logger.Info(sprintf "Copy of DriverTool.exe to driver update package returned %d:" copyExitCode)
+            return extractedFiles
         }

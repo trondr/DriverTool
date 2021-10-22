@@ -3,7 +3,7 @@
 open NUnit.Framework
 
 [<TestFixture>]
-[<Category(TestCategory.UnitTests)>]
+[<Category(TestCategory.IntegrationTests)>]
 module PackageTemplateTests =    
     open DriverTool.Library.F
     open DriverTool.Library

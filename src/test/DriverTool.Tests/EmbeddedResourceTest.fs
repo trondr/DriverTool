@@ -62,7 +62,7 @@ module EmbeddedResourceTest  =
          |Ok actual -> Assert.AreEqual(expectedFileName, actual, "Resource file name was not expected.")
          |Error ex -> Assert.Fail("Test failed unexpectedly due to: " + ex.Message)
 
-
+    //[<Category(TestCategory.IntegrationTests)>]
     [<Test>]
     let extractPackageTemplateTest () = 
         let destinationFolderPathString = @"c:\temp\testpackage_test" 
@@ -82,7 +82,7 @@ module EmbeddedResourceTest  =
             let files = 
                 System.IO.Directory.GetFiles(FileSystem.pathValue p,"*.*",System.IO.SearchOption.AllDirectories)
                 |> Array.filter(fun f -> not (f.Contains("DriverTool.exe"))) //Filter away DriverTool.exe and DriverTool.exe.config as these files are not in the expected location during NChrunch testing.
-            Assert.AreEqual(14, files.Length, sprintf "Extracted file count not expected in %s. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. %A" destinationFolderPathString (System.IO.Directory.GetFiles(destinationFolderPathString,"*.*",SearchOption.AllDirectories)))
+            Assert.AreEqual(115, files.Length, sprintf "Extracted file count not expected in %s. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. %A" destinationFolderPathString (System.IO.Directory.GetFiles(destinationFolderPathString,"*.*",SearchOption.AllDirectories)))
         |Error ex -> Assert.IsTrue(false,ex.Message)
 
     [<Test>]
