@@ -10,10 +10,11 @@
     <RootNamespace>DriverTool.Library</RootNamespace>
     <AssemblyName>DriverTool.Library</AssemblyName>
     <UseStandardResourceNames>true</UseStandardResourceNames>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <WarningsAsErrors>3239;$(WarningsAsErrors)</WarningsAsErrors>
     <Name>DriverTool.Messages</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,7 +62,7 @@
     <EmbeddedResource Include="Libs\FsPickler.dll" />
     <EmbeddedResource Include="Libs\FsPickler.Json.dll" />
     <EmbeddedResource Include="Libs\Google.Protobuf.dll" />
-	<EmbeddedResource Include="Libs\INIFileParser.dll" />
+    <EmbeddedResource Include="Libs\INIFileParser.dll" />
     <EmbeddedResource Include="Libs\Interop.SHDocVw.dll" />
     <EmbeddedResource Include="Libs\LsupEval.dll" />
     <EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />

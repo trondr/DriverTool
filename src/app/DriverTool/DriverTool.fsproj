@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PackageReleaseNotes></PackageReleaseNotes>
     <AssemblyVersion>1.0.21290.62</AssemblyVersion>
     <FileVersion>1.0.21290.62</FileVersion>
