@@ -124,19 +124,7 @@ Target.create "Test" (fun _ ->
 Target.create "Publish" (fun _ ->
     Trace.trace "Publishing app..."
     let assemblyVersion = getVersion (System.IO.Path.Combine(buildAppFolder,"DriverTool.exe"))
-    let files = 
-        [|
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.exe")
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.pdb")
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.UI.dll")
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.UI.dll.config")
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.UI.pdb")
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.exe.config")            
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.dll")
-            System.IO.Path.Combine(buildAppFolder,"DriverTool.Library.pdb")            
-            System.IO.Path.Combine(buildAppFolder,"FSharp.Core.dll")
-            System.IO.Path.Combine(buildAppFolder,"Common.Logging.dll")
-        |]
+    let files = !!("build/app/**/*")        
     let zipFile = System.IO.Path.Combine(artifactFolder,sprintf "DriverTool.%s.zip" assemblyVersion)
     files
     |> Fake.IO.Zip.createZip buildAppFolder zipFile (sprintf "DriverTool %s" assemblyVersion) 9 false 
