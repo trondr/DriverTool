@@ -1,49 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>5c9696b4-d386-463d-8bde-1ec35901614a</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>DriverTool.Library</RootNamespace>
-    <AssemblyName>DriverTool.Library</AssemblyName>
-    <UseStandardResourceNames>true</UseStandardResourceNames>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <WarningsAsErrors>3239;$(WarningsAsErrors)</WarningsAsErrors>
-    <Name>DriverTool.Messages</Name>
-    <TargetFrameworkProfile />
+    <TargetFramework>net48</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
-    <WarningsAsErrors>3239;0025</WarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
-    <WarningsAsErrors>3239;0025</WarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup>
-    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(FSharpTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets') ">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <Import Project="$(FSharpTargetsPath)" />
+
   <ItemGroup>
     <EmbeddedResource Include="Libs\Common.Logging.Core.dll" />
     <EmbeddedResource Include="Libs\Common.Logging.Serilog.dll" />
@@ -195,198 +156,74 @@
     <Compile Include="CmUi\UiModels.fs" />
     <Compile Include="CmUi\UiViewModels.fs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>..\..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core">
-      <HintPath>..\..\..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Serilog">
-      <HintPath>..\..\..\packages\Common.Logging.Serilog.4.4.0\lib\net461\Common.Logging.Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="CsvHelper">
-      <HintPath>..\..\..\packages\CsvHelper.26.1.0\lib\net47\CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="Destructurama.FSharp">
-      <HintPath>..\..\..\packages\Destructurama.FSharp.1.0.4\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10\Destructurama.FSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Collections.ParallelSeq">
-      <HintPath>..\..\..\packages\FSharp.Collections.ParallelSeq.1.1.4\lib\net45\FSharp.Collections.ParallelSeq.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Configuration">
-      <HintPath>..\..\..\packages\FSharp.Configuration.1.5.0\lib\net45\FSharp.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Control.AsyncSeq">
-      <HintPath>..\..\..\packages\FSharp.Control.AsyncSeq.2.0.21\lib\net45\FSharp.Control.AsyncSeq.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Core">
-      <HintPath>..\..\..\packages\FSharp.Core.4.7.2\lib\net45\FSharp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharpx.Async">
-      <HintPath>..\..\..\packages\FSharpx.Async.1.14.1\lib\net452\FSharpx.Async.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharpx.Collections">
-      <HintPath>..\..\..\packages\FSharpx.Collections.2.1.2\lib\net45\FSharpx.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharpx.Extras">
-      <HintPath>..\..\..\packages\FSharpx.Extras.2.4.0\lib\net452\FSharpx.Extras.dll</HintPath>
-    </Reference>
-    <Reference Include="FsPickler">
-      <HintPath>..\..\..\packages\FsPickler.5.3.2\lib\net45\FsPickler.dll</HintPath>
-    </Reference>
-    <Reference Include="FsPickler.Json">
-      <HintPath>..\..\..\packages\FsPickler.Json.5.3.2\lib\net45\FsPickler.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="INIFileParser">
-      <HintPath>..\..\..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
-    </Reference>
-    <Reference Include="LsupEval">
-      <HintPath>..\..\..\packages\LsupEval.1.0.21087-alpha7\lib\net452\LsupEval.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces">
-      <HintPath>..\..\..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.HashCode">
-      <HintPath>..\..\..\packages\Microsoft.Bcl.HashCode.1.1.0\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Expression.Interactions">
-      <HintPath>..\..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.FileProviders.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.FileProviders.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.FileProviders.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.FileProviders.Physical">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.FileProviders.Physical.5.0.0\lib\net461\Microsoft.Extensions.FileProviders.Physical.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.FileSystemGlobbing">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.FileSystemGlobbing.5.0.0\lib\net461\Microsoft.Extensions.FileSystemGlobbing.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives">
-      <HintPath>..\..\..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.UpdateServices.Administration">
-      <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\Microsoft.UpdateServices.Administration.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="MvvmHelpers">
-      <HintPath>..\..\..\packages\Refractored.MvvmHelpers.1.6.2\lib\net461\MvvmHelpers.dll</HintPath>
-    </Reference>
-    <Reference Include="NCmdLiner">
-      <HintPath>..\..\..\packages\NCmdLiner.2.0.18110.340\lib\net462\NCmdLiner.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
+    <PackageReference Include="Common.Logging" Version="3.4.1" />
+	<PackageReference Include="Common.Logging.Core" Version="3.4.1" />
+	<PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
+	<PackageReference Include="CsvHelper" Version="26.1.0" />
+	<PackageReference Include="Destructurama.FSharp" Version="1.0.4" />
+	<PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.1.4" />
+	<PackageReference Include="FSharp.Configuration" Version="1.5.0" />
+	<PackageReference Include="FSharp.Control.AsyncSeq" Version="2.0.21" />
+	<PackageReference Include="FSharp.Core" Version="4.7.2" />
+	<PackageReference Include="FSharp.Data" Version="3.3.3" />
+	<PackageReference Include="FSharpx.Async" Version="1.14.1" />
+	<PackageReference Include="FSharpx.Collections" Version="2.1.2" />
+	<PackageReference Include="FSharpx.Extras" Version="2.4.0" />
+	<PackageReference Include="FsPickler" Version="5.3.2" />
+	<PackageReference Include="FsPickler.Json" Version="5.3.2" />
+	<PackageReference Include="ini-parser" Version="2.5.2" />
+	<PackageReference Include="LsupEval" Version="1.0.21087-alpha7" />
+	<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
+	<PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
+	<PackageReference Include="Microsoft.CSharp" Version="4.7.0"/>
+	<PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
+	<PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="5.0.0" />
+	<PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="5.0.0" />
+	<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="5.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Primitives" Version="5.0.0" />
+	<PackageReference Include="sdpeval" Version="1.0.21087.10" />		
+	<PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
+	<PackageReference Include="NCmdLiner" Version="2.0.18110.340" />
+	<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />	
+	<PackageReference Include="Serilog" Version="2.8.0" />
+	<PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
+	<PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+	<PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+	<PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="System.Buffers" Version="4.5.1" />
+	<PackageReference Include="System.Memory" Version="4.5.4" />
+	<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+	<PackageReference Include="System.Reactive" Version="5.0.0" />
+	<PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
+	<PackageReference Include="System.Text.Json" Version="5.0.0" />
+	<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+	<PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />	
+	
+	
+	<Reference Include="mscorlib" />
+	<Reference Include="System" />
+	<Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="sdpeval">
-      <HintPath>..\..\..\packages\sdpeval.1.0.21087.10\lib\net45\sdpeval.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog">
-      <HintPath>..\..\..\packages\Serilog.2.8.0\lib\net46\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Formatting.Compact">
-      <HintPath>..\..\..\packages\Serilog.Formatting.Compact.1.1.0\lib\net452\Serilog.Formatting.Compact.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.Console">
-      <HintPath>..\..\..\packages\Serilog.Sinks.Console.3.1.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.File">
-      <HintPath>..\..\..\packages\Serilog.Sinks.File.4.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.RollingFile">
-      <HintPath>..\..\..\packages\Serilog.Sinks.RollingFile.3.3.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers">
-      <HintPath>..\..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
+	<Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation" Version="10.0.10586" />
+	<Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Management" />
-    <Reference Include="System.Management.Automation">
-      <HintPath>..\..\..\packages\System.Management.Automation.dll.10.0.10586.0\lib\net40\System.Management.Automation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Memory">
-      <HintPath>..\..\..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors">
-      <HintPath>..\..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive">
-      <HintPath>..\..\..\packages\System.Reactive.5.0.0\lib\net472\System.Reactive.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\..\..\packages\System.Reactive.Linq.5.0.0\lib\net472\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Algorithms">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Text.Encodings.Web">
-      <HintPath>..\..\..\packages\System.Text.Encodings.Web.5.0.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Json">
-      <HintPath>..\..\..\packages\System.Text.Json.5.0.0\lib\net461\System.Text.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions">
-      <HintPath>..\..\..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <Private>True</Private>
-    </Reference>
+    
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity">
-      <HintPath>..\..\..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
+	<Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj">
-      <Name>DriverTool.CSharpLib</Name>
-      <Project>{09a4cb06-46f7-4b78-b972-686516b67169}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.Data.DesignTime">
+	<Reference Include="FSharp.Data.DesignTime">
       <HintPath>..\..\..\packages\FSharp.Data.3.3.3\lib\net45\FSharp.Data.DesignTime.dll</HintPath>
-    </Reference>
+    </Reference>    
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>robocopy "$(ProjectDir)bin\$(ConfigurationName)" "$(ProjectDir)Libs" *.dll
-exit /b 0</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj" />
+  </ItemGroup>
+
 </Project>
