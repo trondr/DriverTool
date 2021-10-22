@@ -40,7 +40,7 @@ module CsvOperationTests =
             return actualCsvContent
         })with
         |Result.Ok v -> Assert.IsTrue(true)
-        |Result.Error ex -> Assert.Fail(ex.Message)
+        |Result.Error ex -> Assert.Fail(getAccumulatedExceptionMessages ex)
 
         
         

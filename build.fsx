@@ -102,7 +102,7 @@ Target.create "BuildApp" (fun _ ->
 
 Target.create "BuildTest" (fun _ -> 
     Trace.trace "Building test..."
-    !! "src/test/**/*.fsproj"
+    !! "src/test/**/DriverTool.Tests.fsproj"
         |> MSBuild.runRelease id buildTestFolder "Build"
         |> Trace.logItems "BuildTest-Output: "
 )
