@@ -92,7 +92,7 @@
     <PackageReference Include="FSharp.Data" Version="3.3.3" />
 	<PackageReference Include="NUnit" Version="3.12.0" />
 	<PackageReference Include="RhinoMocks" Version="3.6.1" />
-	<PackageReference Include="FSharp.Core" Version="4.7.2" />
+	<PackageReference Include="FSharp.Core" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
