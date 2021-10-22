@@ -133,7 +133,7 @@ module HpUpdates =
                                 Released=p.DateReleased|> toHPReleaseDateTime
                                 Os= osCode
                                 OsBuild=osBuild
-                                ModelWmiQuery=toModelCodesWqlQuery modelName modelCodes
+                                ModelWmiQuery=toModelCodesWqlQuery modelName (ManufacturerTypes.Manufacturer.HP "HP") modelCodes
                                 ManufacturerWmiQuery=toManufacturerWqlQuery "HP"
                             }
                 |None -> Result.Error (toException (sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' and os build '%s'" products.[0].SystemName products.[0].OSName "*") None)

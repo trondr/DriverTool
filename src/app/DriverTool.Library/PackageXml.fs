@@ -1,5 +1,7 @@
 ﻿namespace DriverTool.Library
 
+open ManufacturerTypes
+
 module PackageXml = 
     open System.Xml.Linq
     open DriverTool.Library.F0
@@ -116,12 +118,18 @@ module PackageXml =
     type ExtractedCmPackageInfo = { ExtractedDirectoryPath:string; DownloadedCmPackage:DownloadedCmPackage;}
     
     ///Convert list of model codes to a wql query that can be used as condition in model specific SCCM task sequence step
-    let toModelCodesWqlQuery name (modelCodes:string[]) =
+    let toModelCodesWqlQuery name (manufacturer:Manufacturer) (modelCodes:string[]) =
+        let modelPropertyName =
+            match manufacturer with
+            |Manufacturer.Dell _ -> "SystemSKU"
+            |Manufacturer.HP _ -> "BaseBoardProduct"
+            |Manufacturer.Lenovo _ -> "BaseBoardProduct"
+        
         let whereCondition =
             (modelCodes 
-            |> Array.map(fun mc -> sprintf "(BaseBoardProduct like '%s%%')" mc)
+            |> Array.map(fun mc -> sprintf "(%s like '%s%%')" modelPropertyName mc)
             |> String.concat " or ").Trim()        
-        let query = sprintf "select BaseBoardProduct from MS_SystemInformation where %s" whereCondition
+        let query = sprintf "select %s from MS_SystemInformation where %s" modelPropertyName whereCondition
         {
             Name = name
             NameSpace = "root\\WMI"
@@ -130,7 +138,7 @@ module PackageXml =
 
     ///Convert manufacturer name to a wql query that can be used as condition for a manufacturer specific group in SCCM task sequence
     let toManufacturerWqlQuery manufacturer =
-        let query = sprintf "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='%s'" manufacturer 
+        let query = sprintf "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='%s%%'" manufacturer 
         {
             Name = manufacturer
             NameSpace = "root\\WMI"
