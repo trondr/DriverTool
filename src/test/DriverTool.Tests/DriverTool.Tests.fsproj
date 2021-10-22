@@ -12,11 +12,12 @@
     <RootNamespace>DriverTool.Tests</RootNamespace>
     <AssemblyName>DriverTool.Tests</AssemblyName>
     <UseStandardResourceNames>true</UseStandardResourceNames>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Name>DriverTool.Tests2</Name>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -105,6 +106,7 @@
     <Compile Include="SccmTests.fs" />
     <Compile Include="PackageDefintionSmsTests.fs" />
     <Compile Include="PathOperationsTests.fs" />
+    <Compile Include="DpInstExitCode2ExitCodeTests.fs" />
     <Compile Include="_TemplateTests.fs" />
     <EmbeddedResource Include="TestData\TestDataXmlHelper.xml" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
@@ -175,6 +177,11 @@
       <HintPath>..\..\..\packages\Serilog.Sinks.File.4.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <ProjectReference Include="..\..\app\DriverTool.DpInstExitCode2ExitCode\DriverTool.DpInstExitCode2ExitCode.fsproj">
+      <Name>DriverTool.DpInstExitCode2ExitCode</Name>
+      <Project>{33970bf4-79e7-4f9f-aa19-c4ae54d62d50}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\app\DriverTool.Library\DriverTool.Library.fsproj">
       <Name>DriverTool.Library</Name>
       <Project>{5c9696b4-d386-463d-8bde-1ec35901614a}</Project>

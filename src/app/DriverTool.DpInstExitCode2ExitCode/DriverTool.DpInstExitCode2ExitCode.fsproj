@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net48</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="F.fs" />
+    <Compile Include="DpInstExitCode.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>
