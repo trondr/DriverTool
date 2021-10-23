@@ -1,5 +1,5 @@
 #r "paket:
-nuget FSharp.Core 5.0.0
+nuget FSharp.Core 4.7.0
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.MSBuild
