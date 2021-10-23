@@ -1,5 +1,5 @@
 #r "paket:
-nuget FSharp.Core 4.7.0.0
+nuget FSharp.Core 5.0.0
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.MSBuild
@@ -39,7 +39,26 @@ let getVersion file =
 //Targets
 Target.create "Clean" (fun _ ->
     Trace.trace "Clean build folder..."
-    Shell.cleanDirs [ buildFolder; artifactFolder ]
+    let folders =
+        [ 
+            buildFolder; 
+            artifactFolder;
+            System.IO.Path.GetFullPath("./src/app/DriverTool/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool/obj");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.CSharpLib/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.CSharpLib/obj");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.DpInstExitCode2ExitCode/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.DpInstExitCode2ExitCode/obj");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.DupExitCode2ExitCode/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.DupExitCode2ExitCode/obj");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.Library/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.Library/obj");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.UI/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.UI/obj");
+            System.IO.Path.GetFullPath("./src/test/DriverTool.Tests/bin");
+            System.IO.Path.GetFullPath("./src/test/DriverTool.Tests/obj");
+            ]
+    folders |> Shell.cleanDirs 
 )
 
 Target.create "RestorePackages" (fun _ ->
@@ -81,6 +100,14 @@ Target.create "BuildApp" (fun _ ->
             AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
         ]
 
+    !! "src/app/**/DriverTool.DpInstExitCode2ExitCode.fsproj"
+    |> MSBuild.runRelease id buildAppFolder "Build"
+    |> Trace.logItems "BuildApp-Output: "
+
+    !! "src/app/**/DriverTool.DupExitCode2ExitCode.fsproj"
+    |> MSBuild.runRelease id buildAppFolder "Build"
+    |> Trace.logItems "BuildApp-Output: "
+
     !! "src/app/**/DriverTool.CSharpLib.csproj"
     |> MSBuild.runRelease id buildAppFolder "Build"
     |> Trace.logItems "BuildApp-Output: "
@@ -96,8 +123,6 @@ Target.create "BuildApp" (fun _ ->
     !! "src/app/**/DriverTool.fsproj"
     |> MSBuild.runRelease id buildAppFolder "Build"
     |> Trace.logItems "BuildApp-Output: "
-
-    
 )
 
 Target.create "BuildTest" (fun _ -> 
