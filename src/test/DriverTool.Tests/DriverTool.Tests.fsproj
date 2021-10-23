@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Content Include="packages.config" />
     <Content Include="App.config" />
     <Compile Include="Init.fs" />
     <Compile Include="ChecksumTests.fs" />
@@ -88,11 +87,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
+    <PackageReference Include="FSharp.Core" Version="6.0.0" />
+	<PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
     <PackageReference Include="FSharp.Data" Version="4.2.4" />
 	<PackageReference Include="NUnit" Version="3.13.2" />
-	<PackageReference Include="RhinoMocks" Version="3.6.1" />
-	<PackageReference Include="FSharp.Core" Version="6.0.0" />
+	<PackageReference Include="RhinoMocks" Version="3.6.1" />	
   </ItemGroup>
 
   <ItemGroup>

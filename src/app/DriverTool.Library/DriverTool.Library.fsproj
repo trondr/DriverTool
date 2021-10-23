@@ -23,7 +23,6 @@
     <EmbeddedResource Include="Tools\7Zip\readme.txt" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
-    <Content Include="packages.config" />
     <Content Include="app.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="F0.fs" />
@@ -110,7 +109,7 @@
 	<PackageReference Include="FSharp.Core" Version="6.0.0" />
 	<PackageReference Include="FSharp.Data" Version="4.2.4" />
 	<PackageReference Include="FSharpx.Async" Version="1.14.1" />
-	<PackageReference Include="FSharpx.Collections" Version="3.0.0" />
+	<PackageReference Include="FSharpx.Collections" Version="3.0.1" />
 	<PackageReference Include="FSharpx.Extras" Version="3.0.0" />
 	<PackageReference Include="FsPickler" Version="5.3.2" />
 	<PackageReference Include="FsPickler.Json" Version="5.3.2" />

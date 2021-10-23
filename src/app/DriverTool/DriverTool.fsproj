@@ -33,7 +33,6 @@
     <EmbeddedResource Include="License\05. mvvm-helpers License.xml" />
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
-    <Content Include="packages.config" />
     <None Include="Script.fsx" />
     <Compile Include="Init.fs" />
     <Compile Include="Run.fs" />
