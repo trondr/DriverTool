@@ -88,25 +88,26 @@
 
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="6.0.0" />
-	<PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
+	  <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
     <PackageReference Include="FSharp.Data" Version="4.2.4" />
-	<PackageReference Include="NUnit" Version="3.13.2" />
-	<PackageReference Include="RhinoMocks" Version="3.6.1" />	
+	  <PackageReference Include="NUnit" Version="3.13.2" />
+	  <PackageReference Include="RhinoMocks" Version="3.6.1" />	
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\app\DriverTool.DpInstExitCode2ExitCode\DriverTool.DpInstExitCode2ExitCode.fsproj" />
+    <ProjectReference Include="..\..\app\DriverTool.DupExitCode2ExitCode\DriverTool.DupExitCode2ExitCode.fsproj" />
     <ProjectReference Include="..\..\app\DriverTool.Library\DriverTool.Library.fsproj" />
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj" />
 	
-	<Reference Include="FSharp.Data.DesignTime">
-      <HintPath>..\..\..\packages\fsharp.data\4.2.4\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll</HintPath>
+	  <Reference Include="FSharp.Data.DesignTime">
+        <HintPath>..\..\..\packages\fsharp.data\4.2.4\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
-	
-	
-	<Reference Include="System.Management.Automation">
-      <HintPath>..\..\..\packages\System.Management.Automation.dll.10.0.10586.0\lib\net40\System.Management.Automation.dll</HintPath>
-      <Private>True</Private>
+	  
+	  
+	  <Reference Include="System.Management.Automation">
+        <HintPath>..\..\..\packages\System.Management.Automation.dll.10.0.10586.0\lib\net40\System.Management.Automation.dll</HintPath>
+    <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
       <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
