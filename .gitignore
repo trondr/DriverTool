@@ -45,3 +45,5 @@ build.fsx.lock
 [Bb]uild[Ll]og.*
 .ionide
 modules/DriverTool.PowerCLI/internal/tools/DriverTool/
+
+.fake

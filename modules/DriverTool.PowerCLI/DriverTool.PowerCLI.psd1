@@ -41,7 +41,7 @@
 	FunctionsToExport = @("Invoke-DtDriverTool")
 	
 	# Cmdlets to export from this module
-	CmdletsToExport = @('Get-SomeMap','Send-Greeting')
+	CmdletsToExport = @('Get-DtSccmPackage','Send-Greeting')
 	
 	# Variables to export from this module
 	VariablesToExport = @()
