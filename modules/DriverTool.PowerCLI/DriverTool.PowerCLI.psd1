@@ -38,7 +38,7 @@
 	FormatsToProcess = @('DriverTool.PowerCLI.Format.ps1xml')
 	
 	# Functions to export from this module
-	FunctionsToExport = @()
+	FunctionsToExport = @("Invoke-DtDriverTool")
 	
 	# Cmdlets to export from this module
 	CmdletsToExport = @('Get-SomeMap','Send-Greeting')
