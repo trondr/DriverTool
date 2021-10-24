@@ -27,6 +27,15 @@
         .PARAMETER BaseOnLocallyInstalledUpdates
         Create driver package based on locally installed updates. Use this on a fully updated reference machine where the vendor specific update utility (Lenovo System Update) has been run and no more updates are available.
 
+        .PARAMETER InstallDriverPackage
+        Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.
+
+        .PARAMETER UnInstallDriverPackage
+        Uninstall driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-UnInstall-Package.cmd in any sub folders below the .\Drivers folder.
+
+        .PARAMETER DriverPackagePath
+        Driver package folder path. Below this path there should be a .\Drivers sub folder or Drivers.zip
+
         .EXAMPLE
 		Invoke-DtDriverTool -Help
 
@@ -40,6 +49,9 @@
         .EXAMPLE
         Write-Host "Create driver update package for current model based on locally installed updates and excluding any BIOS or firmware updates."
         Invoke-DtDriverTool -CreateDriverPackage -DestinationFolder "c:\temp\D" -PackagePublisher "trondr" -BaseOnLocallyInstalledUpdates -ExcludeUpdatePatterns @("BIOS","Firmware")
+
+        .EXAMPLE
+        Invoke-DtDriverTool -InstallDriverPackage -DriverPackagePath "C:\temp\d\20EQ0022MN\2021-09-22-1.0\Script\"
 
 		.NOTES        
 		Version:        1.0
@@ -71,7 +83,20 @@
         $BaseOnLocallyInstalledUpdates=$false,
         [Parameter(ParameterSetName="CreateDriverPackage",Mandatory=$false,HelpMessage="Exclude updates where title or category match any of the specified regular expression patterns.")]
         [string[]]
-        $ExcludeUpdatePatterns=@()
+        $ExcludeUpdatePatterns=@(),
+
+        [Parameter(ParameterSetName="InstallDriverPackage",Mandatory=$true,HelpMessage="Install driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-Install-Package.cmd in any sub folders below the .\Drivers folder.")]
+        [switch]
+        $InstallDriverPackage,
+        
+        [Parameter(ParameterSetName="UnInstallDriverPackage",Mandatory=$true,HelpMessage="Uninstall driver package. This command looks for the .\Drivers sub folder. If the .\Drivers does not exist the command looks for the \Drivers.zip file and extracts it to .\Drivers folder. The command then executes each DT-UnInstall-Package.cmd in any sub folders below the .\Drivers folder.")]
+        [switch]
+        $UnInstallDriverPackage,
+        
+        [Parameter(ParameterSetName="InstallDriverPackage",Mandatory=$true,HelpMessage="Driver package folder path. Below this path there should be a .\Drivers sub folder or Drivers.zip")]
+        [Parameter(ParameterSetName="UnInstallDriverPackage",Mandatory=$true,HelpMessage="Driver package folder path. Below this path there should be a .\Drivers sub folder or a Drivers.zip.")]
+        [string]
+        $DriverPackagePath        
 	)
 	
 	begin
@@ -91,6 +116,14 @@
             $ExcludeUpdatePatternsArgument = [System.Text.StringBuilder]::new()            
             $ExcludeUpdatePatterns | ForEach-Object{[void]$ExcludeUpdatePatternsArgument.Append("$($_);")}
             & "$driverToolExe" "CreateDriverPackage" "/destinationFolder=`"$DestinationFolder`"" "/packagePublisher=`"$PackagePublisher`"" "/baseOnLocallyInstalledUpdates=$BaseOnLocallyInstalledUpdates" "/excludeUpdatePatterns=[$($ExcludeUpdatePatternsArgument.ToString().Trim(';'))]"
+        }
+        elseif($InstallDriverPackage)
+        {
+            & "$driverToolExe" "InstallDriverPackage" "/driverPackagePath=`"$DriverPackagePath`""
+        }
+        elseif($UnInstallDriverPackage)
+        {
+            & "$driverToolExe" "UnInstallDriverPackage" "/driverPackagePath=`"$DriverPackagePath`""
         }
         else {
             Write-Host "TODO: Implement call to DriverTool.exe commands"
