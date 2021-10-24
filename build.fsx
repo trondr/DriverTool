@@ -24,6 +24,7 @@ let buildAppFolder = buildFolder + "app"
 let buildTestFolder = buildFolder + "test"
 let artifactFolder = System.IO.Path.GetFullPath("./artifact/")
 let artifactAppFolder = artifactFolder + "app"
+let modulesBinaryFolder = System.IO.Path.GetFullPath("./modules/DriverTool.PowerCLI/binary/")
 
 let assemblyVersion =
     let majorVersion = "1"
@@ -55,8 +56,15 @@ Target.create "Clean" (fun _ ->
             System.IO.Path.GetFullPath("./src/app/DriverTool.Library/obj");
             System.IO.Path.GetFullPath("./src/app/DriverTool.UI/bin");
             System.IO.Path.GetFullPath("./src/app/DriverTool.UI/obj");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.PowerCLI.Library.CSharp/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.PowerCLI.Library.CSharp/obj");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.PowerCLI.Library.FSharp/bin");
+            System.IO.Path.GetFullPath("./src/app/DriverTool.PowerCLI.Library.FSharp/obj");                        
             System.IO.Path.GetFullPath("./src/test/DriverTool.Tests/bin");
             System.IO.Path.GetFullPath("./src/test/DriverTool.Tests/obj");
+            System.IO.Path.GetFullPath("./src/test/DriverTool.PowerCLI.Library.Tests/bin");
+            System.IO.Path.GetFullPath("./src/test/DriverTool.PowerCLI.Library.Tests/obj");
+            System.IO.Path.GetFullPath("./modules/DriverTool.PowerCLI/internal/tools/DriverTool");
             ]
     folders |> Shell.cleanDirs 
 )
@@ -101,28 +109,57 @@ Target.create "BuildApp" (fun _ ->
         ]
 
     !! "src/app/**/DriverTool.DpInstExitCode2ExitCode.fsproj"
-    |> MSBuild.runRelease id buildAppFolder "Build"
-    |> Trace.logItems "BuildApp-Output: "
+        |> MSBuild.runRelease id buildAppFolder "Build"
+        |> Trace.logItems "BuildApp-Output: "
 
     !! "src/app/**/DriverTool.DupExitCode2ExitCode.fsproj"
-    |> MSBuild.runRelease id buildAppFolder "Build"
-    |> Trace.logItems "BuildApp-Output: "
+        |> MSBuild.runRelease id buildAppFolder "Build"
+        |> Trace.logItems "BuildApp-Output: "
 
     !! "src/app/**/DriverTool.CSharpLib.csproj"
-    |> MSBuild.runRelease id buildAppFolder "Build"
-    |> Trace.logItems "BuildApp-Output: "
+        |> MSBuild.runRelease id buildAppFolder "Build"
+        |> Trace.logItems "BuildApp-Output: "
 
     !! "src/app/**/DriverTool.Library.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
 
     !! "src/app/**/DriverTool.UI.csproj"
-    |> MSBuild.runRelease id buildAppFolder "Build"
-    |> Trace.logItems "BuildApp-Output: "
+        |> MSBuild.runRelease id buildAppFolder "Build"
+        |> Trace.logItems "BuildApp-Output: "
 
     !! "src/app/**/DriverTool.fsproj"
-    |> MSBuild.runRelease id buildAppFolder "Build"
-    |> Trace.logItems "BuildApp-Output: "
+        |> MSBuild.runRelease id buildAppFolder "Build"
+        |> Trace.logItems "BuildApp-Output: "
+
+    Trace.trace "Building PowerCLI CSharp library..."
+    !! "src/app/**/DriverTool.PowerCLI.Library.CSharp.csproj"
+        |> Fake.DotNet.MSBuild.runRelease id (System.IO.Path.Combine(modulesBinaryFolder,"DriverTool.PowerCLI.Library.CSharp")) "Build"
+        |> Trace.logItems "BuildLibraries-Output: "
+
+    Trace.trace "Building PowerCLI FSharp library..."
+    !! "src/app/**/DriverTool.PowerCLI.Library.FSharp.fsproj"
+        |> Fake.DotNet.MSBuild.runRelease id (System.IO.Path.Combine(modulesBinaryFolder,"DriverTool.PowerCLI.Library.FSharp")) "Build"
+        |> Trace.logItems "BuildLibraries-Output: "
+
+    Trace.trace "Copy DriverTool to PowerCLI Module..."
+    let appDir = System.IO.Path.GetFullPath("./build/app");
+    let destinationDir = System.IO.Path.GetFullPath("./modules/DriverTool.PowerCLI/internal/tools/DriverTool")
+    Fake.IO.Shell.copyDir destinationDir appDir (fun _ -> true)
+)
+
+Target.create "BuildDocumentation" (fun _ ->
+    Trace.trace "Building documentation..."
+
+    CreateProcess.fromRawCommand "./tools/XmlDoc2CmdletDoc/XmlDoc2CmdletDoc.exe" ["-strict";System.IO.Path.Combine(modulesBinaryFolder,"DriverTool.PowerCLI.Library.CSharp","DriverTool.PowerCLI.Library.CSharp.dll")]
+    |> CreateProcess.withWorkingDirectory (System.IO.Path.Combine(modulesBinaryFolder,"DriverTool.PowerCLI.Library.CSharp"))
+    |> Proc.run
+    |> ignore
+
+    CreateProcess.fromRawCommand "./tools/XmlDoc2CmdletDoc/XmlDoc2CmdletDoc.exe" ["-strict";System.IO.Path.Combine(modulesBinaryFolder,"DriverTool.PowerCLI.Library.FSharp","DriverTool.PowerCLI.Library.FSharp.dll")]
+    |> CreateProcess.withWorkingDirectory (System.IO.Path.Combine(modulesBinaryFolder,"DriverTool.PowerCLI.Library.FSharp"))
+    |> Proc.run
+    |> ignore
 )
 
 Target.create "BuildTest" (fun _ -> 
@@ -130,6 +167,11 @@ Target.create "BuildTest" (fun _ ->
     !! "src/test/**/DriverTool.Tests.fsproj"
         |> MSBuild.runRelease id buildTestFolder "Build"
         |> Trace.logItems "BuildTest-Output: "
+
+    !! "src/test/**/DriverTool.PowerCLI.Library.Tests.fsproj"
+        |> MSBuild.runRelease id buildTestFolder "Build"
+        |> Trace.logItems "BuildTest-Output: "
+
 )
 
 let nunitConsoleRunner() =
@@ -166,6 +208,7 @@ open Fake.Core.TargetOperators
 "Clean" 
     ==> "RestorePackages"
     ==> "BuildApp"
+    ==> "BuildDocumentation"
     ==> "BuildTest"
     ==> "Test"
     ==> "Publish"
