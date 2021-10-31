@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "DriverTool.PowerCLI.Library.FSharp": {
+      "commandName": "Executable",
+      "executablePath": "c:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "commandLineArgs": "-NoExit -Command \"& Import-Module 'C:\\Dev\\github.trondr\\DriverTool\\src\\app\\DriverTool.PowerCLI.Library.FSharp\\bin\\Debug\\net48\\DriverTool.PowerCLI.Library.FSharp.dll' -Verbose\""
+    }
+  }
+}

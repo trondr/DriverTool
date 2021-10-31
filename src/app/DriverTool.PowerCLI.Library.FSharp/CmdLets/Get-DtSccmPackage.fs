@@ -76,20 +76,28 @@ type GetDtSccmPackage () =
         parameterAttribute.Position <- 1
         attributeCollection.Add(parameterAttribute)
         let modelCodes = M.getModelCodes manufacturerName
-        let validateSetAttribute = new System.Management.Automation.ValidateSetAttribute(modelCodes)
-        attributeCollection.Add(validateSetAttribute)
-        let manufacturerCompleterAttribute = new System.Management.Automation.ArgumentCompleterAttribute(typeof<ModelCodeCompleter>)
-        attributeCollection.Add(manufacturerCompleterAttribute)
-        let runTimeParameter = new System.Management.Automation.RuntimeDefinedParameter(modelCodeParameterName,typeof<string>,attributeCollection)
-        runTimeParameter
+        if( Array.length modelCodes > 0) then
+            let validateSetAttribute = new System.Management.Automation.ValidateSetAttribute(modelCodes)
+            attributeCollection.Add(validateSetAttribute)
+            let completerAttribute = new System.Management.Automation.ArgumentCompleterAttribute(typeof<ModelCodeCompleter>)
+            attributeCollection.Add(completerAttribute)
+            let runTimeParameter = new System.Management.Automation.RuntimeDefinedParameter(modelCodeParameterName,typeof<string>,attributeCollection)
+            Some runTimeParameter
+        else
+            None
 
-    ///// <summary>
-    ///// <para type="description">Minimum longitude of the map.</para>
-    ///// </summary>
-    //[<Parameter(Mandatory=false)>]
-    //[<ArgumentCompleter(typeof<ManufacturerCompleter>)>]
-    member val private Manufacturer :string = System.String.Empty with get,set
+    /// <summary>
+    /// <para type="description">Manufacturer.</para>
+    /// </summary>
+    [<Parameter(Mandatory=false)>]
+    [<ArgumentCompleter(typeof<ManufacturerCompleter>)>]
+    member val Manufacturer :string = System.String.Empty with get,set
 
+    /// <summary>
+    /// <para type="description">Model code.</para>
+    /// </summary>
+    [<Parameter(Mandatory=false)>]
+    [<ArgumentCompleter(typeof<ModelCodeCompleter>)>]
     member val ModelCode :string = System.String.Empty with get,set
 
     member val private _runtimeParameterDictionary: System.Management.Automation.RuntimeDefinedParameterDictionary = null with get,set
@@ -107,25 +115,27 @@ type GetDtSccmPackage () =
         ()
 
     interface IDynamicParameters with
-        member this.GetDynamicParameters() =            
-            let runtimeParameterDictionary =
-                if(this._runtimeParameterDictionary = null) then
-                    this._runtimeParameterDictionary <- new System.Management.Automation.RuntimeDefinedParameterDictionary()
-                    this._runtimeParameterDictionary                    
-                else
-                    this._runtimeParameterDictionary
-            //runtimeParameterDictionary.Clear()                        
+        member this.GetDynamicParameters() =                                    
+            let runtimeParameterDictionary = new System.Management.Automation.RuntimeDefinedParameterDictionary()            
+            
             let manufacturerParameterName = nameof this.Manufacturer
-            if(not (runtimeParameterDictionary.ContainsKey(manufacturerParameterName))) then
-               runtimeParameterDictionary.Add(manufacturerParameterName,getManufacturerRuntimeParameter manufacturerParameterName)
+            if(not (runtimeParameterDictionary.ContainsKey(manufacturerParameterName))) then               
+               let runtimeParameter = getManufacturerRuntimeParameter manufacturerParameterName
+               runtimeParameter.Value <- this.Manufacturer
+               runtimeParameterDictionary.Add(manufacturerParameterName,runtimeParameter)               
             else
-                ()
-            this.Manufacturer <- runtimeParameterDictionary.[manufacturerParameterName].Value :?> string            
+                ()            
+            
             if (not (System.String.IsNullOrWhiteSpace(this.Manufacturer))) then
                 let modelCodeParameterName = nameof this.ModelCode
-                runtimeParameterDictionary.Add(modelCodeParameterName,getModelCodeRuntimeParameter modelCodeParameterName this.Manufacturer)
+                let modelCodeRuntimeParameter = getModelCodeRuntimeParameter modelCodeParameterName this.Manufacturer
+                match modelCodeRuntimeParameter with
+                |Some m ->                
+                    runtimeParameterDictionary.Add(modelCodeParameterName,m)
+                |None -> ()
             else
                 ()
+            
             //TODO: Add OS parameter if Model has been defined.
             //TODO: Add OSBuild parameter if OS has been defined.
             runtimeParameterDictionary :> obj
