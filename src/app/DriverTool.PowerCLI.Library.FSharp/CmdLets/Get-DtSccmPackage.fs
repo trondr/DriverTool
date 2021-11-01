@@ -41,8 +41,6 @@ type ModelCodeCompleter () =
             |>Seq.filter(fun mc -> (new WildcardPattern(wordToComplete + "*", WildcardOptions.IgnoreCase)).IsMatch(mc))
             |>Seq.map(fun mc -> new CompletionResult(mc))
 
-//TODO: Implement ModelCompleter to returning model codes for specified Manufacturer. Manufacturer should be available via fakeBoundParameters.
-
 /// <summary>
 /// <para type="synopsis">Get one or more sccm packages</para>
 /// <para type="description">Get one or more sccm packages</para>
@@ -54,34 +52,20 @@ type ModelCodeCompleter () =
 [<OutputType(typeof<string>)>]
 type GetDtSccmPackage () =
     inherit PSCmdlet ()
-    
-    let getManufacturerRuntimeParameter parameterName =        
-        let attributeCollection = new System.Collections.ObjectModel.Collection<System.Attribute>()
-        let parameterAttribute = new System.Management.Automation.ParameterAttribute()
-        parameterAttribute.Mandatory <- true
-        parameterAttribute.Position <- 1
-        attributeCollection.Add(parameterAttribute)
-        let manufacturers = DriverTool.Library.ManufacturerTypes.getValidManufacturers()
-        let validateSetAttribute = new System.Management.Automation.ValidateSetAttribute(manufacturers)
-        attributeCollection.Add(validateSetAttribute)
-        let manufacturerCompleterAttribute = new System.Management.Automation.ArgumentCompleterAttribute(typeof<ManufacturerCompleter>)
-        attributeCollection.Add(manufacturerCompleterAttribute)
-        let runTimeParameter = new System.Management.Automation.RuntimeDefinedParameter(parameterName,typeof<string>,attributeCollection)
-        runTimeParameter
 
-    let getModelCodeRuntimeParameter modelCodeParameterName manufacturerName =
+    //Get mandatory run time parameter with validate set attribute
+    let getRunTimeParameter parameterName position validateSet (argumentCompleterType:System.Type) =
         let attributeCollection = new System.Collections.ObjectModel.Collection<System.Attribute>()
         let parameterAttribute = new System.Management.Automation.ParameterAttribute()
         parameterAttribute.Mandatory <- true
-        parameterAttribute.Position <- 1
-        attributeCollection.Add(parameterAttribute)
-        let modelCodes = M.getModelCodes manufacturerName
-        if( Array.length modelCodes > 0) then
-            let validateSetAttribute = new System.Management.Automation.ValidateSetAttribute(modelCodes)
+        parameterAttribute.Position <- position        
+        attributeCollection.Add(parameterAttribute)        
+        if( Array.length validateSet > 0) then
+            let validateSetAttribute = new System.Management.Automation.ValidateSetAttribute(validateSet)
             attributeCollection.Add(validateSetAttribute)
-            let completerAttribute = new System.Management.Automation.ArgumentCompleterAttribute(typeof<ModelCodeCompleter>)
+            let completerAttribute = new System.Management.Automation.ArgumentCompleterAttribute(argumentCompleterType)
             attributeCollection.Add(completerAttribute)
-            let runTimeParameter = new System.Management.Automation.RuntimeDefinedParameter(modelCodeParameterName,typeof<string>,attributeCollection)
+            let runTimeParameter = new System.Management.Automation.RuntimeDefinedParameter(parameterName,typeof<string>,attributeCollection)
             Some runTimeParameter
         else
             None
@@ -118,17 +102,22 @@ type GetDtSccmPackage () =
         member this.GetDynamicParameters() =                                    
             let runtimeParameterDictionary = new System.Management.Automation.RuntimeDefinedParameterDictionary()            
             
+            //Add Manufacturer parameter
             let manufacturerParameterName = nameof this.Manufacturer
             if(not (runtimeParameterDictionary.ContainsKey(manufacturerParameterName))) then               
-               let runtimeParameter = getManufacturerRuntimeParameter manufacturerParameterName
-               runtimeParameter.Value <- this.Manufacturer
-               runtimeParameterDictionary.Add(manufacturerParameterName,runtimeParameter)               
+               let runtimeParameter = getRunTimeParameter manufacturerParameterName 1 (DriverTool.Library.ManufacturerTypes.getValidManufacturers()) (typeof<ManufacturerCompleter>)
+               match runtimeParameter with
+               |Some r ->
+                    r.Value <- this.Manufacturer                
+                    runtimeParameterDictionary.Add(manufacturerParameterName,r)
+               |None -> ()
             else
-                ()            
+               ()            
             
+            //Add ModelCode parameter
             if (not (System.String.IsNullOrWhiteSpace(this.Manufacturer))) then
                 let modelCodeParameterName = nameof this.ModelCode
-                let modelCodeRuntimeParameter = getModelCodeRuntimeParameter modelCodeParameterName this.Manufacturer
+                let modelCodeRuntimeParameter = getRunTimeParameter modelCodeParameterName 2 (M.getModelCodes this.Manufacturer) (typeof<ModelCodeCompleter>)
                 match modelCodeRuntimeParameter with
                 |Some m ->                
                     runtimeParameterDictionary.Add(modelCodeParameterName,m)
