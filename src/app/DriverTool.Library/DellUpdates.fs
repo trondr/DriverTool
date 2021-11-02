@@ -198,7 +198,7 @@ module DellUpdates=
         }
 
     ///Parse DriverPackage xml element to CmPackage
-    let toCmPackage (dp:DellDriverPackCatalog.DriverPackage) : CmPackage =        
+    let toCmPackage (dp:DellDriverPackCatalog.DriverPackage) : DriverPackInfo =        
         let modelCodes = dp.Models |> Array.map(fun m -> m.Code) // Array of model codes
         let modelName = dp.Models|> Array.map(fun m -> m.Name)|>Array.distinct|> String.concat ", " //Comma separated list of distinct model names
         {
@@ -215,7 +215,7 @@ module DellUpdates=
         }
 
     ///Download sccm driver package info from Dell web site and parse the downloaded xml into array of CmPackages
-    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<CmPackage[],Exception> =
+    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
         logger.Info("Loading Dell Sccm Packages...")
         result{
             let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath

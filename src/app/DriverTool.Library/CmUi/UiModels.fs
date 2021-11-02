@@ -31,7 +31,7 @@ module UiModels =
     open DriverTool.Library.PackageDefinitionSms
 
     /// Package CM drivers
-    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (cmPackage:CmPackage) : Result<DownloadedCmPackage,Exception> =
+    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (cmPackage:DriverPackInfo) : Result<DownloadedCmPackage,Exception> =
         result{
             logger.Warn(sprintf "TODO: Packaging '%s' (%A)..." cmPackage.Model cmPackage)
             let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(cmPackage.Manufacturer,false)

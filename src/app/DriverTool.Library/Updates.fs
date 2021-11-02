@@ -48,7 +48,7 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.downloadSccmPackage
         |Manufacturer.Lenovo _ -> LenovoUpdates.downloadSccmPackage
 
-    let downloadCmPackage cacheFolderPath reportProgress (cmPackage:CmPackage) =
+    let downloadCmPackage cacheFolderPath reportProgress (cmPackage:DriverPackInfo) =
         result{            
             let! installerInfo = Web.downloadWebFile logger reportProgress cacheFolderPath cmPackage.InstallerFile
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile

@@ -102,7 +102,7 @@ module HpUpdates =
         }
 
     ///Parse DriverPackage xml element to CmPackage
-    let toCmPackage (softpacs:SoftPaq[]) (softpackIdByProduct:string*ProductOSDriverPack[])  : Result<CmPackage,Exception> =
+    let toCmPackage (softpacs:SoftPaq[]) (softpackIdByProduct:string*ProductOSDriverPack[])  : Result<DriverPackInfo,Exception> =
         result{            
             let! cmPackage =
                 let (softPackId,products) = softpackIdByProduct
@@ -141,7 +141,7 @@ module HpUpdates =
         }
         
     ///Get CM package infos for all HP models
-    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<CmPackage[],Exception> =
+    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
         logger.Info("Loading HP Sccm Packages...")
         result{
             let! catalogPath = downloadDriverPackCatalog cacheFolderPath

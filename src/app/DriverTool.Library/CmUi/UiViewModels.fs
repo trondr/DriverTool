@@ -16,7 +16,7 @@
     open System.Windows
     
     [<AllowNullLiteral>]
-    type CmPackageViewModel(cmPackage:CmPackage) =
+    type CmPackageViewModel(cmPackage:DriverPackInfo) =
         inherit BaseViewModel()
         let mutable isSelected = false
         let mutable info = null
@@ -36,7 +36,7 @@
             and set(value) =                
                 base.SetProperty(&isSelected,value)|>ignore
         
-        static member ToCmPackage(cmPackageViewModel: CmPackageViewModel) :CmPackage =
+        static member ToCmPackage(cmPackageViewModel: CmPackageViewModel) :DriverPackInfo =
             {
                 Model = cmPackageViewModel.Model
                 ModelCodes = cmPackageViewModel.ModelCodes.Split([|'|'|])

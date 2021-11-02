@@ -100,7 +100,7 @@ module PackageXml =
         Query :string
     }
 
-    type CmPackage = {
+    type DriverPackInfo = {
         Manufacturer:string
         Model: string
         ModelCodes: string[]
@@ -113,7 +113,7 @@ module PackageXml =
         ManufacturerWmiQuery:WmiQuery
     }
 
-    type DownloadedCmPackage = { InstallerPath:string; ReadmePath:string option; CmPackage:CmPackage}
+    type DownloadedCmPackage = { InstallerPath:string; ReadmePath:string option; CmPackage:DriverPackInfo}
 
     type ExtractedCmPackageInfo = { ExtractedDirectoryPath:string; DownloadedCmPackage:DownloadedCmPackage;}
     
