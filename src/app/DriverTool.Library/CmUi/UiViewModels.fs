@@ -16,20 +16,20 @@
     open System.Windows
     
     [<AllowNullLiteral>]
-    type CmPackageViewModel(cmPackage:DriverPackInfo) =
+    type CmPackageViewModel(driverPack:DriverPackInfo) =
         inherit BaseViewModel()
         let mutable isSelected = false
         let mutable info = null
-        member this.Model = cmPackage.Model
-        member this.ModelCodes = cmPackage.ModelCodes |> String.concat "|"
-        member this.Manufacturer = cmPackage.Manufacturer
-        member this.Os = cmPackage.Os
-        member this.OsBuild = cmPackage.OsBuild
-        member this.Released = cmPackage.Released
-        member this.InstallerFile = cmPackage.InstallerFile
-        member this.ReadmeFile = cmPackage.ReadmeFile
-        member this.ModelWmiQuery = cmPackage.ModelWmiQuery
-        member this.ManufacturerWmiQuery = cmPackage.ManufacturerWmiQuery
+        member this.Model = driverPack.Model
+        member this.ModelCodes = driverPack.ModelCodes |> String.concat "|"
+        member this.Manufacturer = driverPack.Manufacturer
+        member this.Os = driverPack.Os
+        member this.OsBuild = driverPack.OsBuild
+        member this.Released = driverPack.Released
+        member this.InstallerFile = driverPack.InstallerFile
+        member this.ReadmeFile = driverPack.ReadmeFile
+        member this.ModelWmiQuery = driverPack.ModelWmiQuery
+        member this.ManufacturerWmiQuery = driverPack.ManufacturerWmiQuery
         member this.IsSelected
             with get() =                
                 isSelected
@@ -119,8 +119,8 @@
             let c = new System.Func<obj,bool>(fun obj -> canExecute(obj))
             new Command(a,c)
                     
-        let toCmPackageViewModel cmPackage =
-            new CmPackageViewModel (cmPackage)
+        let toCmPackageViewModel driverPack =
+            new CmPackageViewModel (driverPack)
 
         do
             logger <- Logger<CmPackagesViewModel>()
@@ -163,9 +163,9 @@
                     (
                         match fe.Item with
                         | :? CmPackageViewModel -> 
-                            let cmPackage = fe.Item :?> CmPackageViewModel
+                            let driverPack = fe.Item :?> CmPackageViewModel
                             fe.Accepted <- 
-                                System.String.IsNullOrEmpty(this.SearchText) || cmPackage.Model.Contains(this.SearchText) || cmPackage.ModelCodes.Contains(this.SearchText) || cmPackage.OsBuild.Contains(this.SearchText)
+                                System.String.IsNullOrEmpty(this.SearchText) || driverPack.Model.Contains(this.SearchText) || driverPack.ModelCodes.Contains(this.SearchText) || driverPack.OsBuild.Contains(this.SearchText)
                             ()
                         | _ -> ()
                     )))

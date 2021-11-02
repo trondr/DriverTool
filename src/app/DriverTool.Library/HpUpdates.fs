@@ -101,10 +101,10 @@ module HpUpdates =
             return sccmPackageInfo
         }
 
-    ///Parse DriverPackage xml element to CmPackage
+    ///Parse DriverPackage xml element to DriverPackInfo
     let toCmPackage (softpacs:SoftPaq[]) (softpackIdByProduct:string*ProductOSDriverPack[])  : Result<DriverPackInfo,Exception> =
         result{            
-            let! cmPackage =
+            let! driverPack =
                 let (softPackId,products) = softpackIdByProduct
                 match(softpacs|>Array.tryFind(fun sp -> sp.Id = softPackId))with
                 |Some p ->                     
@@ -137,7 +137,7 @@ module HpUpdates =
                                 ManufacturerWmiQuery=toManufacturerWqlQuery "HP"
                             }
                 |None -> Result.Error (toException (sprintf "Failed to find HP sccm driver package. Found os driver product but failed to find softpaq for model '%s' and operating system '%s' and os build '%s'" products.[0].SystemName products.[0].OSName "*") None)
-            return cmPackage
+            return driverPack
         }
         
     ///Get CM package infos for all HP models

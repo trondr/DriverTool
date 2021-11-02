@@ -321,7 +321,7 @@ module LenovoUpdates =
                                             let readmeUrl =  p.SccmDriverPackUrl.Value.Replace(".exe",".txt")
                                             let installerUrl = p.SccmDriverPackUrl.Value
                                             let osBuild = p.OsBuild.Value
-                                            let cmPackage =
+                                            let driverPack =
                                                 {
                                                     Manufacturer= "Lenovo"
                                                     Model=p.Model.Value
@@ -346,7 +346,7 @@ module LenovoUpdates =
                                                     ModelWmiQuery=toModelCodesWqlQuery p.Model.Value (ManufacturerTypes.Manufacturer.Lenovo "Lenovo") p.ModelCodes
                                                     ManufacturerWmiQuery= toManufacturerWqlQuery "Lenovo"
                                                 }
-                                            cmPackage
+                                            driverPack
                     )            
             logger.Info("Finished loading Lenovo Sccm Packages!")
             return sccmPackages

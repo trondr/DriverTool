@@ -100,6 +100,7 @@ module PackageXml =
         Query :string
     }
 
+    ///Information about an enterprise driver pack. An enterprise driver pack contains all drivers for a model. These drivers are "INF" drivers and consequently injectable using the DISM utility.
     type DriverPackInfo = {
         Manufacturer:string
         Model: string
@@ -113,7 +114,7 @@ module PackageXml =
         ManufacturerWmiQuery:WmiQuery
     }
 
-    type DownloadedCmPackage = { InstallerPath:string; ReadmePath:string option; CmPackage:DriverPackInfo}
+    type DownloadedCmPackage = { InstallerPath:string; ReadmePath:string option; DriverPack:DriverPackInfo}
 
     type ExtractedCmPackageInfo = { ExtractedDirectoryPath:string; DownloadedCmPackage:DownloadedCmPackage;}
     

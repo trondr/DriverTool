@@ -48,12 +48,12 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.downloadSccmPackage
         |Manufacturer.Lenovo _ -> LenovoUpdates.downloadSccmPackage
 
-    let downloadCmPackage cacheFolderPath reportProgress (cmPackage:DriverPackInfo) =
+    let downloadCmPackage cacheFolderPath reportProgress (driverPack:DriverPackInfo) =
         result{            
-            let! installerInfo = Web.downloadWebFile logger reportProgress cacheFolderPath cmPackage.InstallerFile
+            let! installerInfo = Web.downloadWebFile logger reportProgress cacheFolderPath driverPack.InstallerFile
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
             let! readmePath =
-                match cmPackage.ReadmeFile with
+                match driverPack.ReadmeFile with
                 |Some readmeFile ->
                     result{                        
                         let! readmeInfo = Web.downloadWebFile logger reportProgress cacheFolderPath readmeFile
@@ -64,7 +64,7 @@ module Updates =
             return {
                 InstallerPath = installerPath
                 ReadmePath = readmePath
-                CmPackage = cmPackage;
+                DriverPack = driverPack;
             }            
         }
 
