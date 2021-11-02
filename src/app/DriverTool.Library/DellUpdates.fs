@@ -220,7 +220,7 @@ module DellUpdates=
         result{
             let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath
             let! driverPackages = DellDriverPackCatalog.loadCatalog driverPackageCatalogXmlPath            
-            let cmPackages = 
+            let driverPackInfos = 
                 driverPackages                
                 |>Seq.filter(fun dp -> dp.PackageType = "win")
                 |>Seq.map toDriverPackInfo
@@ -228,7 +228,7 @@ module DellUpdates=
                 |>Seq.toArray                
             logger.Warn("TODO: Dell: Verify WmiQuery from model codes and manufacturer.")
             logger.Info("Finished loading Dell Packages!")
-            return cmPackages
+            return driverPackInfos
         }
     
     let downloadSccmPackage (cacheFolderPath, sccmPackage:SccmPackageInfo) =

@@ -146,7 +146,7 @@ module HpUpdates =
         result{
             let! catalogPath = downloadDriverPackCatalog cacheFolderPath
             let! (softpacs,products) = loadCatalog catalogPath
-            let! cmPackages = 
+            let! driverPackInfos = 
                 products
                 |> Array.filter (fun p -> isSupportedOs p.OSName)
                 |> Array.groupBy(fun p -> p.SoftPaqId)
@@ -154,7 +154,7 @@ module HpUpdates =
                 |> toAccumulatedResult
             logger.Warn("TODO: HP: Calculate WmiQuery from model codes.")
             logger.Info("Finished loading HP Sccm Packages!")
-            return cmPackages |> Seq.toArray
+            return driverPackInfos |> Seq.toArray
         }
 
     let downloadSccmPackage (cacheFolderPath, sccmPackage:SccmPackageInfo) =

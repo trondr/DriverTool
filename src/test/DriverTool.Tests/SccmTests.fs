@@ -101,7 +101,7 @@ module SccmTests=
                                 })                
                 |>toAccumulatedResult
                 
-            let! cmPackages =
+            let! driverPackInfos =
                 packageDefinitions
                 |>Seq.toArray
                 |>Array.filter(fun (_,p) -> not (cmPackageExists  (WrappedString.value p.Name)))
@@ -111,8 +111,8 @@ module SccmTests=
                                 return actual
                             })
                 |>toAccumulatedResult
-            let cmPackages = cmPackages |>Seq.toArray
-            logger.Info(sprintf "All '%d' packages exists. Ready to create custom task sequence" (Array.length cmPackages))
+            let driverPackInfos = driverPackInfos |>Seq.toArray
+            logger.Info(sprintf "All '%d' packages exists. Ready to create custom task sequence" (Array.length driverPackInfos))
             let! actual = createCustomTaskSequence "Example Task Sequence 1.0" "Example Description" "INSTALL-OFFLINE-OS" packageDefinitionSmsFilePaths
             return actual
         })with

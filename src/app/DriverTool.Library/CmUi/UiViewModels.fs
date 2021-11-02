@@ -81,7 +81,7 @@
     type DriverPackInfosViewModel() =
         inherit BaseViewModel()
     
-        let mutable cmPackages = null
+        let mutable driverPackInfos = null
         let mutable selectedDriverPackInfos = null
         let mutable tobePackagedDriverPackInfos = null
         let mutable selectedToBePackagedDriverPackInfos = null
@@ -94,7 +94,7 @@
         let mutable copyInfoCommand = null
         let mutable statusMessage = "Ready"
         let mutable selectedDriverPackInfo:DriverPackInfoViewModel = null
-        let mutable cmPackagesViewSource:System.Windows.Data.CollectionViewSource = null
+        let mutable driverPackInfosViewSource:System.Windows.Data.CollectionViewSource = null
         let mutable progressValue = 0.0
         let mutable progressIsIndeterminate = false
         
@@ -145,21 +145,21 @@
 
         member this.DriverPackInfos
             with get() = 
-                match cmPackages with
+                match driverPackInfos with
                 | null ->
-                    cmPackages <- new ObservableRangeCollection<DriverPackInfoViewModel>()                    
-                    cmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
-                    cmPackages
-                |_ -> cmPackages
+                    driverPackInfos <- new ObservableRangeCollection<DriverPackInfoViewModel>()                    
+                    driverPackInfos.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
+                    driverPackInfos
+                |_ -> driverPackInfos
 
         member this.DriverPackInfosView
             with get(): System.ComponentModel.ICollectionView =
-                match cmPackagesViewSource with
+                match driverPackInfosViewSource with
                 |null ->
-                    cmPackagesViewSource <- new System.Windows.Data.CollectionViewSource()
-                    cmPackagesViewSource.Source <- this.DriverPackInfos
-                    cmPackagesViewSource.View.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
-                    cmPackagesViewSource.Filter.AddHandler(new System.Windows.Data.FilterEventHandler(fun sender fe -> 
+                    driverPackInfosViewSource <- new System.Windows.Data.CollectionViewSource()
+                    driverPackInfosViewSource.Source <- this.DriverPackInfos
+                    driverPackInfosViewSource.View.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
+                    driverPackInfosViewSource.Filter.AddHandler(new System.Windows.Data.FilterEventHandler(fun sender fe -> 
                     (
                         match fe.Item with
                         | :? DriverPackInfoViewModel -> 
@@ -169,8 +169,8 @@
                             ()
                         | _ -> ()
                     )))
-                    cmPackagesViewSource.View
-                |_ -> cmPackagesViewSource.View
+                    driverPackInfosViewSource.View
+                |_ -> driverPackInfosViewSource.View
 
         member this.SelectedDriverPackInfos
             with get() = 
