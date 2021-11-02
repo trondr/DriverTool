@@ -48,18 +48,18 @@ type ModelCodeCompleter () =
             |>Seq.map(fun mc -> new CompletionResult(mc))
 
 /// <summary>
-/// <para type="synopsis">Get one or more sccm packages</para>
-/// <para type="description">Get one or more sccm packages</para>
+/// <para type="synopsis">Get one or more driver packs</para>
+/// <para type="description">Get one or more driver packs. An enteprise driver pack typically contains all drivers for a model in inf format and can be injected into the operating system using DISM.</para>
 /// <example>
-///     <code>Get-DtSccmPackage -Manufacturer Dell -ModelCode 79TH</code>
+///     <code>Get-DtDriverPack -Manufacturer Dell -ModelCode 79TH</code>
 /// </example>
 /// <example>
-///     <code>Get-DtSccmPackage -All</code>
+///     <code>Get-DtDriverPack -All</code>
 /// </example>
 /// </summary>
-[<Cmdlet(VerbsCommon.Get,"DtSccmPackage")>]
+[<Cmdlet(VerbsCommon.Get,"DtDriverPack")>]
 [<OutputType(typeof<string>)>]
-type GetDtSccmPackage () =
+type GetDtDriverPack () =
     inherit PSCmdlet ()
 
     //Get mandatory run time parameter with validate set attribute

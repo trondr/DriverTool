@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>    
-    <Compile Include="CmdLets\Get-DtSccmPackage.fs" />
+    <Compile Include="CmdLets\Get-DtDriverPack.fs" />
   </ItemGroup>
   
   <ItemGroup>
