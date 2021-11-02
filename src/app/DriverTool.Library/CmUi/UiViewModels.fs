@@ -36,18 +36,18 @@
             and set(value) =                
                 base.SetProperty(&isSelected,value)|>ignore
         
-        static member ToDriverPackInfo(cmPackageViewModel: DriverPackInfoViewModel) :DriverPackInfo =
+        static member ToDriverPackInfo(driverPackInfoViewModel: DriverPackInfoViewModel) :DriverPackInfo =
             {
-                Model = cmPackageViewModel.Model
-                ModelCodes = cmPackageViewModel.ModelCodes.Split([|'|'|])
-                Manufacturer = cmPackageViewModel.Manufacturer
-                Os = cmPackageViewModel.Os
-                OsBuild = cmPackageViewModel.OsBuild
-                Released = cmPackageViewModel.Released
-                InstallerFile = cmPackageViewModel.InstallerFile
-                ReadmeFile = cmPackageViewModel.ReadmeFile
-                ModelWmiQuery = cmPackageViewModel.ModelWmiQuery
-                ManufacturerWmiQuery = cmPackageViewModel.ManufacturerWmiQuery
+                Model = driverPackInfoViewModel.Model
+                ModelCodes = driverPackInfoViewModel.ModelCodes.Split([|'|'|])
+                Manufacturer = driverPackInfoViewModel.Manufacturer
+                Os = driverPackInfoViewModel.Os
+                OsBuild = driverPackInfoViewModel.OsBuild
+                Released = driverPackInfoViewModel.Released
+                InstallerFile = driverPackInfoViewModel.InstallerFile
+                ReadmeFile = driverPackInfoViewModel.ReadmeFile
+                ModelWmiQuery = driverPackInfoViewModel.ModelWmiQuery
+                ManufacturerWmiQuery = driverPackInfoViewModel.ManufacturerWmiQuery
             }
 
         override this.ToString() =            
@@ -209,9 +209,9 @@
                             match(result{
                                 let! cacheFolderPath = getCacheFolderPath()                                
                                 let! sccmPackages = (loadSccmPackages (cacheFolderPath))
-                                let cmPackageViewModels = sccmPackages |> Array.map toDriverPackInfoViewModel
+                                let driverPackInfoViewModels = sccmPackages |> Array.map toDriverPackInfoViewModel
                                 updateUi (fun () -> 
-                                        this.DriverPackInfos.ReplaceRange(cmPackageViewModels)
+                                        this.DriverPackInfos.ReplaceRange(driverPackInfoViewModels)
                                     )
                                 return ()
                             })with

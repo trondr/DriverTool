@@ -32,7 +32,7 @@ module CommandProviders =
                 let! cacheFolderPath = FileSystem.path DriverTool.Library.Configuration.downloadCacheDirectoryPath
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
                 let! exportResult = DriverTool.ExportLocalUpdates.exportLocalUpdates existingCacheFolderPath nonExistingCsvFilePath excludeUpdatePatterns
-                return exportResult        
+                return exportResult
         }) with
         | Ok _ -> NCmdLiner.Result.Ok(0)
         | Result.Error ex -> NCmdLiner.Result.Fail<int>(ex)
