@@ -21,7 +21,7 @@ module UiModels =
             let manufacturers = FSharpType.GetUnionCases typeof<ManufacturerTypes.Manufacturer>
             let updateFunctions = manufacturers|> Array.map(fun m -> 
                                                                 let manufacturer = FSharpValue.MakeUnion(m,[|(m.Name:>obj)|]):?> ManufacturerTypes.Manufacturer
-                                                                let getFunc = DriverTool.Updates.getSccmPackagesFunc manufacturer
+                                                                let getFunc = DriverTool.Updates.getDriverPacksFunc manufacturer
                                                                 getFunc                                                            
                                                             )
             let! sccmPackagesArray = updateFunctions |> Array.map (fun f -> f(cacheFolderPath)) |> toAccumulatedResult

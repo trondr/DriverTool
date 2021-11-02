@@ -216,7 +216,7 @@ module DellUpdates=
         }
 
     ///Download sccm driver package info from Dell web site and parse the downloaded xml into array of DriverPackInfos
-    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
+    let getDriverPackInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
         logger.Info("Loading Dell Sccm Packages...")
         result{
             let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath

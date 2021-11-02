@@ -142,7 +142,7 @@ module HpUpdates =
         }
         
     ///Get CM package infos for all HP models
-    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
+    let getDriverPackInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
         logger.Info("Loading HP Sccm Packages...")
         result{
             let! catalogPath = downloadDriverPackCatalog cacheFolderPath

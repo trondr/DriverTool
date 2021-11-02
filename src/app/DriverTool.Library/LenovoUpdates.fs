@@ -313,7 +313,7 @@ module LenovoUpdates =
                 return sccmPackage
             }
 
-    let getSccmDriverPackageInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
+    let getDriverPackInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
         logger.Info("Loading Lenovo Sccm Packages...")
         result{
             let! products = DriverTool.LenovoCatalog.getSccmPackageInfosv2 cacheFolderPath
