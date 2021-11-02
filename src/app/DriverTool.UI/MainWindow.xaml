@@ -12,10 +12,10 @@
         Width="1024"
         Icon="NCmdLiner.ico">
     <Window.DataContext>
-        <viewModels:CmPackagesViewModel/>
+        <viewModels:DriverPackInfosViewModel/>
     </Window.DataContext>
 
-    <DockPanel d:DataContext="{d:DesignInstance Type=viewModels:ExampleCmPackagesViewModel, IsDesignTimeCreatable=True}" LastChildFill="True">
+    <DockPanel d:DataContext="{d:DesignInstance Type=viewModels:ExampleDriverPackInfosViewModel, IsDesignTimeCreatable=True}" LastChildFill="True">
         <i:Interaction.Triggers>
             <i:EventTrigger>
                 <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
@@ -62,15 +62,15 @@
                 <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0">
                     <TextBlock.Text >
                         <MultiBinding StringFormat="{}#Models: {0}">
-                            <Binding Path="Items.Count" ElementName="CmPackagesListView" Mode="OneWay"/>
+                            <Binding Path="Items.Count" ElementName="DriverPackInfosListView" Mode="OneWay"/>
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
             </Grid>
 
-            <ListView Grid.Row="1" Grid.Column="0" Margin="2" x:Name="CmPackagesListView"
-                  ItemsSource="{Binding CmPackagesView}" 
-                  local:ListViewExtensions.SelectedValues="{Binding SelectedCmPackages}" 
+            <ListView Grid.Row="1" Grid.Column="0" Margin="2" x:Name="DriverPackInfosListView"
+                  ItemsSource="{Binding DriverPackInfosView}" 
+                  local:ListViewExtensions.SelectedValues="{Binding SelectedDriverPackInfos}" 
                   SelectedItem="{Binding SelectedCmPackage}"
                   >
                 <ListView.ItemContainerStyle>
@@ -102,15 +102,15 @@
                 <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0">
                     <TextBlock.Text >
                         <MultiBinding StringFormat="{}#Models: {0}">
-                            <Binding Path="Items.Count" ElementName="ToBePackagedCmPackagesListView" Mode="OneWay"/>
+                            <Binding Path="Items.Count" ElementName="ToBePackagedDriverPackInfosListView" Mode="OneWay"/>
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
             </Grid>
 
-            <ListView Grid.Row="1" Grid.Column="2" Margin="2" x:Name="ToBePackagedCmPackagesListView"
-                  ItemsSource="{Binding ToBePackagedCmPackages}" 
-                  local:ListViewExtensions.SelectedValues="{Binding SelectedToBePackagedCmPackages}"
+            <ListView Grid.Row="1" Grid.Column="2" Margin="2" x:Name="ToBePackagedDriverPackInfosListView"
+                  ItemsSource="{Binding ToBePackagedDriverPackInfos}" 
+                  local:ListViewExtensions.SelectedValues="{Binding SelectedToBePackagedDriverPackInfos}"
                   SelectedItem="{Binding SelectedCmPackage}"
                   ToolTip="Package CM package for this list of models."
         >

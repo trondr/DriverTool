@@ -78,13 +78,13 @@
 
 
     
-    type CmPackagesViewModel() =
+    type DriverPackInfosViewModel() =
         inherit BaseViewModel()
     
         let mutable cmPackages = null
-        let mutable selectedCmPackages = null
-        let mutable tobePackagedCmPackages = null
-        let mutable selectedToBePackagedCmPackages = null
+        let mutable selectedDriverPackInfos = null
+        let mutable tobePackagedDriverPackInfos = null
+        let mutable selectedToBePackagedDriverPackInfos = null
         let mutable searchText=""
         let mutable logger: ILog = null
         let mutable loadCommand = null
@@ -123,14 +123,14 @@
             new CmPackageViewModel (driverPack)
 
         do
-            logger <- Logger<CmPackagesViewModel>()
+            logger <- Logger<DriverPackInfosViewModel>()
             base.Title <- "DriverTool - CM Device Drivers Packaging"
             
         member this.SearchText
             with get() = searchText
             and set(value) =
                 if(base.SetProperty(&searchText,value)) then
-                    this.CmPackagesView.Refresh()
+                    this.DriverPackInfosView.Refresh()
                     ()
 
         member this.StatusMessage
@@ -143,7 +143,7 @@
             and set(value) =
                 base.SetProperty(&selectedCmPackage,value)|>ignore
 
-        member this.CmPackages
+        member this.DriverPackInfos
             with get() = 
                 match cmPackages with
                 | null ->
@@ -152,12 +152,12 @@
                     cmPackages
                 |_ -> cmPackages
 
-        member this.CmPackagesView
+        member this.DriverPackInfosView
             with get(): System.ComponentModel.ICollectionView =
                 match cmPackagesViewSource with
                 |null ->
                     cmPackagesViewSource <- new System.Windows.Data.CollectionViewSource()
-                    cmPackagesViewSource.Source <- this.CmPackages
+                    cmPackagesViewSource.Source <- this.DriverPackInfos
                     cmPackagesViewSource.View.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
                     cmPackagesViewSource.Filter.AddHandler(new System.Windows.Data.FilterEventHandler(fun sender fe -> 
                     (
@@ -172,32 +172,32 @@
                     cmPackagesViewSource.View
                 |_ -> cmPackagesViewSource.View
 
-        member this.SelectedCmPackages
+        member this.SelectedDriverPackInfos
             with get() = 
-                match selectedCmPackages with
+                match selectedDriverPackInfos with
                 | null ->
-                    selectedCmPackages <- new ObservableRangeCollection<CmPackageViewModel>()                    
-                    selectedCmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
-                    selectedCmPackages
-                |_ -> selectedCmPackages
+                    selectedDriverPackInfos <- new ObservableRangeCollection<CmPackageViewModel>()                    
+                    selectedDriverPackInfos.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
+                    selectedDriverPackInfos
+                |_ -> selectedDriverPackInfos
                 
-        member this.ToBePackagedCmPackages
+        member this.ToBePackagedDriverPackInfos
             with get() = 
-                match tobePackagedCmPackages with
+                match tobePackagedDriverPackInfos with
                 | null ->
-                    tobePackagedCmPackages <- new ObservableRangeCollection<CmPackageViewModel>()                    
-                    tobePackagedCmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
-                    tobePackagedCmPackages
-                |_ -> tobePackagedCmPackages
+                    tobePackagedDriverPackInfos <- new ObservableRangeCollection<CmPackageViewModel>()                    
+                    tobePackagedDriverPackInfos.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))
+                    tobePackagedDriverPackInfos
+                |_ -> tobePackagedDriverPackInfos
 
-        member this.SelectedToBePackagedCmPackages
+        member this.SelectedToBePackagedDriverPackInfos
             with get() = 
-                match selectedToBePackagedCmPackages with
+                match selectedToBePackagedDriverPackInfos with
                 | null ->
-                    selectedToBePackagedCmPackages <- new ObservableRangeCollection<CmPackageViewModel>()                    
-                    selectedToBePackagedCmPackages.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
-                    selectedToBePackagedCmPackages
-                |_ -> selectedToBePackagedCmPackages
+                    selectedToBePackagedDriverPackInfos <- new ObservableRangeCollection<CmPackageViewModel>()                    
+                    selectedToBePackagedDriverPackInfos.CollectionChanged.AddHandler(new NotifyCollectionChangedEventHandler(this.OnCollectionChanged))                    
+                    selectedToBePackagedDriverPackInfos
+                |_ -> selectedToBePackagedDriverPackInfos
 
         member this.LoadCommand
             with get() =
@@ -211,7 +211,7 @@
                                 let! sccmPackages = (loadSccmPackages (cacheFolderPath))
                                 let cmPackageViewModels = sccmPackages |> Array.map toCmPackageViewModel
                                 updateUi (fun () -> 
-                                        this.CmPackages.ReplaceRange(cmPackageViewModels)
+                                        this.DriverPackInfos.ReplaceRange(cmPackageViewModels)
                                     )
                                 return ()
                             })with
@@ -230,15 +230,15 @@
                 match addPackageCommand with
                 |null ->
                     addPackageCommand <- createCommand (fun _ -> 
-                                                            this.CmPackages.Where(fun cmp -> cmp.IsSelected)
+                                                            this.DriverPackInfos.Where(fun cmp -> cmp.IsSelected)
                                                             |> Seq.toArray
                                                             |> Array.map(fun cmp -> 
                                                                                     logger.Info(sprintf "Adding %s" cmp.Model)
-                                                                                    this.ToBePackagedCmPackages.Add(cmp)|> ignore
+                                                                                    this.ToBePackagedDriverPackInfos.Add(cmp)|> ignore
                                                                                     cmp.IsSelected <- false
-                                                                                    this.CmPackages.Remove(cmp)
+                                                                                    this.DriverPackInfos.Remove(cmp)
                                                                             ) |> ignore
-                                                       ) (fun _ -> this.IsNotBusy && this.CmPackages.Where(fun cmp -> cmp.IsSelected).Count() > 0)
+                                                       ) (fun _ -> this.IsNotBusy && this.DriverPackInfos.Where(fun cmp -> cmp.IsSelected).Count() > 0)
                     addPackageCommand
                 |_ -> addPackageCommand
 
@@ -247,15 +247,15 @@
                 match removePackageCommand with
                 |null ->
                     removePackageCommand <- createCommand (fun _ -> 
-                                                            this.ToBePackagedCmPackages.Where(fun cmp -> cmp.IsSelected)
+                                                            this.ToBePackagedDriverPackInfos.Where(fun cmp -> cmp.IsSelected)
                                                             |> Seq.toArray
                                                             |> Array.map(fun cmp -> 
                                                                                     logger.Info(sprintf "Removing %s" cmp.Model)
-                                                                                    this.ToBePackagedCmPackages.Remove(cmp)|> ignore
+                                                                                    this.ToBePackagedDriverPackInfos.Remove(cmp)|> ignore
                                                                                     cmp.IsSelected <- false
-                                                                                    this.CmPackages.Add(cmp)
+                                                                                    this.DriverPackInfos.Add(cmp)
                                                                             ) |> ignore
-                                                       ) (fun _ -> this.IsNotBusy && this.ToBePackagedCmPackages.Where(fun cmp -> cmp.IsSelected).Count() > 0)
+                                                       ) (fun _ -> this.IsNotBusy && this.ToBePackagedDriverPackInfos.Where(fun cmp -> cmp.IsSelected).Count() > 0)
                     removePackageCommand
                 |_ -> removePackageCommand
 
@@ -274,21 +274,21 @@
                                                 r                                                                                                                                
                                             match(result{
                                                 let! cacheFolderPath = getCacheFolderPath()                                
-                                                let! downloadedCmPackages =
-                                                    this.ToBePackagedCmPackages.Select(fun cmp-> cmp) 
+                                                let! downloadedDriverPackInfos =
+                                                    this.ToBePackagedDriverPackInfos.Select(fun cmp-> cmp) 
                                                     |> Seq.toArray 
                                                     |> Seq.map CmPackageViewModel.ToCmPackage
                                                     |> Seq.map (packageSccmPackage cacheFolderPath this.ReportProgress)
                                                     |> Seq.map logPackagingResult                                                    
                                                     |> toAccumulatedResult                                                    
-                                                return downloadedCmPackages |> Seq.toArray
+                                                return downloadedDriverPackInfos |> Seq.toArray
                                             })with
                                             |Result.Ok _ -> this.ReportProgress false None "Successfully packaged CM packages"
                                             |Result.Error ex -> logger.Error(sprintf "Failed to package CM driver packages due to %s" (getAccumulatedExceptionMessages ex))
                                             this.ReportProgress true None "TODO: Done packaging CM driver packages!"
                                             this.ReportProgress false None "Ready"                                            
                                         } |> Async.startAsPlainTask                                    
-                                    ) (fun _ -> this.IsNotBusy && this.ToBePackagedCmPackages.Count > 0) (fun ex -> logger.Error(ex.Message))
+                                    ) (fun _ -> this.IsNotBusy && this.ToBePackagedDriverPackInfos.Count > 0) (fun ex -> logger.Error(ex.Message))
                     packageCommand
                 | _ -> packageCommand
         
@@ -355,8 +355,8 @@
             this.RemovePackageCommand.RaiseCanExecuteChanged()
             this.CopyInfoCommand.RaiseCanExecuteChanged()
 
-    type ExampleCmPackagesViewModel() =
-        inherit  CmPackagesViewModel()
+    type ExampleDriverPackInfosViewModel() =
+        inherit  DriverPackInfosViewModel()
         do
             let cmPackage1 =
                 {                    
@@ -431,8 +431,8 @@
                         }
                 }
 
-            base.CmPackages.AddRange([|new CmPackageViewModel(cmPackage1);new CmPackageViewModel(cmPackage2)|])
-            base.ToBePackagedCmPackages.AddRange([|new CmPackageViewModel(cmPackage3)|])
+            base.DriverPackInfos.AddRange([|new CmPackageViewModel(cmPackage1);new CmPackageViewModel(cmPackage2)|])
+            base.ToBePackagedDriverPackInfos.AddRange([|new CmPackageViewModel(cmPackage3)|])
 
 
         

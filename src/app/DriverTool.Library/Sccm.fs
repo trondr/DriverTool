@@ -304,11 +304,11 @@ module Sccm =
                 |>Array.map PackageDefinitionSms.readFromFile
                 |>toAccumulatedResult
             let packageDefinitions = packageDefinitions |> Seq.toArray
-            let! ensureCmPackagesExists =
+            let! ensureDriverPackInfosExists =
                 packageDefinitions                
                 |>Array.map (fun p -> ensureCmPackageExists (WrappedString.value p.Name))
                 |>toAccumulatedResult
-            logger.Info(sprintf "All packages exist: %b" (ensureCmPackagesExists|>Seq.forall(fun p -> p)))            
+            logger.Info(sprintf "All packages exist: %b" (ensureDriverPackInfosExists|>Seq.forall(fun p -> p)))            
             let! script = toCustomTaskSequenceScript name description programName packageDefinitions                
             let! out = CMPowerShellSession.Instance.RunScript script
             return out
