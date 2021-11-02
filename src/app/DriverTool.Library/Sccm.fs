@@ -127,12 +127,12 @@ module Sccm =
             logger.Warn(sprintf "Failed to check if package '%s' exists in Configuration Manager due to: %s" packageName (getAccumulatedExceptionMessages ex))
             false
 
-    let ensureCmPackageExists packageName =
+    let ensureDriverPackInfoExists packageName =
         match(cmPackageExists packageName)with
         |true -> Result.Ok true
         |false -> Result.Error (toException (sprintf "CM Package does not exist: %s" packageName) None)
 
-    let ensureCmPackageDoesNotExist packageName =
+    let ensureDriverPackInfoDoesNotExist packageName =
         match(cmPackageExists packageName)with
         |true -> Result.Error (toException (sprintf "CM Package allready exist: %s" packageName) None)
         |false -> Result.Ok true
@@ -184,7 +184,7 @@ module Sccm =
         newCMProgramPSCommand
 
     ///Build New-CMPackage PowerShell command
-    let toCmPackagePSCommand (packageDefinition:SmsPackageDefinition) sourceFolderPath =
+    let toDriverPackInfoPSCommand (packageDefinition:SmsPackageDefinition) sourceFolderPath =
         let newCMPackagePSCommand =
             seq{
                 yield "New-CMPackage"
@@ -204,10 +204,10 @@ module Sccm =
     ///Create SCCM package from package definition sms file
     let createPackageFromDefinition sourceFolderPath packageDefinition =
         result{                        
-            let! ensurePackageNotAllreadyExists = ensureCmPackageDoesNotExist (WrappedString.value packageDefinition.Name)
+            let! ensurePackageNotAllreadyExists = ensureDriverPackInfoDoesNotExist (WrappedString.value packageDefinition.Name)
             let script = 
                 seq{                    
-                    yield (sprintf "$package = %s" (toCmPackagePSCommand packageDefinition (FileSystem.pathValue sourceFolderPath)))
+                    yield (sprintf "$package = %s" (toDriverPackInfoPSCommand packageDefinition (FileSystem.pathValue sourceFolderPath)))
                     yield ("$package | Set-CMPackage -EnableBinaryDeltaReplication $true")
                     for program in packageDefinition.Programs do
                         yield toNewCmProgramPSCommand "$($package.PackageId)" program
@@ -306,7 +306,7 @@ module Sccm =
             let packageDefinitions = packageDefinitions |> Seq.toArray
             let! ensureDriverPackInfosExists =
                 packageDefinitions                
-                |>Array.map (fun p -> ensureCmPackageExists (WrappedString.value p.Name))
+                |>Array.map (fun p -> ensureDriverPackInfoExists (WrappedString.value p.Name))
                 |>toAccumulatedResult
             logger.Info(sprintf "All packages exist: %b" (ensureDriverPackInfosExists|>Seq.forall(fun p -> p)))            
             let! script = toCustomTaskSequenceScript name description programName packageDefinitions                

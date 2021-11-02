@@ -71,7 +71,7 @@
             <ListView Grid.Row="1" Grid.Column="0" Margin="2" x:Name="DriverPackInfosListView"
                   ItemsSource="{Binding DriverPackInfosView}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedDriverPackInfos}" 
-                  SelectedItem="{Binding SelectedCmPackage}"
+                  SelectedItem="{Binding SelectedDriverPackInfo}"
                   >
                 <ListView.ItemContainerStyle>
                     <Style TargetType="{x:Type ListViewItem}">
@@ -111,7 +111,7 @@
             <ListView Grid.Row="1" Grid.Column="2" Margin="2" x:Name="ToBePackagedDriverPackInfosListView"
                   ItemsSource="{Binding ToBePackagedDriverPackInfos}" 
                   local:ListViewExtensions.SelectedValues="{Binding SelectedToBePackagedDriverPackInfos}"
-                  SelectedItem="{Binding SelectedCmPackage}"
+                  SelectedItem="{Binding SelectedDriverPackInfo}"
                   ToolTip="Package CM package for this list of models."
         >
                 <ListView.ItemContainerStyle>
@@ -151,7 +151,7 @@
                         <TextBlock TextWrapping="WrapWithOverflow">
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Model(s): {0}">
-                                    <Binding Path="SelectedCmPackage.Model" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.Model" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
@@ -159,7 +159,7 @@
                         <TextBlock TextWrapping="WrapWithOverflow">
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Model Codes: {0}">
-                                    <Binding Path="SelectedCmPackage.ModelCodes" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.ModelCodes" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
@@ -167,22 +167,22 @@
                         <TextBlock>
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Manufacturer: {0}">
-                                    <Binding Path="SelectedCmPackage.Manufacturer" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.Manufacturer" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
                         <TextBlock>
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Operating System: {0} ({1})">
-                                    <Binding Path="SelectedCmPackage.Os" Mode="OneWay"/>
-                                    <Binding Path="SelectedCmPackage.OsBuild" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.Os" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.OsBuild" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
                         <TextBlock>
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Released: {0}">
-                                    <Binding Path="SelectedCmPackage.Released" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.Released" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
@@ -190,7 +190,7 @@
                         <TextBlock TextWrapping="WrapWithOverflow">
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Installer: {0}">
-                                    <Binding Path="SelectedCmPackage.InstallerFile" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.InstallerFile" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
@@ -198,7 +198,7 @@
                         <TextBlock TextWrapping="WrapWithOverflow">
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Readme: {0}">
-                                    <Binding Path="SelectedCmPackage.ReadmeFile" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.ReadmeFile" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
@@ -206,7 +206,7 @@
                         <TextBlock TextWrapping="WrapWithOverflow">
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Manufacturer WmiQuery: {0}">
-                                    <Binding Path="SelectedCmPackage.ManufacturerWmiQuery" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.ManufacturerWmiQuery" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
@@ -214,7 +214,7 @@
                         <TextBlock TextWrapping="WrapWithOverflow">
                             <TextBlock.Text >
                                 <MultiBinding StringFormat="Model WmiQuery: {0}">
-                                    <Binding Path="SelectedCmPackage.ModelWmiQuery" Mode="OneWay"/>
+                                    <Binding Path="SelectedDriverPackInfo.ModelWmiQuery" Mode="OneWay"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>

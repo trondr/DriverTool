@@ -114,9 +114,9 @@ module PackageXml =
         ManufacturerWmiQuery:WmiQuery
     }
 
-    type DownloadedCmPackage = { InstallerPath:string; ReadmePath:string option; DriverPack:DriverPackInfo}
+    type DownloadedDriverPackInfo = { InstallerPath:string; ReadmePath:string option; DriverPack:DriverPackInfo}
 
-    type ExtractedCmPackageInfo = { ExtractedDirectoryPath:string; DownloadedCmPackage:DownloadedCmPackage;}
+    type ExtractedDriverPackInfoInfo = { ExtractedDirectoryPath:string; DownloadedDriverPackInfo:DownloadedDriverPackInfo;}
     
     ///Convert list of model codes to a wql query that can be used as condition in model specific SCCM task sequence step
     let toModelCodesWqlQuery name (manufacturer:Manufacturer) (modelCodes:string[]) =

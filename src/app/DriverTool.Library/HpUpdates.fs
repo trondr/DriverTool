@@ -102,7 +102,7 @@ module HpUpdates =
         }
 
     ///Parse DriverPackage xml element to DriverPackInfo
-    let toCmPackage (softpacs:SoftPaq[]) (softpackIdByProduct:string*ProductOSDriverPack[])  : Result<DriverPackInfo,Exception> =
+    let toDriverPackInfo (softpacs:SoftPaq[]) (softpackIdByProduct:string*ProductOSDriverPack[])  : Result<DriverPackInfo,Exception> =
         result{            
             let! driverPack =
                 let (softPackId,products) = softpackIdByProduct
@@ -150,7 +150,7 @@ module HpUpdates =
                 products
                 |> Array.filter (fun p -> isSupportedOs p.OSName)
                 |> Array.groupBy(fun p -> p.SoftPaqId)
-                |> Array.map (fun g -> toCmPackage softpacs g)
+                |> Array.map (fun g -> toDriverPackInfo softpacs g)
                 |> toAccumulatedResult
             logger.Warn("TODO: HP: Calculate WmiQuery from model codes.")
             logger.Info("Finished loading HP Sccm Packages!")
@@ -187,10 +187,10 @@ module HpUpdates =
             return (destinationPath,copiedReadmeFilePath)
         }
 
-    let extractCmPackage (downloadedCmPackage:DownloadedCmPackage) (destinationPath:FileSystem.Path) =
+    let extractDriverPackInfo (downloadedDriverPackInfo:DownloadedDriverPackInfo) (destinationPath:FileSystem.Path) =
         logger.Info("Extracting CM Driver Package ...")
         result{
-            let! installerPath = FileSystem.path downloadedCmPackage.InstallerPath
+            let! installerPath = FileSystem.path downloadedDriverPackInfo.InstallerPath
             let! exeFilepath = FileOperations.ensureFileExtension ".exe" installerPath
             let! existingExeFilePath = FileOperations.ensureFileExists exeFilepath  
             let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
@@ -200,7 +200,7 @@ module HpUpdates =
             let! exitCode = 
                 ProcessOperations.startConsoleProcess' (installerPath,arguments1,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0|])
                 |>ProcessOperations.onError ProcessOperations.startConsoleProcess' (installerPath,arguments2,FileSystem.pathValue existingDestinationPath,-1,null,null,false,[|0;1168|])
-            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedCmPackage.ReadmePath destinationPath            
+            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedDriverPackInfo.ReadmePath destinationPath            
             return (destinationPath)
         }
 

@@ -383,19 +383,19 @@ module LenovoUpdates =
             return (installerExtractedFolder,copiedReadmeFilePath)
         }
 
-    let extractCmPackage (downloadedCmPackage:DownloadedCmPackage) (destinationPath:FileSystem.Path) =
+    let extractDriverPackInfo (downloadedDriverPackInfo:DownloadedDriverPackInfo) (destinationPath:FileSystem.Path) =
         result{
             logger.Info("Extract SccmPackage installer...")
             let! nonExistingDestinationPath = DirectoryOperations.ensureDirectoryNotExistsWithMessage "Destination path should not exist before extracting the downloaded CM package." destinationPath
             let arguments = sprintf "/VERYSILENT /DIR=\"%s\"" (FileSystem.pathValue nonExistingDestinationPath)
             let! installerExtractedFolder =
-                match (FileSystem.existingFilePathString downloadedCmPackage.InstallerPath) with
+                match (FileSystem.existingFilePathString downloadedDriverPackInfo.InstallerPath) with
                 |Ok fp -> 
                     match DriverTool.Library.ProcessOperations.startConsoleProcess (fp, arguments, null, -1, null, null, false) with
                     |Ok _ -> Result.Ok destinationPath
                     |Result.Error ex -> Result.Error (toException  ("Failed to extract CM package due to: " + ex.Message) (Some ex))
                 |Result.Error ex -> Result.Error (toException  ("CM package installer not found due to: " + ex.Message) (Some ex))
-            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedCmPackage.ReadmePath destinationPath
+            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedDriverPackInfo.ReadmePath destinationPath
             return (destinationPath)
         }        
         

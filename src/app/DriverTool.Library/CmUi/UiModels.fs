@@ -31,7 +31,7 @@ module UiModels =
     open DriverTool.Library.PackageDefinitionSms
 
     /// Package CM drivers
-    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (driverPack:DriverPackInfo) : Result<DownloadedCmPackage,Exception> =
+    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (driverPack:DriverPackInfo) : Result<DownloadedDriverPackInfo,Exception> =
         result{
             logger.Warn(sprintf "TODO: Packaging '%s' (%A)..." driverPack.Model driverPack)
             let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(driverPack.Manufacturer,false)
@@ -56,16 +56,16 @@ module UiModels =
                 |> DirectoryOperations.ensureFolderPathExists' true (Some "Package drivers folder does not exist.")
                         
             reportProgress true None (sprintf "Downloading CM Drivers for model '%s'..." driverPack.Model)
-            let downloadCmPackage = DriverTool.Updates.downloadCmPackageFunc manufacturer
-            let! downloadedCmPackage = downloadCmPackage cacheFolderPath reportProgress driverPack
+            let downloadDriverPackInfo = DriverTool.Updates.downloadDriverPackInfoFunc manufacturer
+            let! downloadedDriverPackInfo = downloadDriverPackInfo cacheFolderPath reportProgress driverPack
             
             reportProgress true None (sprintf "Extracting CM Drivers for model '%s'..." driverPack.Model)
-            let extractCmPackage = DriverTool.Updates.extractCmPackageFunc manufacturer
+            let extractDriverPackInfo = DriverTool.Updates.extractDriverPackInfoFunc manufacturer
             
-            let cmDriversFolderName = "005_CM_Package_" + downloadedCmPackage.DriverPack.Released.ToString("yyyy_MM_dd")
+            let cmDriversFolderName = "005_CM_Package_" + downloadedDriverPackInfo.DriverPack.Released.ToString("yyyy_MM_dd")
             let! cmDriversFolderPath = 
                 PathOperations.combinePaths2 packageDriversFolderPath cmDriversFolderName                
-            let! extractedCmPackageFolder = extractCmPackage downloadedCmPackage cmDriversFolderPath
+            let! extractedDriverPackInfoFolder = extractDriverPackInfo downloadedDriverPackInfo cmDriversFolderPath
 
             logger.Info("Create PackageDefinition-DISM.sms")            
             let! dismProgram = PackageDefinitionSms.createSmsProgram "INSTALL-OFFLINE-OS" ("DISM.exe /Image:%OSDisk%\\ /Add-Driver /Driver:.\\Drivers\\" + cmDriversFolderName + "\\ /Recurse") "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "Install INF drivers into the offline operating system using DISM in the WinPE phase of the OSD."
@@ -76,7 +76,7 @@ module UiModels =
             logger.Info(sprintf "Created PackageDefinition.sms: %A" packageDefintionWriteResult)
 
             reportProgress true None (sprintf "Finished packaging INF drivers for model %s" driverPack.Model)            
-            return downloadedCmPackage
+            return downloadedDriverPackInfo
         }
 
         

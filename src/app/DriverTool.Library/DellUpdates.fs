@@ -198,7 +198,7 @@ module DellUpdates=
         }
 
     ///Parse DriverPackage xml element to DriverPackInfo
-    let toCmPackage (dp:DellDriverPackCatalog.DriverPackage) : DriverPackInfo =        
+    let toDriverPackInfo (dp:DellDriverPackCatalog.DriverPackage) : DriverPackInfo =        
         let modelCodes = dp.Models |> Array.map(fun m -> m.Code) // Array of model codes
         let modelName = dp.Models|> Array.map(fun m -> m.Name)|>Array.distinct|> String.concat ", " //Comma separated list of distinct model names
         {
@@ -223,7 +223,7 @@ module DellUpdates=
             let cmPackages = 
                 driverPackages                
                 |>Seq.filter(fun dp -> dp.PackageType = "win")
-                |>Seq.map toCmPackage
+                |>Seq.map toDriverPackInfo
                 |>Seq.filter(fun cp -> cp.Os.Contains("Windows10"))                
                 |>Seq.toArray                
             logger.Warn("TODO: Dell: Verify WmiQuery from model codes and manufacturer.")
@@ -255,15 +255,15 @@ module DellUpdates=
             return (destinationPath,copiedReadmeFilePath)
         }
 
-    let extractCmPackage (downloadedCmPackage:DownloadedCmPackage) (destinationPath:FileSystem.Path) =
+    let extractDriverPackInfo (downloadedDriverPackInfo:DownloadedDriverPackInfo) (destinationPath:FileSystem.Path) =
         logger.Info("Extract Sccm Driver Package CAB...")
         result{
-            let! installerPath = FileSystem.path downloadedCmPackage.InstallerPath
+            let! installerPath = FileSystem.path downloadedDriverPackInfo.InstallerPath
             let! cabFilepath = FileOperations.ensureFileExtension ".cab" installerPath
             let! existingCabFilePath = FileOperations.ensureFileExists cabFilepath
             let! existingDestinationPath = DirectoryOperations.ensureDirectoryExists true destinationPath
             let! expandResult = DriverTool.DellCatalog.expandCabFile (existingCabFilePath,existingDestinationPath)
-            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedCmPackage.ReadmePath destinationPath
+            let! copiedReadmeFilePath = FileOperations.copyFileIfExists' downloadedDriverPackInfo.ReadmePath destinationPath
             return (destinationPath)
         }
 

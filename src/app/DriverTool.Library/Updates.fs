@@ -48,7 +48,7 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.downloadSccmPackage
         |Manufacturer.Lenovo _ -> LenovoUpdates.downloadSccmPackage
 
-    let downloadCmPackage cacheFolderPath reportProgress (driverPack:DriverPackInfo) =
+    let downloadDriverPackInfo cacheFolderPath reportProgress (driverPack:DriverPackInfo) =
         result{            
             let! installerInfo = Web.downloadWebFile logger reportProgress cacheFolderPath driverPack.InstallerFile
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
@@ -68,11 +68,11 @@ module Updates =
             }            
         }
 
-    let downloadCmPackageFunc (manufacturer:Manufacturer) = 
+    let downloadDriverPackInfoFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer.Dell _ -> downloadCmPackage
-        |Manufacturer.HP _ -> downloadCmPackage
-        |Manufacturer.Lenovo _ -> downloadCmPackage
+        |Manufacturer.Dell _ -> downloadDriverPackInfo
+        |Manufacturer.HP _ -> downloadDriverPackInfo
+        |Manufacturer.Lenovo _ -> downloadDriverPackInfo
         
     let extractSccmPackageFunc (manufacturer:Manufacturer) = 
         match manufacturer with
@@ -80,11 +80,11 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.extractSccmPackage
         |Manufacturer.Lenovo _->  LenovoUpdates.extractSccmPackage
         
-    let extractCmPackageFunc (manufacturer:Manufacturer) = 
+    let extractDriverPackInfoFunc (manufacturer:Manufacturer) = 
         match manufacturer with
-        |Manufacturer.Dell _ -> DellUpdates.extractCmPackage
-        |Manufacturer.HP _ -> HpUpdates.extractCmPackage
-        |Manufacturer.Lenovo _->  LenovoUpdates.extractCmPackage
+        |Manufacturer.Dell _ -> DellUpdates.extractDriverPackInfo
+        |Manufacturer.HP _ -> HpUpdates.extractDriverPackInfo
+        |Manufacturer.Lenovo _->  LenovoUpdates.extractDriverPackInfo
 
 
     let extractUpdateFunc (manufacturer:Manufacturer) = 
