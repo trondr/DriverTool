@@ -4,7 +4,8 @@ module Sccm =
     open System
     open System.Collections.Generic
     open DriverTool.Library.PowerShellHelper 
-
+    open DriverTool.Library.DriverPack
+    
     ///Get assigned SCCM site
     let getAssignedSite () =
         let script = 

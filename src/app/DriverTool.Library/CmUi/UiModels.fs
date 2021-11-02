@@ -7,6 +7,7 @@ module UiModels =
     open Microsoft.FSharp.Reflection
     open DriverTool.Library.PackageXml
     open DriverTool.Library.PackageDefinition
+    open DriverTool.Library.DriverPack
 
     let getCacheFolderPath () =
         result{
@@ -29,6 +30,7 @@ module UiModels =
         }
 
     open DriverTool.Library.PackageDefinitionSms
+    open DriverTool.Library.DriverPack
 
     /// Package CM drivers
     let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (driverPack:DriverPackInfo) : Result<DownloadedDriverPackInfo,Exception> =

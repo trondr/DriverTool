@@ -13,6 +13,7 @@ module DellUpdates=
     open FSharp.Collections.ParallelSeq
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.DriverPack
     open DriverTool.Library.Logging
 
     type DellUpdates = class end

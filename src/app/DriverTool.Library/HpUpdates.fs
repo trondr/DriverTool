@@ -13,6 +13,7 @@ module HpUpdates =
     open DriverTool.Library.UpdatesContext
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.DriverPack
     open DriverTool.Library.Logging
         
     let toPackageInfos sdp  =

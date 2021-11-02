@@ -14,6 +14,7 @@
     open System.Linq
     open DriverTool.Library.PackageXml    
     open System.Windows
+    open DriverTool.Library.DriverPack
     
     [<AllowNullLiteral>]
     type DriverPackInfoViewModel(driverPack:DriverPackInfo) =

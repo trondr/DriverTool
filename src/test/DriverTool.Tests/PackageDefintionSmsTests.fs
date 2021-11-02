@@ -8,6 +8,7 @@ module PackageDefintionSmsTests=
     open DriverTool.Library
     open DriverTool.Library.PackageDefinitionSms
     open DriverTool.Library.PackageXml
+    open DriverTool.Library.DriverPack
     
     [<SetUp>]    
     let setup () =

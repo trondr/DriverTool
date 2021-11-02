@@ -9,6 +9,7 @@ module PackageXml =
     open DriverTool.Library
     open DriverTool.Library.XmlHelper
     open DriverTool.Library.Web
+    open DriverTool.Library.DriverPack
     
     open System
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageXml"
@@ -94,29 +95,9 @@ module PackageXml =
 
     type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
 
-    type WmiQuery = {
-        Name:string
-        NameSpace :string
-        Query :string
-    }
+    
 
-    ///Information about an enterprise driver pack. An enterprise driver pack contains all drivers for a model. These drivers are "INF" drivers and consequently injectable using the DISM utility.
-    type DriverPackInfo = {
-        Manufacturer:string
-        Model: string
-        ModelCodes: string[]
-        ReadmeFile:DriverTool.Library.Web.WebFile option
-        InstallerFile:DriverTool.Library.Web.WebFile
-        Released:DateTime
-        Os:string
-        OsBuild:string
-        ModelWmiQuery:WmiQuery
-        ManufacturerWmiQuery:WmiQuery
-    }
-
-    type DownloadedDriverPackInfo = { InstallerPath:string; ReadmePath:string option; DriverPack:DriverPackInfo}
-
-    type ExtractedDriverPackInfoInfo = { ExtractedDirectoryPath:string; DownloadedDriverPackInfo:DownloadedDriverPackInfo;}
+    
     
     ///Convert list of model codes to a wql query that can be used as condition in model specific SCCM task sequence step
     let toModelCodesWqlQuery name (manufacturer:Manufacturer) (modelCodes:string[]) =

@@ -13,6 +13,7 @@ module PackageDefinitionSms =
     open DriverTool.Library.String127
     open DriverTool.Library.String255
     open DriverTool.Library.String512
+    open DriverTool.Library.DriverPack
 
     let logger = Logger.Logger()
 
@@ -200,8 +201,8 @@ module PackageDefinitionSms =
             Comment:String512
             ContainsNoFiles:bool
             Programs:SmsProgram[]
-            ManufacturerWmiQuery:PackageXml.WmiQuery
-            ModelWmiQuery:PackageXml.WmiQuery
+            ManufacturerWmiQuery:DriverPack.WmiQuery
+            ModelWmiQuery:DriverPack.WmiQuery
         }
 
 

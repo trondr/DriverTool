@@ -6,6 +6,7 @@ open DriverTool.Library
 open DriverTool.Library.ManufacturerTypes
 open DriverTool.Library.PackageXml
 open DriverTool.Library.Web
+open DriverTool.Library.DriverPack
 
 module Updates =
 

@@ -7,6 +7,7 @@ open NUnit.Framework
 module SccmTests=
     open DriverTool.Library
     open DriverTool.Library.Sccm
+    open DriverTool.Library.DriverPack
     
     [<SetUp>]    
     let setup () =

@@ -16,6 +16,7 @@ module LenovoUpdates =
     open DriverTool.Library.F
     open DriverTool.Library
     open DriverTool.Library.XmlHelper
+    open DriverTool.Library.DriverPack
     
     let logger = DriverTool.Library.Logging.getLoggerByName "LenovoUpdates"
                

@@ -61,6 +61,7 @@
     <Compile Include="Web.fs" />
     <Compile Include="UpdatesContext.fs" />
     <Compile Include="InstallXml.fs" />
+    <Compile Include="DriverPack.fs" />
     <Compile Include="PackageXml.fs" />
     <Compile Include="Cab.fs" />
     <Compile Include="WebParsing.fs" />
