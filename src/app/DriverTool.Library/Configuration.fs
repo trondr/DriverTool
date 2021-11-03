@@ -4,15 +4,38 @@ open System
 open System.Configuration
 open System.Collections.Specialized
 open FSharp.Configuration
+open System.Xml
+open System.IO
 
 module Configuration =
     
     let private sectionName = "DriverTool"
 
-    let private section = 
-        ConfigurationManager.GetSection(sectionName) :?> NameValueCollection
+    let private getSection() = 
+        let section = ConfigurationManager.GetSection(sectionName) :?> NameValueCollection                
+        if(section = null) then
+            let configFile = System.Reflection.Assembly.GetCallingAssembly().Location+ ".config"
+            let configFileMap = new ExeConfigurationFileMap()
+            configFileMap.ExeConfigFilename <- configFile
+            let config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap,ConfigurationUserLevel.None)
+            let configSection = config.GetSection(sectionName)
+            let xml = configSection.SectionInformation.GetRawXml()
+            let xmlDoc = new XmlDocument()
+            use xmlReader = XmlReader.Create(new StringReader(xml))
+            xmlDoc.Load(xmlReader)
+            let sectionType = configSection.SectionInformation.Type;
+            let assemblyName = typeof<IConfigurationSectionHandler>.Assembly.GetName().FullName;
+            let configSectionHandlerHandle = Activator.CreateInstance(assemblyName, sectionType);
+            if(configSectionHandlerHandle <> null) then
+                let handler = configSectionHandlerHandle.Unwrap() :?> IConfigurationSectionHandler
+                handler.Create(null,null,xmlDoc.DocumentElement) :?> NameValueCollection
+            else
+                null
+        else
+            null
     
     let private getValue (valueName :string) =
+        let section = getSection()
         section.[valueName]
     
     let private getExpandedValue (valueName :string) =
@@ -37,14 +60,14 @@ module Configuration =
         let value = getValue "LogLevel"
         value
 
-    let getDownloadCacheDirectoryPathUnsafe =
+    let getDownloadCacheDirectoryPath' () =
         let expandedPath = getExpandedValue "DownloadCacheDirectoryPath"
         let path = System.IO.Path.GetFullPath(expandedPath)        
         path
 
-    let downloadCacheDirectoryPath =
+    let getDownloadCacheDirectoryPath () =
         try
-            getDownloadCacheDirectoryPathUnsafe
+            getDownloadCacheDirectoryPath' ()
         with
         | _ as ex -> 
             printfn "Failed to get download cache directory due to: %s. Using TEMP path instead." ex.Message

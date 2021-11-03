@@ -8,8 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>    
+    <None Include="..\DriverTool\App.config" Link="App.config" />    
     <Compile Include="CmdLets\Get-DtDriverPack.fs" />
   </ItemGroup>
+
+  <ItemGroup />
   
   <ItemGroup>
     <PackageReference Include="PowershellStandard.Library" Version="5.1.0" />

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\DriverTool\App.config" Link="App.config" />
     <EmbeddedResource Include="PackageTemplate\Install.xml" />
     <EmbeddedResource Include="PackageTemplate\Install.cmd" />
     <EmbeddedResource Include="PackageTemplate\UnInstall.cmd" />
@@ -23,7 +24,6 @@
     <EmbeddedResource Include="Tools\7Zip\readme.txt" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
-    <Content Include="app.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="F0.fs" />
     <Compile Include="Configuration.fs" />
@@ -94,6 +94,7 @@
     <Compile Include="CompressDriverPackage.fs" />
     <Compile Include="PowerShellHelper.fs" />
     <Compile Include="Sccm.fs" />
+    <Compile Include="DriverPacks.fs" />
     <Compile Include="CmUi\UiModels.fs" />
     <Compile Include="CmUi\UiViewModels.fs" />
   </ItemGroup>
