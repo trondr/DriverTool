@@ -22,7 +22,7 @@ module M =
         match manufacturer with
         |Result.Ok m ->
             match m with
-            |Dell _ -> [|"79EQ";"79TH";"79L1"|]
+            |Dell _ -> [|"09BF";"094B";"0738"|]
             |Lenovo _ -> [|"20EQ";"20TH";"20L1"|]
             |HP _ -> [|"68EQ";"68TH";"68L1"|]
         |Result.Error _ ->                         
@@ -85,14 +85,9 @@ type GetDtDriverPack () =
     /// <para type="description">Manufacturer.</para>
     /// </summary>
     [<Parameter(Mandatory=false,ParameterSetName=M.singleModelparameterSetName)>]
-    [<ArgumentCompleter(typeof<ManufacturerCompleter>)>]
+    [<ArgumentCompleter(typeof<ManufacturerCompleter>)>]    
     member val Manufacturer :string = System.String.Empty with get,set
-
-    /// <summary>
-    /// <para type="description">Model code.</para>
-    /// </summary>
-    [<Parameter(Mandatory=false,ParameterSetName=M.singleModelparameterSetName)>]
-    [<ArgumentCompleter(typeof<ModelCodeCompleter>)>]
+    
     member val ModelCode :string = System.String.Empty with get,set
     
     [<Parameter(Mandatory=false,ParameterSetName=M.allModelsparameterSetName)>]
@@ -100,10 +95,11 @@ type GetDtDriverPack () =
     
     override this.BeginProcessing() =
         //TODO: Assign Manufacturer dynamic parameter value.
-        if(this.MyInvocation.BoundParameters.ContainsKey(nameof this.Manufacturer)) then
-            this.Manufacturer <- (this.MyInvocation.BoundParameters.[nameof this.Manufacturer] :?> string)
+        if(this.MyInvocation.BoundParameters.ContainsKey(nameof this.ModelCode)) then
+            this.ModelCode <- (this.MyInvocation.BoundParameters.[nameof this.ModelCode] :?> string)
         else
-            this.Manufacturer <- System.String.Empty
+            this.ModelCode <- System.String.Empty
+        ()
 
     override this.ProcessRecord() =                            
         if(this.All.IsPresent) then
@@ -113,12 +109,20 @@ type GetDtDriverPack () =
                 return driverPackInfos
             }) with
             |Result.Ok dps ->
-                dps|>Array.map(fun dp ->                            
-                        this.WriteObject(dp)                        
-                        ) |> ignore
+                dps|>Array.map(fun dp -> this.WriteObject(dp)) |> ignore
             |Result.Error ex -> (raise ex)
-        else
-            //TODO: Get info for specific model code.
+        else            
+            match (result{
+                let cacheFolder = DriverTool.Library.FileSystem.pathUnSafe (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())                
+                let! driverPackInfos = DriverTool.Library.DriverPacks.loadDriverPackInfos cacheFolder
+                return driverPackInfos
+            }) with
+            |Result.Ok dps ->
+                dps
+                |>Array.filter(fun dp -> dp.Manufacturer = this.Manufacturer)
+                |>Array.filter(fun dp -> dp.ModelCodes|>Array.contains this.ModelCode)
+                |>Array.map(fun dp -> this.WriteObject(dp)) |> ignore
+            |Result.Error ex -> (raise ex)
             ()
 
     interface IDynamicParameters with
@@ -127,19 +131,7 @@ type GetDtDriverPack () =
             
             if(this.All.IsPresent) then
                 ()
-            else
-                //Add Manufacturer parameter
-                let manufacturerParameterName = nameof this.Manufacturer
-                if(not (runtimeParameterDictionary.ContainsKey(manufacturerParameterName))) then               
-                   let runtimeParameter = getRunTimeParameter manufacturerParameterName M.singleModelparameterSetName 1 (DriverTool.Library.ManufacturerTypes.getValidManufacturerNames()) (typeof<ManufacturerCompleter>)
-                   match runtimeParameter with
-                   |Some r ->
-                        r.Value <- this.Manufacturer                
-                        runtimeParameterDictionary.Add(manufacturerParameterName,r)
-                   |None -> ()
-                else
-                   ()            
-            
+            else     
                 //Add ModelCode parameter
                 if (not (System.String.IsNullOrWhiteSpace(this.Manufacturer))) then
                     let modelCodeParameterName = nameof this.ModelCode
