@@ -12,21 +12,36 @@ module ManufacturerTypes =
         |Lenovo of name:string
         |HP of name:string        
 
-    let getValidManufacturers () = 
+    ///Get valid manufacturer names
+    let getValidManufacturerNames () = 
         FSharpType.GetUnionCases typeof<Manufacturer>
         |>Array.map(fun case -> case.Name)
-    
+
+    ///Get concated manufacturer names
     let getValidManufacturersString () =
-        String.Join ("|",getValidManufacturers ())
-    
-    let getWmiManufacturerForCurrentSystem () =
-        (WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Manufacturer")
+        String.Join ("|",getValidManufacturerNames ())
     
     type InvalidManufacturerException (msg:string) =
         inherit Exception((sprintf "%s %s" msg (sprintf "Supported manufacturers: %s." (getValidManufacturersString()) )))
 
+    ///Parse manufacturer
+    let toManufacturer manufacturer =
+        match manufacturer with
+        |manufacturerName when Regex.Match(manufacturerName,"Dell",RegexOptions.IgnoreCase).Success -> Manufacturer.Dell "Dell"
+        |manufacturerName when Regex.Match(manufacturerName,"Lenovo",RegexOptions.IgnoreCase).Success -> Manufacturer.Lenovo "Lenovo"
+        |manufacturerName when Regex.Match(manufacturerName,"HP",RegexOptions.IgnoreCase).Success -> Manufacturer.HP "HP"
+        |_ -> raise (new InvalidManufacturerException(sprintf "Manufacturer '%s' is not supported." manufacturer))
+
+    ///Get valid manufacturers
+    let getValidManufacturers () =
+        FSharpType.GetUnionCases typeof<Manufacturer>
+        |>Array.map(fun m -> FSharpValue.MakeUnion(m,[|(m.Name:>obj)|]):?> Manufacturer)
+   
+    let getWmiManufacturerForCurrentSystem () =
+        (WmiHelper.getWmiPropertyDefault "Win32_ComputerSystem" "Manufacturer")
+
     type WmiManufacturerValueFunc = unit -> Result<string,Exception>
-    
+
     let rec manufacturerStringToManufacturerUnsafeBase (wmiManufacturerValueFunc:WmiManufacturerValueFunc, manufacturer:string, defaultToLocal) =
         match manufacturer with
         |manufacturerName when (String.IsNullOrWhiteSpace(manufacturerName) && defaultToLocal) -> 

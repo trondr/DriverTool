@@ -15,6 +15,7 @@
     open DriverTool.Library.PackageXml    
     open System.Windows
     open DriverTool.Library.DriverPack
+    open DriverTool.Library.DriverPacks
     
     [<AllowNullLiteral>]
     type DriverPackInfoViewModel(driverPack:DriverPackInfo) =
@@ -209,7 +210,7 @@
                             this.ReportProgress true None "Loading CM driver package infos from all supported vendors..."
                             match(result{
                                 let! cacheFolderPath = getCacheFolderPath()                                
-                                let! sccmPackages = (loadSccmPackages (cacheFolderPath))
+                                let! sccmPackages = (loadDriverPackInfos (cacheFolderPath))
                                 let driverPackInfoViewModels = sccmPackages |> Array.map toDriverPackInfoViewModel
                                 updateUi (fun () -> 
                                         this.DriverPackInfos.ReplaceRange(driverPackInfoViewModels)

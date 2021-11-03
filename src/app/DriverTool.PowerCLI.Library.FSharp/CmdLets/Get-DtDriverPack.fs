@@ -5,12 +5,13 @@ open System.Collections.Generic
 open System.Management.Automation
 open System.Management.Automation.Language
 open DriverTool.Library.ManufacturerTypes
+open DriverTool.Library
 
 
 type ManufacturerCompleter () =
     interface IArgumentCompleter with
         member this.CompleteArgument(commandName:string,parameterName:string,wordToComplete:string,commandAst:CommandAst,fakeBoundParameters:IDictionary) =            
-            DriverTool.Library.ManufacturerTypes.getValidManufacturers()
+            DriverTool.Library.ManufacturerTypes.getValidManufacturerNames()
             |>Seq.filter(fun m -> (new WildcardPattern(wordToComplete + "*", WildcardOptions.IgnoreCase)).IsMatch(m))
             |>Seq.map(fun m -> new CompletionResult(m))
 
@@ -95,7 +96,7 @@ type GetDtDriverPack () =
     member val ModelCode :string = System.String.Empty with get,set
     
     [<Parameter(Mandatory=false,ParameterSetName=M.allModelsparameterSetName)>]
-    member val All : bool = false
+    member val All : SwitchParameter = new SwitchParameter(false) with get,set
     
     override this.BeginProcessing() =
         //TODO: Assign Manufacturer dynamic parameter value.
@@ -104,22 +105,33 @@ type GetDtDriverPack () =
         else
             this.Manufacturer <- System.String.Empty
 
-    override this.ProcessRecord() =                    
-        let some = "Manufacturer: " + this.Manufacturer + " ModelCode: " + this.ModelCode
-        this.WriteObject(some)
-        ()
+    override this.ProcessRecord() =                            
+        if(this.All.IsPresent) then
+            match (result{
+                let cacheFolder = DriverTool.Library.FileSystem.pathUnSafe (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())                
+                let! driverPackInfos = DriverTool.Library.DriverPacks.loadDriverPackInfos cacheFolder
+                return driverPackInfos
+            }) with
+            |Result.Ok dps ->
+                dps|>Array.map(fun dp ->                            
+                        this.WriteObject(dp)                        
+                        ) |> ignore
+            |Result.Error ex -> (raise ex)
+        else
+            //TODO: Get info for specific model code.
+            ()
 
     interface IDynamicParameters with
         member this.GetDynamicParameters() =                                    
             let runtimeParameterDictionary = new System.Management.Automation.RuntimeDefinedParameterDictionary()            
             
-            if(this.All) then
+            if(this.All.IsPresent) then
                 ()
             else
                 //Add Manufacturer parameter
                 let manufacturerParameterName = nameof this.Manufacturer
                 if(not (runtimeParameterDictionary.ContainsKey(manufacturerParameterName))) then               
-                   let runtimeParameter = getRunTimeParameter manufacturerParameterName M.singleModelparameterSetName 1 (DriverTool.Library.ManufacturerTypes.getValidManufacturers()) (typeof<ManufacturerCompleter>)
+                   let runtimeParameter = getRunTimeParameter manufacturerParameterName M.singleModelparameterSetName 1 (DriverTool.Library.ManufacturerTypes.getValidManufacturerNames()) (typeof<ManufacturerCompleter>)
                    match runtimeParameter with
                    |Some r ->
                         r.Value <- this.Manufacturer                
