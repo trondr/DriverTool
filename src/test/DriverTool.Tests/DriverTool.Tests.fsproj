@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\app\DriverTool\App.config" Link="App.config" />
     <Compile Include="AssemblyInfo.fs" />
-    <Content Include="App.config" />
     <Compile Include="Init.fs" />
     <Compile Include="ChecksumTests.fs" />
     <Compile Include="EmbeddedResourceTest.fs" />
@@ -85,6 +85,8 @@
     <EmbeddedResource Include="TestData\LenovoSccm\ds540208_v2.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_new_2019-12-01.html" />
   </ItemGroup>
+
+  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="5.0.2" />

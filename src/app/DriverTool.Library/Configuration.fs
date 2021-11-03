@@ -32,7 +32,7 @@ module Configuration =
             else
                 null
         else
-            null
+            section
     
     let private getValue (valueName :string) =
         let section = getSection()
