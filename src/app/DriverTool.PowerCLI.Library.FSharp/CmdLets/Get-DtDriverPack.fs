@@ -52,6 +52,9 @@ module M =
     [<Literal>]
     let allModelsparameterSetName = "AllModels"
 
+    [<Literal>]
+    let singleModelLatestparameterSetName = "SingleModelLatest"
+
 type ManufacturerCompleter () =
     interface IArgumentCompleter with
         member this.CompleteArgument(commandName:string,parameterName:string,wordToComplete:string,commandAst:CommandAst,fakeBoundParameters:IDictionary) =
@@ -121,6 +124,7 @@ type GetDtDriverPack () =
     /// <para type="description">Manufacturer.</para>
     /// </summary>
     [<Parameter(Mandatory=false,ParameterSetName=M.singleModelparameterSetName)>]
+    [<Parameter(Mandatory=true,ParameterSetName=M.singleModelLatestparameterSetName)>]
     [<ArgumentCompleter(typeof<ManufacturerCompleter>)>]
     member val Manufacturer :string = System.String.Empty with get,set
     
@@ -128,6 +132,7 @@ type GetDtDriverPack () =
     /// <para type="description">ModelCode.</para>
     /// </summary>
     [<Parameter(Mandatory=false,ParameterSetName=M.singleModelparameterSetName)>]
+    [<Parameter(Mandatory=true,ParameterSetName=M.singleModelLatestparameterSetName)>]
     [<ArgumentCompleter(typeof<ModelCodeCompleter>)>]
     member val ModelCode :string = System.String.Empty with get,set
 
@@ -135,6 +140,7 @@ type GetDtDriverPack () =
     /// <para type="description">OperatingSystem.</para>
     /// </summary>
     [<Parameter(Mandatory=false,ParameterSetName=M.singleModelparameterSetName)>]
+    [<Parameter(Mandatory=true,ParameterSetName=M.singleModelLatestparameterSetName)>]
     [<ArgumentCompleter(typeof<OperatingSystemCompleter>)>]
     member val OperatingSystem :string = System.String.Empty with get,set
 
@@ -145,8 +151,17 @@ type GetDtDriverPack () =
     [<ArgumentCompleter(typeof<OsBuildCompleter>)>]
     member val OsBuild :string = System.String.Empty with get,set
     
+    /// <summary>
+    /// <para type="description">Get all driver packs for all manufacturers.</para>
+    /// </summary>
     [<Parameter(Mandatory=false,ParameterSetName=M.allModelsparameterSetName)>]
     member val All : SwitchParameter = new SwitchParameter(false) with get,set
+
+    /// <summary>
+    /// <para type="description">Get latest driver pack for a specific manufacturer and model.</para>
+    /// </summary>
+    [<Parameter(Mandatory=true,ParameterSetName=M.singleModelLatestparameterSetName)>]
+    member val Latest : SwitchParameter = new SwitchParameter(false) with get,set
     
     override this.BeginProcessing() =        
         ()
@@ -156,7 +171,17 @@ type GetDtDriverPack () =
             M.allDriverPacks.Value
             |>Array.map(fun dp -> this.WriteObject(dp)) 
             |> ignore            
-        else            
+        elif (this.Latest.IsPresent) then
+            let latest =
+                M.allDriverPacks.Value
+                |>Array.filter(fun dp -> dp.Manufacturer = this.Manufacturer)
+                |>Array.filter(fun dp -> dp.ModelCodes|>Array.contains this.ModelCode)
+                |>Array.filter(fun dp -> dp.Os = this.OperatingSystem)
+                |>Array.sortByDescending(fun dp -> dp.OsBuild)
+                |>Array.head
+            this.WriteObject(latest)
+            ()
+        else     
             M.allDriverPacks.Value
             |>Array.filter(fun dp -> dp.Manufacturer = this.Manufacturer)
             |>Array.filter(fun dp -> System.String.IsNullOrWhiteSpace(this.ModelCode) || dp.ModelCodes|>Array.contains this.ModelCode)
