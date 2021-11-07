@@ -7,41 +7,45 @@ open System.Management.Automation.Language
 open DriverTool.Library.ManufacturerTypes
 open DriverTool.Library
 
+module M =    
+    let getAllDriverPacks () =
+        match(result{
+            let! cacheFolder = DriverTool.Library.FileSystem.path (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())                
+            let! driverPackInfos = DriverTool.Library.DriverPacks.loadDriverPackInfos cacheFolder
+            return driverPackInfos
+        })with
+        |Result.Ok dps -> dps
+        |Result.Error ex -> 
+            raise ex
+            
+    let allDriverPacks = lazy (getAllDriverPacks ())
 
-type ManufacturerCompleter () =
-    interface IArgumentCompleter with
-        member this.CompleteArgument(commandName:string,parameterName:string,wordToComplete:string,commandAst:CommandAst,fakeBoundParameters:IDictionary) =            
-            DriverTool.Library.ManufacturerTypes.getValidManufacturerNames()
-            |>Seq.filter(fun m -> (new WildcardPattern(wordToComplete + "*", WildcardOptions.IgnoreCase)).IsMatch(m))
-            |>Seq.map(fun m -> new CompletionResult(m))
-
-module M =
-    //TODO: Get modelCode list from downloaded list of all models
-    let getModelCodes manufacturerName =        
-        let manufacturer = DriverTool.Library.ManufacturerTypes.manufacturerStringToManufacturer (manufacturerName,false)                    
-        match manufacturer with
-        |Result.Ok m ->
-            match m with
-            |Dell _ -> [|"09BF";"094B";"0738"|]
-            |Lenovo _ -> [|"20EQ";"20TH";"20L1"|]
-            |HP _ -> [|"68EQ";"68TH";"68L1"|]
-        |Result.Error _ ->                         
-            [||]
-
+    let getModelCodes manufacturer (driverPacks:DriverPack.DriverPackInfo[]) =
+        driverPacks
+        |>Array.filter(fun dp -> dp.Manufacturer = manufacturer)
+        |>Array.map(fun dp -> dp.ModelCodes |> Array.map(fun m -> m))
+        |>Array.collect id
+    
     [<Literal>]
     let singleModelparameterSetName = "SingleModel"
 
     [<Literal>]
     let allModelsparameterSetName = "AllModels"
 
+type ManufacturerCompleter () =
+    interface IArgumentCompleter with
+        member this.CompleteArgument(commandName:string,parameterName:string,wordToComplete:string,commandAst:CommandAst,fakeBoundParameters:IDictionary) =
+            DriverTool.Library.ManufacturerTypes.getValidManufacturerNames()
+            |>Seq.filter(fun m -> (new WildcardPattern(wordToComplete + "*", WildcardOptions.IgnoreCase)).IsMatch(m))
+            |>Seq.map(fun m -> new CompletionResult(m))
+
 type ModelCodeCompleter () =
     interface IArgumentCompleter with
         member this.CompleteArgument(commandName:string,parameterName:string,wordToComplete:string,commandAst:CommandAst,fakeBoundParameters:IDictionary) =
-            //TODO: Get modelCode list from downloaded list of all models
             let modelCodes =
                 if(fakeBoundParameters.Contains("Manufacturer")) then
                     let manufacturerName = fakeBoundParameters.["Manufacturer"] :?>string
-                    M.getModelCodes manufacturerName         
+                    M.getModelCodes manufacturerName M.allDriverPacks.Value        
                 else
                     [||]            
             modelCodes
@@ -102,29 +106,14 @@ type GetDtDriverPack () =
         ()
 
     override this.ProcessRecord() =                            
-        if(this.All.IsPresent) then
-            match (result{
-                let cacheFolder = DriverTool.Library.FileSystem.pathUnSafe (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())                
-                let! driverPackInfos = DriverTool.Library.DriverPacks.loadDriverPackInfos cacheFolder
-                return driverPackInfos
-            }) with
-            |Result.Ok dps ->
-                dps|>Array.map(fun dp -> this.WriteObject(dp)) |> ignore
-            |Result.Error ex -> (raise ex)
+        if(this.All.IsPresent) then            
+            M.allDriverPacks.Value|>Array.map(fun dp -> this.WriteObject(dp)) |> ignore            
         else            
-            match (result{
-                let cacheFolder = DriverTool.Library.FileSystem.pathUnSafe (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())                
-                let! driverPackInfos = DriverTool.Library.DriverPacks.loadDriverPackInfos cacheFolder
-                return driverPackInfos
-            }) with
-            |Result.Ok dps ->
-                dps
-                |>Array.filter(fun dp -> dp.Manufacturer = this.Manufacturer)
-                |>Array.filter(fun dp -> dp.ModelCodes|>Array.contains this.ModelCode)
-                |>Array.map(fun dp -> this.WriteObject(dp)) |> ignore
-            |Result.Error ex -> (raise ex)
-            ()
-
+            M.allDriverPacks.Value
+            |>Array.filter(fun dp -> dp.Manufacturer = this.Manufacturer)
+            |>Array.filter(fun dp -> dp.ModelCodes|>Array.contains this.ModelCode)
+            |>Array.map(fun dp -> this.WriteObject(dp)) |> ignore
+            
     interface IDynamicParameters with
         member this.GetDynamicParameters() =                                    
             let runtimeParameterDictionary = new System.Management.Automation.RuntimeDefinedParameterDictionary()            
@@ -135,7 +124,7 @@ type GetDtDriverPack () =
                 //Add ModelCode parameter
                 if (not (System.String.IsNullOrWhiteSpace(this.Manufacturer))) then
                     let modelCodeParameterName = nameof this.ModelCode
-                    let modelCodeRuntimeParameter = getRunTimeParameter modelCodeParameterName M.singleModelparameterSetName 2 (M.getModelCodes this.Manufacturer) (typeof<ModelCodeCompleter>)
+                    let modelCodeRuntimeParameter = getRunTimeParameter modelCodeParameterName M.singleModelparameterSetName 2 (M.getModelCodes this.Manufacturer M.allDriverPacks.Value) (typeof<ModelCodeCompleter>)
                     match modelCodeRuntimeParameter with
                     |Some m ->                
                         runtimeParameterDictionary.Add(modelCodeParameterName,m)
