@@ -8,6 +8,7 @@ module UiModels =
     open DriverTool.Library.PackageXml
     open DriverTool.Library.PackageDefinition
     open DriverTool.Library.DriverPack
+    open DriverTool.Library.Logging
 
     let getCacheFolderPath () =
         result{
@@ -20,7 +21,7 @@ module UiModels =
     open DriverTool.Library.DriverPack
 
     /// Package CM drivers
-    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:(bool->float option->string->unit)) (driverPack:DriverPackInfo) : Result<DownloadedDriverPackInfo,Exception> =
+    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:reportProgressFunction) (driverPack:DriverPackInfo) : Result<DownloadedDriverPackInfo,Exception> =
         result{
             logger.Warn(sprintf "TODO: Packaging '%s' (%A)..." driverPack.Model driverPack)
             let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(driverPack.Manufacturer,false)
@@ -44,11 +45,11 @@ module UiModels =
                 PathOperations.combinePaths2 packageScriptsFolderPath "Drivers"
                 |> DirectoryOperations.ensureFolderPathExists' true (Some "Package drivers folder does not exist.")
                         
-            reportProgress true None (sprintf "Downloading CM Drivers for model '%s'..." driverPack.Model)
+            reportProgress (sprintf "Downloading CM Drivers for model '%s'..." driverPack.Model) String.Empty String.Empty None true None
             let downloadDriverPackInfo = DriverTool.Updates.downloadDriverPackInfoFunc manufacturer
             let! downloadedDriverPackInfo = downloadDriverPackInfo cacheFolderPath reportProgress driverPack
             
-            reportProgress true None (sprintf "Extracting CM Drivers for model '%s'..." driverPack.Model)
+            reportProgress (sprintf "Extracting CM Drivers for model '%s'..." driverPack.Model) String.Empty String.Empty None true None
             let extractDriverPackInfo = DriverTool.Updates.extractDriverPackInfoFunc manufacturer
             
             let cmDriversFolderName = "005_CM_Package_" + downloadedDriverPackInfo.DriverPack.Released.ToString("yyyy_MM_dd")
@@ -64,7 +65,7 @@ module UiModels =
             let! packageDefintionWriteResult = packageDefinition |> writeToFile logger packageDefinitionSmsPath
             logger.Info(sprintf "Created PackageDefinition.sms: %A" packageDefintionWriteResult)
 
-            reportProgress true None (sprintf "Finished packaging INF drivers for model %s" driverPack.Model)            
+            reportProgress (sprintf "Finished packaging INF drivers for model %s" driverPack.Model) String.Empty String.Empty None true None
             return downloadedDriverPackInfo
         }
 

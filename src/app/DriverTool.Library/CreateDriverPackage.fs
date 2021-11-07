@@ -86,7 +86,7 @@ module CreateDriverPackage =
 
 
     let downloadUpdate (downloadJob,ignoreVerificationErrors) =
-        DriverTool.Library.Web.downloadIfDifferent logger reportProgressStdOut downloadJob ignoreVerificationErrors
+        DriverTool.Library.Web.downloadIfDifferent logger reportProgressStdOut' downloadJob ignoreVerificationErrors
 
     let packageInfosToDownloadedPackageInfos destinationDirectory (packageInfos:seq<PackageInfo>) (downloadJobs:seq<DownloadInfo>) =
         packageInfos
@@ -202,7 +202,7 @@ module CreateDriverPackage =
                         result{
                             logger.Info("Getting SCCM package info...")
                             let getSccmPackage = DriverTool.Updates.getSccmPackageFunc dpcc.Manufacturer                
-                            let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem,dpcc.CacheFolderPath)
+                            let! sccmPackage = getSccmPackage (dpcc.Model,dpcc.OperatingSystem,dpcc.CacheFolderPath,reportProgressStdOut')
                             logger.Info(sprintf "Sccm packge: %A" sccmPackage)
                 
                             logger.Info("Downloading SCCM package...")

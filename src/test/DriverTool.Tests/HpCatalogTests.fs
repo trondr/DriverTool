@@ -10,6 +10,7 @@ module HpCatalogTests =
     open DriverTool
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Logging
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
@@ -22,14 +23,14 @@ module HpCatalogTests =
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
                     
-                    let! xmlPath = HpCatalog.downloadDriverPackCatalog cacheFolderPath
+                    let! xmlPath = HpCatalog.downloadDriverPackCatalog cacheFolderPath reportProgressStdOut'
                     return xmlPath
                 }
         match actual with
-        |Ok p -> 
+        |Result.Ok p -> 
             printfn "%s" (FileSystem.pathValue p)
             Assert.IsTrue(true)
-        |Error e -> Assert.Fail(e.Message)
+        |Result.Error e -> Assert.Fail(e.Message)
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -54,8 +55,8 @@ module HpCatalogTests =
                     Assert.IsFalse(String.IsNullOrWhiteSpace(actual.[0].Version),"Version was empty")
                     return actual
                 }) with
-        |Ok _ -> Assert.IsTrue(true)
-        |Error e -> Assert.Fail(e.Message)
+        |Result.Ok _ -> Assert.IsTrue(true)
+        |Result.Error e -> Assert.Fail(e.Message)
        
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -74,8 +75,8 @@ module HpCatalogTests =
                     Assert.IsFalse(String.IsNullOrWhiteSpace(actual.[0].SystemName),"SystemName was empty")
                     return actual
                 }) with
-         |Ok _ -> Assert.IsTrue(true)
-         |Error e -> Assert.Fail(e.Message)
+         |Result.Ok _ -> Assert.IsTrue(true)
+         |Result.Error e -> Assert.Fail(e.Message)
         
     [<Test>]
 
@@ -117,10 +118,10 @@ module HpCatalogTests =
                     let! deleted = FileOperations.ensureFileDoesNotExist true extractedFilePath
                     return actual
                 }) with
-         |Ok sp -> 
+         |Result.Ok sp -> 
             Assert.AreEqual(sp.OsBuild,osBuild,"OsBuild was not expected")
             Assert.IsTrue(true)
-         |Error e -> Assert.Fail(e.Message)
+         |Result.Error e -> Assert.Fail(e.Message)
         
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
@@ -135,5 +136,5 @@ module HpCatalogTests =
             return actual
         }
         match res with
-        |Ok s -> Assert.IsTrue(true)
-        |Error ex -> Assert.Fail(ex.Message)
+        |Result.Ok s -> Assert.IsTrue(true)
+        |Result.Error ex -> Assert.Fail(ex.Message)

@@ -197,10 +197,30 @@ namespace DriverTool.Library
                 messageLoop()
                 )
 
+        /////Report progress to stdout
+        //let reportProgressStdOut isBusy percentage message =
+        //    match percentage with
+        //    |Some p ->
+        //        progressActor.Post (sprintf "%.2f: %-47s (IsBusy: %b)\r" p message isBusy)
+        //    |None -> 
+        //        progressActor.Post (sprintf "%-47s (IsBusy: %b)\r" message isBusy)
+
+        ///Function definition: (activity:string) -> (status:string option) -> (currentOperation:string option) -> (percentComplete: float option) -> (isBusy:bool) -> (id:int option)
+        type reportProgressFunction = string -> string -> string -> float option -> bool -> int option -> unit
+            
         ///Report progress to stdout
-        let reportProgressStdOut isBusy percentage message =
-            match percentage with
-            |Some p ->
-                progressActor.Post (sprintf "%.2f: %-47s (IsBusy: %b)\r" p message isBusy)
-            |None -> 
-                progressActor.Post (sprintf "%-47s (IsBusy: %b)\r" message isBusy)
+        let reportProgressStdOut' : reportProgressFunction = (fun activity status currentOperation percentComplete isBusy id ->
+                match percentComplete with
+                |Some p ->
+                    match id with
+                    |Some i ->
+                        progressActor.Post (sprintf "%d: %.2f: %-47s: %s: %s: (IsBusy: %b)\r" i p activity currentOperation status isBusy)
+                    |None -> 
+                        progressActor.Post (sprintf "%.2f: %-47s: %s: %s: (IsBusy: %b)\r" p activity currentOperation status isBusy)
+                |None -> 
+                    match id with
+                    |Some i ->
+                        progressActor.Post (sprintf "%d: %-47s: %s: %s: (IsBusy: %b)\r" i activity status currentOperation isBusy)
+                    |None -> 
+                        progressActor.Post (sprintf "%-47s: %s: %s: (IsBusy: %b)\r" activity status currentOperation isBusy)
+            )

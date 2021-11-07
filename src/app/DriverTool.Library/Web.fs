@@ -56,17 +56,18 @@ module Web =
             webClient.Proxy <- webProxy
             use subscription = webClient.DownloadProgressChanged.Subscribe (fun progress -> 
                     let percentage = (float progress.BytesReceived) / (float progress.TotalBytesToReceive) * 100.0
-                    reportProgress true (Some percentage) (sprintf "Downloading '%s'..." sourceUri.OriginalString)
+                    //reportProgress true (Some percentage) (sprintf "Downloading '%s'..." sourceUri.OriginalString)
+                    reportProgress (sprintf "Downloading '%s'..." sourceUri.OriginalString) String.Empty String.Empty (Some percentage) true None
                 )
             let webHeaderCollection = new WebHeaderCollection()
             webHeaderCollection.Add("User-Agent", "DriverTool/1.0")
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
-            |Ok path -> 
-                reportProgress true (Some 0.0) (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path))
+            |Ok path ->                 
+                reportProgress (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path)) String.Empty String.Empty (Some 0.0) true None
                 let downloadTask = webClient.DownloadFileTaskAsync(sourceUri.OriginalString,FileSystem.pathValue path)                
                 Async.AwaitTask downloadTask |> Async.RunSynchronously            
-                reportProgress false (Some 100.0) sourceUri.OriginalString
+                reportProgress sourceUri.OriginalString String.Empty String.Empty (Some 100.0) false None
                 Result.Ok path      
             |Result.Error ex -> toErrorResult ex (Some(sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)))
         with

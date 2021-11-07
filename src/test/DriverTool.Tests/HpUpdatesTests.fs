@@ -9,6 +9,7 @@ module HpUpdatesTests =
     let logger = Common.Logging.Simple.ConsoleOutLogger("HpUpdatesTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.Logging
     type ThisAssembly = { Empty:string;}
     
     [<Test>]
@@ -22,7 +23,7 @@ module HpUpdatesTests =
                     let! modelCode = (ModelCode.create modelCodeString false)
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
-                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode,cacheFolderPath)                
+                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode,cacheFolderPath,reportProgressStdOut')                
                     let! actual = HpUpdates.downloadSccmPackage (cacheFolderPath,sccmDriverPackageInfo)
                     Assert.IsFalse(String.IsNullOrWhiteSpace(actual.InstallerPath), "InstallerPath is empty")
                     
@@ -42,7 +43,7 @@ module HpUpdatesTests =
                     let! modelCode = (ModelCode.create modelCodeString false)
                     use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! cacheFolderPath = cacheFolder.FolderPath
-                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode, cacheFolderPath)                
+                    let! sccmDriverPackageInfo = HpUpdates.getSccmDriverPackageInfo (modelCode,operatingSystemCode, cacheFolderPath,reportProgressStdOut')                
                     let! downloadedSccmPackageInfo = HpUpdates.downloadSccmPackage (cacheFolderPath,sccmDriverPackageInfo)
                     let! destinationFolderPath = PathOperations.combine2Paths (PathOperations.getTempPath,"005 Sccm Package Test")
                     Assert.IsTrue((FileSystem.pathValue destinationFolderPath).EndsWith("\\005 Sccm Package Test"))

@@ -6,12 +6,17 @@ open System.Management.Automation
 open System.Management.Automation.Language
 open DriverTool.Library.ManufacturerTypes
 open DriverTool.Library
+open DriverTool.Library.Logging
 
 module M =    
+    let reportProgressSilently:reportProgressFunction = (fun activity status currentOperation percentComplete isBusy id -> 
+        ()//Do not report progress
+    )
+    
     let getAllDriverPacks () =
         match(result{
             let! cacheFolder = DriverTool.Library.FileSystem.path (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())                
-            let! driverPackInfos = DriverTool.Library.DriverPacks.loadDriverPackInfos cacheFolder
+            let! driverPackInfos = DriverTool.Library.DriverPacks.loadDriverPackInfos cacheFolder reportProgressSilently
             return driverPackInfos
         })with
         |Result.Ok dps -> dps

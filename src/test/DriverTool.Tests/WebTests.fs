@@ -243,7 +243,7 @@ module ManualWebTest =
                 {
                     let! uri = Web.toUri sourceUrl
                     let! destinationFilePath = FileSystem.path destinationFile
-                    let! downloadedDestinationFilePath = Web.downloadFile reportProgressStdOut uri true destinationFilePath
+                    let! downloadedDestinationFilePath = Web.downloadFile reportProgressStdOut' uri true destinationFilePath
                     return downloadedDestinationFilePath
                 }
         match res with

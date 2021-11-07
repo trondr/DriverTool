@@ -16,7 +16,8 @@ module LenovoCatalogTests=
     open DriverTool.Library.FileOperations
     open DriverTool.Library.PathOperations
     open System.Threading    
-    
+    open DriverTool.Library.Logging
+
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
 
     type ThisAssembly = { Empty:string;}
@@ -166,8 +167,8 @@ module LenovoCatalogTests=
             printfn "%A" actual
             return actual
         }) with        
-        |Ok _ -> ()
-        |Error e -> Assert.Fail(e.ToString())
+        |Result.Ok _ -> ()
+        |Result.Error e -> Assert.Fail(e.ToString())
 
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -269,12 +270,12 @@ module LenovoCatalogTests=
             let! catalogProducts = loadLenovoCatalog existingCatalogXmlPath
             return catalogProducts
         }) with
-        |Ok v -> 
+        |Result.Ok v -> 
             Assert.IsTrue(true,sprintf "Success: %A" v)
             Assert.IsTrue((Seq.length v) > 0,sprintf "Lenght of CatalogProducts was not greater than zero")
             let actualProduct = Seq.item testData.ItemIndex v
             Assert.AreEqual(testData.Expected,actualProduct,"Products Not equal.")
-        |Error ex ->
+        |Result.Error ex ->
             Assert.IsFalse(true,sprintf "Expected success but failed instead: %s" ex.Message)       
 
     [<Test>]
@@ -283,7 +284,7 @@ module LenovoCatalogTests=
         match(result{
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath
-            let! res = getSccmPackageInfosv2 cacheFolderPath
+            let! res = getSccmPackageInfosv2 cacheFolderPath reportProgressStdOut'
             return res
         }) with
         |Result.Ok v -> 
@@ -321,6 +322,6 @@ module LenovoCatalogTests=
             printfn "%A" actual
             return actual
         }) with        
-        |Ok _ -> ()
-        |Error e -> Assert.Fail(e.ToString())
+        |Result.Ok _ -> ()
+        |Result.Error e -> Assert.Fail(e.ToString())
     

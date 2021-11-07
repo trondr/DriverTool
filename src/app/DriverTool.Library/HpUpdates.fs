@@ -94,9 +94,9 @@ module HpUpdates =
             return packageInfos
         }
 
-    let getSccmDriverPackageInfo (modelCode: ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path) =
+    let getSccmDriverPackageInfo (modelCode: ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path, reportProgress) =
         result{
-            let! driverPackCatalogXmlFilePath = downloadDriverPackCatalog cacheFolderPath
+            let! driverPackCatalogXmlFilePath = downloadDriverPackCatalog cacheFolderPath reportProgress
             let osBuild = OperatingSystem.getOsBuildForCurrentSystem
             let! sccmPackageInfo = getSccmDriverPackageInfoBase (driverPackCatalogXmlFilePath, modelCode, operatingSystemCode, osBuild)
             return sccmPackageInfo
@@ -142,10 +142,10 @@ module HpUpdates =
         }
         
     ///Get CM package infos for all HP models
-    let getDriverPackInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
+    let getDriverPackInfos (cacheFolderPath:FileSystem.Path) (reportProgress:reportProgressFunction) : Result<DriverPackInfo[],Exception> =
         logger.Info("Loading HP Sccm Packages...")
         result{
-            let! catalogPath = downloadDriverPackCatalog cacheFolderPath
+            let! catalogPath = downloadDriverPackCatalog cacheFolderPath reportProgress
             let! (softpacs,products) = loadCatalog catalogPath
             let! driverPackInfos = 
                 products
@@ -160,7 +160,7 @@ module HpUpdates =
 
     let downloadSccmPackage (cacheFolderPath, sccmPackage:SccmPackageInfo) =
         result{                                    
-            let! installerInfo = Web.downloadWebFile logger reportProgressStdOut cacheFolderPath sccmPackage.InstallerFile
+            let! installerInfo = Web.downloadWebFile logger reportProgressStdOut' cacheFolderPath sccmPackage.InstallerFile
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
             return {
                 InstallerPath = installerPath

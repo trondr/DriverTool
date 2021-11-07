@@ -179,9 +179,9 @@ module DellUpdates=
             OsBuild="";
         }
 
-    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path)  : Result<SccmPackageInfo,Exception> =
+    let getSccmDriverPackageInfo (modelCode:ModelCode, operatingSystemCode:OperatingSystemCode, cacheFolderPath:FileSystem.Path, reportProgress)  : Result<SccmPackageInfo,Exception> =
         result{
-            let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath
+            let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath reportProgress
             let xDocument = XDocument.Load(FileSystem.pathValue driverPackageCatalogXmlPath)            
             let! (dellOsCode, dellOsArchitecture) = osCodeToDellOsCodeAndArchitecture operatingSystemCode            
             let driverPackage = 
@@ -216,10 +216,10 @@ module DellUpdates=
         }
 
     ///Download sccm driver package info from Dell web site and parse the downloaded xml into array of DriverPackInfos
-    let getDriverPackInfos (cacheFolderPath:FileSystem.Path) : Result<DriverPackInfo[],Exception> =
+    let getDriverPackInfos (cacheFolderPath:FileSystem.Path) (reportProgress:reportProgressFunction) : Result<DriverPackInfo[],Exception> =
         logger.Info("Loading Dell Sccm Packages...")
         result{
-            let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath
+            let! driverPackageCatalogXmlPath = downloadDriverPackageCatalog cacheFolderPath reportProgress
             let! driverPackages = DellDriverPackCatalog.loadCatalog driverPackageCatalogXmlPath            
             let driverPackInfos = 
                 driverPackages                
@@ -234,7 +234,7 @@ module DellUpdates=
     
     let downloadSccmPackage (cacheFolderPath, sccmPackage:SccmPackageInfo) =
         result{            
-            let! installerInfo = Web.downloadWebFile logger reportProgressStdOut cacheFolderPath sccmPackage.InstallerFile
+            let! installerInfo = Web.downloadWebFile logger reportProgressStdOut' cacheFolderPath sccmPackage.InstallerFile
             let installerPath = FileSystem.pathValue installerInfo.DestinationFile
 
             return {

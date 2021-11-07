@@ -103,7 +103,7 @@ module DellUpdatesTests =
             let! operatingSystemCode = OperatingSystemCode.create operatingSystem false
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath
-            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode, cacheFolderPath)
+            let! actual = DriverTool.DellUpdates.getSccmDriverPackageInfo (modelCode, operatingSystemCode, cacheFolderPath,reportProgressStdOut')
             return actual
         }) with
         |Ok _->Assert.IsTrue(true)

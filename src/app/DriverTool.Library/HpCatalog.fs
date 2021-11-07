@@ -24,11 +24,11 @@ module HpCatalog =
             return expandResult
         }
 
-    let downloadDriverPackCatalog cachedFolderPath =
+    let downloadDriverPackCatalog cachedFolderPath reportProgress =
         result{            
             let! destinationCabFile = PathOperations.combine2Paths (FileSystem.pathValue cachedFolderPath,"HPClientDriverPackCatalog.cab")
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
-            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri(soruceDriverPackCatalogCab)) true nonExistingDestinationCabFile
+            let! downloadResult = Web.downloadFile reportProgress (new Uri(soruceDriverPackCatalogCab)) true nonExistingDestinationCabFile
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)
             let! destinationFilePath = PathOperations.combine2Paths (FileSystem.pathValue cachedFolderPath,"HPClientDriverPackCatalog.xml")
             let! expandResult = expandCabFile (existingDestinationCabFile, cachedFolderPath,destinationFilePath)
@@ -43,7 +43,7 @@ module HpCatalog =
             let! existingHpCatalogDestinationFolderPath = DirectoryOperations.ensureDirectoryExistsAndIsEmpty (nonExistingHpCatalogDestinationFolderPath,true) 
             let! destinationCabFile = PathOperations.combinePaths2 cachedFolderPath "HpCatalogForSms.latest.cab"
             let! nonExistingDestinationCabFile = FileOperations.ensureFileDoesNotExist true destinationCabFile
-            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri(smsSdpCatalog)) true nonExistingDestinationCabFile
+            let! downloadResult = Web.downloadFile reportProgressStdOut' (new Uri(smsSdpCatalog)) true nonExistingDestinationCabFile
             let! existingDestinationCabFile = FileOperations.ensureFileExists (destinationCabFile)            
             let! expandResult = DriverTool.SdpUpdates.expandSmsSdpCabFile (existingDestinationCabFile, existingHpCatalogDestinationFolderPath)                        
             return existingHpCatalogDestinationFolderPath

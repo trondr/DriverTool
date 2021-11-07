@@ -21,7 +21,7 @@ module LenovoCatalog =
     let downloadCatalog cacheFolderPath =
         result {
             let! destinationFile = getLocalLenvoCatalogXmlFilePath cacheFolderPath
-            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml")) true destinationFile
+            let! downloadResult = Web.downloadFile reportProgressStdOut' (new Uri("https://download.lenovo.com/cdrt/td/catalog.xml")) true destinationFile
             return downloadResult
         }    
     
@@ -206,10 +206,10 @@ module LenovoCatalog =
     let getLocalLenvoCatalogv2XmlFilePath cacheFolderPath =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue cacheFolderPath ,"LenovoCatalogv2.xml"))
 
-    let downloadCatalogv2 cacheFolderPath =
+    let downloadCatalogv2 cacheFolderPath reportProgress =
         result {
             let! destinationFile = getLocalLenvoCatalogv2XmlFilePath cacheFolderPath
-            let! downloadResult = Web.downloadFile reportProgressStdOut (new Uri("https://download.lenovo.com/cdrt/td/catalogv2.xml")) true destinationFile
+            let! downloadResult = Web.downloadFile reportProgress (new Uri("https://download.lenovo.com/cdrt/td/catalogv2.xml")) true destinationFile
             return downloadResult
         }
 
@@ -234,10 +234,10 @@ module LenovoCatalog =
         products
 
     /// Download and parse catalogv2.xml from Lenovo web site. The file catalogv2.xml contains sccm driver package download information for each model and os build.
-    let getSccmPackageInfosv2 cacheFolderPath =
+    let getSccmPackageInfosv2 cacheFolderPath reportProgress =
         result
             {
-                let! catalogXmlPath = downloadCatalogv2 cacheFolderPath
+                let! catalogXmlPath = downloadCatalogv2 cacheFolderPath reportProgress
                 let! lenovoCatalogModels = DriverTool.LenovoCatalogXml.loadLenovoCatalogv2 catalogXmlPath
                 let products = getSccmPackageInfosFromLenovoCataloModels lenovoCatalogModels
                 return products

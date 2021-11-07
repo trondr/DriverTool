@@ -207,20 +207,20 @@
                 |null ->
                     loadCommand <- createAsyncCommand (fun _ -> 
                         async{                            
-                            this.ReportProgress true None "Loading CM driver package infos from all supported vendors..."
+                            this.ReportProgress "Loading CM driver package infos from all supported vendors..."  String.Empty String.Empty None true None
                             match(result{
                                 let! cacheFolderPath = getCacheFolderPath()                                
-                                let! sccmPackages = (loadDriverPackInfos (cacheFolderPath))
+                                let! sccmPackages = (loadDriverPackInfos cacheFolderPath this.ReportProgress)
                                 let driverPackInfoViewModels = sccmPackages |> Array.map toDriverPackInfoViewModel
                                 updateUi (fun () -> 
                                         this.DriverPackInfos.ReplaceRange(driverPackInfoViewModels)
                                     )
                                 return ()
                             })with
-                            |Result.Ok _ -> this.ReportProgress false None "Successfully loaded sccm packages"
+                            |Result.Ok _ -> this.ReportProgress "Successfully loaded sccm packages"  String.Empty String.Empty None false None
                             |Result.Error ex -> logger.Error(sprintf "Failed to load sccm packages due to %s" ex.Message)
-                            this.ReportProgress false None "Done loading CM driver package infos!"                            
-                            this.ReportProgress false None "Ready"
+                            this.ReportProgress "Done loading CM driver package infos!"  String.Empty String.Empty None false None                           
+                            this.ReportProgress "Ready"  String.Empty String.Empty None false None
                             }|> Async.startAsPlainTask
                     ) (fun _ -> this.IsNotBusy) (fun ex -> logger.Error(ex.Message)) 
                     loadCommand
@@ -268,10 +268,10 @@
                     packageCommand <-                    
                         createAsyncCommand (fun _ ->                                        
                                         async{
-                                            this.ReportProgress true None "TODO: Packaging CM driver packages..."
+                                            this.ReportProgress "TODO: Packaging CM driver packages..."  String.Empty String.Empty None true None
                                             let logPackagingResult (r:Result<_,Exception>) =
                                                 match r with
-                                                |Result.Ok p -> this.ReportProgress true None (sprintf "Succesfully created CM driver package: %A" p)
+                                                |Result.Ok p -> this.ReportProgress (sprintf "Succesfully created CM driver package: %A" p) String.Empty String.Empty None true None
                                                 |Result.Error ex -> logger.Error(sprintf "Failed to create CM driver package due to: %s" (getAccumulatedExceptionMessages ex))
                                                 r                                                                                                                                
                                             match(result{
@@ -285,10 +285,10 @@
                                                     |> toAccumulatedResult                                                    
                                                 return downloadedDriverPackInfos |> Seq.toArray
                                             })with
-                                            |Result.Ok _ -> this.ReportProgress false None "Successfully packaged CM packages"
+                                            |Result.Ok _ -> this.ReportProgress "Successfully packaged CM packages" String.Empty String.Empty  None false None
                                             |Result.Error ex -> logger.Error(sprintf "Failed to package CM driver packages due to %s" (getAccumulatedExceptionMessages ex))
-                                            this.ReportProgress true None "TODO: Done packaging CM driver packages!"
-                                            this.ReportProgress false None "Ready"                                            
+                                            this.ReportProgress "TODO: Done packaging CM driver packages!" String.Empty String.Empty None true None
+                                            this.ReportProgress "Ready"  String.Empty String.Empty None false None
                                         } |> Async.startAsPlainTask                                    
                                     ) (fun _ -> this.IsNotBusy && this.ToBePackagedDriverPackInfos.Count > 0) (fun ex -> logger.Error(ex.Message))
                     packageCommand
@@ -330,25 +330,26 @@
             and set(value) =
                 base.SetProperty(&progressIsIndeterminate,value)|>ignore
 
-        member private this.ReportProgress (isBusy:bool) (percent:float option) (message:string) =
+        member private this.ReportProgress :reportProgressFunction = (fun activity status currentOperation percentComplete isBusy id ->
             updateUi (fun () -> 
                     this.IsBusy <- isBusy
-                    match percent with
+                    match percentComplete with
                     |Some p ->
                         this.ProgressValue <- p
                         this.ProgressIsIndeterminate <-false
-                        reportProgressStdOut isBusy percent message
+                        reportProgressStdOut' activity status currentOperation percentComplete isBusy id
                     |None ->
                         this.ProgressValue <- 0.0
                         this.ProgressIsIndeterminate <-isBusy
-                        if(message.Contains("TODO:")) then
-                            logger.Warn(message)
+                        if(activity.Contains("TODO:")) then
+                            logger.Warn(activity)
                         else
-                            logger.Info(message)                        
-                    this.StatusMessage <- message
+                            logger.Info(activity)                        
+                    this.StatusMessage <- activity
                     ()
                 )
             ()
+            )
 
         member this.RaiseCanExecuteChanged() =
             this.LoadCommand.RaiseCanExecuteChanged()
