@@ -114,6 +114,12 @@ type OsBuildCompleter () =
 /// <example>
 ///     <code>Get-DtDriverPack -All</code>
 /// </example>
+/// <example>
+///     <code>
+///     # Write-Host "Get driver pack infos for all models found in SCCM"
+///     Get-DtCmDeviceModel | Foreach-Object { Get-DtDriverPack -Manufacturer $_.Manufacturer -ModelCode $_.ModelCode -OperatingSystem win10 -Latest }
+///     </code>
+/// </example>
 /// </summary>
 [<Cmdlet(VerbsCommon.Get,"DtDriverPack")>]
 [<OutputType(typeof<string>)>]
