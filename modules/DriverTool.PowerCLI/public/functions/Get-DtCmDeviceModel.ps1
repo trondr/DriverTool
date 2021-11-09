@@ -24,6 +24,7 @@
 	
 	begin
 	{
+		Connect-DtCmSite
 		$Query = @'
                             select distinct             
                                 SMS_G_System_COMPUTER_SYSTEM.Model,
@@ -45,7 +46,7 @@
                 Manufacturer = $_.SMS_G_System_COMPUTER_SYSTEM.Manufacturer
                 ModelCode    = $_.SMS_G_System_COMPUTER_SYSTEM.Model
 				ModelCode4   = $($_.SMS_G_System_COMPUTER_SYSTEM.Model).SubString(0,4)
-                ModelName    = $_.SMS_G_System_COMPUTER_SYSTEM_PRODUCT.Version                
+                ModelName    = $_.SMS_G_System_COMPUTER_SYSTEM_PRODUCT.Version               
             }
         }|Select-Object Manufacturer,ModelCode,ModelName
 	}
