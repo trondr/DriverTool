@@ -12,8 +12,8 @@
 
 		.NOTES        
 		Version:        1.0
-		Author:         trondr
-		Company:        MyCompany
+		Author:         github/trondr
+		Company:        github/trondr
 		Repository:     https://github.com/trondr/DriverTool.git
 	#>
 	[CmdletBinding()]
@@ -44,8 +44,8 @@
 		Invoke-CMWmiQuery -Query $Query | Foreach-Object {
             [pscustomobject][ordered]@{                
                 Manufacturer = $_.SMS_G_System_COMPUTER_SYSTEM.Manufacturer
-                ModelCode    = $_.SMS_G_System_COMPUTER_SYSTEM.Model
-				ModelCode4   = $($_.SMS_G_System_COMPUTER_SYSTEM.Model).SubString(0,4)
+                ModelCodeFull    = $_.SMS_G_System_COMPUTER_SYSTEM.Model
+				ModelCode   = $($_.SMS_G_System_COMPUTER_SYSTEM.Model).SubString(0,4)
                 ModelName    = $_.SMS_G_System_COMPUTER_SYSTEM_PRODUCT.Version               
             }
         }|Select-Object Manufacturer,ModelCode,ModelName
