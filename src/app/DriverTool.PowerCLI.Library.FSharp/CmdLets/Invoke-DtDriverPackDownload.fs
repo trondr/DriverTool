@@ -9,6 +9,9 @@ open DriverTool.Library.DriverPack
 /// <example>
 ///     <code>Invoke-DtDownloadDriverPack -DriverPack $driverPack</code>
 /// </example>
+/// <example>
+///     <code>Get-DtDriverPack -Manufacturer Lenovo -ModelCode 20EQ -OperatingSystem win10 -Latest | Invoke-DtDownloadDriverPack</code>
+/// </example>
 /// </summary>
 [<Cmdlet(VerbsLifecycle.Invoke,"DtDownloadDriverPack")>]
 [<OutputType(typeof<string>)>]
