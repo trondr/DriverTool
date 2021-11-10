@@ -41,7 +41,7 @@
 	FunctionsToExport = @("Invoke-DtDriverTool","Get-DtCmDeviceModel")
 	
 	# Cmdlets to export from this module
-	CmdletsToExport = @('Get-DtSccmPackage')
+	CmdletsToExport = @('Get-DtDriverPack','Invoke-DtDownloadDriverPack')
 	
 	# Variables to export from this module
 	VariablesToExport = @()
