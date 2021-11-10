@@ -55,19 +55,18 @@ module Web =
             let webProxy = getWebProxy DriverTool.Library.Configuration.getWebProxyUrl DriverTool.Library.Configuration.getWebProxyByPassOnLocal DriverTool.Library.Configuration.getWebProxyByPassList
             webClient.Proxy <- webProxy
             use subscription = webClient.DownloadProgressChanged.Subscribe (fun progress -> 
-                    let percentage = (float progress.BytesReceived) / (float progress.TotalBytesToReceive) * 100.0
-                    //reportProgress true (Some percentage) (sprintf "Downloading '%s'..." sourceUri.OriginalString)
-                    reportProgress (sprintf "Downloading '%s'..." sourceUri.OriginalString) String.Empty String.Empty (Some percentage) true None
+                    let percentage = (float progress.BytesReceived) / (float progress.TotalBytesToReceive) * 100.0                    
+                    reportProgress "Downloading file from the web." (sprintf "Downloading '%s'..." sourceUri.OriginalString) String.Empty (Some percentage) true Option<int>.None
                 )
             let webHeaderCollection = new WebHeaderCollection()
             webHeaderCollection.Add("User-Agent", "DriverTool/1.0")
             webClient.Headers <- webHeaderCollection                          
             match (FileOperations.ensureFileDoesNotExist force destinationFilePath) with
             |Ok path ->                 
-                reportProgress (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path)) String.Empty String.Empty (Some 0.0) true None
+                reportProgress "Downloading file from the web." (sprintf "Downloading '%s' -> '%s'..." sourceUri.OriginalString (FileSystem.pathValue path)) String.Empty (Some 0.0) true Option<int>.None
                 let downloadTask = webClient.DownloadFileTaskAsync(sourceUri.OriginalString,FileSystem.pathValue path)                
                 Async.AwaitTask downloadTask |> Async.RunSynchronously            
-                reportProgress sourceUri.OriginalString String.Empty String.Empty (Some 100.0) false None
+                reportProgress "Downloading file from the web." sourceUri.OriginalString String.Empty (Some 100.0) false Option<int>.None
                 Result.Ok path      
             |Result.Error ex -> toErrorResult ex (Some(sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)))
         with
