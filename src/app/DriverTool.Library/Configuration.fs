@@ -76,11 +76,6 @@ module Configuration =
     let getDownloadCacheFilePath cacheFolder fileName = 
         System.IO.Path.Combine(cacheFolder , fileName)
 
-    type Settings = AppSettings<"App.config">
-
-    let getAppConfigFilePath = 
-        AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
-    
     let getDriverPackageLogDirectoryPath =
         getValue "DriverPackageLogDirectoryPath"
 
