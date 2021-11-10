@@ -9,6 +9,7 @@
 
   <ItemGroup>    
     <None Include="..\DriverTool\App.config" Link="App.config" />    
+    <Compile Include="PowerShellProgress.fs" />    
     <Compile Include="CmdLets\Get-DtDriverPack.fs" />    
     <Compile Include="CmdLets\Invoke-DtDriverPackDownload.fs" />
   </ItemGroup>
