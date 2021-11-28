@@ -490,11 +490,11 @@ choco install nunit
 choco feature disable -n allowGlobalConfirmation
 ```
 
-*From a new admin PowerShell command line:
+*From a new PowerShell admin command prompt run:
 
 dotnet new -i NUnit3.DotNetNew.Template
 
-* From a standard commmand line run:
+* From a standard commmand prompt run:
 
 ```batch
 mkdir c:\dev\github.trondr
@@ -541,8 +541,6 @@ if((Test-Path -Path $vsInstallerExe) -eq $false)
     Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_enterprise.exe" -OutFile "$vsInstallerExe"
 }
 . $vsInstallerExe --add "Microsoft.VisualStudio.Component.FSharp.Desktop" --passive --norestart --quiet
-
-
 choco feature disable -n allowGlobalConfirmation
 ```
 
