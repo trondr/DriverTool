@@ -40,7 +40,7 @@ module RegistryOperationTests =
     [<TestCase(true,100000)>]
     [<TestCase(false,100)>]
     let getRegistrySubKeyPathsTest (recursive,max) =
-        let regKeyPath = @"HKEY_CURRENT_USER\Software\JetBrains"
+        let regKeyPath = @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion"
         let actual = 
             getRegistrySubKeyPaths regKeyPath recursive
             |> Seq.map (fun p -> System.Console.WriteLine(p))
