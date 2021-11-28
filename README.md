@@ -465,26 +465,32 @@ CmUi                            Start user interface for download and
 
 # Build Environment
 
-* From an admin command line run:
-```batch
-@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+From a PowerShell Admin command prompt run:
+
+```PowerShell
+try{Set-ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue}catch{}
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 choco feature enable -n allowGlobalConfirmation
 choco install git
 choco install git-credential-winstore
-choco install fake
-choco upgrade fake
-choco install windows-sdk-10-version-1903-all
-choco install windows-sdk-10-version-2004-all
-choco install netfx-4.7.2-devpack
 choco install netfx-4.8-devpack
 choco install visualstudio2019buildtools
-choco install wixtoolset
-choco insall nunit
-choco install lenovo-thinkvantage-system-update
+choco install visualstudio2019-workload-netcorebuildtools
+choco install visualstudio2019-workload-manageddesktopbuildtools
+$vsBuildToolsExe = "c:\windows\temp\vs_buildtools.exe"
+if((Test-Path -Path $vsBuildToolsExe) -eq $false)
+{
+    Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_buildtools.exe" -OutFile "$vsBuildToolsExe"
+}
+. $vsBuildToolsExe --add "Microsoft.VisualStudio.Component.FSharp.MSBuild" --passive --norestart --quiet
+choco install fake
+choco upgrade fake
+choco install nunit
 choco feature disable -n allowGlobalConfirmation
 ```
 
-*From a new admin command line:
+*From a new admin PowerShell command line:
 
 dotnet new -i NUnit3.DotNetNew.Template
 
@@ -504,9 +510,9 @@ Build.cmd
 
 ```batch
 choco feature enable -n allowGlobalConfirmation
-choco install sourcetree
+choco install SourceTree
 choco install notepadplusplus
-choco install vscode	
+choco install vscode
 choco install visualstudio2019enterprise
 REM choco install visualstudio2019professional
 choco feature disable -n allowGlobalConfirmation
