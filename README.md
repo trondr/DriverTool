@@ -506,15 +506,43 @@ Build.cmd
 
 ## Development Environment
 
-* From an admin command line run:
+* From a PowerShell admin command prompt run:
 
 ```batch
+try{Set-ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue}catch{}
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 choco feature enable -n allowGlobalConfirmation
+choco install git
+choco install git-credential-winstore
+choco install netfx-4.8-devpack
+choco install visualstudio2019buildtools
+choco install visualstudio2019-workload-netcorebuildtools
+choco install visualstudio2019-workload-manageddesktopbuildtools
+$vsBuildToolsExe = "c:\windows\temp\vs_buildtools.exe"
+if((Test-Path -Path $vsBuildToolsExe) -eq $false)
+{
+    Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_buildtools.exe" -OutFile "$vsBuildToolsExe"
+}
+. $vsBuildToolsExe --add "Microsoft.VisualStudio.Component.FSharp.MSBuild" --passive --norestart --quiet
+choco install fake
+choco upgrade fake
+choco install nunit
 choco install SourceTree
 choco install notepadplusplus
 choco install vscode
 choco install visualstudio2019enterprise
-REM choco install visualstudio2019professional
+# choco install visualstudio2019professional
+choco install visualstudio2019-workload-manageddesktop
+$vsInstallerExe = "c:\windows\temp\vs_enterprise.exe"
+# $vsInstallerExe = "c:\windows\temp\vs_professional.exe"
+if((Test-Path -Path $vsInstallerExe) -eq $false)
+{
+    Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_enterprise.exe" -OutFile "$vsInstallerExe"
+}
+. $vsInstallerExe --add "Microsoft.VisualStudio.Component.FSharp.Desktop" --passive --norestart --quiet
+
+
 choco feature disable -n allowGlobalConfirmation
 ```
 
