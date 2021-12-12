@@ -20,14 +20,15 @@
 	Param (
 		[Parameter(Mandatory=$false)]
 		[string]
-		$SiteCode=$((New-Object -ComObject "Microsoft.SMS.Client").GetAssignedSite()),
+		$SiteCode=$(Get-DtCmAssignedSite),
 		[Parameter(Mandatory=$false)]
 		[string]
-		$SiteServer=$((New-Object -ComObject "Microsoft.SMS.Client").GetCurrentManagementPoint())
+		$SiteServer=$(Get-DtCmCurrentManagementPoint)
 	)
 	
 	begin
-	{
+	{		
+		Assert-DtCmManagerConsoleIsInstalled
 		# Customizations
 		$initParams = @{}
 		#$initParams.Add("Verbose", $true) # Uncomment this line to enable verbose logging

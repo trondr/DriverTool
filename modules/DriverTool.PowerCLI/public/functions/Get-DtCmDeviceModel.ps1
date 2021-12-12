@@ -24,6 +24,7 @@
 	
 	begin
 	{
+		
 		Connect-DtCmSite
 		$Query = @'
                             select distinct             
