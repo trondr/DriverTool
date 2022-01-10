@@ -40,25 +40,14 @@ type InvokeDtDownloadDriverPack () =
     override this.BeginProcessing() =
         ()
 
-    override this.ProcessRecord() =
+    override this.ProcessRecord() =        
         
-        let reportProgress activity status currentOperation (percentageComplete:float option) isBusy (id:int option) = 
-            let progressRecord = new ProgressRecord((match id with |Some i -> i|None -> 0),activity,status)
-            progressRecord.CurrentOperation <- currentOperation
-            progressRecord.PercentComplete <- match percentageComplete with |Some p->(System.Convert.ToInt32(p)) |None -> 0
-            if(isBusy)then
-                progressRecord.RecordType <- ProgressRecordType.Processing
-            else
-                progressRecord.RecordType <- ProgressRecordType.Completed                        
-            //TODO: Calling WriteProgress must be done on the main thread. Create a solution for this. Maybe this one: https://stackoverflow.com/questions/12852494/best-way-to-update-cmdlet-progress-from-a-separate-thread
-            //this.WriteProgress(progressRecord)
-            ()
         let reportProgressStdOut =
             DriverTool.Library.Logging.reportProgressStdOut'
 
         this.DriverPack
         |> Array.map(fun dp ->        
-                let ddp = InvokeDtDownloadDriverPack.downloadDriverPackInfo reportProgress dp                
+                let ddp = InvokeDtDownloadDriverPack.downloadDriverPackInfo reportProgressStdOut dp                
                 this.WriteObject(ddp)
                 )
         |> ignore
