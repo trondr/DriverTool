@@ -512,6 +512,20 @@ REM choco install visualstudio2019professional
 choco feature disable -n allowGlobalConfirmation
 ```
 
+# Debug PowerShell CmdLet  written in F# (Example)
+
+## Executable
+```
+"c:\Windows\system32\WindowsPowerShell\v1.0\powershell.exe" 
+```
+##Arguments
+
+```
+-NoExit -Command "& Import-Module 'C:\Dev\github.trondr\DriverTool\src\app\DriverTool.PowerCLI.Library.FSharp\bin\Debug\net48\DriverTool.PowerCLI.Library.FSharp.dll' -Verbose;Get-DtDriverPack -Manufacturer Lenovo -ModelCode 20EQ -OperatingSystem win10 -Latest | Invoke-DtDownloadDriverPack"
+```
+
+
+
 ## Build
 
 * Install chocolatey 
