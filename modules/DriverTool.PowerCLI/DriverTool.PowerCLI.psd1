@@ -38,7 +38,11 @@
 	FormatsToProcess = @('DriverTool.PowerCLI.Format.ps1xml')
 	
 	# Functions to export from this module
-	FunctionsToExport = @("Invoke-DtDriverTool","Get-DtCmDeviceModel")
+	FunctionsToExport = @(
+		"Invoke-DtDriverTool"
+		,"Get-DtCmDeviceModel"
+		,"Connect-DtCmSite"
+		)
 	
 	# Cmdlets to export from this module
 	CmdletsToExport = @('Get-DtDriverPack','Invoke-DtDownloadDriverPack')
