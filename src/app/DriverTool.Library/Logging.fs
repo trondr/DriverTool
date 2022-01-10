@@ -197,30 +197,31 @@ namespace DriverTool.Library
                 messageLoop()
                 )
 
-        /////Report progress to stdout
-        //let reportProgressStdOut isBusy percentage message =
-        //    match percentage with
-        //    |Some p ->
-        //        progressActor.Post (sprintf "%.2f: %-47s (IsBusy: %b)\r" p message isBusy)
-        //    |None -> 
-        //        progressActor.Post (sprintf "%-47s (IsBusy: %b)\r" message isBusy)
-
         ///Function definition: (activity:string) -> (status:string option) -> (currentOperation:string option) -> (percentComplete: float option) -> (isBusy:bool) -> (id:int option)
         type reportProgressFunction = string -> string -> string -> float option -> bool -> int option -> unit
             
+        let min x y = 
+            if x < y then x
+            else y
+
+        let normalizeLength length (value:string) =            
+            let maxLength = min value.Length length
+            value.Substring(0,maxLength) + "\r"
+
         ///Report progress to stdout
         let reportProgressStdOut' : reportProgressFunction = (fun activity status currentOperation percentComplete isBusy id ->
+                let length = Console.WindowWidth                
                 match percentComplete with
                 |Some p ->
                     match id with
                     |Some i ->
-                        progressActor.Post (sprintf "%d: %.2f: %-47s: %s: %s: (IsBusy: %b)\r" i p activity currentOperation status isBusy)
+                        progressActor.Post (sprintf "%d: %.2f: %s: %s: %s: (IsBusy: %b)" i p activity currentOperation status isBusy|>normalizeLength length)
                     |None -> 
-                        progressActor.Post (sprintf "%.2f: %-47s: %s: %s: (IsBusy: %b)\r" p activity currentOperation status isBusy)
+                        progressActor.Post (sprintf "%.2f: %s: %s: %s: (IsBusy: %b)" p activity currentOperation status isBusy|>normalizeLength length)
                 |None -> 
                     match id with
                     |Some i ->
-                        progressActor.Post (sprintf "%d: %-47s: %s: %s: (IsBusy: %b)\r" i activity status currentOperation isBusy)
+                        progressActor.Post (sprintf "%d: %s: %s: %s: (IsBusy: %b)" i activity status currentOperation isBusy|>normalizeLength length)
                     |None -> 
-                        progressActor.Post (sprintf "%-47s: %s: %s: (IsBusy: %b)\r" activity status currentOperation isBusy)
+                        progressActor.Post (sprintf "%s: %s: %s: (IsBusy: %b)" activity status currentOperation isBusy|>normalizeLength length)
             )
