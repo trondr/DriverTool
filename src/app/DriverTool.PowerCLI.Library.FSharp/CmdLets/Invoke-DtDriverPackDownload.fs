@@ -9,10 +9,10 @@ module InvokeDtDownloadDriverPack =
     let downloadDriverPackInfo reportProgress dp =
         match(result{
             let! cacheFolder = DriverTool.Library.FileSystem.path (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())            
-            let! driverPackInfos = DriverTool.Library.CmUi.UiModels.packageSccmPackage cacheFolder reportProgress dp
-            return driverPackInfos
+            let! pacakgeDefinitionSms = DriverTool.Library.CmUi.UiModels.packageSccmPackage cacheFolder reportProgress dp
+            return FileSystem.pathValue pacakgeDefinitionSms
         })with
-        |Result.Ok dps -> dps
+        |Result.Ok pdSmsPath -> pdSmsPath
         |Result.Error ex -> 
             raise ex
 
