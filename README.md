@@ -462,6 +462,31 @@ CmUi                            Start user interface for download and
    Example: DriverTool.exe CmUi 
  
 ```
+	
+# Procedure (PowerShell)
+	
+Automated procedure for downloading, extracting, packaging and adding driver packs to a new task sequence. This will replace the CM Device driver package steps in the "DriverTool.exe" procedure above. The task sequence created can be added as a sub task sequence to the main OSD task sequence.
+
+1. Download, extract and package driver packs. Example:
+	
+```
+@("20QW","20QF") | Foreach-Object{ Write-Host "Getting driver pack for model $_";  Get-DtDriverPack -Manufacturer Lenovo -ModelCode "$_" -OperatingSystem "win10" -OsBuild "21H2" -Verbose } | Invoke-DtDownloadDriverPack
+```
+The packages will be created in c:\temp\D on developement machine and should be copied to final location on Sccm Server manually.
+
+2. Create SCCM packages after copying the package folders to server. Example:
+	
+```
+$packageDefintionSms = Get-ChildItem -Path "Z:\Packages\CM-Drivers\21H2" -Filter "PackageDefinition.sms" -Recurse | ForEach-Object {$_.FullName} 
+$packageDefintionSms | New-DtCmPackageFromDriverPackPackageDefinitionSms
+```
+
+3. Create task sequence with all the driver packages added. Example:
+	
+```
+$packageDefintionSms = Get-ChildItem -Path "Z:\Applications\CM-Drivers\21H2" -Filter "PackageDefinition.sms" -Recurse | ForEach-Object {$_.FullName} 
+New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms -Path $packageDefintionSms -Name "Test CM Drivers 21H2" -Description "Test CM Drivers 21H2" -ProgramName "INSTALL-OFFLINE-OS"
+```
 
 # Build Environment
 
