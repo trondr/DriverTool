@@ -21,12 +21,13 @@ module UiModels =
     open DriverTool.Library.DriverPack
 
     /// Package CM drivers
-    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:reportProgressFunction) (driverPack:DriverPackInfo) : Result<DownloadedDriverPackInfo,Exception> =
+    let packageSccmPackage (cacheFolderPath:FileSystem.Path) (reportProgress:reportProgressFunction) (driverPack:DriverPackInfo) : Result<FileSystem.Path,Exception> =
         result{
-            logger.Warn(sprintf "TODO: Packaging '%s' (%A)..." driverPack.Model driverPack)
-            let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(driverPack.Manufacturer,false)
             
-            logger.Warn("Preparing package folder...")
+            reportProgress (sprintf "Downloading and Packaging '%s' (%A)...\n" driverPack.Model driverPack) String.Empty String.Empty None true None            
+            let! manufacturer = ManufacturerTypes.manufacturerStringToManufacturer(driverPack.Manufacturer,false)
+                        
+            reportProgress (sprintf "Preparing package folder...\n") String.Empty String.Empty None true None
             let! destinationRootFolderPath = FileSystem.path @"c:\temp\D"
             let osBuild = 
                 match(driverPack.OsBuild)with
@@ -45,28 +46,28 @@ module UiModels =
                 PathOperations.combinePaths2 packageScriptsFolderPath "Drivers"
                 |> DirectoryOperations.ensureFolderPathExists' true (Some "Package drivers folder does not exist.")
                         
-            reportProgress (sprintf "Downloading CM Drivers for model '%s'..." driverPack.Model) String.Empty String.Empty None true None
+            reportProgress (sprintf "Downloading CM Drivers for model '%s'...\n" driverPack.Model) String.Empty String.Empty None true None
             let downloadDriverPackInfo = DriverTool.Updates.downloadDriverPackInfoFunc manufacturer
             let! downloadedDriverPackInfo = downloadDriverPackInfo cacheFolderPath reportProgress driverPack
             
-            reportProgress (sprintf "Extracting CM Drivers for model '%s'..." driverPack.Model) String.Empty String.Empty None true None
+            reportProgress (sprintf "Extracting CM Drivers for model '%s'...\n" driverPack.Model) String.Empty String.Empty None true None
             let extractDriverPackInfo = DriverTool.Updates.extractDriverPackInfoFunc manufacturer
             
             let cmDriversFolderName = "005_CM_Package_" + downloadedDriverPackInfo.DriverPack.Released.ToString("yyyy_MM_dd")
             let! cmDriversFolderPath = 
                 PathOperations.combinePaths2 packageDriversFolderPath cmDriversFolderName                
             let! extractedDriverPackInfoFolder = extractDriverPackInfo downloadedDriverPackInfo cmDriversFolderPath
-
-            logger.Info("Create PackageDefinition-DISM.sms")            
+            
+            reportProgress (sprintf "Creating PackageDefinition.sms...\n") String.Empty String.Empty None true None
             let! dismProgram = PackageDefinitionSms.createSmsProgram "INSTALL-OFFLINE-OS" ("DISM.exe /Image:%OSDisk%\\ /Add-Driver /Driver:.\\Drivers\\" + cmDriversFolderName + "\\ /Recurse") "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "Install INF drivers into the offline operating system using DISM in the WinPE phase of the OSD."
             let! pnpUtilProgram = PackageDefinitionSms.createSmsProgram "INSTALL-ONLINE-OS" ("pnputil.exe /add-driver .\\Drivers\\" + cmDriversFolderName + "\\*.inf /install /subdirs") "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "Install INF drivers into the online operating system using PnPUtil."
             let! packageDefinition = PackageDefinitionSms.createSmsPackageDefinition packageName (driverPack.Released.ToString("yyyy-MM-dd")) None driverPack.Manufacturer "EN" false "Install INF drivers." [|dismProgram;pnpUtilProgram|] driverPack.ManufacturerWmiQuery driverPack.ModelWmiQuery
             let! packageDefinitionSmsPath = FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue packageScriptsFolderPath,"PackageDefinition.sms"))
             let! packageDefintionWriteResult = packageDefinition |> writeToFile logger packageDefinitionSmsPath
-            logger.Info(sprintf "Created PackageDefinition.sms: %A" packageDefintionWriteResult)
+            reportProgress (sprintf "Created PackageDefinition.sms: %A\n" packageDefintionWriteResult) String.Empty String.Empty None true None            
 
-            reportProgress (sprintf "Finished packaging INF drivers for model %s" driverPack.Model) String.Empty String.Empty None true None
-            return downloadedDriverPackInfo
+            reportProgress (sprintf "Finished packaging INF drivers for model %s\n" driverPack.Model) String.Empty String.Empty None true None
+            return packageDefintionWriteResult
         }
 
         
