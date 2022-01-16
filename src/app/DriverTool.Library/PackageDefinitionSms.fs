@@ -203,6 +203,7 @@ module PackageDefinitionSms =
             Programs:SmsProgram[]
             ManufacturerWmiQuery:DriverPack.WmiQuery
             ModelWmiQuery:DriverPack.WmiQuery
+            SourcePath:string option
         }
 
 
@@ -227,6 +228,7 @@ module PackageDefinitionSms =
                     Programs=smsPrograms
                     ManufacturerWmiQuery=manufacturerWmiQuery
                     ModelWmiQuery=modelWmiQuery
+                    SourcePath=None
                 }
             return smsPackageDefinition
         }
@@ -488,12 +490,12 @@ module PackageDefinitionSms =
         result{
             let! iniData = FileOperations.readContentFromFile filePath
             let! packageDefinition = fromIniString iniData
-            return packageDefinition
+            return {packageDefinition with SourcePath=(Some (DriverTool.Library.FileSystem.pathValue filePath))}
         }
 
     let readFromFileUnsafe file = 
         let filePath = DriverTool.Library.FileSystem.pathUnSafe file
         match(readFromFile filePath) with
-        |Result.Ok smsPackageDefinition -> smsPackageDefinition
+        |Result.Ok packageDefinition -> {packageDefinition with SourcePath=(Some file)}
         |Result.Error ex -> raise ex
         
