@@ -202,6 +202,19 @@ module Sccm =
             |>String.concat " "
         newCMPackagePSCommand
 
+    //Build script to create new Sccm Package from DriverPack definition
+    let toNewCmPackagePSScript sourceFolderPath packageDefinition = 
+        let script = 
+            seq{                    
+                yield (sprintf "$package = %s" (toDriverPackInfoPSCommand packageDefinition (FileSystem.pathValue sourceFolderPath)))
+                yield ("$package | Set-CMPackage -EnableBinaryDeltaReplication $true")
+                for program in packageDefinition.Programs do
+                    yield toNewCmProgramPSCommand "$($package.PackageId)" program
+            }
+            |>Seq.toArray
+            |>String.concat Environment.NewLine
+        script
+
     ///Create SCCM package from package definition sms file
     let createPackageFromDefinition sourceFolderPath packageDefinition =
         result{                        

@@ -488,14 +488,14 @@ module PackageDefinitionSms =
     ///Read package definition from file
     let readFromFile filePath =
         result{
-            let! iniData = FileOperations.readContentFromFile filePath
+            let! uncFilePath = PathOperations.toUncPath true filePath
+            let uncFilePathValue = FileSystem.pathValue uncFilePath
+            let! iniData = FileOperations.readContentFromFile uncFilePath
             let! packageDefinition = fromIniString iniData
-            return {packageDefinition with SourcePath=(Some (DriverTool.Library.FileSystem.pathValue filePath))}
+            return {packageDefinition with SourcePath=(Some uncFilePathValue)}
         }
 
-    let readFromFileUnsafe file = 
-        let filePath = DriverTool.Library.FileSystem.pathUnSafe file
-        match(readFromFile filePath) with
-        |Result.Ok packageDefinition -> {packageDefinition with SourcePath=(Some file)}
-        |Result.Error ex -> raise ex
-        
+    ///Read package definition from file, throws exception on error.
+    let readFromFileUnsafe file =                  
+        let filePath = DriverTool.Library.FileSystem.pathUnSafe file        
+        resultToValueUnsafe (readFromFile filePath)

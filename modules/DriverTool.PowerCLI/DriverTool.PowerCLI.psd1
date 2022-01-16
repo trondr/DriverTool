@@ -42,6 +42,7 @@
 		"Invoke-DtDriverTool"
 		,"Get-DtCmDeviceModel"
 		,"Connect-DtCmSite"
+		,'New-DtCmPackageFromDriverPackPackageDefinitionSms'
 		)
 	
 	# Cmdlets to export from this module
@@ -49,6 +50,7 @@
 		,'Invoke-DtDownloadDriverPack'
 		,'Convert-DtExceptionToMessage'
 		,'Import-DtDriverPackPackageDefinitionSms'
+		,'Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms'
 		)
 	
 	# Variables to export from this module

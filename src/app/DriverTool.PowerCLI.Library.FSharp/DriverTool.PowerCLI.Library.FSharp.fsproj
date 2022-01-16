@@ -14,7 +14,8 @@
     <Compile Include="CmdLets\Get-DtDriverPack.fs" />    
     <Compile Include="CmdLets\Invoke-DtDriverPackDownload.fs" />    
     <Compile Include="CmdLets\Convert-DtExceptionToMessage.fs" />
-	<Compile Include="CmdLets\Import-DtDriverPackPackageDefinitionSms.fs" />
+    <Compile Include="CmdLets\Import-DtDriverPackPackageDefinitionSms.fs" />
+    <Compile Include="CmdLets\Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms.fs" />
   </ItemGroup>
 
   <ItemGroup />
