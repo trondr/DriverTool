@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>    
+    <Content Include="Debug.txt" />    
     <None Include="..\DriverTool\App.config" Link="App.config" />    
     <Compile Include="PowerShellProgress.fs" />    
     <Compile Include="CmdLets\Get-DtDriverPack.fs" />    
     <Compile Include="CmdLets\Invoke-DtDriverPackDownload.fs" />
+    <Compile Include="CmdLets\Convert-DtExceptionToMessage.fs" />
   </ItemGroup>
   
   <ItemGroup>

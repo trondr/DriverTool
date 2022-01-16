@@ -45,7 +45,10 @@
 		)
 	
 	# Cmdlets to export from this module
-	CmdletsToExport = @('Get-DtDriverPack','Invoke-DtDownloadDriverPack')
+	CmdletsToExport = @('Get-DtDriverPack'
+		,'Invoke-DtDownloadDriverPack'
+		,'Convert-DtExceptionToMessage'
+		)
 	
 	# Variables to export from this module
 	VariablesToExport = @()
