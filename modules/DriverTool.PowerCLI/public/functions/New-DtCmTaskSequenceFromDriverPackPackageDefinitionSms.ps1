@@ -8,7 +8,10 @@
 		Create new task sequence from driver pack package defintion sms.
 
 		.EXAMPLE
-		New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms
+		Write-Host "Package all driver packages in a folder structure and create and add to task sequence."
+		$packageDefintionSms = Get-ChildItem -Path "Z:\Applications\CM-Drivers\21H2" -Filter "PackageDefinition.sms" -Recurse | ForEach-Object {$_.FullName} 
+		$packageDefintionSms | New-DtCmPackageFromDriverPackPackageDefinitionSms 
+		New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms -Path $packageDefintionSms -Name "Test CM Drivers 21H2" -Description "Test CM Drivers 21H2" -ProgramName "INSTALL-OFFLINE-OS"
 
 		.NOTES        
 		Version:        1.0
