@@ -12,7 +12,7 @@ Packaging and command line experience is required to use and understand this too
 
 DriverTool currently supports PCs from Dell, HP and Lenovo.
 
-# Procedure
+# Procedure (DriverTool.exe)
 
 1. Install Windows 10 from original media
    * Typically there will be uknown devices in Device Manager after operating system has been installed. 
@@ -555,7 +555,7 @@ choco feature disable -n allowGlobalConfirmation
 ```
 "c:\Windows\system32\WindowsPowerShell\v1.0\powershell.exe" 
 ```
-##Arguments
+## Arguments
 
 ```
 -NoExit -Command "& Import-Module 'C:\Dev\github.trondr\DriverTool\src\app\DriverTool.PowerCLI.Library.FSharp\bin\Debug\net48\DriverTool.PowerCLI.Library.FSharp.dll' -Verbose;Get-DtDriverPack -Manufacturer Lenovo -ModelCode 20EQ -OperatingSystem win10 -Latest | Invoke-DtDownloadDriverPack"
