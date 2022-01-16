@@ -490,4 +490,10 @@ module PackageDefinitionSms =
             let! packageDefinition = fromIniString iniData
             return packageDefinition
         }
+
+    let readFromFileUnsafe file = 
+        let filePath = DriverTool.Library.FileSystem.pathUnSafe file
+        match(readFromFile filePath) with
+        |Result.Ok smsPackageDefinition -> smsPackageDefinition
+        |Result.Error ex -> raise ex
         
