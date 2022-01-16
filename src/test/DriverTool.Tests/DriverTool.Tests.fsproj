@@ -1,10 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyVersion>1.0.22016.71</AssemblyVersion>
+    <FileVersion>1.0.22016.71</FileVersion>
+    <Version>1.0.22016</Version>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <DummyProperty>Dummy</DummyProperty>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\app\DriverTool\App.config" Link="App.config" />
     <Compile Include="AssemblyInfo.fs" />
@@ -85,14 +89,12 @@
     <EmbeddedResource Include="TestData\LenovoSccm\ds540208_v2.html" />
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_new_2019-12-01.html" />
   </ItemGroup>
-
   <ItemGroup />
-
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="5.0.2" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
-	<PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
+    <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
     <PackageReference Include="FSharp.Data" Version="4.2.4" />
     <PackageReference Include="CsvHelper" Version="27.1.1" />
     <PackageReference Include="Destructurama.FSharp" Version="1.2.0" />
@@ -133,18 +135,16 @@
     <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit.ConsoleRunner" Version="3.12.0" />
-	<PackageReference Include="NUnit.Console" Version="3.12.0" />
-	<PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-    <PackageReference Include="RhinoMocks" Version="3.6.1" />	
+    <PackageReference Include="NUnit.Console" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+    <PackageReference Include="RhinoMocks" Version="3.6.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\app\DriverTool.DpInstExitCode2ExitCode\DriverTool.DpInstExitCode2ExitCode.fsproj" />
     <ProjectReference Include="..\..\app\DriverTool.DupExitCode2ExitCode\DriverTool.DupExitCode2ExitCode.fsproj" />
     <ProjectReference Include="..\..\app\DriverTool.Library\DriverTool.Library.fsproj" />
     <ProjectReference Include="..\..\app\DriverTool\DriverTool.fsproj" />
     <ProjectReference Include="..\..\app\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj" />
-
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="PresentationCore" />
@@ -154,7 +154,6 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -164,5 +163,4 @@
       <HintPath>..\..\..\packages\fsharp.data\4.2.4\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

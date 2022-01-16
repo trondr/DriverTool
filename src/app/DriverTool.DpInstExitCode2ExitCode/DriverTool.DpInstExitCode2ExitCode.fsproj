@@ -1,18 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net48</TargetFrameworks>
+    <AssemblyVersion>1.0.22016.71</AssemblyVersion>
+    <FileVersion>1.0.22016.71</FileVersion>
+    <Version>1.0.22016</Version>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <DummyProperty>Dummy</DummyProperty>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="F.fs" />
     <Compile Include="DpInstExitCode.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="5.0.2" />
   </ItemGroup>
-
 </Project>

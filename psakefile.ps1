@@ -39,13 +39,78 @@ task Publish -depends PublishModule {
     Write-Host "Published!" -ForegroundColor Green
 }
 
+function Update-DtFsProjectVersion
+{
+    param(
+        [Parameter(Mandatory=$true)] 
+        [string]
+        $Path,
+        [Parameter(Mandatory=$true)]
+        [string]
+        $ModuleVersion,
+        [Parameter(Mandatory=$false)]
+        [int]
+        $Revision=0
+    )
+    Write-Host "Updating project: $Path"
+    $xml = [xml](Get-Content $Path)
+    Write-Host "$($xml.OuterXml)"
+    $xml.Project.PropertyGroup[0].AssemblyVersion = "$($ModuleVersion).$($Revision)"
+    $xml.Project.PropertyGroup[0].FileVersion = "$($ModuleVersion).$($Revision)"
+    $xml.Project.PropertyGroup[0].Version = $ModuleVersion
+    $xml.Save($Path)
+}
+
+function Update-DtPSModuleVersion
+{
+    param(
+        [Parameter(Mandatory=$true)] 
+        [string]
+        $Path,
+        [Parameter(Mandatory=$true)]
+        [string]
+        $ModuleVersion        
+    )
+    Write-Host "Updating Module File: $Path"
+    $content = Get-Content -Path $Path
+    $content | ForEach-Object {
+        [System.Text.RegularExpressions.Regex]::Replace($_,"^\s*ModuleVersion\s*=\s*'\d+\.\d+\.\d+'\s*$","    ModuleVersion = '$ModuleVersion'")
+    } | Set-Content -Path $Path
+}
+
+function Update-DtRevisionVersion
+{
+    param(
+        [Parameter(Mandatory=$true)] 
+        [string]
+        $Path               
+    )
+    $content = Get-Content -Path $Path
+    try {
+        $revision = [System.Convert]::ToInt16($content.Trim()) + 1
+    }
+    catch {
+        $revision = 0
+    }
+    "$revision" | Set-Content -Path $Path | Out-Null
+    "$revision"
+}
+
 task UpdateVersion {
     $DayOfYear = "$((Get-Date).DayOfYear + $AddDaysToBuildVersion)".PadLeft(3,'0')
     $ModuleVersion = "1.0.$((Get-Date).Year - 2000)$DayOfYear"
 	$psModuleFile = [System.IO.Path]::Combine($rootFolder,"modules","DriverTool.PowerCLI","DriverTool.PowerCLI.psd1")    
-    Write-Host "Updating Module File: $psModuleFile"
-    $content = Get-Content -Path $psModuleFile
-    $content | ForEach-Object {
-        [System.Text.RegularExpressions.Regex]::Replace($_,"^\s*ModuleVersion\s*=\s*'\d+\.\d+\.\d+'\s*$","    ModuleVersion = '$ModuleVersion'")
-    } | Set-Content -Path $psModuleFile
+    Update-DtPSModuleVersion -Path $psModuleFile -ModuleVersion $ModuleVersion
+    $revisionFile = [System.IO.Path]::Combine($rootFolder,"revision.txt")
+    $revision = Update-DtRevisionVersion -Path $revisionFile
+    $projectFiles = @(
+            [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool","DriverTool.fsproj")            
+            [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.PowerCLI.Library.FSharp","DriverTool.PowerCLI.Library.FSharp.fsproj"),
+            [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.Library","DriverTool.Library.fsproj"),
+            [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.DupExitCode2ExitCode","DriverTool.DupExitCode2ExitCode.fsproj"),
+            [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.DpInstExitCode2ExitCode","DriverTool.DpInstExitCode2ExitCode.fsproj"),
+            [System.IO.Path]::Combine($rootFolder,"src","test","DriverTool.Tests","DriverTool.Tests.fsproj"),
+            [System.IO.Path]::Combine($rootFolder,"src","test","DriverTool.PowerCLI.Library.Tests","DriverTool.PowerCLI.Library.Tests.fsproj")
+        )
+    $projectFiles | Foreach-Object{ Update-DtFsProjectVersion -Path $_ -ModuleVersion $ModuleVersion -Revision $revision}
 }

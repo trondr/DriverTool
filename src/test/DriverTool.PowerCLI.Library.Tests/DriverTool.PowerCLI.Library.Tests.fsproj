@@ -1,32 +1,38 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <TargetFramework>net48</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <WarnOn>3390;$(WarnOn)</WarnOn>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    </PropertyGroup>
-    <ItemGroup>
-        <Compile Include="Init.fs" />
-        <Compile Include="ExampleTests.fs" />
-    </ItemGroup>
-    <ItemGroup />
-    <ItemGroup>
-        <PackageReference Include="Common.Logging" Version="3.4.1" />
-        <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
-        <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
-        <PackageReference Include="JetBrains.DotMemoryUnit" Version="3.1.20200127.214830" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-        <PackageReference Include="NUnit" Version="3.13.2" />
-        <PackageReference Include="NUnit.ConsoleRunner" Version="3.12.0" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\..\app\DriverTool.PowerCLI.Library.FSharp\DriverTool.PowerCLI.Library.FSharp.fsproj" />
-        <ProjectReference Include="..\..\app\DriverTool.PowerCLI.Library.CSharp\DriverTool.PowerCLI.Library.CSharp.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Update="FSharp.Core" Version="5.0.2" />
-    </ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <WarnOn>3390;$(WarnOn)</WarnOn>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblyVersion>1.0.22016.71</AssemblyVersion>
+    <FileVersion>1.0.22016.71</FileVersion>
+    <Version>1.0.22016</Version>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DummyProperty>Dummy</DummyProperty>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Init.fs" />
+    <Compile Include="ExampleTests.fs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Common.Logging" Version="3.4.1" />
+    <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
+    <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
+    <PackageReference Include="JetBrains.DotMemoryUnit" Version="3.1.20200127.214830" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\app\DriverTool.PowerCLI.Library.FSharp\DriverTool.PowerCLI.Library.FSharp.fsproj" />
+    <ProjectReference Include="..\..\app\DriverTool.PowerCLI.Library.CSharp\DriverTool.PowerCLI.Library.CSharp.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="5.0.2" />
+  </ItemGroup>
 </Project>

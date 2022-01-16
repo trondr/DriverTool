@@ -1,16 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <AssemblyVersion>1.0.21290.62</AssemblyVersion>
-    <FileVersion>1.0.21290.62</FileVersion>
+    <PackageReleaseNotes>
+    </PackageReleaseNotes>
+    <AssemblyVersion>1.0.22016.71</AssemblyVersion>
+    <FileVersion>1.0.22016.71</FileVersion>
+    <Version>1.0.22016</Version>
     <!--<Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
     <Copyright>Copyright © github/trondr 2018-2021</Copyright>-->
     <Company>github/trondr</Company>
     <Authors>github/trondr</Authors>
-    <Version>1.0.21290.62</Version> 
-
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -18,7 +18,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\02. serilog Credit.xml" />
@@ -42,15 +41,13 @@
     <Compile Include="Program.fs" />
     <Content Include="Debug.txt" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="5.0.2" />
-	<PackageReference Include="Common.Logging" Version="3.4.1" />
+    <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
     <PackageReference Include="NCmdLiner" Version="2.0.18110.340" />
-    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />  
+    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
     <ProjectReference Include="..\DriverTool.Library\DriverTool.Library.fsproj" />
     <ProjectReference Include="..\DriverTool.UI\DriverTool.UI.csproj" />
   </ItemGroup>
-  
 </Project>
