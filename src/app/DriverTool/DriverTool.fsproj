@@ -8,7 +8,7 @@
     <FileVersion>1.0.22016.72</FileVersion>
     <Version>1.0.22016</Version>
     <!--<Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
-    <Copyright>Copyright Â© github/trondr 2018-2021</Copyright>-->
+    <Copyright>Copyright &#169; github/trondr 2018-2021</Copyright>-->
     <Company>github/trondr</Company>
     <Authors>github/trondr</Authors>
   </PropertyGroup>
