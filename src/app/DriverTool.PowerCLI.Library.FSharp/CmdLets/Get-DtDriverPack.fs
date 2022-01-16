@@ -120,6 +120,10 @@ type OsBuildCompleter () =
 ///     Get-DtCmDeviceModel | Foreach-Object { Get-DtDriverPack -Manufacturer $_.Manufacturer -ModelCode $_.ModelCode -OperatingSystem win10 -Latest }
 ///     </code>
 /// </example>
+///      <code>
+///      # Write-Host "Get driver pack infos for specified Lenovo models"
+///      @("20QW","20QF") | Foreach-Object{ Write-Host "Getting driver pack for model $_";  Get-DtDriverPack -Manufacturer Lenovo -ModelCode $_ -OperatingSystem win10 -OsBuild 21H2 -Verbose }
+///      </code>
 /// </summary>
 [<Cmdlet(VerbsCommon.Get,"DtDriverPack")>]
 [<OutputType(typeof<string>)>]
