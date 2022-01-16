@@ -301,7 +301,7 @@ module Sccm =
 
                         yield sprintf "$GroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" wmiQuery.NameSpace wmiQuery.Query
                         yield sprintf "$ManufacturerGroups += New-CMTaskSequenceGroup -Name '%s' -Description 'Manufacturer %s' -Condition @($GroupCondition) -Step @($ModelGroups)" wmiQuery.Name wmiQuery.Name
-                    yield "$ApplyDriversGroup = New-CMTaskSequenceGroup -Name 'Apply Drivers' -Description 'Apply drivers to the offline operating system.' -Step @($ManufacturerGroups)"
+                    yield "$ApplyDriversGroup = New-CMTaskSequenceGroup -Name 'Apply Drivers' -Description 'Apply drivers.' -Step @($ManufacturerGroups)"
                     yield sprintf "$taskSequence = New-CMTaskSequence -CustomTaskSequence -Name '%s' -Description '%s'" name description
                     yield sprintf "Add-CMTaskSequenceStep -TaskSequenceName '%s' -Step @($ApplyDriversGroup)" name
                 }

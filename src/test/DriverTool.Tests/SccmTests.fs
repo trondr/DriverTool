@@ -171,7 +171,7 @@ $ModelGroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Quer
 $ModelGroups += New-CMTaskSequenceGroup -Name 'Dell Latitude 550' -Condition @($ModelGroupCondition) -Step @($commandLineStep,$restartStep)
 $GroupCondition = New-CMTSStepConditionQueryWMI -Namespace "root\WMI" -Query "select where Dell"
 $ManufacturerGroups += New-CMTaskSequenceGroup -Name 'Dell' -Description 'Manufacturer Dell' -Condition @($GroupCondition) -Step @($ModelGroups)
-$ApplyDriversGroup = New-CMTaskSequenceGroup -Name 'Apply Drivers' -Description 'Apply drivers to the offline operating system.' -Step @($ManufacturerGroups)
+$ApplyDriversGroup = New-CMTaskSequenceGroup -Name 'Apply Drivers' -Description 'Apply drivers.' -Step @($ManufacturerGroups)
 $taskSequence = New-CMTaskSequence -CustomTaskSequence -Name 'Example TS 1.0' -Description 'Example Custom Task Sequence'
 Add-CMTaskSequenceStep -TaskSequenceName 'Example TS 1.0' -Step @($ApplyDriversGroup)"""
     [<Test>]

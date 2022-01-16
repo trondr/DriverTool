@@ -43,14 +43,17 @@
 		,"Get-DtCmDeviceModel"
 		,"Connect-DtCmSite"
 		,'New-DtCmPackageFromDriverPackPackageDefinitionSms'
+		,'New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms'
 		)
 	
 	# Cmdlets to export from this module
-	CmdletsToExport = @('Get-DtDriverPack'
+	CmdletsToExport = @(
+		'Get-DtDriverPack'
 		,'Invoke-DtDownloadDriverPack'
 		,'Convert-DtExceptionToMessage'
 		,'Import-DtDriverPackPackageDefinitionSms'
 		,'Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms'
+		,'Get-DtScriptNewCmTaskSequenceFromDriverPackPackageDefinitionSms'
 		)
 	
 	# Variables to export from this module

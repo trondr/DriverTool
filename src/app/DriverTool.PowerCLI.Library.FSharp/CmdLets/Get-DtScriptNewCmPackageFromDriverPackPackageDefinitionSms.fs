@@ -9,7 +9,7 @@ open DriverTool.Library
 /// <para type="synopsis">Get script for creating new Sccm Package from DriverPack Package Definition Sms.</para>
 /// <para type="description">Get script for creating new Sccm Package from DriverPack Package Definition Sms.</para>
 /// <example>
-///     <code>Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms</code>
+///     <code>Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms -Path "\\sccmserver01\PkgSrc\Packages\Package1\PackageDefinition.sms"</code>
 /// </example>
 /// </summary>
 [<Cmdlet(VerbsCommon.Get,"DtScriptNewCmPackageFromDriverPackPackageDefinitionSms")>]
@@ -18,7 +18,7 @@ type GetDtScriptNewCmPackageFromDriverPackPackageDefinitionSms () =
     inherit PSCmdlet ()
     
     /// <summary>
-    /// <para type="description">PackageDefinition</para>
+    /// <para type="description">Path to PackageDefinition.sms</para>
     /// </summary>    
     [<Parameter(Mandatory=true,ValueFromPipeline=true,ValueFromPipelineByPropertyName=true)>]    
     member val Path : string[] = Array.empty with get,set
