@@ -56,3 +56,4 @@
 	
 	}
 }
+#TEST:Get-DtCmDeviceModel
