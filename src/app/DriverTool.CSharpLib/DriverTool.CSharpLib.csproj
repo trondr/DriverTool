@@ -1,10 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net48</TargetFramework>
+    <AssemblyVersion>1.0.22016.72</AssemblyVersion>
+    <FileVersion>1.0.22016.72</FileVersion>
+    <Version>1.0.22016</Version>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <DummyProperty>Dummy</DummyProperty>
+  </PropertyGroup>
   <ItemGroup>
     <COMReference Include="SHDocVw">
       <WrapperTool>tlbimp</WrapperTool>
@@ -16,9 +20,7 @@
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Common.Logging" Version="3.4.1" />
   </ItemGroup>
-
 </Project>

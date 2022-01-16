@@ -54,7 +54,7 @@ function Update-DtFsProjectVersion
     )
     Write-Host "Updating project: $Path"
     $xml = [xml](Get-Content $Path)
-    Write-Host "$($xml.OuterXml)"
+    #Write-Host "$($xml.OuterXml)"
     $xml.Project.PropertyGroup[0].AssemblyVersion = "$($ModuleVersion).$($Revision)"
     $xml.Project.PropertyGroup[0].FileVersion = "$($ModuleVersion).$($Revision)"
     $xml.Project.PropertyGroup[0].Version = $ModuleVersion
@@ -78,7 +78,7 @@ function Update-DtPSModuleVersion
     } | Set-Content -Path $Path
 }
 
-function Update-DtRevisionVersion
+function Get-DtRevisionVersion
 {
     param(
         [Parameter(Mandatory=$true)] 
@@ -87,7 +87,7 @@ function Update-DtRevisionVersion
     )
     $content = Get-Content -Path $Path
     try {
-        $revision = [System.Convert]::ToInt16($content.Trim()) + 1
+        $revision = [System.Convert]::ToInt16($content.Trim())
     }
     catch {
         $revision = 0
@@ -102,7 +102,7 @@ task UpdateVersion {
 	$psModuleFile = [System.IO.Path]::Combine($rootFolder,"modules","DriverTool.PowerCLI","DriverTool.PowerCLI.psd1")    
     Update-DtPSModuleVersion -Path $psModuleFile -ModuleVersion $ModuleVersion
     $revisionFile = [System.IO.Path]::Combine($rootFolder,"revision.txt")
-    $revision = Update-DtRevisionVersion -Path $revisionFile
+    $revision = Get-DtRevisionVersion -Path $revisionFile
     $projectFiles = @(
             [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool","DriverTool.fsproj")            
             [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.PowerCLI.Library.FSharp","DriverTool.PowerCLI.Library.FSharp.fsproj"),
@@ -110,7 +110,9 @@ task UpdateVersion {
             [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.DupExitCode2ExitCode","DriverTool.DupExitCode2ExitCode.fsproj"),
             [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.DpInstExitCode2ExitCode","DriverTool.DpInstExitCode2ExitCode.fsproj"),
             [System.IO.Path]::Combine($rootFolder,"src","test","DriverTool.Tests","DriverTool.Tests.fsproj"),
-            [System.IO.Path]::Combine($rootFolder,"src","test","DriverTool.PowerCLI.Library.Tests","DriverTool.PowerCLI.Library.Tests.fsproj")
+            [System.IO.Path]::Combine($rootFolder,"src","test","DriverTool.PowerCLI.Library.Tests","DriverTool.PowerCLI.Library.Tests.fsproj"),
+            [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.PowerCLI.Library.CSharp","DriverTool.PowerCLI.Library.CSharp.csproj"),
+            [System.IO.Path]::Combine($rootFolder,"src","app","DriverTool.CSharpLib","DriverTool.CSharpLib.csproj")
         )
     $projectFiles | Foreach-Object{ Update-DtFsProjectVersion -Path $_ -ModuleVersion $ModuleVersion -Revision $revision}
 }

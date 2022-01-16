@@ -2,8 +2,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
-    <AssemblyVersion>1.0.22016.71</AssemblyVersion>
-    <FileVersion>1.0.22016.71</FileVersion>
+    <AssemblyVersion>1.0.22016.72</AssemblyVersion>
+    <FileVersion>1.0.22016.72</FileVersion>
     <Version>1.0.22016</Version>
   </PropertyGroup>
   <PropertyGroup>
