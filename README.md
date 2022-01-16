@@ -181,8 +181,8 @@ As DriverTool does not calculate dependencies between updates it will in many ca
 ## Command line help
 
 ```
-DriverTool 1.0.21290.60 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
-Copyright © github/trondr 2018-2021
+DriverTool 1.0.22016 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
+Copyright © github/trondr 2018-2022
 Usage: DriverTool.exe <command> [parameters]
 
 Commands:
@@ -459,7 +459,7 @@ DecompressDriverPackage         Decompress Drivers.zip to \Drivers folder.
 CmUi                            Start user interface for download and
                                 packaging of CM device drivers into SCCM.
 
-   Example: DriverTool.exe CmUi
+   Example: DriverTool.exe CmUi 
  
 ```
 
