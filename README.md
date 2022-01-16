@@ -541,6 +541,11 @@ if((Test-Path -Path $vsInstallerExe) -eq $false)
     Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_enterprise.exe" -OutFile "$vsInstallerExe"
 }
 . $vsInstallerExe --add "Microsoft.VisualStudio.Component.FSharp.Desktop" --passive --norestart --quiet
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+Install-Module VSSetup
+Install-Module psake
+Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
 choco feature disable -n allowGlobalConfirmation
 ```
 
