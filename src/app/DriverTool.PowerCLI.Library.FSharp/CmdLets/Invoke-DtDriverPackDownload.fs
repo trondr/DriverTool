@@ -8,8 +8,8 @@ module InvokeDtDownloadDriverPack =
     
     let downloadDriverPackInfo reportProgress dp =
         match(result{
-            let! cacheFolder = DriverTool.Library.FileSystem.path (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())                
-            let! driverPackInfos = DriverTool.Updates.downloadDriverPackInfo cacheFolder reportProgress dp
+            let! cacheFolder = DriverTool.Library.FileSystem.path (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())            
+            let! driverPackInfos = DriverTool.Library.CmUi.UiModels.packageSccmPackage cacheFolder reportProgress dp
             return driverPackInfos
         })with
         |Result.Ok dps -> dps
