@@ -25,6 +25,14 @@ module InvokeDtDownloadDriverPack =
 /// <example>
 ///     <code>Get-DtDriverPack -Manufacturer Lenovo -ModelCode 20EQ -OperatingSystem win10 -Latest | Invoke-DtDownloadDriverPack</code>
 /// </example>
+/// <example>
+///     <code>
+///     @("20QW","20QF") | Foreach-Object{ Write-Host "Getting driver pack for model $_";  Get-DtDriverPack -Manufacturer Lenovo -ModelCode "$_" -OperatingSystem "win10" -OsBuild "21H2" -Verbose } | Invoke-DtDownloadDriverPack
+///     </code>
+/// </example>
+
+
+
 /// </summary>
 [<Cmdlet(VerbsLifecycle.Invoke,"DtDownloadDriverPack")>]
 [<OutputType(typeof<string>)>]
