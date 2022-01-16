@@ -205,7 +205,9 @@ module Sccm =
     //Build script to create new Sccm Package from DriverPack definition
     let toNewCmPackagePSScript sourceFolderPath packageDefinition = 
         let script = 
-            seq{                    
+            let packageName = (WrappedString.value packageDefinition.Name)
+            seq{                                    
+                yield (sprintf "if( (((Get-CMPackage -Name '%s' -Fast) | Measure-Object).Count) -gt 0){throw \"Package '%s' allready exists!\"}" packageName packageName)
                 yield (sprintf "$package = %s" (toDriverPackInfoPSCommand packageDefinition (FileSystem.pathValue sourceFolderPath)))
                 yield ("$package | Set-CMPackage -EnableBinaryDeltaReplication $true")
                 for program in packageDefinition.Programs do
