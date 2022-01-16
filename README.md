@@ -12,7 +12,7 @@ Packaging and command line experience is required to use and understand this too
 
 DriverTool currently supports PCs from Dell, HP and Lenovo.
 
-# Procedure
+# Procedure (DriverTool.exe)
 
 1. Install Windows 10 from original media
    * Typically there will be uknown devices in Device Manager after operating system has been installed. 
