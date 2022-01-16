@@ -33,8 +33,7 @@
 	{
 		foreach($p in $Path)
 		{
-			try {
-				Write-Host "TODO: Implemented processing of each item in the pipe line: $p" -ForegroundColor Yellow
+			try {				
 				$script = Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms -Path $p
 				Write-Host "Invoking script to create Sccm Package:"
 				Write-Host "$script"
