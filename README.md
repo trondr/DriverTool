@@ -460,10 +460,27 @@ CmUi                            Start user interface for download and
                                 packaging of CM device drivers into SCCM.
 
    Example: DriverTool.exe CmUi 
- 
+``` 
+
+# Procedure (PowerShell)
+	
+## Install Powershell Module
+	
+1. Create local PS Repository 
+
+```PowerShell
+New-Item -Path c:\ -Name LocalPSRepository -ItemType Directory -Force
+Register-PSRepository -Name LocalPSRepository -SourceLocation "C:\LocalPSRepository" -PublishLocation "C:\LocalPSRepository" -InstallationPolicy Trusted
+```
+2. Download and copy DriverTool.PowerCLI.1.0.22016.nupkg to C:\LocalPSRepository
+	
+3. Install PowerShell Module
+
+```PowerShell
+Install-Module -Repository LocalPSRepository -Name DriverTool.PowerCLI
 ```
 	
-# Procedure (PowerShell)
+## Create Driver Pack Packages and task sequence.
 	
 Automated procedure for downloading, extracting, packaging and adding driver packs to a new task sequence. This will replace the CM Device driver package steps in the "DriverTool.exe" procedure above. The task sequence created can be added as a sub task sequence to the main OSD task sequence.
 
