@@ -2,9 +2,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net48</TargetFrameworks>
-    <AssemblyVersion>1.0.22016.72</AssemblyVersion>
-    <FileVersion>1.0.22016.72</FileVersion>
-    <Version>1.0.22016</Version>
+    <AssemblyVersion>1.0.22023.74</AssemblyVersion>
+    <FileVersion>1.0.22023.74</FileVersion>
+    <Version>1.0.22023</Version>
   </PropertyGroup>
   <PropertyGroup>
     <DummyProperty>Dummy</DummyProperty>

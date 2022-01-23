@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarnOn>3390;$(WarnOn)</WarnOn>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyVersion>1.0.22016.72</AssemblyVersion>
-    <FileVersion>1.0.22016.72</FileVersion>
-    <Version>1.0.22016</Version>
+    <AssemblyVersion>1.0.22023.74</AssemblyVersion>
+    <FileVersion>1.0.22023.74</FileVersion>
+    <Version>1.0.22023</Version>
   </PropertyGroup>
   <PropertyGroup>
     <DummyProperty>Dummy</DummyProperty>
@@ -19,9 +19,9 @@
     <Compile Include="CmdLets\Data.fs" />
     <Compile Include="CmdLets\Completers.fs" />
     <Compile Include="CmdLets\Get-DtDriverPack.fs" />
-	<Compile Include="CmdLets\Get-DtDriverUpdates.fs" />
+    <Compile Include="CmdLets\Get-DtDriverUpdates.fs" />
     <Compile Include="CmdLets\Invoke-DtDownloadDriverPack.fs" />
-	<Compile Include="CmdLets\Invoke-DtDownloadDriverUpdates.fs" />
+    <Compile Include="CmdLets\Invoke-DtDownloadDriverUpdates.fs" />
     <Compile Include="CmdLets\Convert-DtExceptionToMessage.fs" />
     <Compile Include="CmdLets\Import-DtDriverPackPackageDefinitionSms.fs" />
     <Compile Include="CmdLets\Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms.fs" />
