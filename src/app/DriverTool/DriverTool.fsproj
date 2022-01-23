@@ -30,7 +30,6 @@
     <EmbeddedResource Include="License\03. NUnit License.xml" />
     <EmbeddedResource Include="License\04. CsvHelper License.xml" />
     <EmbeddedResource Include="License\05. mvvm-helpers License.xml" />
-    <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <None Include="Script.fsx" />
     <Compile Include="Init.fs" />

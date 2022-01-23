@@ -78,35 +78,6 @@ Target.create "RestorePackages" (fun _ ->
 
 Target.create "BuildApp" (fun _ -> 
     Trace.trace "Building app..."
-    let now2 = System.DateTime.Now
-    let year = now2.Year.ToString()
-    AssemblyInfoFile.createFSharp "./src/app/DriverTool/AssemblyInfo.fs"
-        [
-            AssemblyInfo.Title "DriverTool"
-            AssemblyInfo.Description "Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application." 
-            AssemblyInfo.Product "DriverTool"
-            AssemblyInfo.Company "github/trondr"
-            AssemblyInfo.Copyright (sprintf "Copyright \u00A9 github/trondr 2018-%s" year )
-            AssemblyInfo.Version assemblyVersion
-            AssemblyInfo.FileVersion assemblyVersion                        
-            AssemblyInfo.ComVisible false
-            AssemblyInfo.Guid "19822aea-c088-455d-b5a5-4738a3a9dba7"
-            AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
-        ]
-    
-    AssemblyInfoFile.createFSharp "./src/app/DriverTool.Library/AssemblyInfo.fs"
-        [
-            AssemblyInfo.Title "DriverTool.Library"
-            AssemblyInfo.Description "Library providing common DriverTool functionality."
-            AssemblyInfo.Product "DriverTool.Library"
-            AssemblyInfo.Company "github/trondr"
-            AssemblyInfo.Copyright (sprintf "Copyright \u00A9 github/trondr 2018-%s" year )
-            AssemblyInfo.Version assemblyVersion
-            AssemblyInfo.FileVersion assemblyVersion                        
-            AssemblyInfo.ComVisible false
-            AssemblyInfo.Guid "19822aea-c088-455d-b5a5-4738a3a9dba8"
-            AssemblyInfo.InternalsVisibleTo "DriverTool.Tests"
-        ]
 
     !! "src/app/**/DriverTool.DpInstExitCode2ExitCode.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
