@@ -7,10 +7,10 @@ open DriverTool.Library
 /// <para type="synopsis">Get driver updates</para>
 /// <para type="description">Get driver updates</para>
 /// <example>
-///     <code>Get-DtDriverUpdates -Manufacturer "Lenovo" -Model "20EQ" -OperatingSystem "WIN10"</code>
+///     <code>Get-DtDriverUpdates -Manufacturer "Lenovo" -Model "20EQ" -OperatingSystem "WIN10" -Osbuild "21H2"</code>
 /// </example>
 /// <example>
-///     <code>Get-DtDriverUpdates -Manufacturer "Lenovo" -Model "20EQ" -OperatingSystem "WIN10" -ExcludeDriverUpdates @("BIOS","Firmware") </code>
+///     <code>Get-DtDriverUpdates -Manufacturer "Lenovo" -Model "20EQ" -OperatingSystem "WIN10" -Osbuild "21H2" -ExcludeDriverUpdates @("BIOS","Firmware") </code>
 /// </example>
 /// </summary>
 [<Cmdlet(VerbsCommon.Get,"DtDriverUpdates")>]
@@ -40,6 +40,13 @@ type GetDtDriverUpdates () =
     member val OperatingSystem :string = System.String.Empty with get,set
 
     /// <summary>
+    /// <para type="description">OsBuild. Example: 21H2</para>
+    /// </summary>
+    [<Parameter(Mandatory=false,ParameterSetName=Constants.SingleModelParameterSetName)>]
+    [<ArgumentCompleter(typeof<OperatingSystemCodeCompleter>)>]
+    member val OsBuild :string = "All" with get,set
+
+    /// <summary>
     /// <para type="description">Exlude driver updates specified in this array of regular expression patterns. If there is a match in package info title or package info category the driver update will be excluded.</para>
     /// </summary>
     [<Parameter(Mandatory=false,ParameterSetName=Constants.SingleModelParameterSetName)>]        
@@ -53,7 +60,7 @@ type GetDtDriverUpdates () =
         let excludeDriverUpdatesRegExPatters = resultToValueUnsafe (this.ExcludeDriverUpdates |> RegExp.toRegexPatterns true)
         let operatingSystem = OperatingSystem.getOsNameFromOsShortName this.OperatingSystem //WIN10X64 -> WIN10
         let modelName = Data.getModelName this.Manufacturer this.ModelCode operatingSystem
-        let modelInfo = resultToValueUnsafe (DriverTool.Library.DriverUpdates.loadDriverUpdates (DriverTool.Library.Logging.reportProgressStdOut') cacheFolderPath manufacturer model modelName operatingSystemCode excludeDriverUpdatesRegExPatters )
+        let modelInfo = resultToValueUnsafe (DriverTool.Library.DriverUpdates.loadDriverUpdates (DriverTool.Library.Logging.reportProgressStdOut') cacheFolderPath manufacturer model modelName operatingSystemCode this.OsBuild excludeDriverUpdatesRegExPatters )
         this.WriteObject(modelInfo)  
         ()
         

@@ -20,7 +20,8 @@
     <Compile Include="CmdLets\Completers.fs" />
     <Compile Include="CmdLets\Get-DtDriverPack.fs" />
 	<Compile Include="CmdLets\Get-DtDriverUpdates.fs" />
-    <Compile Include="CmdLets\Invoke-DtDriverPackDownload.fs" />
+    <Compile Include="CmdLets\Invoke-DtDownloadDriverPack.fs" />
+	<Compile Include="CmdLets\Invoke-DtDownloadDriverUpdates.fs" />
     <Compile Include="CmdLets\Convert-DtExceptionToMessage.fs" />
     <Compile Include="CmdLets\Import-DtDriverPackPackageDefinitionSms.fs" />
     <Compile Include="CmdLets\Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms.fs" />

@@ -51,6 +51,7 @@
 		'Get-DtDriverPack'
 		,'Get-DtDriverUpdates'
 		,'Invoke-DtDownloadDriverPack'
+		,'Invoke-DtDownloadDriverUpdates'
 		,'Convert-DtExceptionToMessage'
 		,'Import-DtDriverPackPackageDefinitionSms'
 		,'Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms'
