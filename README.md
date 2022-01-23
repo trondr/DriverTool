@@ -514,13 +514,13 @@ Automated procedure for downloading, extracting, packaging and adding driver upd
 This procedures downloads _all_ driver updates for a specified computer model and can be run without having access to the computer model in question.
 
 Note! Some of the drivers for a model might allready be installed or not even required due to differences in actual hardware components installed. 
-The resulting driver updates package can therefor be manually trimmed for unrequired drivers. If the resulting driver package from this procedure is 
+The resulting driver updates package can therefore be manually trimmed for unrequired drivers. If the resulting driver package from this procedure is 
 not trimmed for unrequired drivers, this might still work sucessfully but assumes that all driver updates quits gracefully if not applicable. Testing 
-is allways neccessary.
+is allways neccessary!
 
 Note! An automated procedure for creating a allready trimmed package is availble when signed into the actual computer model in question. 
 The required drivers can then be calculated based on locally installed updates after filling the machine up using the vendor update utility.
-See above DriverTool procedure.
+See DriverTool procedure further up.
 
 1. Download, extract and package driver packs. Example:
 
