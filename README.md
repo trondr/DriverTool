@@ -511,7 +511,7 @@ New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms -Path $packageDefintionSm
 
 ## Create DriverUpdates Packages and task sequence
 
-Automated procedure for downloading, extracting, packaging and adding driver updates to a new task sequence.
+Automated procedure for downloading, extracting, packaging and adding driver updates to a new task sequence. The resulting task sequence can be added as a sub task sequence to the main OSD task sequence.
 
 This procedures downloads _all_ driver updates for a specified computer model and can be run without having access to the computer model in question.
 
