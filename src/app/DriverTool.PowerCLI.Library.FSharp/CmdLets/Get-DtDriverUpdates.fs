@@ -48,13 +48,13 @@ type GetDtDriverUpdates () =
     override this.BeginProcessing() =
         let manufacturer = ManufacturerTypes.toManufacturer this.Manufacturer
         let model = resultToValueUnsafe (ModelCode.create this.ModelCode false)
-        let operatingSystem = resultToValueUnsafe (OperatingSystemCode.create this.OperatingSystem false)
+        let operatingSystemCode = resultToValueUnsafe (OperatingSystemCode.create this.OperatingSystem false)
         let cacheFolderPath = resultToValueUnsafe (DriverTool.Library.FileSystem.path (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath()))
         let excludeDriverUpdatesRegExPatters = resultToValueUnsafe (this.ExcludeDriverUpdates |> RegExp.toRegexPatterns true)
-        let driverUpdates = resultToValueUnsafe (DriverTool.Library.DriverUpdates.loadDriverUpdates (DriverTool.Library.Logging.reportProgressStdOut') cacheFolderPath manufacturer model operatingSystem excludeDriverUpdatesRegExPatters )
-        driverUpdates
-        |>Array.map(fun du -> this.WriteObject(du))
-        |>ignore
+        let operatingSystem = OperatingSystem.getOsNameFromOsShortName this.OperatingSystem //WIN10X64 -> WIN10
+        let modelName = Data.getModelName this.Manufacturer this.ModelCode operatingSystem
+        let modelInfo = resultToValueUnsafe (DriverTool.Library.DriverUpdates.loadDriverUpdates (DriverTool.Library.Logging.reportProgressStdOut') cacheFolderPath manufacturer model modelName operatingSystemCode excludeDriverUpdatesRegExPatters )
+        this.WriteObject(modelInfo)  
         ()
         
     override this.ProcessRecord() =

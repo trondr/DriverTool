@@ -20,6 +20,18 @@ module Data =
             
     let allDriverPacks = lazy (getAllDriverPacks ())
 
+    ///Get model name
+    let getModelName manufacturer modelCode (operatingSystem:string) =
+        let model = 
+            allDriverPacks.Value
+            |>Array.filter(fun dp -> dp.Manufacturer = manufacturer)
+            |>Array.filter(fun dp -> dp.ModelCodes|>Array.contains modelCode)
+            |>Array.filter(fun dp -> dp.Os.ToUpper() = operatingSystem.ToUpper())
+            |>Array.tryHead
+        match model with
+        |Some m -> m.Model
+        |None -> modelCode
+
     let getModelCodes manufacturer (driverPacks:DriverPack.DriverPackInfo[]) =
         driverPacks
         |>Array.filter(fun dp -> dp.Manufacturer = manufacturer)

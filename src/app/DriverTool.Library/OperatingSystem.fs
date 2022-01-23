@@ -213,6 +213,9 @@ module OperatingSystem =
         let isX64 = isOperatingSystemX64        
         getOsShortNameBase (osMajorVersion, osMinorVersion, isX64, isServer)
 
+    let getOsNameFromOsShortName (osShortName:string) = 
+        osShortName.Replace("X64","").Replace("X86","")
+
     let getValidOsShortNames =
         let versions = 
             seq{ 

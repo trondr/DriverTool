@@ -1,7 +1,13 @@
 ﻿Executeable: c:\Windows\system32\WindowsPowerShell\v1.0\powershell.exe
 Arguments: -NoExit -Command "& Import-Module 'C:\Dev\github.trondr\DriverTool\src\app\DriverTool.PowerCLI.Library.FSharp\bin\Debug\net48\DriverTool.PowerCLI.Library.FSharp.dll' -Verbose;Get-DtDriverPack -Manufacturer Lenovo -ModelCode 20EQ -OperatingSystem win10 -Latest | Invoke-DtDownloadDriverPack"
 
+Arguments: -NoExit -Command "& Import-Module 'C:\Dev\github.trondr\DriverTool\src\app\DriverTool.PowerCLI.Library.FSharp\bin\Debug\net48\DriverTool.PowerCLI.Library.FSharp.dll' -Verbose;Get-DtDriverUpdates -Manufacturer Lenovo -ModelCode 20QW -OperatingSystem WIN10X64"
+
+
 Arguments: -NoExit -Command "& Import-Module 'C:\Dev\github.trondr\DriverTool\src\app\DriverTool.PowerCLI.Library.FSharp\bin\Debug\net48\DriverTool.PowerCLI.Library.FSharp.dll' -Verbose;try{$innerException1 = New-Object -TypeName 'System.Exception' -ArgumentList @('Simulated Inner Exception 1.');$innerException2 = New-Object -TypeName "System.Exception" -ArgumentList @('Simulated Inner Exception 2.',$innerException1);$outerException = New-Object -TypeName 'System.Exception' -ArgumentList @('Simulated Outer Exception.',$innerException2);throw $outerException}catch{Convert-DtExceptionToMessage -Exception $_.Exception}"
+
+
+
 
 
 
