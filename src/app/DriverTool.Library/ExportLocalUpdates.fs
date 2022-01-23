@@ -16,7 +16,7 @@ module ExportLocalUpdates =
             let! localOperatingSystemCode = OperatingSystemCode.create String.Empty true
             
             let! logDirectory = FileSystem.path DriverTool.Library.Configuration.getDriverPackageLogDirectoryPath
-            let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
+            let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns true excludeUpdatePatterns
             let updatesRetrievalContext = toUpdatesRetrievalContext localManufacturer localModelCode localOperatingSystemCode true logDirectory cacheFolderPath true excludeUpdateRegexPatterns
             let getUpdates = DriverTool.Updates.getUpdatesFunc (logger,localManufacturer, updatesRetrievalContext.BaseOnLocallyInstalledUpdates)
             let! localUpdates = getUpdates cacheFolderPath updatesRetrievalContext

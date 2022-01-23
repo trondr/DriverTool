@@ -30,7 +30,7 @@ module RegExpTests =
                             [|@"Soft\ware";@"Utility";@"B.OS";"Firmware"|]
                         |false -> 
                             [|@"Soft\ware";@"Utility";@"B.OS";"Firmware";@"\!#%((()"|]
-                    let! regExPatterns = RegExp.toRegexPatterns patterns ignoreCase
+                    let! regExPatterns = RegExp.toRegexPatterns ignoreCase patterns
                     let actual = RegExp.matchAny regExPatterns text
                     Assert.AreEqual(expected,actual,text)
                     return actual

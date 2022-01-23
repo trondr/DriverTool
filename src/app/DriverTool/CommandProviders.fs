@@ -54,7 +54,7 @@ module CommandProviders =
                 let! operatingSystemCode = OperatingSystemCode.create operatingSystemString true
                 let! destinationFolderPath = FileSystem.path destinationFolder
                 let! logDirectory = FileSystem.path DriverTool.Library.Configuration.getDriverPackageLogDirectoryPath
-                let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
+                let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns true excludeUpdatePatterns
                 let! released = toDateTime sccmPackageReleased
                 let! cacheFolderPath = FileSystem.path (DriverTool.Library.Configuration.getDownloadCacheDirectoryPath())
                 let! existingCacheFolderPath = DirectoryOperations.ensureDirectoryExists true cacheFolderPath
@@ -127,7 +127,7 @@ module CommandProviders =
             let allmodelCodes = DriverTool.LenovoCatalog.getAllLenovoModels lenovoCatalogProducts
             let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" false
             let! logDirectory = FileSystem.path @"c:\temp"
-            let! patterns = (RegExp.toRegexPatterns [||] true)            
+            let! patterns = (RegExp.toRegexPatterns true [||])
             let logger = DriverTool.Library.Logging.getLoggerByName "DownloadLenovoUpdatePackageXmls"
             let packageInfoResults =
                 allmodelCodes|>Array.map(fun modelCode -> 

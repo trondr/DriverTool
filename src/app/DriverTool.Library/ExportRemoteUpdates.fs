@@ -11,7 +11,7 @@ module ExportRemoteUpdates =
     let exportRemoteUpdates cacheFolderPath logger (manufacturer:Manufacturer) (model: ModelCode) (operatingSystem:OperatingSystemCode) csvFilePath overwrite excludeUpdatePatterns =         
         result {
             let! logDirectory = FileSystem.path DriverTool.Library.Configuration.getDriverPackageLogDirectoryPath
-            let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns excludeUpdatePatterns true
+            let! excludeUpdateRegexPatterns = RegExp.toRegexPatterns true excludeUpdatePatterns 
             let updatesRetrievalContext = toUpdatesRetrievalContext manufacturer model operatingSystem overwrite logDirectory cacheFolderPath false excludeUpdateRegexPatterns            
             let! csvFilePath = ensureFileDoesNotExist overwrite csvFilePath
             let getUpdates = DriverTool.Updates.getUpdatesFunc (logger, manufacturer, updatesRetrievalContext.BaseOnLocallyInstalledUpdates)
