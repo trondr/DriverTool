@@ -190,6 +190,12 @@ module PackageDefinitionSms =
         |0 -> Result.Error (toException "No programs defined in package definition sms." None)
         |_ -> Result.Ok smsPrograms
         
+    type DetectionMethodRegistryValue =
+        {
+            Value:string
+            Is64Bit:bool
+        }
+
 
     type  SmsPackageDefinition =
         {
@@ -204,6 +210,7 @@ module PackageDefinitionSms =
             ManufacturerWmiQuery:DriverPack.WmiQuery
             ModelWmiQuery:DriverPack.WmiQuery
             SourcePath:string option
+            DetectionMethod:DetectionMethodRegistryValue option
         }
 
 
@@ -229,6 +236,7 @@ module PackageDefinitionSms =
                     ManufacturerWmiQuery=manufacturerWmiQuery
                     ModelWmiQuery=modelWmiQuery
                     SourcePath=None
+                    DetectionMethod = None
                 }
             return smsPackageDefinition
         }
@@ -345,7 +353,15 @@ module PackageDefinitionSms =
             yield (sprintf "Name=%s" smsPackageDefinition.ModelWmiQuery.Name)
             yield (sprintf "NameSpace=%s" smsPackageDefinition.ModelWmiQuery.NameSpace)
             yield (sprintf "Query=%s" smsPackageDefinition.ModelWmiQuery.Query)
-            
+
+            match(smsPackageDefinition.DetectionMethod) with
+            |Some dmrv ->
+                yield ""
+                yield "[DetectionMethod]"
+                yield (sprintf "RegistryValue=%s" dmrv.Value)
+                yield (sprintf "RegistryValueIs64Bit=%b" dmrv.Is64Bit)
+            |None -> yield ""
+                        
         } |> Seq.toArray |>String.concat Environment.NewLine
             
     open IniParser
