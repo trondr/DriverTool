@@ -472,7 +472,7 @@ CmUi                            Start user interface for download and
 New-Item -Path c:\ -Name LocalPSRepository -ItemType Directory -Force
 Register-PSRepository -Name LocalPSRepository -SourceLocation "C:\LocalPSRepository" -PublishLocation "C:\LocalPSRepository" -InstallationPolicy Trusted
 ```
-2. Download and copy DriverTool.PowerCLI.1.0.22016.nupkg to C:\LocalPSRepository
+2. Download and copy DriverTool.PowerCLI.%version%.nupkg to C:\LocalPSRepository
 	
 3. Install PowerShell Module
 
