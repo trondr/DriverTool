@@ -27,6 +27,11 @@ module InvokeDtDriverUpdatesDownload =
 ///     @("20QW","20QF") | Foreach-Object{ Write-Host "Getting driver updates for model $_";  Get-DtDriverUpdates -Manufacturer Lenovo -ModelCode "$_" -OperatingSystem "WIN10X64" -Verbose } | Invoke-DtDownloadDriverUpdates
 ///     </code>
 /// </example>
+/// <example>
+///     <code>
+///     @("20QW","20QF") | Foreach-Object{ Write-Host "Getting driver updates for model $_";  Get-DtDriverUpdates -Manufacturer Lenovo -ModelCode "$_" -OperatingSystem "WIN10X64" -OsBuild "21H2" -ExcludeDriverUpdates @("BIOS","Firmware") -Verbose } | Invoke-DtDownloadDriverUpdates
+///     </code>
+/// </example>
 /// </summary>
 [<Cmdlet(VerbsLifecycle.Invoke,"DtDownloadDriverUpdates")>]
 [<OutputType(typeof<string>)>]

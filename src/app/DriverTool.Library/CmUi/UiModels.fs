@@ -97,7 +97,7 @@ module UiModels =
             reportProgress (sprintf "Extracting driver updates to folder '%A'...\n" driversPath) String.Empty String.Empty None true None
             let! driversPath = combine2Paths (FileSystem.pathValue versionedPackagePath, "Drivers")            
             let! existingDriversPath = DirectoryOperations.ensureDirectoryExists true driversPath
-            let! extractedUpdates = DriverTool.CreateDriverPackage.extractUpdates (existingDriversPath,manufacturer, updatedInfoDownloadedUpdates)
+            let! extractedUpdates = DriverTool.CreateDriverPackage.extractUpdates (existingDriversPath, manufacturer, updatedInfoDownloadedUpdates)
             let! logDirectory = FileSystem.path packageInstallLogDirectory
             let installScriptResults = DriverTool.CreateDriverPackage.createInstallScripts (extractedUpdates,manufacturer,logDirectory)
             let packageSmsResults = DriverTool.CreateDriverPackage.createPackageDefinitionFiles (extractedUpdates, logDirectory, packagePublisher)
