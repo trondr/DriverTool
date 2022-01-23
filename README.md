@@ -480,7 +480,7 @@ Register-PSRepository -Name LocalPSRepository -SourceLocation "C:\LocalPSReposit
 Install-Module -Repository LocalPSRepository -Name DriverTool.PowerCLI
 ```
 	
-## Create Driver Pack Packages and task sequence.
+## Create DriverPack Packages and task sequence.
 	
 Automated procedure for downloading, extracting, packaging and adding driver packs to a new task sequence. This will replace the CM Device driver package steps in the "DriverTool.exe" procedure above. The task sequence created can be added as a sub task sequence to the main OSD task sequence.
 
@@ -507,12 +507,20 @@ $packageDefintionSms
 New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms -Path $packageDefintionSms -Name "Test CM Drivers 21H2" -Description "Test CM Drivers 21H2" -ProgramName "INSTALL-OFFLINE-OS"
 ```
 
-## Create Driver Updates Package and task sequence
+## Create DriverUpdates Packages and task sequence
 
-Automated procedure for downloading, extracting, packaging and adding driver updates to a new task sequence. 
+Automated procedure for downloading, extracting, packaging and adding driver updates to a new task sequence.
 
-Important! This procedures downloads _all_ driver updates for a specified list of models and works without running the procedure on the computer models in question. Some of the drivers for a model might allready be installed or not even required due to differences in hardware components installed. To trim the resulting package removing unrequired drivers from a package can be done but is a manual procedure. 
-The automated procedure is availble when signed into the actual computer model in question. The required drivers can then be calculated based on locally installed updates. Command line: DriverTool.exe CreateDriverPackage /destinationFolder="c:\temp\DU" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']")
+This procedures downloads _all_ driver updates for a specified computer model and can be run without having access to the computer model in question.
+
+Note! Some of the drivers for a model might allready be installed or not even required due to differences in actual hardware components installed. 
+The resulting driver updates package can therefor be manually trimmed for unrequired drivers. If the resulting driver package from this procedure is 
+not trimmed for unrequired drivers, this might still work sucessfully but assumes that all driver updates quits gracefully if not applicable. Testing 
+is allways neccessary.
+
+Note! An automated procedure for creating a allready trimmed package is availble when signed into the actual computer model in question. 
+The required drivers can then be calculated based on locally installed updates after filling the machine up using the vendor update utility.
+See above DriverTool procedure.
 
 1. Download, extract and package driver packs. Example:
 
