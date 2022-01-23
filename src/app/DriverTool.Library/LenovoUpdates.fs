@@ -192,6 +192,33 @@ module LenovoUpdates =
                 |>Seq.toArray
         }
 
+    let filterDriverUpdates excludeUpdateRegexPatterns packageInfo =
+        (not (RegExp.matchAny excludeUpdateRegexPatterns packageInfo.Category)) 
+        &&                             
+        (not (RegExp.matchAny excludeUpdateRegexPatterns packageInfo.Title))
+
+    let getDriverUpdates reportProgress cacheFolderPath (model:ModelCode) (operatingSystem:OperatingSystemCode) excludeUpdateRegexPatterns =
+        result{
+            let modelInfoUri = getModelInfoUri model operatingSystem
+            let! modelInfoXmlFilePath = getModelInfoXmlFilePath cacheFolderPath model operatingSystem            
+            let downloadInfo = DriverTool.Library.Web.toDownloadInfo modelInfoUri String.Empty 0L modelInfoXmlFilePath                
+            let! downloadedInfo = DriverTool.Library.Web.downloadIfDifferent logger reportProgress downloadInfo true
+            let! packageXmlInfos = loadPackagesXml downloadedInfo.DestinationFile
+            let! downloadedPackageXmls = downloadPackageXmls cacheFolderPath packageXmlInfos
+            let! packageInfos = 
+                (parsePackageXmls downloadedPackageXmls)
+                |>toAccumulatedResult
+            let! downloadResult = 
+                    packageInfos
+                    |>Seq.toArray
+                    |> Array.map (downloadExternalFiles cacheFolderPath)                    
+                    |> toAccumulatedResult            
+            return 
+                packageInfos 
+                |>Seq.filter (filterDriverUpdates excludeUpdateRegexPatterns)
+                |>Seq.toArray
+        }
+
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =
         if(actualModel.Value.StartsWith(model.Value)) then
             Result.Ok true

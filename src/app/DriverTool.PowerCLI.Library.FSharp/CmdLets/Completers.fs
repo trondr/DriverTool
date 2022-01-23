@@ -28,14 +28,22 @@ type ModelCodeCompleter () =
 type OperatingSystemCompleter () =
     interface IArgumentCompleter with
         member this.CompleteArgument(commandName:string,parameterName:string,wordToComplete:string,commandAst:CommandAst,fakeBoundParameters:IDictionary) =
-            let modelCodes =
+            let operatingSystems =
                 if(fakeBoundParameters.Contains("Manufacturer") && fakeBoundParameters.Contains("ModelCode")) then
                     let manufacturerName = fakeBoundParameters.["Manufacturer"] :?>string
                     let modelCode = fakeBoundParameters.["ModelCode"] :?>string
                     Data.getOperatingSystems manufacturerName modelCode Data.allDriverPacks.Value        
                 else
                     [||]            
-            modelCodes
+            operatingSystems
+            |>Seq.filter(fun mc -> (new WildcardPattern(wordToComplete + "*", WildcardOptions.IgnoreCase)).IsMatch(mc))
+            |>Seq.map(fun mc -> new CompletionResult(mc))
+
+type OperatingSystemCodeCompleter () =
+    interface IArgumentCompleter with
+        member this.CompleteArgument(commandName:string,parameterName:string,wordToComplete:string,commandAst:CommandAst,fakeBoundParameters:IDictionary) =            
+            OperatingSystem.getValidOsShortNames
+            |>Seq.toArray
             |>Seq.filter(fun mc -> (new WildcardPattern(wordToComplete + "*", WildcardOptions.IgnoreCase)).IsMatch(mc))
             |>Seq.map(fun mc -> new CompletionResult(mc))
 

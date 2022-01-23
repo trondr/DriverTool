@@ -115,15 +115,15 @@ module SdpUpdates =
     /// <summary>
     /// Convert Sdps (SoftwareDistributionPackage's) to PackagInfo's
     /// </summary>
-    /// <param name="context"></param>
+    /// <param name="excludeUpdateRegexPatterns"></param>
     /// <param name="toPackageInfos"></param>
     /// <param name="sdps"></param>
-    let sdpsToPacakgeInfos (context:UpdatesRetrievalContext) toPackageInfos (sdps:seq<SoftwareDistributionPackage>) : PackageInfo[] =
+    let sdpsToPacakgeInfos excludeUpdateRegexPatterns toPackageInfos (sdps:seq<SoftwareDistributionPackage>) : PackageInfo[] =
         let packageInfos =
             sdps
             |>Seq.map toPackageInfos                
             |>Seq.concat
-            |>Seq.filter (packageExcludeFilter context.ExcludeUpdateRegexPatterns)
+            |>Seq.filter (packageExcludeFilter excludeUpdateRegexPatterns)
             |>Seq.toArray
         packageInfos
     

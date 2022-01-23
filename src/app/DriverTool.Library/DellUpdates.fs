@@ -82,7 +82,7 @@ module DellUpdates=
                     )
                 |>PSeq.filter DriverTool.SdpUpdates.localUpdatesFilter
                 |>PSeq.toArray
-                |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
+                |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context.ExcludeUpdateRegexPatterns toPackageInfos)
 
             let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
             let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths            
@@ -104,11 +104,32 @@ module DellUpdates=
                     )
                 |>PSeq.filter DriverTool.SdpUpdates.remoteUpdatesFilter
                 |>PSeq.toArray
-                |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context toPackageInfos)
+                |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos context.ExcludeUpdateRegexPatterns toPackageInfos)
             let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
             let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths
             return packageInfos
         }
+
+    let getDriverUpdates reportProgress cacheFolderPath (model:ModelCode) (operatingSystem:OperatingSystemCode) excludeUpdateRegexPatterns =
+        result{
+            let! supported = DriverTool.SdpUpdates.validateModelAndOs model operatingSystem
+            let! sdpFiles = downloadSdpFiles cacheFolderPath
+            let! sdps = DriverTool.SdpUpdates.loadSdps sdpFiles            
+            let mutable count = 0
+            let packageInfos = 
+                sdps                
+                |>Seq.map(fun p -> 
+                    count <- count + 1 
+                    printf "%i\r" count
+                    p
+                    )
+                |>PSeq.filter DriverTool.SdpUpdates.remoteUpdatesFilter
+                |>PSeq.toArray
+                |>(DriverTool.SdpUpdates.sdpsToPacakgeInfos excludeUpdateRegexPatterns toPackageInfos)
+            let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
+            let! copyResult =  DriverTool.SdpUpdates.copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths
+            return packageInfos
+        }   
 
     let osCodeToDellOsCodeAndArchitectureUnsafe (operatingSystemCode:OperatingSystemCode) =
         match operatingSystemCode.Value with

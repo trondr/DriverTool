@@ -73,7 +73,7 @@ module HpUpdates =
                 sdps                
                 |>Seq.filter localUpdatesFilter
                 |>Seq.toArray
-                |>(sdpsToPacakgeInfos context toPackageInfos)
+                |>(sdpsToPacakgeInfos context.ExcludeUpdateRegexPatterns toPackageInfos)
             let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
             let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths            
             return packageInfos
@@ -88,7 +88,22 @@ module HpUpdates =
                 sdps                
                 |>Seq.filter remoteUpdatesFilter
                 |>Seq.toArray
-                |>(sdpsToPacakgeInfos context toPackageInfos)
+                |>(sdpsToPacakgeInfos context.ExcludeUpdateRegexPatterns toPackageInfos)
+            let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
+            let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths
+            return packageInfos
+        }
+
+    let getDriverUpdates reportProgress cacheFolderPath (model:ModelCode) (operatingSystem:OperatingSystemCode) excludeUpdateRegexPatterns =
+        result{
+            let! supported = validateModelAndOs model operatingSystem
+            let! sdpFiles = downloadSdpFiles cacheFolderPath
+            let! sdps = loadSdps sdpFiles
+            let packageInfos = 
+                sdps                
+                |>Seq.filter remoteUpdatesFilter
+                |>Seq.toArray
+                |>(sdpsToPacakgeInfos excludeUpdateRegexPatterns toPackageInfos)
             let! sdpFilePaths = sdpFiles |> Array.map (fun p -> FileSystem.path p) |> toAccumulatedResult
             let! copyResult =  copySdpFilesToDownloadCache cacheFolderPath packageInfos sdpFilePaths
             return packageInfos

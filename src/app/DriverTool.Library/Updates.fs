@@ -25,6 +25,13 @@ module Updates =
             |true -> LenovoUpdates.getLocalUpdates logger
             |false -> LenovoUpdates.getRemoteUpdates logger
 
+    ///Get driver updates function
+    let getDriverUpdatesFunc (manufacturer:Manufacturer) =
+        match manufacturer with
+        |Manufacturer.Dell _ -> DellUpdates.getDriverUpdates
+        |Manufacturer.HP _ -> HpUpdates.getDriverUpdates
+        |Manufacturer.Lenovo _ -> LenovoUpdates.getDriverUpdates
+
     let updateDownloadedPackageInfoFunc (manufacturer:Manufacturer) =
         match manufacturer with
         |Manufacturer.Dell _ -> DellUpdates.updateDownloadedPackageInfo

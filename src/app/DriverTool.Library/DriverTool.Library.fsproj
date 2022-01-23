@@ -99,6 +99,7 @@
     <Compile Include="PowerShellHelper.fs" />
     <Compile Include="Sccm.fs" />
     <Compile Include="DriverPacks.fs" />
+    <Compile Include="DriverUpdates.fs" />
     <Compile Include="CmUi\UiModels.fs" />
     <Compile Include="CmUi\UiViewModels.fs" />
   </ItemGroup>
