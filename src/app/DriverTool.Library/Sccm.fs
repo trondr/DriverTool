@@ -289,11 +289,12 @@ module Sccm =
                         for package in vendorPackages do
                             yield sprintf "$package = Get-CMPackage -Name '%s' -Fast" (WrappedString.value package.Name)
                             let installProgram = package.Programs|>Array.filter(fun program -> (WrappedString.value program.Name) = programName) |>Array.head
+                            let packageName50 = truncate 50 (WrappedString.value package.Name)
                             yield   match installProgram.Comment with
                                     |Some c -> 
-                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\" -CommandLine '%s' -SuccessCode @(0,3010) -Description \"%s\"" (WrappedString.value package.Name) (WrappedString.value installProgram.Commandline) (WrappedString.value c)
+                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\" -CommandLine '%s' -SuccessCode @(0,3010) -Description \"%s\"" packageName50 (WrappedString.value installProgram.Commandline) (WrappedString.value c)
                                     |None ->
-                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\"  -CommandLine '%s' -SuccessCode @(0,3010)" (WrappedString.value package.Name) (WrappedString.value installProgram.Commandline)
+                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\"  -CommandLine '%s' -SuccessCode @(0,3010)" packageName50 (WrappedString.value installProgram.Commandline)
                             yield "$restartStep = New-CMTSStepReboot -Name \"Restart\" -RunAfterRestart \"HardDisk\" -NotificationMessage \"A new Microsoft Windows operating system is being installed. The computer must restart to continue.\" -MessageTimeout 3"
                             
                             yield sprintf "$ModelGroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" package.ModelWmiQuery.NameSpace package.ModelWmiQuery.Query

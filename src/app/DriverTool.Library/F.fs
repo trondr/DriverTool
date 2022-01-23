@@ -351,3 +351,10 @@ module F=
         |null -> None
         |value when String.IsNullOrWhiteSpace(value) -> None
         |_ -> Some value
+
+    ///Truncate text to specified lenght
+    let truncate length text =
+        if((String.length text) > length) then
+            (text.Substring(0,length))
+        else
+           text
