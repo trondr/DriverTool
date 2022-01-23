@@ -495,6 +495,7 @@ The packages will be created in c:\temp\D on developement machine and should be 
 	
 ```
 $packageDefintionSms = Get-ChildItem -Path "Z:\Packages\CM-Drivers\21H2" -Filter "PackageDefinition.sms" -Recurse | ForEach-Object {$_.FullName} 
+$packageDefintionSms
 $packageDefintionSms | New-DtCmPackageFromDriverPackPackageDefinitionSms
 ```
 
@@ -502,7 +503,41 @@ $packageDefintionSms | New-DtCmPackageFromDriverPackPackageDefinitionSms
 	
 ```
 $packageDefintionSms = Get-ChildItem -Path "Z:\Applications\CM-Drivers\21H2" -Filter "PackageDefinition.sms" -Recurse | ForEach-Object {$_.FullName} 
+$packageDefintionSms
 New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms -Path $packageDefintionSms -Name "Test CM Drivers 21H2" -Description "Test CM Drivers 21H2" -ProgramName "INSTALL-OFFLINE-OS"
+```
+
+## Create Driver Updates Package and task sequence
+
+Automated procedure for downloading, extracting, packaging and adding driver updates to a new task sequence. 
+
+Important! This procedures downloads _all_ driver updates for a specified list of models and works without running the procedure on the computer models in question. Some of the drivers for a model might allready be installed or not even required due to differences in hardware components installed. To trim the resulting package removing unrequired drivers from a package can be done but is a manual procedure. 
+The automated procedure is availble when signed into the actual computer model in question. The required drivers can then be calculated based on locally installed updates. Command line: DriverTool.exe CreateDriverPackage /destinationFolder="c:\temp\DU" /packagePublisher="YourCompany" /baseOnLocallyInstalledUpdates="True" /excludeUpdatePatterns="['BIOS';'Firmware']")
+
+1. Download, extract and package driver packs. Example:
+
+```
+@("20QW","20QF") | Foreach-Object{ Write-Host "Getting driver updates for model $_";  Get-DtDriverUpdates -Manufacturer Lenovo -ModelCode "$_" -OperatingSystem "WIN10X64" -OsBuild "21H2" -ExcludeDriverUpdates @("BIOS","Firmware") -Verbose } | Invoke-DtDownloadDriverUpdates
+```
+The packages will be created in c:\temp\DU on developement machine and should be copied to final location on Sccm Server manually. Example server locations: 
+* Z:\Packages\DriverUpdates\21H2\20QW
+* Z:\Packages\DriverUpdates\21H2\20QF
+
+2. Create SCCM packages after copying the package folders to server. Example:
+	
+```
+$packageDefintionSms = Get-ChildItem -Path "Z:\Packages\DriverUpdates\21H2" -Filter "PackageDefinition.sms" -Recurse -Depth 3| ForEach-Object {$_.FullName} 
+$packageDefintionSms
+$packageDefintionSms | New-DtCmPackageFromDriverPackPackageDefinitionSms
+```
+Note! When recursing the directory, the recursion depth is set to avoid getting PackageDefinition.sms for driver updates in the Drivers sub folders. The recursion depth must be set depending on start point of recursion.
+
+3. Create task sequence with all the driver update packages added. Example:
+	
+```
+$packageDefintionSms = Get-ChildItem -Path "Z:\Packages\DriverUpdates\21H2" -Filter "PackageDefinition.sms" -Recurse -Depth 3| ForEach-Object {$_.FullName}
+$packageDefintionSms
+New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms -Path $packageDefintionSms -Name "Test Driver Updates 21H2" -Description "Test Driver Updates 21H2" -ProgramName "INSTALL"
 ```
 
 # Build Environment
