@@ -533,6 +533,8 @@ Steps:
 ```
 @("20QW","20QF") | Foreach-Object{ Write-Host "Getting driver updates for model $_";  Get-DtDriverUpdates -Manufacturer Lenovo -ModelCode "$_" -OperatingSystem "WIN10X64" -OsBuild "21H2" -ExcludeDriverUpdates @("BIOS","Firmware") -Verbose } | Invoke-DtDownloadDriverUpdates
 ```
+Note! Some driver updates when extracted might result in a path longer than 256 characters. Try enabling long path support in registry ( [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem]LongPathsEnabled=1) or extract such updates manually to a shorter root path before moving the result to the package drivers folder.
+	
 The packages will be created in c:\temp\DU on developement machine and should be copied to final location on Sccm Server manually. Example server locations: 
 * Z:\Packages\DriverUpdates\21H2\20QW
 * Z:\Packages\DriverUpdates\21H2\20QF
@@ -547,7 +549,7 @@ $packageDefintionSms | New-DtCmPackageFromDriverPackPackageDefinitionSms
 Note! When recursing the directory, the recursion depth is set to avoid getting PackageDefinition.sms for driver updates in the Drivers sub folders. The recursion depth must be set depending on start point of recursion.
 
 3. Create task sequence with all the driver update packages added. Example:
-	
+
 ```
 $packageDefintionSms = Get-ChildItem -Path "Z:\Packages\DriverUpdates\21H2" -Filter "PackageDefinition.sms" -Recurse -Depth 3| ForEach-Object {$_.FullName}
 $packageDefintionSms
