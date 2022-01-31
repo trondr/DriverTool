@@ -233,7 +233,7 @@ module DellUpdates=
             Os= dp.OperatinSystems |> Array.map (fun os -> sprintf "%s-%s" os.OsCode os.OsArch)|>Array.distinct |> String.concat ", "
             OsBuild="*"
             ModelWmiQuery=toModelCodesWqlQuery modelName (ManufacturerTypes.Manufacturer.Dell "Dell") modelCodes
-            ManufacturerWmiQuery = toManufacturerWqlQuery "Dell"
+            ManufacturerWmiQuery = toManufacturerWqlQuery (ManufacturerTypes.Manufacturer.Dell "Dell")
         }
 
     ///Download sccm driver package info from Dell web site and parse the downloaded xml into array of DriverPackInfos

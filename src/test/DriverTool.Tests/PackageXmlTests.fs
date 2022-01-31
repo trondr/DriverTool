@@ -32,3 +32,16 @@ module PackageXmlTests=
         let actual = toModelCodesWqlQuery name  manufacturer [|"20QF";"20QG"|]
         Assert.AreEqual(expected,actual)
         ()
+
+    [<Test>]
+    let toManufacturerWqlQueryTest() =
+        let name = "Lenovo"
+        let manufacturer = DriverTool.Library.ManufacturerTypes.toManufacturer "Lenovo"
+        let expected = {
+                Name = name
+                NameSpace = "root\\cimv2"
+                Query = "select Manufacturer from Win32_ComputerSystem where (Manufacturer like '%Lenovo%')"
+            }
+        let actual = toManufacturerWqlQuery manufacturer
+        Assert.AreEqual(expected,actual)
+        ()

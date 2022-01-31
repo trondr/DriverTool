@@ -125,7 +125,7 @@ module UiModels =
             
             let! installProgram = PackageDefinitionSms.createSmsProgram "INSTALL" (sprintf "Install.cmd > \"%s\\%s-Install.cmd.log\"" packageInstallLogDirectory packageName) "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "Install Driver Updates."
             let! unInstallProgram = PackageDefinitionSms.createSmsProgram "UNINSTALL" (sprintf "UnInstall.cmd > \"%s\\%s-UnInstall.cmd.log\"" packageInstallLogDirectory packageName) "" SmsCanRunWhen.AnyUserStatus true true false (Some SmsProgramMode.Hidden) "UnInstall Driver Updates."
-            let manufacturerWmiQuery = toManufacturerWqlQuery modelInfo.Manufacturer
+            let manufacturerWmiQuery = toManufacturerWqlQuery (DriverTool.Library.ManufacturerTypes.toManufacturer modelInfo.Manufacturer)
             let modelWmiQuery = toModelCodesWqlQuery modelInfo.Name manufacturer ([|(modelInfo.ModelCode)|])
             let! packageDefinition = PackageDefinitionSms.createSmsPackageDefinition packageName (latestRelaseDate) None modelInfo.Manufacturer "EN" false "Install Driver Updates." [|installProgram;unInstallProgram|] manufacturerWmiQuery modelWmiQuery
             let applicationRegistryValue = getApplicationRegistryValue updatedInstallConfiguration

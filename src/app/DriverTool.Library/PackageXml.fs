@@ -127,11 +127,30 @@ module PackageXml =
         }
 
     ///Convert manufacturer name to a wql query that can be used as condition for a manufacturer specific group in SCCM task sequence
-    let toManufacturerWqlQuery manufacturer =
-        let query = sprintf "select BaseBoardManufacturer from MS_SystemInformation where BaseBoardManufacturer='%s%%'" manufacturer 
+    let toManufacturerWqlQuery manufacturer =        
+        let nameSpace =
+            match manufacturer with
+            |Manufacturer.Dell _ -> "root\\WMI"
+            |Manufacturer.HP _ -> "root\\WMI"
+            |Manufacturer.Lenovo _ -> "root\\cimv2"
+
+        let className =
+            match manufacturer with
+            |Manufacturer.Dell _ -> "MS_SystemInformation"
+            |Manufacturer.HP _ -> "MS_SystemInformation"
+            |Manufacturer.Lenovo _ -> "Win32_ComputerSystem"
+        
+        let propertyName =
+            match manufacturer with
+            |Manufacturer.Dell _ -> "BaseBoardManufacturer"
+            |Manufacturer.HP _ -> "BaseBoardManufacturer"
+            |Manufacturer.Lenovo _ -> "Manufacturer"     
+        
+        let manufacturerName = DriverTool.Library.ManufacturerTypes.manufacturerToName manufacturer        
+        let query = sprintf "select %s from %s where (%s like '%%%s%%')" propertyName className propertyName manufacturerName 
         {
-            Name = manufacturer
-            NameSpace = "root\\WMI"
+            Name = manufacturerName
+            NameSpace = nameSpace
             Query=query
         }
 

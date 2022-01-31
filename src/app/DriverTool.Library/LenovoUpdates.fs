@@ -372,7 +372,7 @@ module LenovoUpdates =
                                                     Os= (DriverTool.LenovoCatalog.osShortNameToLenovoOs p.Os);
                                                     OsBuild=osBuild
                                                     ModelWmiQuery=toModelCodesWqlQuery p.Model.Value (ManufacturerTypes.Manufacturer.Lenovo "Lenovo") p.ModelCodes
-                                                    ManufacturerWmiQuery= toManufacturerWqlQuery "Lenovo"
+                                                    ManufacturerWmiQuery= toManufacturerWqlQuery (ManufacturerTypes.Manufacturer.Lenovo "Lenovo")
                                                 }
                                             driverPack
                     )            
