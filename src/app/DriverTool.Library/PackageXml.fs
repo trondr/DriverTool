@@ -94,27 +94,35 @@ module PackageXml =
     type DownloadedSccmPackageInfo = { InstallerPath:string; ReadmePath:string; SccmPackage:SccmPackageInfo}
 
     type ExtractedSccmPackageInfo = { ExtractedDirectoryPath:string; DownloadedSccmPackage:DownloadedSccmPackageInfo;}
-
-    
-
-    
-    
+        
     ///Convert list of model codes to a wql query that can be used as condition in model specific SCCM task sequence step
     let toModelCodesWqlQuery name (manufacturer:Manufacturer) (modelCodes:string[]) =
+        let modelNameSpace =
+            match manufacturer with
+            |Manufacturer.Dell _ -> "root\\WMI"
+            |Manufacturer.HP _ -> "root\\WMI"
+            |Manufacturer.Lenovo _ -> "root\\cimv2"
+
+        let modelClassName =
+            match manufacturer with
+            |Manufacturer.Dell _ -> "MS_SystemInformation"
+            |Manufacturer.HP _ -> "MS_SystemInformation"
+            |Manufacturer.Lenovo _ -> "Win32_ComputerSystem"
+        
         let modelPropertyName =
             match manufacturer with
             |Manufacturer.Dell _ -> "SystemSKU"
             |Manufacturer.HP _ -> "BaseBoardProduct"
-            |Manufacturer.Lenovo _ -> "BaseBoardProduct"
-        
+            |Manufacturer.Lenovo _ -> "Model"               
+
         let whereCondition =
             (modelCodes 
             |> Array.map(fun mc -> sprintf "(%s like '%s%%')" modelPropertyName mc)
             |> String.concat " or ").Trim()        
-        let query = sprintf "select %s from MS_SystemInformation where %s" modelPropertyName whereCondition
+        let query = sprintf "select %s from %s where %s" modelPropertyName modelClassName whereCondition
         {
             Name = name
-            NameSpace = "root\\WMI"
+            NameSpace = modelNameSpace
             Query=query
         }
 
