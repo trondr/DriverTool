@@ -47,6 +47,6 @@ build.fsx.lock
 .fake
 artifacts/
 
-nchrunchtemp*
+nChrunchTemp*
 
 modules/DriverTool.PowerCLI/binary/
