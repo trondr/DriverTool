@@ -101,7 +101,7 @@
 	
 	begin
 	{
-		$driverToolExe = [System.IO.Path]::Combine($global:ModuleRootPath,"internal","tools","DriverTool","DriverTool.exe")
+		$driverToolExe = [System.IO.Path]::Combine($global:ModuleRootPath,"binary","DriverTool.PowerCLI.Library.FSharp","DriverTool.exe")
         Assert-DtFileExists -Path $driverToolExe -Message "DriverTool.exe ($driverToolExe) not found."
 	}
 	process

@@ -2,7 +2,7 @@
 bin/*
 obj/*
 bld/*
-[Bb]in*/
+[Bb]in/
 obj*/
 [Dd]ebug*/
 [Rr]elease*/
@@ -44,7 +44,9 @@ build.fsx.lock
 [Tt]est[Rr]esult*
 [Bb]uild[Ll]og.*
 .ionide
-modules/DriverTool.PowerCLI/internal/tools/DriverTool/
-
 .fake
 artifacts/
+
+nchrunchtemp*
+
+modules/DriverTool.PowerCLI/binary/

@@ -118,11 +118,6 @@ Target.create "BuildApp" (fun _ ->
     !! "src/app/**/DriverTool.PowerCLI.Library.FSharp.fsproj"
         |> Fake.DotNet.MSBuild.runRelease id (System.IO.Path.Combine(modulesBinaryFolder,"DriverTool.PowerCLI.Library.FSharp")) "Build"
         |> Trace.logItems "BuildLibraries-Output: "
-
-    Trace.trace "Copy DriverTool to PowerCLI Module..."
-    let appDir = System.IO.Path.GetFullPath("./build/app");
-    let destinationDir = System.IO.Path.GetFullPath("./modules/DriverTool.PowerCLI/internal/tools/DriverTool")
-    Fake.IO.Shell.copyDir destinationDir appDir (fun _ -> true)
 )
 
 Target.create "BuildDocumentation" (fun _ ->
