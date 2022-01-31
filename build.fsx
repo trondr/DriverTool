@@ -79,26 +79,32 @@ Target.create "RestorePackages" (fun _ ->
 Target.create "BuildApp" (fun _ -> 
     Trace.trace "Building app..."
 
+    Trace.trace "Building DriverTool DpInstExitCode2ExitCode..."
     !! "src/app/**/DriverTool.DpInstExitCode2ExitCode.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
 
+    Trace.trace "Building DriverTool DupExitCode2ExitCode..."
     !! "src/app/**/DriverTool.DupExitCode2ExitCode.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
 
+    Trace.trace "Building DriverTool CSharpLib..."
     !! "src/app/**/DriverTool.CSharpLib.csproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
 
+    Trace.trace "Building DriverTool Library..."
     !! "src/app/**/DriverTool.Library.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
 
+    Trace.trace "Building DriverTool UI..."
     !! "src/app/**/DriverTool.UI.csproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
 
+    Trace.trace "Building DriverTool..."
     !! "src/app/**/DriverTool.fsproj"
         |> MSBuild.runRelease id buildAppFolder "Build"
         |> Trace.logItems "BuildApp-Output: "
