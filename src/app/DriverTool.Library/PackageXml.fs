@@ -388,11 +388,19 @@ module PackageXml =
             ReleaseDate = releaseDate;
             PackageXmlName = ((new System.IO.FileInfo(FileSystem.pathValue downloadedPackageInfo.FilePath)).Name)
             ExternalFiles = externalFiles
-        }        
-        
+        }
+    
+    ///Keep only the two first words of the category.
+    let truncateCategory (category:string) =
+        let words = category.Split [|' '|] |>Array.filter(fun s -> not (s.Contains("and")))
+        let truncatedWords = words.[0..1]
+        truncatedWords |> String.concat " "
+
+    ///Get folder name for the extracted update
     let getPackageFolderName category releaseDate =         
         let postfix = releaseDate
-        let prefix = (category |? "Unknown_Category")
+        let trucatedCategory = truncateCategory category
+        let prefix = (trucatedCategory |? "Unknown_Category")
         let packageFolderName = 
             (sprintf "%s_%s" prefix postfix)
                 .Replace("__", "_")
