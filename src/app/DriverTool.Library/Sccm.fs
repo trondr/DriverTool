@@ -294,11 +294,9 @@ module Sccm =
                                     |Some c -> 
                                         sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\" -CommandLine '%s' -SuccessCode @(0,3010) -Description \"%s\"" packageName50 (WrappedString.value installProgram.Commandline) (WrappedString.value c)
                                     |None ->
-                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\"  -CommandLine '%s' -SuccessCode @(0,3010)" packageName50 (WrappedString.value installProgram.Commandline)
-                            yield "$restartStep = New-CMTSStepReboot -Name \"Restart\" -RunAfterRestart \"HardDisk\" -NotificationMessage \"A new Microsoft Windows operating system is being installed. The computer must restart to continue.\" -MessageTimeout 3"
-                            
+                                        sprintf "$commandLineStep = New-CMTSStepRunCommandLine -PackageId $($Package.PackageID) -Name \"%s\"  -CommandLine '%s' -SuccessCode @(0,3010)" packageName50 (WrappedString.value installProgram.Commandline)                                                        
                             yield sprintf "$ModelGroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" package.ModelWmiQuery.NameSpace package.ModelWmiQuery.Query
-                            yield sprintf "$ModelGroups += New-CMTaskSequenceGroup -Name '%s' -Condition @($ModelGroupCondition) -Step @($commandLineStep,$restartStep)" package.ModelWmiQuery.Name
+                            yield sprintf "$ModelGroups += New-CMTaskSequenceGroup -Name '%s' -Condition @($ModelGroupCondition) -Step @($commandLineStep)" package.ModelWmiQuery.Name
 
                         yield sprintf "$GroupCondition = New-CMTSStepConditionQueryWMI -Namespace \"%s\" -Query \"%s\"" wmiQuery.NameSpace wmiQuery.Query
                         yield sprintf "$ManufacturerGroups += New-CMTaskSequenceGroup -Name '%s' -Description 'Manufacturer %s' -Condition @($GroupCondition) -Step @($ModelGroups)" wmiQuery.Name wmiQuery.Name
