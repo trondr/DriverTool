@@ -24,9 +24,10 @@
 		[Parameter(ValueFromPipeline=$false,Mandatory=$true)]
 		#Path to package definition sms file
 		[System.string[]]
-		$Path,
-		[Parameter(Mandatory=$true)]
-		#Task sequence name
+		$Path,		
+        [Parameter(Mandatory=$true)]
+        [ValidateLength(1,50)]
+		#Task sequence name. Maximum 50 characters long.
 		[string]
 		$Name,
 		[Parameter(Mandatory=$true)]
