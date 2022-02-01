@@ -2,9 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyVersion>1.0.22031.76</AssemblyVersion>
-    <FileVersion>1.0.22031.76</FileVersion>
-    <Version>1.0.22031</Version>
+    <AssemblyVersion>1.0.22032.78</AssemblyVersion>
+    <FileVersion>1.0.22032.78</FileVersion>
+    <Version>1.0.22032</Version>
   </PropertyGroup>
   <PropertyGroup>
     <DummyProperty>Dummy</DummyProperty>
