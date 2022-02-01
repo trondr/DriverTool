@@ -46,6 +46,7 @@ module InstallDriverPackageTests =
             {ExitCodes=[|0;0;0;0;0;0;0;0;0;0;|];ExpectedAdjustedExitCode=0}            
             {ExitCodes=[|0;0;0;0;-2146232576;0;0;0;0;0;|];ExpectedAdjustedExitCode=3010}
             {ExitCodes=[|0;0;0;0;3010;0;0;0;0;0;|];ExpectedAdjustedExitCode=3010}
+            {ExitCodes=[|0;0;-436207360;0;3010;0;-2147213312;-3;0;0;|];ExpectedAdjustedExitCode=3010}
         |]
 
     [<Test>]
