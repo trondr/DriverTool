@@ -4,11 +4,11 @@
     <TargetFramework>net48</TargetFramework>
     <PackageReleaseNotes>
     </PackageReleaseNotes>
-    <AssemblyVersion>1.0.22032.78</AssemblyVersion>
-    <FileVersion>1.0.22032.78</FileVersion>
-    <Version>1.0.22032</Version>
-    <!--<Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
-    <Copyright>Copyright &#169; github/trondr 2018-2021</Copyright>-->
+    <AssemblyVersion>1.0.22037.78</AssemblyVersion>
+    <FileVersion>1.0.22037.78</FileVersion>
+    <Version>1.0.22037</Version>
+    <Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
+    <Copyright>Copyright (c) 2018-2022 github/trondr</Copyright>
     <Company>github/trondr</Company>
     <Authors>github/trondr</Authors>
   </PropertyGroup>

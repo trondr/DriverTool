@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DriverTool.UI")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCopyright("Copyright (c) 2018-2022 github/trondr")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

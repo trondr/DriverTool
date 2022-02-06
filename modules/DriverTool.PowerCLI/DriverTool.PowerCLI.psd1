@@ -3,7 +3,7 @@
 	RootModule = 'DriverTool.PowerCLI.psm1'
 	
 	# Version number of this module.
-    ModuleVersion = '1.0.22032'
+    ModuleVersion = '1.0.22037'
 	
 	# ID used to uniquely identify this module
 	GUID = '35971a7e-b1f9-4932-82a1-29597fb6f022'
@@ -15,7 +15,7 @@
 	CompanyName = 'github/trondr'
 	
 	# Copyright statement for this module
-	Copyright = 'Copyright (c) 2021 github/trondr'
+	Copyright = 'Copyright (c) 2018-2022 github/trondr'
 	
 	# Description of the functionality provided by this module
 	Description = 'Download drivers and updates for Dell, HP and Lenovo PC models. Package drivers and updates for import into SCCM as a package or Application.'

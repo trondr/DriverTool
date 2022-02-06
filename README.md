@@ -654,11 +654,21 @@ choco feature disable -n allowGlobalConfirmation
 -NoExit -Command "& Import-Module 'C:\Dev\github.trondr\DriverTool\src\app\DriverTool.PowerCLI.Library.FSharp\bin\Debug\net48\DriverTool.PowerCLI.Library.FSharp.dll' -Verbose;Get-DtDriverPack -Manufacturer Lenovo -ModelCode 20EQ -OperatingSystem win10 -Latest | Invoke-DtDownloadDriverPack"
 ```
 
+# Update version
 
+```powershell
+.\Build.ps1 -BuildTarget UpdateVersion
+```
 
-## Build
+# Build
 
-```batch
+```powershell
 .\Build.ps1 -BuildTarget Default
 ```
-	
+
+# Publish PowerShell module to PowerShell Gallery
+
+```powershell
+$ApiKey="...api...key...here..."
+Publish-Module -Path ".\modules\DriverTool.PowerCLI" -Repository PSGallery -NuGetApiKey $ApiKey
+```
