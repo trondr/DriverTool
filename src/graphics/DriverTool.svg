@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 67.733332 67.733335"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   sodipodi:docname="DriverTool.svg"
+   inkscape:export-filename="C:\dev\github.trondr\DriverTool\src\graphics\DriverTool.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     units="px"
+     inkscape:zoom="0.5499273"
+     inkscape:cx="-387.32392"
+     inkscape:cy="356.41075"
+     inkscape:window-width="2171"
+     inkscape:window-height="1233"
+     inkscape:window-x="366"
+     inkscape:window-y="534"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="33.431285"
+       y="34.717104"
+       width="47.57529"
+       height="61.719295"
+       id="rect3411" />
+    <rect
+       x="33.431286"
+       y="34.717106"
+       width="47.575291"
+       height="61.719296"
+       id="rect3411-7" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="matrix(1.3364945,0,0,1.3364945,-39.374972,-38.988393)"
+       id="text3409"
+       style="font-size:30px;line-height:1.25;font-family:'Courier New';-inkscape-font-specification:'Courier New';white-space:pre;shape-inside:url(#rect3411)"><tspan
+         x="33.431641"
+         y="61.73943"
+         id="tspan3973"><tspan
+           style="font-family:Arial;-inkscape-font-specification:Arial"
+           id="tspan3971">D</tspan></tspan></text>
+    <g
+       id="g3933"
+       transform="translate(-3.1750001,-6.879167)">
+      <text
+         xml:space="preserve"
+         transform="matrix(1.3364945,0,0,1.3364945,-17.300001,-19.062478)"
+         id="text3409-0"
+         style="font-size:30px;line-height:1.25;font-family:'Courier New';-inkscape-font-specification:'Courier New';white-space:pre;shape-inside:url(#rect3411-7)"><tspan
+           x="33.431641"
+           y="61.73943"
+           id="tspan3977"><tspan
+             style="font-family:Arial;-inkscape-font-specification:Arial"
+             id="tspan3975">T</tspan></tspan></text>
+      <path
+         id="path705"
+         style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1.32292;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 60.403231,53.704706 -2.330088,2.440962 -3.772605,-2.551835 -2.995911,1.331645 -0.998443,4.373073 -3.217655,-0.02976 -0.887569,-4.486863 -2.995911,-1.188095 v 0 l -0.0033,-3.649539 C 51.679444,58.26517 62.3949,44.105423 52.969512,37.61584 v -2.330088 l 1.109316,0.55495 3.439402,-2.186769 2.376188,1.951019 -2.153857,3.675153 1.220188,2.995911 4.203552,0.6985 0.01309,3.184979 -4.32744,1.109898 -1.192762,2.912464 z"
+         sodipodi:nodetypes="cccccccccccccccccccccc"
+         sodipodi:stroke-cmyk="(0 0 0 0.8)" />
+    </g>
+  </g>
+</svg>
