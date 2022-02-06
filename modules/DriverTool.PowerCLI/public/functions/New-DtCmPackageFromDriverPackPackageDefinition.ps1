@@ -13,8 +13,8 @@
 
 		.NOTES        
 		Version:        1.0
-		Author:         trondr
-		Company:        MyCompany
+		Author:         github/trondr
+		Company:        github/trondr
 		Repository:     https://github.com/trondr/DriverTool.git
 	#>
 	[CmdletBinding()]
