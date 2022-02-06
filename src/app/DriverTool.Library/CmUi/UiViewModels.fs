@@ -126,7 +126,7 @@
 
         do
             logger <- Logger<DriverPackInfosViewModel>()
-            base.Title <- "DriverTool - CM Device Drivers Packaging"
+            base.Title <- "DriverTool - Package Driver Packs"
             
         member this.SearchText
             with get() = searchText
