@@ -102,7 +102,7 @@
 			ProjectUri = 'https://github.com/trondr/DriverTool'
 			
 			# A URL to an icon representing this module.
-			# IconUri = ''
+			IconUri = 'https://raw.githubusercontent.com/trondr/DriverTool/master/src/graphics/DriverTool.png'
 			
 			# ReleaseNotes of this module
 			# ReleaseNotes = ''
