@@ -8,7 +8,8 @@
 		Create new Sccm package from driver pack package definition.
 
 		.EXAMPLE
-		New-DtCmPackageFromDriverPackPackageDefinitionSms
+		$packageDefintionSms = Get-ChildItem -Path "Z:\Packages\CM-Drivers\21H2" -Filter "PackageDefinition.sms" -Recurse | ForEach-Object {$_.FullName} 
+		$packageDefintionSms | New-DtCmPackageFromDriverPackPackageDefinitionSms  
 
 		.NOTES        
 		Version:        1.0
