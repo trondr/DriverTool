@@ -18,7 +18,7 @@
 	Copyright = 'Copyright (c) 2018-2022 github/trondr'
 	
 	# Description of the functionality provided by this module
-	Description = 'Download drivers and updates for Dell, HP and Lenovo PC models. Package drivers and updates for import into SCCM as a package or Application.'
+	Description = 'Download and package driver packs and driver updates for Dell, HP and Lenovo PC models.'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
 	PowerShellVersion = '5.1'
@@ -39,9 +39,9 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		"Invoke-DtDriverTool"
-		,"Get-DtCmDeviceModel"
-		,"Connect-DtCmSite"
+		'Invoke-DtDriverTool'
+		,'Get-DtCmDeviceModel'
+		,'Connect-DtCmSite'
 		,'New-DtCmPackageFromDriverPackPackageDefinitionSms'
 		,'New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms'
 		)
@@ -74,13 +74,32 @@
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags = @("DriverTool.PowerCLI","DriverTool","PowerCLI","Drivers","Driver Updates")
+			Tags = @(
+				'DriverTool.PowerCLI'
+				,'DriverTool'
+				,'PowerCLI'
+				,'Driver Packs'
+				,'Driver Updates'
+				'Invoke-DtDriverTool'
+				,'Get-DtCmDeviceModel'
+				,'Connect-DtCmSite'
+				,'New-DtCmPackageFromDriverPackPackageDefinitionSms'
+				,'New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms'
+				,'Get-DtDriverPack'
+				,'Get-DtDriverUpdates'
+				,'Invoke-DtDownloadDriverPack'
+				,'Invoke-DtDownloadDriverUpdates'
+				,'Convert-DtExceptionToMessage'
+				,'Import-DtDriverPackPackageDefinitionSms'
+				,'Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms'
+				,'Get-DtScriptNewCmTaskSequenceFromDriverPackPackageDefinitionSms'
+				)
 			
 			# A URL to the license for this module.
-			# LicenseUri = 'https://github.com/trondr/DriverTool/LICENSE'
+			LicenseUri = 'https://github.com/trondr/DriverTool/blob/master/LICENSE'
 			
 			# A URL to the main website for this project.
-			# ProjectUri = 'https://github.com/trondr/DriverTool'
+			ProjectUri = 'https://github.com/trondr/DriverTool'
 			
 			# A URL to an icon representing this module.
 			# IconUri = ''
