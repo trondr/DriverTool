@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
@@ -11,6 +11,7 @@
     <Copyright>Copyright (c) 2018-2022 github/trondr</Copyright>
     <Company>github/trondr</Company>
     <Authors>github/trondr</Authors>
+	<ApplicationIcon>DriverTool.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -19,6 +20,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="DriverTool.ico" />
     <EmbeddedResource Include="Credits\01. NCmdLiner Credit.xml" />
     <EmbeddedResource Include="Credits\02. serilog Credit.xml" />
     <EmbeddedResource Include="Credits\03. Nunit Credit.xml" />

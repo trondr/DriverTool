@@ -10,7 +10,7 @@
         Title="{Binding Title}"
         Height="600"
         Width="1024"
-        Icon="NCmdLiner.ico">
+        Icon="DriverTool.ico">
     <Window.DataContext>
         <viewModels:DriverPackInfosViewModel/>
     </Window.DataContext>
