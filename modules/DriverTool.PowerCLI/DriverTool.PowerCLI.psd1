@@ -56,6 +56,7 @@
 		,'Import-DtDriverPackPackageDefinitionSms'
 		,'Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms'
 		,'Get-DtScriptNewCmTaskSequenceFromDriverPackPackageDefinitionSms'
+        ,'Test-DtIsDriverUpdateRequired'
 		)
 	
 	# Variables to export from this module

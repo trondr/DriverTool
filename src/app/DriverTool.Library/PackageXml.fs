@@ -41,6 +41,8 @@ module PackageXml =
             Size:Int64
             Type:PackageFileType
         }
+        with
+            static member Default = {Url=None;Name=String.Empty;Checksum=String.Empty;Size=0L;Type=PackageFileType.Readme}
 
     type PackageInfo = 
         {
@@ -56,6 +58,8 @@ module PackageXml =
             PackageXmlName:string
             ExternalFiles: PackageFile[] option
         }
+        with
+            static member Default = { Name = String.Empty; Title = String.Empty; Version=String.Empty; Installer=PackageFile.Default; ExtractCommandLine=String.Empty; InstallCommandLine=String.Empty; Category=String.Empty; Readme=PackageFile.Default; ReleaseDate=String.Empty; PackageXmlName=String.Empty; ExternalFiles=None }
 
     let packageInfoSortKey packageInfo =
         sprintf "%s-%s" packageInfo.Category packageInfo.ReleaseDate

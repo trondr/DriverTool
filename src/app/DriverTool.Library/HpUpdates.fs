@@ -281,3 +281,13 @@ module HpUpdates =
                 let updatedUpdatesArray = updatedUpdates |> Seq.toArray
                 return (updatedUpdatesArray |> Array.sortBy (fun dp -> packageInfoSortKey dp.Package))
             }
+
+    //Check if driver update is required on the current system.
+    let isDriverUpdateRequired (cacheFolderPath:FileSystem.Path) (packageInfo:PackageInfo) (allPackageInfos:PackageInfo[]) : Result<bool,Exception> =
+        result {
+            let! sdpFilePath = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath packageInfo.PackageXmlName
+            let! sdp = sdpeval.fsharp.Sdp.loadSdpFromFile (FileSystem.pathValue sdpFilePath)
+            let isApplicable = DriverTool.SdpUpdates.localUpdatesFilter sdp
+            let isInstalled = DriverTool.SdpUpdates.remoteUpdatesFilter sdp
+            return (isApplicable && (not isInstalled))
+        }

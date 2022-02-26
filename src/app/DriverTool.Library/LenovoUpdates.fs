@@ -231,7 +231,41 @@ module LenovoUpdates =
         else
             Result.Error (new Exception(sprintf "Given operating system code '%s' and actual operating system code '%s' are not equal." operatingSystemCode.Value actualOperatingSystemCode.Value))
 
+    //Check if update is applicable
+    let updateIsApplicable logger cacheFolderPath systemInformation lsuPackages (packageInfo:PackageInfo) =
+        result{
+            let workingFolder = FileSystem.pathValue cacheFolderPath
+            let! lsuPackageFilePath = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath packageInfo.PackageXmlName
+            let! lsuPackage = LsupEval.Lsup.loadLsuPackageFromFile (FileSystem.pathValue lsuPackageFilePath)            
+            let isApplicable = 
+                match lsuPackage.Dependencies with                
+                |Some d ->                    
+                    let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
+                    let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder (Some lsuPackages) detectionRule 
+                    logger.Info(sprintf "Evaluating dependencies: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch)
+                    isMatch
+                |None -> false
+            return isApplicable
+        }
+    
+    //Check if update is installed
     let updateIsInstalled logger cacheFolderPath systemInformation lsuPackages (packageInfo:PackageInfo) =
+        result{
+            let workingFolder = FileSystem.pathValue cacheFolderPath
+            let! lsuPackageFilePath = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath packageInfo.PackageXmlName
+            let! lsuPackage = LsupEval.Lsup.loadLsuPackageFromFile (FileSystem.pathValue lsuPackageFilePath)            
+            let isInstalled =
+                match lsuPackage.DetectInstall with                
+                |Some d ->                    
+                    let detectionRule = LsupEval.Lsup.lsupXmlToApplicabilityRules logger d
+                    let isMatch = LsupEval.Rules.evaluateApplicabilityRule logger systemInformation workingFolder (Some lsuPackages) detectionRule 
+                    logger.Info(sprintf "Evaluating detect install: '%s' (%s) '%s'. Return: %b" packageInfo.Title packageInfo.Version packageInfo.PackageXmlName isMatch)
+                    isMatch
+                |None -> false
+            return isInstalled
+        }
+
+    let updateIsApplicableAndInstalled logger cacheFolderPath systemInformation lsuPackages (packageInfo:PackageInfo) =
         match(result{
             let workingFolder = FileSystem.pathValue cacheFolderPath
             let! lsuPackageFilePath = DriverTool.Library.PathOperations.combinePaths2 cacheFolderPath packageInfo.PackageXmlName
@@ -292,7 +326,7 @@ module LenovoUpdates =
             let localUpdates = 
                 remotePackageInfos
                 |> Seq.distinct
-                |> Seq.filter( fun p -> updateIsInstalled logger cacheFolderPath systemInformation lsuPackageArray p)
+                |> Seq.filter( fun p -> updateIsApplicableAndInstalled logger cacheFolderPath systemInformation lsuPackageArray p)
                 |>Seq.filter (filterUpdates context)
                 |>Seq.toArray
             logger.Info(sprintf "Local updates: %A" localUpdates)
@@ -453,3 +487,15 @@ module LenovoUpdates =
             {
                 return (downloadedUpdates |> Array.sortBy (fun dp -> packageInfoSortKey dp.Package))
             }
+
+    //Check if driver update is required on the current system.
+    let isDriverUpdateRequired (cacheFolderPath:FileSystem.Path) (packageInfo:PackageInfo) (allPackageInfos:PackageInfo[]) : Result<bool,Exception> =
+        result{
+            let! lsuPackages = getLsuPackages cacheFolderPath allPackageInfos
+            let lsuPackageArray = lsuPackages|>Seq.toArray
+            let! systemInformation =  LsupEval.Rules.getCurrentSystemInformation'()
+            let! isApplicable = updateIsApplicable logger cacheFolderPath systemInformation lsuPackageArray packageInfo
+            let! isInstalled = updateIsInstalled logger cacheFolderPath systemInformation lsuPackageArray packageInfo
+            return (isApplicable && (not isInstalled))
+        }
+        

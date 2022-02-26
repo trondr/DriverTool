@@ -32,6 +32,12 @@ module Updates =
         |Manufacturer.HP _ -> HpUpdates.getDriverUpdates
         |Manufacturer.Lenovo _ -> LenovoUpdates.getDriverUpdates
 
+    let isDriverUpdateRequiredFunc (manufacturer:Manufacturer) =
+        match manufacturer with
+        |Manufacturer.Dell _ -> DellUpdates.isDriverUpdateRequired
+        |Manufacturer.HP _ -> HpUpdates.isDriverUpdateRequired
+        |Manufacturer.Lenovo _ -> LenovoUpdates.isDriverUpdateRequired
+
     let updateDownloadedPackageInfoFunc (manufacturer:Manufacturer) =
         match manufacturer with
         |Manufacturer.Dell _ -> DellUpdates.updateDownloadedPackageInfo

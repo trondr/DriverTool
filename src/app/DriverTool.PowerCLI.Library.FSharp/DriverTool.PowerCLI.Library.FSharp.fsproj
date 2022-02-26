@@ -27,6 +27,7 @@
     <Compile Include="CmdLets\Import-DtDriverPackPackageDefinitionSms.fs" />
     <Compile Include="CmdLets\Get-DtScriptNewCmPackageFromDriverPackPackageDefinitionSms.fs" />
     <Compile Include="CmdLets\Get-DtScriptNewCmTaskSequenceFromDriverPackPackageDefinitionSms.fs" />
+    <Compile Include="CmdLets\Test-DtIsDriverUpdateRequired.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PowershellStandard.Library" Version="5.1.0" />
