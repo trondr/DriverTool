@@ -467,3 +467,25 @@ module PackageXml =
                 |Ok _ -> Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex
             |Error ex -> Result.Error ex
+
+    let extractExternalFile cacheFolderPath packageFolderPath (packageFile:PackageFile) =
+        result{
+            let! sourceFile = PathOperations.combinePaths2 cacheFolderPath packageFile.Name
+            let! targetFile = PathOperations.combinePaths2 packageFolderPath packageFile.Name
+            let! result = FileOperations.copyFile true sourceFile targetFile
+            return result
+        }        
+
+    let extractExternalFiles (downloadedPackageInfo:DownloadedPackageInfo) (packageFolderPath:FileSystem.Path) =
+        result{
+            let! installerPath = FileSystem.path downloadedPackageInfo.InstallerPath
+            let cacheFolderPath = FileSystem.getDirectoryPath installerPath
+            let! externalFiles = 
+                match (downloadedPackageInfo.Package.ExternalFiles) with
+                |Some externalFiles ->
+                    externalFiles                    
+                    |> Array.map (extractExternalFile cacheFolderPath packageFolderPath)
+                    |> toAccumulatedResult
+                |None -> Result.Ok Seq.empty
+            return externalFiles
+        }

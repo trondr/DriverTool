@@ -472,10 +472,11 @@ module LenovoUpdates =
             let extractReadmeResult = extractReadme (downloadedPackageInfo, existingPackageFolderPath)
             let extractPackageXmlResult = extractPackageXml (downloadedPackageInfo, existingPackageFolderPath)
             let extractInstallerResult = extractInstaller (downloadedPackageInfo, existingPackageFolderPath)
+            let! extractExternalFilesResult = extractExternalFiles downloadedPackageInfo existingPackageFolderPath
             let result = 
                 [|extractReadmeResult;extractPackageXmlResult;extractInstallerResult|]
                 |> toAccumulatedResult
-            let res = 
+            let res =
                 match result with 
                 | Ok r -> extractInstallerResult
                 | Result.Error ex -> Result.Error ex
