@@ -20,7 +20,7 @@ module InvokeDtDriverUpdatesDownload =
 /// <para type="synopsis">Download and package driver updates for a specified model</para>
 /// <para type="description">Download and package driver updates for a specified model</para>
 /// <example>
-///     <code> Get-DtDriverUpdates -Manufacturer "Lenovo" -Model "20EQ" -OperatingSystem "WIN10" -ExcludeDriverUpdates @("BIOS","Firmware") | Invoke-DtDriverUpdatesDownload </code>
+///     <code> Get-DtDriverUpdates -Manufacturer "Lenovo" -Model "20EQ" -OperatingSystem "WIN10X64" -ExcludeDriverUpdates @("BIOS","Firmware") | Invoke-DtDownloadDriverUpdates </code>
 /// </example>
 /// <example>
 ///     <code>
