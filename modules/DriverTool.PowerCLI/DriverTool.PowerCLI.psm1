@@ -42,3 +42,30 @@ $allFunctions | ForEach-Object {
         Write-Error -Message "Failed to import: '$moduleFile' due to $($_.Exception.Message)"
     }
 }
+
+$fsharpCorePath = [System.IO.FileInfo]([System.IO.Path]::Combine($($global:ModuleRootPath),"binary","DriverTool.PowerCLI.Library.FSharp","Fsharp.Core.dll"))
+$global:fsharpCore = [reflection.assembly]::LoadFrom($fsharpCorePath)
+$OnAssemblyResolve = [System.ResolveEventHandler] {
+  param($sender, $e)
+  # from:FSharp.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+  # to:  FSharp.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+  #Write-Host "OnAssemblyResolve: Attempting to resolve when asking for assembly: $($e.Name)"
+  if ($e.Name -eq "FSharp.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") 
+  {       
+    #Write-Host "OnAssemblyResolve: Resolving: $($global:fsharpCore)"
+    return $global:fsharpCore
+  }
+  else {
+    foreach($a in [System.AppDomain]::CurrentDomain.GetAssemblies())
+    {
+        if ($a.FullName -eq $e.Name)
+        {
+            #Write-Host "OnAssemblyResolve: Resolving: $($a.Name)"
+            return $a
+        }
+    }    
+  }
+  #Write-Host "OnAssemblyResolve: Resolving: null."
+  return $null
+}
+[System.AppDomain]::CurrentDomain.add_AssemblyResolve($OnAssemblyResolve)
