@@ -42,7 +42,8 @@ $allFunctions | ForEach-Object {
         Write-Error -Message "Failed to import: '$moduleFile' due to $($_.Exception.Message)"
     }
 }
-
+#Source: https://stackoverflow.com/questions/24181557/powershell-config-assembly-redirect
+#Source: https://github.com/davidpodhola/Bracellus/blob/master/test.ps1
 $fsharpCorePath = [System.IO.FileInfo]([System.IO.Path]::Combine($($global:ModuleRootPath),"binary","DriverTool.PowerCLI.Library.FSharp","Fsharp.Core.dll"))
 $global:fsharpCore = [reflection.assembly]::LoadFrom($fsharpCorePath)
 $OnAssemblyResolve = [System.ResolveEventHandler] {
