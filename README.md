@@ -625,7 +625,7 @@ Write-Host "Setup unit test templates..."
 
 ```
 
-* To build DriverTool, run from a standard PowerShell prompt:
+* To clone and build DriverTool, run from a standard PowerShell command prompt:
 
 ```PowerShell
 $devFolder = "c:\dev\github.trondr"
@@ -638,7 +638,7 @@ Set-Location -Path "$devFolder\DriverTool"
 
 ## Development Environment
 
-* From a PowerShell admin command prompt run:
+* To setup development machine run from a PowerShell admin command prompt:
 
 ```PowerShell
 Write-Host "Installing Nuget..."
@@ -704,6 +704,19 @@ $vsIds | Foreach-Object {
 
 Write-Host "Setup unit test templates..."
 . "C:\Program Files\dotnet\dotnet.exe" new -i NUnit3.DotNetNew.Template
+```
+
+* To clone and build DriverTool, run from a standard PowerShell command prompt:
+
+```PowerShell
+$devFolder = "c:\dev\github.trondr"
+New-Item -Path $devFolder -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+Set-Location -Path $devFolder
+git clone https://github.com/trondr/DriverTool.git .\DriverTool
+Set-Location -Path "$devFolder\DriverTool"
+git checkout develop
+.\Build.ps1
+```
 
 # Debug PowerShell CmdLet  written in F# (Example)
 
