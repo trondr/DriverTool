@@ -1,5 +1,5 @@
 #r "paket:
-nuget FSharp.Core 4.7.0
+nuget FSharp.Core
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.AssemblyInfoFile
 nuget Fake.DotNet.MSBuild
@@ -146,20 +146,6 @@ Target.create "BuildTest" (fun _ ->
 
 )
 
-let nunitConsoleRunner() =
-    let consoleRunner = 
-        !! "packages/**/nunit3-console.exe"
-        |> Seq.head
-    printfn "Console runner:  %s" consoleRunner
-    consoleRunner
-
-Target.create "Test" (fun _ -> 
-    Trace.trace "Testing app..."    
-    !! ("build/test/**/*.Tests.dll")    
-    |> NUnit3.run (fun p ->
-        {p with ToolPath = nunitConsoleRunner();Where = "cat==UnitTests";TraceLevel=NUnit3.NUnit3TraceLevel.Off})
-)
-
 Target.create "Publish" (fun _ ->
     Trace.trace "Publishing app..."
     let assemblyVersion = getVersion (System.IO.Path.Combine(buildAppFolder,"DriverTool.exe"))
@@ -181,8 +167,7 @@ open Fake.Core.TargetOperators
     ==> "RestorePackages"
     ==> "BuildApp"
     ==> "BuildDocumentation"
-    ==> "BuildTest"
-    ==> "Test"
+    ==> "BuildTest"    
     ==> "Publish"
     ==> "Default"
 

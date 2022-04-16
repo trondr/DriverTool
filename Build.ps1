@@ -11,6 +11,7 @@ param(
 if($BuildTarget -eq "Default")
 {
     fake run "Build.fsx" target "$BuildTarget"
+    if($LASTEXITCODE -ne 0) {throw "fake build script failed."}
     Invoke-psake -taskList $BuildTarget
 }
 elseif($BuildTarget -eq "UpdateVersion") {    
@@ -18,6 +19,7 @@ elseif($BuildTarget -eq "UpdateVersion") {
 }
 else {
     fake run "Build.fsx" target "$BuildTarget"
+    if($LASTEXITCODE -ne 0) {throw "fake build script failed."}
     Invoke-psake -taskList $BuildTarget
 }
 

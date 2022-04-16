@@ -12,7 +12,7 @@ properties {
     $templatesStoreFolder = [System.IO.Path]::Combine($myDocuments,"Templates",$templatesStoreName)
 }
 
-task default -depends Publish
+task default -depends UnitTests,Publish
 
 task Clean {    
     Unregister-PSRepository -Name $PSRepositoryName -ErrorAction SilentlyContinue
@@ -37,6 +37,16 @@ task PublishModule -depends ModuleRepository {
 
 task Publish -depends PublishModule {
     Write-Host "Published!" -ForegroundColor Green
+}
+
+task UnitTests {    
+    $nunitConsoleRunner = Get-ChildItem -LiteralPath "$rootFolder\packages\nunit.consolerunner" -Filter "nunit3-console.exe" -Recurse | Select-Object -Last 1
+    if($null -eq $nunitConsoleRunner){ throw "Not found: nunit3-console.exe"}    
+	$tests = (Get-ChildItem -LiteralPath $buildFolder -Recurse -Filter "*Tests.dll") | ForEach-Object {$_.FullName}    
+	Exec {
+        Write-Host "Running: . $($nunitConsoleRunner.FullName) --noheader --where=cat==UnitTests --trace=Off $tests"
+        & $($nunitConsoleRunner.FullName) --noheader --where=cat==UnitTests --trace=Off $tests    
+    }
 }
 
 function Update-DtFsProjectVersion
