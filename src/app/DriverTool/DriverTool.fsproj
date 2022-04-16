@@ -1,17 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <PackageReleaseNotes>
     </PackageReleaseNotes>
-    <AssemblyVersion>1.0.22037.80</AssemblyVersion>
-    <FileVersion>1.0.22037.80</FileVersion>
-    <Version>1.0.22037</Version>
+    <AssemblyVersion>1.0.22106.82</AssemblyVersion>
+    <FileVersion>1.0.22106.82</FileVersion>
+    <Version>1.0.22106</Version>
     <Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
     <Copyright>Copyright (c) 2018-2022 github/trondr</Copyright>
     <Company>github/trondr</Company>
     <Authors>github/trondr</Authors>
-	<ApplicationIcon>DriverTool.ico</ApplicationIcon>
+    <ApplicationIcon>DriverTool.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>

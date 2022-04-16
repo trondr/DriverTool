@@ -5,9 +5,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarnOn>3390;$(WarnOn)</WarnOn>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyVersion>1.0.22037.80</AssemblyVersion>
-    <FileVersion>1.0.22037.80</FileVersion>
-    <Version>1.0.22037</Version>
+    <AssemblyVersion>1.0.22106.82</AssemblyVersion>
+    <FileVersion>1.0.22106.82</FileVersion>
+    <Version>1.0.22106</Version>
     <Copyright>Copyright (c) 2018-2022 github/trondr</Copyright>
   </PropertyGroup>
   <PropertyGroup>

@@ -3,7 +3,7 @@
 	RootModule = 'DriverTool.PowerCLI.psm1'
 	
 	# Version number of this module.
-    ModuleVersion = '1.0.22037'
+    ModuleVersion = '1.0.22106'
 	
 	# ID used to uniquely identify this module
 	GUID = '35971a7e-b1f9-4932-82a1-29597fb6f022'
