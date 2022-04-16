@@ -208,9 +208,14 @@ namespace DriverTool.Library
             let maxLength = min value.Length length
             value.Substring(0,maxLength) + "\r"
 
+        let getConsoleWindowWidth () = 
+            match (System.Console.LargestWindowWidth) with
+            |0 -> 800
+            |_ -> Console.WindowWidth
+                
         ///Report progress to stdout
         let reportProgressStdOut' : reportProgressFunction = (fun activity status currentOperation percentComplete isBusy id ->
-                let length = Console.WindowWidth                
+                let length = getConsoleWindowWidth ()
                 match percentComplete with
                 |Some p ->
                     match id with
