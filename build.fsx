@@ -22,8 +22,6 @@ open Fake.DotNet.Testing
 let buildFolder = System.IO.Path.GetFullPath("./build/")
 let buildAppFolder = buildFolder + "app"
 let buildTestFolder = buildFolder + "test"
-//let artifactsFolder = System.IO.Path.GetFullPath("./artifacts/")
-//let artifactAppFolder = artifactsFolder + "app"
 let modulesBinaryFolder = System.IO.Path.GetFullPath("./modules/DriverTool.PowerCLI/binary/")
 
 let assemblyVersion =
@@ -43,7 +41,6 @@ Target.create "Clean" (fun _ ->
     let folders =
         [ 
             buildFolder; 
-            //artifactsFolder;
             System.IO.Path.GetFullPath("./src/app/DriverTool/bin");
             System.IO.Path.GetFullPath("./src/app/DriverTool/obj");
             System.IO.Path.GetFullPath("./src/app/DriverTool.CSharpLib/bin");
