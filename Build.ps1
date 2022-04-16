@@ -9,17 +9,13 @@ param(
     $AddDaysToBuildVersion = 0
 )
 if($BuildTarget -eq "Default")
-{
-    fake run "Build.fsx" target "$BuildTarget"
-    if($LASTEXITCODE -ne 0) {throw "fake build script failed."}
+{    
     Invoke-psake -taskList $BuildTarget
 }
 elseif($BuildTarget -eq "UpdateVersion") {    
     Invoke-psake -taskList $BuildTarget -parameters @{ 'AddDaysToBuildVersion'=$AddDaysToBuildVersion; }
 }
-else {
-    fake run "Build.fsx" target "$BuildTarget"
-    if($LASTEXITCODE -ne 0) {throw "fake build script failed."}
+else {    
     Invoke-psake -taskList $BuildTarget
 }
 

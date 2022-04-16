@@ -5,6 +5,7 @@ properties {
 	$projectName = "DriverTool"
     $artifactsFolder = [System.IO.Path]::Combine($rootFolder,"artifacts")
     $buildFolder = [System.IO.Path]::Combine($rootFolder,"build")
+    $buildAppFolder = [System.IO.Path]::Combine($rootFolder,"build","app")
     $srcFolder = [System.IO.Path]::Combine($rootFolder,"src")
     $buildSetupFolder = [System.IO.Path]::Combine($buildFolder,"setup")
     $PSRepositoryName = "DriverToolPSRepository"    
@@ -12,15 +13,22 @@ properties {
     $templatesStoreFolder = [System.IO.Path]::Combine($myDocuments,"Templates",$templatesStoreName)
 }
 
-task default -depends UnitTests,Publish
+task default -depends Publish
 
 task Clean {    
     Unregister-PSRepository -Name $PSRepositoryName -ErrorAction SilentlyContinue
-    #Remove-Item -Path $artifactsFolder -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path $artifactsFolder -Force -Recurse -ErrorAction SilentlyContinue
     New-Item -Path $artifactsFolder -ItemType Directory -Force | Out-Null
     #Remove-Item -Path $buildFolder -Force -Recurse -ErrorAction SilentlyContinue
     New-Item -Path $buildFolder -ItemType Directory -Force | Out-Null            
     Write-Host "Cleaned!" -ForegroundColor Green
+    Remove-Item -Path "$artifactsFolder\DriverTool.*.zip" -Force
+}
+
+task Build -depends Clean {
+    Exec{        
+        fake run "Build.fsx" target "Default"        
+    }    
 }
 
 task ModuleRepository -depends Clean {    
@@ -35,11 +43,16 @@ task PublishModule -depends ModuleRepository {
     Write-Host "DriverTool.PowerCLI module published!" -ForegroundColor Green
 }
 
-task Publish -depends PublishModule {
+task PublishApp -depends UnitTests  {
+    $assemblyVersion = (Get-Item "$buildAppFolder\DriverTool.exe").VersionInfo.FileVersion    
+    Compress-Archive -Path "$buildAppFolder\**"  -DestinationPath "$artifactsFolder\DriverTool.$assemblyVersion.zip"
+}
+
+task Publish -depends PublishModule, PublishApp {
     Write-Host "Published!" -ForegroundColor Green
 }
 
-task UnitTests {    
+task UnitTests -depends Build {    
     $nunitConsoleRunner = Get-ChildItem -LiteralPath "$rootFolder\packages\nunit.consolerunner" -Filter "nunit3-console.exe" -Recurse | Select-Object -Last 1
     if($null -eq $nunitConsoleRunner){ throw "Not found: nunit3-console.exe"}    
 	$tests = (Get-ChildItem -LiteralPath $buildFolder -Recurse -Filter "*Tests.dll") | ForEach-Object {$_.FullName}    

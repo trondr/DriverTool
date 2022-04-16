@@ -22,8 +22,8 @@ open Fake.DotNet.Testing
 let buildFolder = System.IO.Path.GetFullPath("./build/")
 let buildAppFolder = buildFolder + "app"
 let buildTestFolder = buildFolder + "test"
-let artifactsFolder = System.IO.Path.GetFullPath("./artifacts/")
-let artifactAppFolder = artifactsFolder + "app"
+//let artifactsFolder = System.IO.Path.GetFullPath("./artifacts/")
+//let artifactAppFolder = artifactsFolder + "app"
 let modulesBinaryFolder = System.IO.Path.GetFullPath("./modules/DriverTool.PowerCLI/binary/")
 
 let assemblyVersion =
@@ -43,7 +43,7 @@ Target.create "Clean" (fun _ ->
     let folders =
         [ 
             buildFolder; 
-            artifactsFolder;
+            //artifactsFolder;
             System.IO.Path.GetFullPath("./src/app/DriverTool/bin");
             System.IO.Path.GetFullPath("./src/app/DriverTool/obj");
             System.IO.Path.GetFullPath("./src/app/DriverTool.CSharpLib/bin");
@@ -146,16 +146,6 @@ Target.create "BuildTest" (fun _ ->
 
 )
 
-Target.create "Publish" (fun _ ->
-    Trace.trace "Publishing app..."
-    let assemblyVersion = getVersion (System.IO.Path.Combine(buildAppFolder,"DriverTool.exe"))
-    let files = !!("build/app/**/*")        
-    let zipFile = System.IO.Path.Combine(artifactsFolder,sprintf "DriverTool.%s.zip" assemblyVersion)
-    files
-    |> Fake.IO.Zip.createZip buildAppFolder zipFile (sprintf "DriverTool %s" assemblyVersion) 9 false 
-    Trace.trace (sprintf "Published: %s" zipFile)
-)
-
 Target.create "Default" (fun _ ->
     Trace.trace "Hello world from FAKE"
 )
@@ -167,8 +157,7 @@ open Fake.Core.TargetOperators
     ==> "RestorePackages"
     ==> "BuildApp"
     ==> "BuildDocumentation"
-    ==> "BuildTest"    
-    ==> "Publish"
+    ==> "BuildTest"
     ==> "Default"
 
 //Start build
