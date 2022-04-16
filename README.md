@@ -558,89 +558,152 @@ New-DtCmTaskSequenceFromDriverPackPackageDefinitionSms -Path $packageDefintionSm
 
 # Build Environment
 
-From a PowerShell Admin command prompt run:
+* To install the minimum required components to build DriverTool, run from a PowerShell Admin command prompt:
 
 ```PowerShell
+Write-Host "Installing Nuget..."
+$PowerShellGetDatafolder = "C:\ProgramData\Microsoft\Windows\PowerShell\PowerShellGet"
+New-Item -Path $PowerShellGetDatafolder -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+$nugetExe = "$PowerShellGetDatafolder\nuget.exe"
+if( (Test-Path -Path $nugetExe) -eq $false)
+{
+    Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile "$nugetExe"  | Out-Null
+	. $nugetExe update -self | Out-Null
+} else
+{
+    . $nugetExe update -self | Out-Null
+}
+
+Write-Host "Installing modules: VSSetup, psake"
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+Install-Module VSSetup
+Install-Module psake
+Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
+Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force -ErrorAction SilentlyContinue
+
+Write-Host "Installing Chocolatey..."
 try{Set-ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue}catch{}
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-choco feature enable -n allowGlobalConfirmation
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) | Out-Null
+choco feature enable -n allowGlobalConfirmation  | Out-Null
 choco install git
 choco install git-credential-winstore
-choco install netfx-4.8-devpack
-choco install visualstudio2019buildtools
-choco install visualstudio2019-workload-netcorebuildtools
-choco install visualstudio2019-workload-manageddesktopbuildtools
-$vsBuildToolsExe = "c:\windows\temp\vs_buildtools.exe"
-if((Test-Path -Path $vsBuildToolsExe) -eq $false)
-{
-    Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_buildtools.exe" -OutFile "$vsBuildToolsExe"
-}
-. $vsBuildToolsExe --add "Microsoft.VisualStudio.Component.FSharp.MSBuild" --passive --norestart --quiet
+choco install notepadplusplus
 choco install fake
 choco upgrade fake
 choco install nunit
-choco feature disable -n allowGlobalConfirmation
+choco feature disable -n allowGlobalConfirmation | Out-Null
+
+Write-Host "Installing Visual Studio 2022 Build Tools"
+$vsInstallerName = "vs_enterprise" #"vs_buildtools"
+$vsInstallerExe = "$($env:TEMP)\$($vsInstallerName).exe"
+if((Test-Path -Path $vsInstallerExe) -eq $false)
+{
+    Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/$($vsInstallerName).exe" -OutFile "$vsInstallerExe"
+}
+$vsIds = @(
+    "Microsoft.VisualStudio.Workload.ManagedDesktop"
+    ,"Microsoft.VisualStudio.Component.FSharp"
+    ,"Microsoft.VisualStudio.Component.FSharp.Desktop"
+    ,"Microsoft.VisualStudio.Component.NuGet"
+    ,"Microsoft.VisualStudio.Component.PortableLibrary"
+    ,"Microsoft.Net.Component.4.8.TargetingPack"
+    ,"Microsoft.Net.ComponentGroup.4.8.DeveloperTools"
+    ,"Microsoft.VisualStudio.Workload.MSBuildTools",
+    "Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools"
+)
+$vsIds | Foreach-Object {
+    $id = $_
+    Write-Host "Installing $id ..."
+    . $vsInstallerExe --add "$id" --norestart --quiet | Out-Null    
+    Start-Sleep -Seconds 5;Get-Process -Name $vsInstallerName,"setup" -ErrorAction SilentlyContinue | Wait-Process
+}
+
+Write-Host "Setup unit test templates..."
+. "C:\Program Files\dotnet\dotnet.exe" new -i NUnit3.DotNetNew.Template
+
 ```
 
-*From a new PowerShell admin command prompt run:
+* To build DriverTool, run from a standard PowerShell prompt:
 
-dotnet new -i NUnit3.DotNetNew.Template
-
-* From a standard commmand prompt run:
-
-```batch
-mkdir c:\dev\github.trondr
-cd c:\dev\github.trondr
+```PowerShell
+$devFolder = "c:\dev\github.trondr"
+New-Item -Path $devFolder -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+Set-Location -Path $devFolder
 git clone https://github.com/trondr/DriverTool.git .\DriverTool
-cd DriverTool
-Build.cmd
+Set-Location -Path "$devFolder\DriverTool"
+.\Build.ps1
 ```
 
 ## Development Environment
 
 * From a PowerShell admin command prompt run:
 
-```batch
-try{Set-ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue}catch{}
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-choco feature enable -n allowGlobalConfirmation
-choco install git
-choco install git-credential-winstore
-choco install netfx-4.8-devpack
-choco install visualstudio2019buildtools
-choco install visualstudio2019-workload-netcorebuildtools
-choco install visualstudio2019-workload-manageddesktopbuildtools
-$vsBuildToolsExe = "c:\windows\temp\vs_buildtools.exe"
-if((Test-Path -Path $vsBuildToolsExe) -eq $false)
+```PowerShell
+Write-Host "Installing Nuget..."
+$PowerShellGetDatafolder = "C:\ProgramData\Microsoft\Windows\PowerShell\PowerShellGet"
+New-Item -Path $PowerShellGetDatafolder -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+$nugetExe = "$PowerShellGetDatafolder\nuget.exe"
+if( (Test-Path -Path $nugetExe) -eq $false)
 {
-    Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_buildtools.exe" -OutFile "$vsBuildToolsExe"
-}
-. $vsBuildToolsExe --add "Microsoft.VisualStudio.Component.FSharp.MSBuild" --passive --norestart --quiet
-choco install fake
-choco upgrade fake
-choco install nunit
-choco install SourceTree
-choco install notepadplusplus
-choco install vscode
-choco install visualstudio2019enterprise
-# choco install visualstudio2019professional
-choco install visualstudio2019-workload-manageddesktop
-$vsInstallerExe = "c:\windows\temp\vs_enterprise.exe"
-# $vsInstallerExe = "c:\windows\temp\vs_professional.exe"
-if((Test-Path -Path $vsInstallerExe) -eq $false)
+    Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile "$nugetExe"  | Out-Null
+	. $nugetExe update -self | Out-Null
+} else
 {
-    Invoke-WebRequest -Uri "https://aka.ms/vs/16/release/vs_enterprise.exe" -OutFile "$vsInstallerExe"
+    . $nugetExe update -self | Out-Null
 }
-. $vsInstallerExe --add "Microsoft.VisualStudio.Component.FSharp.Desktop" --passive --norestart --quiet
+
+Write-Host "Installing modules: VSSetup, psake"
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 Install-Module VSSetup
 Install-Module psake
 Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
-choco feature disable -n allowGlobalConfirmation
-```
+Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force -ErrorAction SilentlyContinue
+
+Write-Host "Installing Chocolatey..."
+try{Set-ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue}catch{}
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) | Out-Null
+choco feature enable -n allowGlobalConfirmation  | Out-Null
+choco install git
+choco install git-credential-winstore
+choco install SourceTree
+choco install notepadplusplus
+choco install vscode
+choco install fake
+choco upgrade fake
+choco install nunit
+choco feature disable -n allowGlobalConfirmation | Out-Null
+Write-Host "Installing Visual Studio 2022 Build Tools"
+$vsInstallerName = "vs_enterprise" # "vs_professional"
+$vsInstallerExe = "$($env:TEMP)\$($vsInstallerName).exe"
+if((Test-Path -Path $vsInstallerExe) -eq $false)
+{
+    Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/$($vsInstallerName).exe" -OutFile "$vsInstallerExe"
+}
+# Ref: https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-enterprise?view=vs-2022
+$vsIds = @(
+    "Microsoft.VisualStudio.Workload.ManagedDesktop"
+    ,"Microsoft.VisualStudio.Component.FSharp"
+    ,"Microsoft.VisualStudio.Component.FSharp.Desktop"
+    ,"Microsoft.VisualStudio.Component.NuGet"
+    ,"Microsoft.VisualStudio.Component.PortableLibrary"
+    ,"Microsoft.Net.Component.4.8.TargetingPack"
+    ,"Microsoft.Net.ComponentGroup.4.8.DeveloperTools"
+    ,"Microsoft.VisualStudio.Workload.MSBuildTools",
+    "Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools"
+)
+$vsIds | Foreach-Object {
+    $id = $_
+    Write-Host "Installing $id ..."
+    . $vsInstallerExe --add "$id" --norestart --quiet | Out-Null    
+    Start-Sleep -Seconds 5;Get-Process -Name $vsInstallerName,"setup" -ErrorAction SilentlyContinue | Wait-Process
+}
+
+Write-Host "Setup unit test templates..."
+. "C:\Program Files\dotnet\dotnet.exe" new -i NUnit3.DotNetNew.Template
 
 # Debug PowerShell CmdLet  written in F# (Example)
 
