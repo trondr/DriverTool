@@ -34,6 +34,6 @@
     <ProjectReference Include="..\..\app\DriverTool.PowerCLI.Library.CSharp\DriverTool.PowerCLI.Library.CSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="5.0.2" />
+    <PackageReference Update="FSharp.Core" Version="6.0.3" />
   </ItemGroup>
 </Project>

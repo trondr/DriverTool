@@ -112,7 +112,7 @@
     <PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.2.0" />
     <PackageReference Include="FSharp.Configuration" Version="2.0.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.0" />
-    <PackageReference Include="FSharp.Core" Version="5.0.2" />
+    <PackageReference Include="FSharp.Core" Version="6.0.3" />
     <PackageReference Include="FSharp.Data" Version="4.2.4" />
     <PackageReference Include="FSharpx.Async" Version="1.14.1" />
     <PackageReference Include="FSharpx.Collections" Version="3.0.1" />
