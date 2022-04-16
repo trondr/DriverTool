@@ -161,3 +161,21 @@ module LenovoUpdateTests =
         })with
         |Result.Ok u -> Assert.IsTrue ((Array.length u) > 0,"")
         |Result.Error ex -> Assert.Fail(ex.ToString())
+
+
+    [<Test>]
+    [<Category(TestCategory.ManualTests)>]
+    let getDriverUpdatesTest() = 
+        match(
+            result{
+                let! cacheFolderPath = FileSystem.path @"C:\Temp\DriverToolCache"
+                let reportProgress = DriverTool.Library.Logging.reportProgressStdOut'
+                let! model = ModelCode.create "20QT" false
+                let! operatingSystem = OperatingSystemCode.create "WIN10X64" false
+                let excludePatterns = Array.zeroCreate<System.Text.RegularExpressions.Regex> 0
+                let! updates = LenovoUpdates.getDriverUpdates reportProgress cacheFolderPath model operatingSystem excludePatterns
+                return updates;
+            }
+        )with
+        |Result.Ok u -> Assert.IsTrue ((Array.length u) > 0,"")
+        |Result.Error ex -> Assert.Fail(ex.ToString())
