@@ -5,6 +5,7 @@ module PackageTemplate =
     let logger = DriverTool.Library.Logging.getLoggerByName "PackageTemplate"
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.FileSystem
         
     let packageTempateResourceName = "DriverTool.Library.PackageTemplate"
 
@@ -29,12 +30,11 @@ module PackageTemplate =
     let getFileName (filePath:FileSystem.Path) =
         ((new System.IO.FileInfo(FileSystem.pathValue filePath)).Name)
 
-    let extractIfNotExists (filePath:FileSystem.Path) = 
+    let extractIfNotExists filePath = 
         result
-            {
-                let filePathValue = FileSystem.pathValue filePath
+            {                
                 let! extractedFilepath =
-                    match System.IO.File.Exists(filePathValue) with
+                    match fileExists filePath with
                     |false ->
                         result{                            
                             let fileName = getFileName filePath

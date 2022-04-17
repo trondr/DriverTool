@@ -45,3 +45,11 @@ module PathTests  =
         let path2Result = FileSystem.path testPath            
         Assert.AreEqual(path1Result,path2Result,"paths are not equal")
 
+    [<Test>]
+    [<Category(TestCategory.UnitTests)>]
+    [<TestCase(@"d:\somefolder\subfolder",@"\\?\d:\somefolder\subfolder","Local path")>]
+    [<TestCase(@"\\someserver\somefolder\subfolder",@"\\?\UNC\someserver\somefolder\subfolder","Unc path")>]
+    [<TestCase(@"\\?\d:\somefolder\subfolder",@"\\?\d:\somefolder\subfolder","Allready a long path")>]
+    let toLongPathTests (path, expectedPath, testName) =       
+       let actual = FileSystem.toLongPathValue path
+       Assert.AreEqual(expectedPath,actual,testName)

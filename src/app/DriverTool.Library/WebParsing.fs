@@ -3,6 +3,7 @@
 module WebParsing =
     let logger = DriverTool.Library.Logging.getLoggerByName "WebParsing"    
     open DriverTool.Library.F
+    open DriverTool.Library.FileSystem
     open DriverTool.Library.FileOperations
 
     let getContentFromWebPage (uri:string)  =  

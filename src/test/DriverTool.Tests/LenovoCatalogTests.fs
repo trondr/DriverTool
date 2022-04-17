@@ -13,6 +13,7 @@ module LenovoCatalogTests=
     open Microsoft.FSharp.Core    
     open DriverTool.Library.Web
     open DriverTool.Library.WebParsing
+    open DriverTool.Library.FileSystem
     open DriverTool.Library.FileOperations
     open DriverTool.Library.PathOperations
     open System.Threading    

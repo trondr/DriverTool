@@ -6,6 +6,7 @@ open NUnit.Framework
 [<Category(TestCategory.UnitTests)>]
 module CompressionTests=
     open DriverTool    
+    open DriverTool.Library.FileSystem
     open DriverTool.Library.FileOperations
     open DriverTool.Library.F
     open DriverTool.Library
@@ -99,7 +100,7 @@ module CompressionTests=
             let! testZipFile = getTestZipFilePath false ziptFileTemporaryFolderPath                                       
             
             let! actual = Compression.zipFolder (testSourceFolderPath, testZipFile, logger)
-            Assert.AreEqual(true, FileOperations.fileExists testZipFile,"Zip file does not exist after zipFolder: " + FileSystem.pathValue testZipFile)
+            Assert.AreEqual(true, fileExists testZipFile,"Zip file does not exist after zipFolder: " + FileSystem.pathValue testZipFile)
             use temporaryDestinationFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! temporaryDestinationFolderPath = temporaryDestinationFolder.FolderPath
 
@@ -131,21 +132,21 @@ module CompressionTests=
                     use sourceTemporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! sourceTemporaryFolderPath = sourceTemporaryFolder.FolderPath
                     let! testSourceFolderPath = createTestFolder sourceFolderExists sourceTemporaryFolderPath
-                    Assert.AreEqual(sourceFolderExists, DirectoryOperations.folderPathExists testSourceFolderPath,"Expected source folder existance zipFolder: " + sourceFolderExists.ToString())
+                    Assert.AreEqual(sourceFolderExists, directoryExists testSourceFolderPath,"Expected source folder existance zipFolder: " + sourceFolderExists.ToString())
                     
                     use zipFileTemporaryFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! ziptFileTemporaryFolderPath = zipFileTemporaryFolder.FolderPath
                     let! testZipFile = getTestZipFilePath zipFileExists ziptFileTemporaryFolderPath                                       
-                    Assert.AreEqual(zipFileExists, FileOperations.fileExists testZipFile,"Expected zip file existance before zipFolder: " + zipFileExists.ToString())
+                    Assert.AreEqual(zipFileExists, fileExists testZipFile,"Expected zip file existance before zipFolder: " + zipFileExists.ToString())
 
                     let! actual = Compression.zipFolder (testSourceFolderPath, testZipFile, logger)
-                    Assert.AreEqual(true, FileOperations.fileExists testZipFile,"Zip file does not exist after zipFolder: " + FileSystem.pathValue testZipFile)
+                    Assert.AreEqual(true, fileExists testZipFile,"Zip file does not exist after zipFolder: " + FileSystem.pathValue testZipFile)
                     use temporaryDestinationFolder = new DirectoryOperations.TemporaryFolder(logger)
                     let! temporaryDestinationFolderPath = temporaryDestinationFolder.FolderPath
                     
                     let! unzipResult = Compression.unzipFile (testZipFile, temporaryDestinationFolderPath, logger)
-                    let! existingSourceFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue testSourceFolderPath)
-                    let! existingDestinationFolderPath = FileSystem.existingDirectoryPath (FileSystem.pathValue temporaryDestinationFolderPath)
+                    let! existingSourceFolderPath = existingDirectoryPath (FileSystem.pathValue testSourceFolderPath)
+                    let! existingDestinationFolderPath = existingDirectoryPath (FileSystem.pathValue temporaryDestinationFolderPath)
                     logger.Debug(sprintf "ExistingDestinationFolderPath: %A" existingDestinationFolderPath)
                     let deletedOrChangedFile () =
                         if(not sourceAndDestiationAreEqual) then                                                        

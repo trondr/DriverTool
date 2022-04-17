@@ -9,6 +9,7 @@ module Packaging=
     open DriverTool.Library.PackageXml
     open DriverTool.Library.PathOperations
     open DriverTool.Library.PackageDefinition
+    open DriverTool.Library.DirectoryOperations
 
 
     let createUnInstallScriptFileContent () =
@@ -74,20 +75,20 @@ module Packaging=
     let dtInstallPackageCmd = "DT-Install-Package.cmd"
     let dtUnInstallPackageCmd = "DT-UnInstall-Package.cmd"
 
-    let directoryContainsDpInst (directoryPath:string) =
+    let directoryContainsDpInst directoryPath =
         let dpinstFilesCount = 
-            System.IO.Directory.GetFiles(directoryPath,"*.*")
-            |> Seq.filter (fun fp -> System.Text.RegularExpressions.Regex.Match((new System.IO.FileInfo(fp)).Name,"dpinst",RegexOptions.IgnoreCase).Success)
+            getFiles' directoryPath
+            |> Seq.filter (fun fp -> System.Text.RegularExpressions.Regex.Match((new System.IO.FileInfo(FileSystem.longPathValue fp)).Name,"dpinst",RegexOptions.IgnoreCase).Success)
             |> Seq.toList
             |> Seq.length            
         (dpinstFilesCount > 0)
 
-    let packageIsUsingDpInstDuringInstall (installScriptPath:FileSystem.Path, installCommandLine:string) = 
+    let packageIsUsingDpInstDuringInstall (installScriptPath, installCommandLine:string) = 
         match (installCommandLine.StartsWith("dpinst.exe", true, System.Globalization.CultureInfo.InvariantCulture)) with
         | true -> 
             true
         | false -> 
-            directoryContainsDpInst ((new System.IO.FileInfo(FileSystem.pathValue installScriptPath)).Directory.FullName)
+            directoryContainsDpInst (getParentFolderPathUnsafe installScriptPath)
 
     let createInstallScript (extractedUpdate:ExtractedPackageInfo,manufacturer:Manufacturer,logDirectory:FileSystem.Path) =
         result{

@@ -10,21 +10,23 @@ open DriverTool.Library.DirectoryOperations
 
 module FileOperations =
 
-    let deleteFileUnsafe path  =
-        System.IO.File.Delete (FileSystem.pathValue path)
-        path
+    /// Delete file. Throw exception if not succesful.
+    let deleteFile' filePath =
+        System.IO.File.Delete(FileSystem.longPathValue filePath)
+        filePath
 
-    let deleteFile path = 
-        tryCatch (Some (sprintf "Failed to delete file: %A" path)) deleteFileUnsafe path
+    /// Delete file.
+    let deleteFile filePath =
+        tryCatch (Some (sprintf "Failed to delete file: '%A'" filePath)) deleteFile' filePath
 
     type FileExistsException(message : string) =
         inherit Exception(message)    
     
     let ensureFileDoesNotExistWithMessage message overwrite filePath =
-        match System.IO.File.Exists(FileSystem.pathValue filePath) with
+        match fileExists filePath with
         | true -> 
             match overwrite with
-            | true -> deleteFile filePath        
+            | true -> deleteFile filePath    
             | false -> Result.Error (new FileExistsException(sprintf "File allready exists: '%s'. %s" (FileSystem.pathValue filePath) message) :> Exception)
         | false -> Result.Ok filePath
     
@@ -32,27 +34,21 @@ module FileOperations =
         ensureFileDoesNotExistWithMessage String.Empty overwrite filePath
     
     let ensureFileExists path = 
-        match System.IO.File.Exists(FileSystem.pathValue  path) with
+        match fileExists  path with
         | true -> Result.Ok path            
         | false -> Result.Error (new System.IO.FileNotFoundException(sprintf "File does not exist: '%s'" (FileSystem.pathValue path)) :> Exception)
     
     let ensureFileExistsWithMessage message path = 
-        match System.IO.File.Exists(FileSystem.pathValue path) with
+        match fileExists path with
         | true -> Result.Ok path            
         | false -> Result.Error (new System.IO.FileNotFoundException(message) :> Exception)
     
-    let fileExists filePath =
-        System.IO.File.Exists(FileSystem.pathValue filePath)
-
-    let directoryExists directoryPath = 
-        System.IO.Directory.Exists(FileSystem.pathValue directoryPath)
-
     let getFileSize filePath =
-        (new System.IO.FileInfo(FileSystem.pathValue filePath)).Length
+        (new System.IO.FileInfo(FileSystem.longPathValue filePath)).Length
  
     let writeContentToFile (logger:Common.Logging.ILog) filePath (content:string) =         
         try
-            use sw = (new System.IO.StreamWriter(FileSystem.pathValue filePath))
+            use sw = (new System.IO.StreamWriter(FileSystem.longPathValue filePath))
             if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))
             (sw.Write(content))            
             if(logger.IsDebugEnabled) then ( logger.Debug(sprintf "Finished writing content to file '%A' (TID: %i)" filePath System.Threading.Thread.CurrentThread.ManagedThreadId))
@@ -62,15 +58,16 @@ module FileOperations =
     
     let readContentFromFile filePath = 
         try
-            use sr = (new System.IO.StreamReader(FileSystem.pathValue filePath))
+            use sr = (new System.IO.StreamReader(FileSystem.longPathValue filePath))
             Result.Ok (sr.ReadToEnd())
         with
         |ex -> Result.Error ex
     
     let copyFileUnsafe force sourceFilePath destinationFilePath =
-        System.IO.File.Copy(FileSystem.pathValue sourceFilePath, FileSystem.pathValue destinationFilePath, force)
+        System.IO.File.Copy(FileSystem.longPathValue sourceFilePath, FileSystem.longPathValue destinationFilePath, force)
         destinationFilePath
     
+    /// Copy file
     let copyFile force sourceFilePath destinationFilePath =
         tryCatch3 (Some (sprintf "Failed to copy file: '%A'->%A. " sourceFilePath destinationFilePath)) copyFileUnsafe force sourceFilePath destinationFilePath 
 
@@ -87,13 +84,6 @@ module FileOperations =
                  )
         |>Seq.toArray
         |>toAccumulatedResult
-
-    let copyFileS (sourceFilePath, destinationFilePath) =
-        try
-            System.IO.File.Copy(sourceFilePath, destinationFilePath, true)
-            Result.Ok destinationFilePath
-        with
-        | ex -> Result.Error (new Exception(sprintf "Failed to copy file '%s'->'%s'." sourceFilePath destinationFilePath, ex))
 
     /// <summary>
     /// Prepend a period to a file extension if necessary
@@ -180,13 +170,13 @@ module FileOperations =
 
     let compareDirectory directoryPath1 directoryPath2 =
         imperative{
-            let directories1 = System.IO.Directory.GetDirectories(FileSystem.pathValue directoryPath1)   
-            let directories2 = System.IO.Directory.GetDirectories(FileSystem.pathValue directoryPath2)                        
+            let directories1 = System.IO.Directory.GetDirectories(FileSystem.longPathValue directoryPath1)   
+            let directories2 = System.IO.Directory.GetDirectories(FileSystem.longPathValue directoryPath2)                        
             if( directories1.Length <> directories2.Length) then 
                 return false
         
-            let relativeDirectories1 = directories1 |> Array.map(fun d -> d.Replace(FileSystem.pathValue directoryPath1,"")) |> Array.sort
-            let relativeDirectories2 = directories2 |> Array.map(fun d -> d.Replace(FileSystem.pathValue directoryPath2,"")) |> Array.sort
+            let relativeDirectories1 = directories1 |> Array.map(fun d -> d.Replace(FileSystem.longPathValue directoryPath1,"")) |> Array.sort
+            let relativeDirectories2 = directories2 |> Array.map(fun d -> d.Replace(FileSystem.longPathValue directoryPath2,"")) |> Array.sort
             
             if( relativeDirectories1 <> relativeDirectories2) then 
                 return false
@@ -196,7 +186,7 @@ module FileOperations =
             if( files1.Length <> files2.Length) then 
                 return false
 
-            let files2To1 = files2 |> Array.map(fun f -> f.Replace(FileSystem.pathValue directoryPath2,FileSystem.pathValue directoryPath1)) |> Array.sort
+            let files2To1 = files2 |> Array.map(fun f -> f.Replace(FileSystem.longPathValue directoryPath2,FileSystem.longPathValue directoryPath1)) |> Array.sort
 
             if( files1 <> files2To1) then 
                 return false
@@ -219,15 +209,12 @@ module FileOperations =
                     |Result.Ok b -> b                    
                     |Result.Error _ -> false
                 if(not isEqual) then 
-                    return false
-                
-
-
+                    return false                
             return true
         }
         
     let toFileName filePath =
-        Path.GetFileName(FileSystem.pathValue filePath)
+        Path.GetFileName(FileSystem.longPathValue filePath)
 
     let createRandomFile logger folderPath =
         result {
@@ -247,8 +234,8 @@ module FileOperations =
            member _this.Path = createTestFile
            interface IDisposable with
                member this.Dispose() =
-                   match System.IO.File.Exists(FileSystem.pathValue this.Path) with
-                   | true -> System.IO.File.Delete(FileSystem.pathValue this.Path)
+                   match fileExists this.Path with
+                   | true -> System.IO.File.Delete(FileSystem.longPathValue this.Path)
                    | false -> ()
     
     let copyFileIfExists sourceFile destinationFolderPath = 

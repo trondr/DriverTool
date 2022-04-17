@@ -11,6 +11,7 @@ module HpCatalogTests =
     open DriverTool.Library.F
     open DriverTool.Library
     open DriverTool.Library.Logging
+    open DriverTool.Library.FileSystem
 
     let logger = Common.Logging.Simple.ConsoleOutLogger("LenovoUpdateTests",Common.Logging.LogLevel.All,true,true,true,"yyyy-MM-dd-HH-mm-ss-ms")
     
@@ -132,7 +133,7 @@ module HpCatalogTests =
             let! cacheFolderPath = cacheFolder.FolderPath
 
             let! actual = HpCatalog.downloadSmsSdpCatalog cacheFolderPath
-            Assert.IsTrue(FileOperations.directoryExists actual)
+            Assert.IsTrue(directoryExists actual)
             return actual
         }
         match res with

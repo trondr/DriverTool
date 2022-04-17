@@ -10,6 +10,7 @@ module InstallDriverPackage =
     let logger = getLoggerByName "InstallDriverPackage"
     open DriverTool.Library.F
     open DriverTool.Library
+    open DriverTool.Library.FileSystem
 
     let getInstallXmlPath (driverPackagePath:FileSystem.Path) =
         FileSystem.path (System.IO.Path.Combine(FileSystem.pathValue driverPackagePath,"Install.xml"))
@@ -71,7 +72,7 @@ module InstallDriverPackage =
             let! sourceDriversFolderPath = PathOperations.combine2Paths(FileSystem.pathValue driverPackagePath,"Drivers")            
             let! sourceDriversZipFilePath = PathOperations.combine2Paths(FileSystem.pathValue driverPackagePath,"Drivers.zip")            
             let! copyResult =   
-                match (System.IO.Directory.Exists(FileSystem.pathValue sourceDriversFolderPath)) with
+                match (directoryExists sourceDriversFolderPath) with
                 |true ->
                     logger.Info("Copy Drivers folder: " + FileSystem.pathValue sourceDriversFolderPath)
                     result{
@@ -97,7 +98,7 @@ module InstallDriverPackage =
 
     let getGetActiveDriverFolders driversFolderPath =
         result{
-            let! subDirectoryPaths = DirectoryOperations.getSubDirectoryPaths driversFolderPath
+            let! subDirectoryPaths = DirectoryOperations.getSubDirectories driversFolderPath
             let activeDriverFolders =
                     subDirectoryPaths
                     |>Seq.filter (fun path-> not (folderStartsWithUnderscore path))
@@ -107,7 +108,7 @@ module InstallDriverPackage =
      
     let getGetInActiveDriverFolders driversFolderPath =
         result{
-            let! subDirectoryPaths = DirectoryOperations.getSubDirectoryPaths driversFolderPath
+            let! subDirectoryPaths = DirectoryOperations.getSubDirectories driversFolderPath
             let activeDriverFolders =
                     subDirectoryPaths
                     |>Seq.filter (fun path-> (folderStartsWithUnderscore path))

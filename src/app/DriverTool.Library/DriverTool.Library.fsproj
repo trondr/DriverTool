@@ -29,10 +29,11 @@
     <EmbeddedResource Include="Tools\7Zip\readme.txt" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Disable BitLocker Protection.cmd" />
     <EmbeddedResource Include="Tools\BitLocker\DriverTool Resume BitLocker Protection.cmd" />
-    <Compile Include="F0.fs" />
+    <Compile Include="F0.fs" />    
     <Compile Include="Configuration.fs" />
     <Compile Include="Logging.fs" />
     <Compile Include="F.fs" />
+    <Compile Include="RegExp.fs" />
     <Compile Include="Async.fs" />
     <Compile Include="WrappedString.fs" />
     <Compile Include="Paths.fs" />
@@ -60,8 +61,7 @@
     <Compile Include="SystemInfo.fs" />
     <Compile Include="SystemFamily.fs" />
     <Compile Include="ModelCode.fs" />
-    <Compile Include="OperatingSystemCode.fs" />
-    <Compile Include="RegExp.fs" />
+    <Compile Include="OperatingSystemCode.fs" />    
     <Compile Include="Web.fs" />
     <Compile Include="UpdatesContext.fs" />
     <Compile Include="InstallXml.fs" />

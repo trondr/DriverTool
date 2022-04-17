@@ -75,10 +75,10 @@ module Web =
     let hasSameFileHash downloadInfo =
         (DriverTool.Library.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))
 
-    let useCachedVersionBase (logger:Common.Logging.ILog) (fileExists:string->bool) (downloadInfo:DownloadInfo) = 
-        let useCachedVersionFilePath =((FileSystem.pathValue downloadInfo.DestinationFile) + ".usecachedversion")
+    let useCachedVersionBase (logger:Common.Logging.ILog) (fileExists:FileSystem.Path->bool) (downloadInfo:DownloadInfo) = 
+        let useCachedVersionFilePath = FileSystem.pathUnSafe ((FileSystem.pathValue downloadInfo.DestinationFile) + ".usecachedversion")
         let useCachedVersionFileExists = (fileExists useCachedVersionFilePath) 
-        let destinationFileExists = (fileExists (FileSystem.pathValue downloadInfo.DestinationFile))
+        let destinationFileExists = (fileExists downloadInfo.DestinationFile)
         let useCachedVersion = useCachedVersionFileExists && destinationFileExists          
         match useCachedVersion with
         |true -> 
@@ -88,7 +88,7 @@ module Web =
             false   
 
     let useCachedVersion (logger:Common.Logging.ILog) (downloadInfo:DownloadInfo) =        
-        useCachedVersionBase logger System.IO.File.Exists downloadInfo
+        useCachedVersionBase logger FileSystem.fileExists downloadInfo
 
     let downloadIsRequired logger downloadInfo =        
         ((String.IsNullOrEmpty(downloadInfo.SourceChecksum) && (not (Cryptography.isTrusted downloadInfo.DestinationFile) ))||(not (hasSameFileHash downloadInfo))) && (not (useCachedVersion logger downloadInfo))

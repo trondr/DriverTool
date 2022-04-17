@@ -4,6 +4,7 @@ module Checksum=
     open System
     open System.IO
     open System.Security.Cryptography    
+    open DriverTool.Library.FileSystem
     open DriverTool.Library.FileOperations
     open DriverTool.Library.Logging    
     let logger = DriverTool.Library.Logging.getLoggerByName "Checksum"
@@ -17,8 +18,8 @@ module Checksum=
             | 128 -> SHA512.Create() :> HashAlgorithm
             | _  -> SHA512.Create() :> HashAlgorithm
 
-    let computeFileHash filePath (hashAlgorithm:HashAlgorithm)  =
-        use fileStream = new FileStream(FileSystem.pathValue filePath, FileMode.Open, FileAccess.Read)
+    let computeFileHash filePath (hashAlgorithm:HashAlgorithm)  =        
+        use fileStream = new FileStream(FileSystem.longPathValue filePath, FileMode.Open, FileAccess.Read)
         hashAlgorithm.ComputeHash(fileStream)
 
     let fileHashToString fileHash =

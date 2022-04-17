@@ -43,3 +43,8 @@ module RegExp =
     let matchAny excludeRegExPatterns text = 
         excludeRegExPatterns
         |>Array.exists(fun (p:Regex) -> p.IsMatch(text))
+
+    ///Replace all occurence of regular expression pattern in input string.
+    let replace pattern (replacement:string) ignorecase input =
+        let options = toRegexOptions ignorecase
+        System.Text.RegularExpressions.Regex.Replace(input,pattern,replacement,options)

@@ -420,20 +420,20 @@ module PackageXml =
         }
 
     let extractPackageXml (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
-        let destinationFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.PackageXmlName)
+        let destinationFilePath = FileSystem.pathUnSafe (System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.PackageXmlName))
         match FileSystem.existingFilePathString downloadedPackageInfo.PackageXmlPath with
         |Ok filePath -> 
-            match (FileOperations.copyFileS (FileSystem.pathValue filePath, destinationFilePath)) with
+            match (FileOperations.copyFile true filePath destinationFilePath) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
         |Error ex -> Result.Error ex
 
     let extractReadme (downloadedPackageInfo, packageFolderPath:FileSystem.Path)  =
-        let destinationReadmeFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Readme.Name)
+        let destinationReadmeFilePath = FileSystem.pathUnSafe (System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Readme.Name))
         match FileSystem.existingFilePathString downloadedPackageInfo.ReadmePath with
         |Ok readmeFilePath -> 
-            match (FileOperations.copyFileS (FileSystem.pathValue readmeFilePath, destinationReadmeFilePath)) with
+            match (FileOperations.copyFile true readmeFilePath destinationReadmeFilePath) with
             |Ok _ -> 
                 Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
             |Error ex -> Result.Error ex
@@ -447,10 +447,10 @@ module PackageXml =
         let installCommandLineUseInstaller = downloadedPackageInfo.Package.InstallCommandLine.Contains(downloadedPackageInfo.Package.Installer.Name)
         if(String.IsNullOrWhiteSpace(downloadedPackageInfo.Package.ExtractCommandLine) || installCommandLineUseInstaller) then
            logger.Info("Installer does not support extraction, copy the installer directly to package folder...")
-           let destinationInstallerFilePath = System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Installer.Name)
+           let destinationInstallerFilePath = FileSystem.pathUnSafe (System.IO.Path.Combine(FileSystem.pathValue packageFolderPath,downloadedPackageInfo.Package.Installer.Name))
            match FileSystem.existingFilePathString downloadedPackageInfo.InstallerPath with
            |Ok installerPath -> 
-                match FileOperations.copyFileS (FileSystem.pathValue installerPath, destinationInstallerFilePath) with
+                match (FileOperations.copyFile true installerPath destinationInstallerFilePath) with
                 |Ok _ -> 
                     Result.Ok (downloadedPackageInfoToExtractedPackageInfo (packageFolderPath,downloadedPackageInfo))
                 |Error ex -> Result.Error ex

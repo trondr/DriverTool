@@ -97,7 +97,8 @@ module WebTests =
     [<TestCase("c:\\temp\\file1.txt",FileExists.False, UseCacheFileExists.False, Expected.False)>]
     let useCachedVersionBaseTests(destinationFileName:string,fileExists,useCachedFileExists, expected) =        
         let useCacheVersionFileName = destinationFileName + ".usecachedversion"
-        let stubFileExists (destinationFileName:string) (useCacheVersionFileName:string) (fileName:string) =
+        let stubFileExists (destinationFileName:string) (useCacheVersionFileName:string) (filePath:FileSystem.Path) =
+            let fileName = FileSystem.pathValue filePath
             match fileName with
             |fileName when (fileName.Equals(destinationFileName)) ->
                 fileExists

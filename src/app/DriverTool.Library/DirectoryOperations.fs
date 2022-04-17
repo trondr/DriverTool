@@ -3,6 +3,7 @@ namespace DriverTool.Library
 open System    
 open DriverTool.Library.Paths
 open DriverTool.Library.F
+open DriverTool.Library.FileSystem
 
 module DirectoryOperations =
     type DirectoryOperations = class end
@@ -12,33 +13,48 @@ module DirectoryOperations =
         
     let logger = Logging.getLoggerByName("DirectoryOperations")
 
-    let createDirectoryUnsafe (directoryPath:FileSystem.Path) =
-        System.IO.Directory.CreateDirectory(FileSystem.pathValue directoryPath) |> ignore
+    /// Create directory, throw exception if not succesful.
+    let createDirectoryUnsafe directoryPath =
+        System.IO.Directory.CreateDirectory(FileSystem.longPathValue directoryPath) |> ignore
         directoryPath
 
+    ///Create directory
     let createDirectory (directoryPath:FileSystem.Path) =
         try
             Result.Ok (createDirectoryUnsafe directoryPath)
         with
         | ex -> Result.Error (new Exception(sprintf "Failed to create directory '%s'" (FileSystem.pathValue directoryPath),ex))
     
+    ///Delete directory, throw exception if not succesful
     let deleteDirectoryUnsafe force (folderPath:FileSystem.Path) =
-            match (System.IO.Directory.Exists(FileSystem.pathValue folderPath)) with
+            match (directoryExists folderPath) with
             |true -> 
-                System.IO.Directory.Delete(FileSystem.pathValue folderPath, force)
+                System.IO.Directory.Delete(FileSystem.longPathValue folderPath, force)
                 folderPath
             |false -> 
                 folderPath
-     
+    
+    ///Delete directory
     let deleteDirectory force (folderPath:FileSystem.Path) =        
         tryCatch2 (Some (sprintf "Failed to delete directory '%A'" folderPath)) deleteDirectoryUnsafe force folderPath
 
-    let folderPathExists (directoryPath:FileSystem.Path) =
-        System.IO.Directory.Exists(FileSystem.pathValue directoryPath)
+    /// Get files in directory
+    let getFiles' directoryPath =
+        System.IO.Directory.GetFiles(FileSystem.longPathValue directoryPath)
+        |>Array.map FileSystem.pathUnSafe
+
+    /// Get sub directories in directory. Throw exception if not succesful.
+    let getDirectories' directoryPath =
+        System.IO.Directory.GetDirectories(FileSystem.longPathValue directoryPath)
+        |>Array.map FileSystem.pathUnSafe
+
+    /// Get sub directories in directory.
+    let getSubDirectories path =
+        tryCatch (Some(sprintf "Failed to get sub directories: '%A'" path)) getDirectories' path
 
     let ensureDirectoryExistsWithMessage createIfNotExists message directoryPath =
         let directoryExists = 
-            folderPathExists directoryPath
+            directoryExists directoryPath
         match (not directoryExists && createIfNotExists) with
         |true->
             logger.Info(sprintf  "Creating directory: '%s'..." (FileSystem.pathValue directoryPath))
@@ -51,17 +67,18 @@ module DirectoryOperations =
     let ensureDirectoryExists createIfNotExists directoryPath =
         ensureDirectoryExistsWithMessage createIfNotExists String.Empty directoryPath
     
-    let folderPathIsEmpty folderPath =
-         match (folderPathExists folderPath) with
+    /// Check if directory is empty
+    let directoryPathIsEmpty directoryPath =
+         match (directoryExists directoryPath) with
          |true ->
-             let isEmpty = not (System.IO.Directory.GetDirectories(FileSystem.pathValue folderPath).Length > 0 || System.IO.Directory.GetFiles(FileSystem.pathValue folderPath).Length > 0)
+             let isEmpty = not (Array.length (getDirectories' directoryPath) > 0 || Array.length (getFiles' directoryPath) > 0)
              isEmpty
          |false -> true
     
     let ensureDirectoryExistsAndIsEmptyWithMessage  message (directoryPath:FileSystem.Path) createIfNotExists =
         match (ensureDirectoryExists createIfNotExists directoryPath) with
         |Ok dp -> 
-            match (folderPathIsEmpty dp) with
+            match (directoryPathIsEmpty dp) with
             |true -> Result.Ok dp
             |false -> Result.Error (new Exception(sprintf "Directory '%s' is not empty. %s" (FileSystem.pathValue dp) message))
         |Result.Error ex -> Result.Error ex
@@ -78,7 +95,7 @@ module DirectoryOperations =
         match folderPath with
         |Result.Error _ -> folderPath
         |Result.Ok fp ->
-            match (folderPathIsEmpty fp) with
+            match (directoryPathIsEmpty fp) with
             |true -> Result.Ok fp
             |false -> toErrorResult (toException (sprintf "Folder '%A' is not empty." fp) None) message 
 
@@ -86,7 +103,7 @@ module DirectoryOperations =
         match folderPath with
         |Result.Error _ -> folderPath
         |Result.Ok fp ->
-            match (folderPathExists fp) with
+            match (directoryExists fp) with
             |true -> Result.Ok fp
             |false -> 
                 match force with
@@ -99,34 +116,17 @@ module DirectoryOperations =
         |>ensureFolderPathExists' force message
         |>ensureFolderPathIsEmpty' message
 
-    let ensureDirectoryNotExistsWithMessage message (directoryPath:FileSystem.Path) =
-        match folderPathExists(directoryPath) with
-        |true -> Result.Error (new Exception(sprintf "Directory '%s' allready exists. %s" (FileSystem.pathValue directoryPath) message))
+    let ensureDirectoryNotExistsWithMessage message directoryPath =
+        match directoryExists directoryPath with
+        |true -> Result.Error (new Exception(sprintf "Directory '%A' allready exists. %s" directoryPath message))
         |false -> Result.Ok directoryPath
     
     let getParentFolderPath (folderPath:FileSystem.Path)=        
-        FileSystem.path (System.IO.DirectoryInfo(FileSystem.pathValue folderPath).Parent.FullName)
+        FileSystem.path (System.IO.DirectoryInfo(FileSystem.longPathValue folderPath).Parent.FullName)
 
     let getParentFolderPathUnsafe (folderPath:FileSystem.Path)=        
-        FileSystem.pathUnSafe (System.IO.DirectoryInfo(FileSystem.pathValue folderPath).Parent.FullName)
-    
-    let getSubDirectoriesUnsafe directory =
-        System.IO.Directory.GetDirectories(directory)
-    
-    let getSubDirectories directory =
-        tryCatch (Some(sprintf "Failed to get sub directories: '%s'" directory)) getSubDirectoriesUnsafe directory
-
-    let getSubDirectoryPaths directoryPath =
-        result{
-            let! existingDirectoryPath = ensureDirectoryExists false directoryPath
-            let! subDirectories = getSubDirectories (FileSystem.pathValue existingDirectoryPath)
-            let! subDirectoryPaths = 
-                    subDirectories
-                    |>Seq.map(fun subDirectory -> FileSystem.path subDirectory)
-                    |>toAccumulatedResult
-            return subDirectoryPaths
-        }
-
+        FileSystem.pathUnSafe (System.IO.DirectoryInfo(FileSystem.longPathValue folderPath).Parent.FullName)
+            
     let toSearchOptions recurse =
         match recurse with
         |false -> System.IO.SearchOption.TopDirectoryOnly
@@ -134,7 +134,7 @@ module DirectoryOperations =
     
     let getFilesUnsafe recurse directoryPath =
         let searchOptions = toSearchOptions recurse                
-        System.IO.Directory.GetFiles(FileSystem.pathValue directoryPath,"*.*",searchOptions)
+        System.IO.Directory.GetFiles(FileSystem.longPathValue directoryPath,"*.*",searchOptions)
 
     let getFiles recurse directoryPath =
         try
@@ -144,20 +144,20 @@ module DirectoryOperations =
         with
         |ex -> Result.Error (new Exception(sprintf "Failed to get files in folder '%s' due to: %s" (FileSystem.pathValue directoryPath) ex.Message,ex))
 
-    let findFilesUnsafe recurse searchPattern folder =
+    let findFilesUnsafe recurse searchPattern directoryPath =
         let searchOptions = toSearchOptions recurse
-        System.IO.Directory.GetFiles(folder, searchPattern,searchOptions)
+        System.IO.Directory.GetFiles(FileSystem.longPathValue directoryPath, searchPattern,searchOptions)
 
-    let findFiles recurse searchPattern folder =
+    let findFiles recurse searchPattern directoryPath =
         try
-            (findFilesUnsafe recurse searchPattern (FileSystem.pathValue folder))
+            (findFilesUnsafe recurse searchPattern directoryPath)
             |>Seq.map(fun fn -> FileSystem.path fn)
             |>toAccumulatedResult
         with
-        |ex -> Result.Error (new Exception(sprintf "Failed to find files in folder '%s' due to: %s" (FileSystem.pathValue folder) ex.Message,ex))
+        |ex -> Result.Error (new Exception(sprintf "Failed to find files in folder '%s' due to: %s" (FileSystem.pathValue directoryPath) ex.Message,ex))
     
     let deleteDirectoryIfExists folderPath =
-        match (folderPathExists folderPath) with
+        match (directoryExists folderPath) with
         |true -> 
             deleteDirectory true folderPath                                    
         |false -> 
@@ -166,7 +166,7 @@ module DirectoryOperations =
     let moveDirectoryUnsafe sourceFolderPath destinationFolderPath =
         try
             createDirectoryUnsafe (getParentFolderPathUnsafe destinationFolderPath) |> ignore
-            System.IO.Directory.Move(FileSystem.pathValue sourceFolderPath,FileSystem.pathValue destinationFolderPath)
+            System.IO.Directory.Move(FileSystem.longPathValue sourceFolderPath,FileSystem.longPathValue destinationFolderPath)
         with
         |ex ->
             logger.Warn(getAccumulatedExceptionMessages ex)
