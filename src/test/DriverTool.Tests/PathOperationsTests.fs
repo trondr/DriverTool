@@ -22,7 +22,7 @@ module PathOperationsTests=
             return actual
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error ex -> Assert.Fail(getAccumulatedExceptionMessages ex)
+        |Result.Error ex -> Assert.Fail(toExceptionMessages ex)
 
 
     [<Test>]
@@ -53,7 +53,7 @@ module PathOperationsTests=
         })with
         |Result.Ok a -> Assert.IsTrue(isSuccess)
         |Result.Error ex -> 
-            logger.Error(getAccumulatedExceptionMessages ex)
+            logger.Error(toExceptionMessages ex)
             Assert.IsFalse(isSuccess)
             Assert.AreEqual(expectedErrorMessage,ex.Message)
 
@@ -72,7 +72,7 @@ module PathOperationsTests=
         })with
         |Result.Ok a -> Assert.IsTrue(isSuccess)
         |Result.Error ex -> 
-            logger.Error(getAccumulatedExceptionMessages ex)
+            logger.Error(toExceptionMessages ex)
             Assert.IsFalse(isSuccess)
             Assert.AreEqual(expectedErrorMessage,ex.Message)
     

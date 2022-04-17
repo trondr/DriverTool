@@ -252,9 +252,9 @@
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.PathsTests</FixtureName>
       </FixtureTestSelector>
-      <FixtureTestSelector>
-        <FixtureName>DriverTool.Tests.PathTests</FixtureName>
-      </FixtureTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest(null,"Empty string",False)</TestName>
+      </NamedTestSelector>
       <FixtureTestSelector>
         <FixtureName>DriverTool.Tests.ProcessOperationsTests</FixtureName>
       </FixtureTestSelector>
@@ -296,18 +296,6 @@
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.WebTests.progressMessageTest&lt;String&gt;(30,30,100,"Test message"," 30% (        30 of        100): Test message                                   \r")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WebTests.useCachedVersionBaseTests&lt;Boolean&gt;("c:\\temp\\file1.txt",False,False,False)</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WebTests.useCachedVersionBaseTests&lt;Boolean&gt;("c:\\temp\\file1.txt",False,True,False)</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WebTests.useCachedVersionBaseTests&lt;Boolean&gt;("c:\\temp\\file1.txt",True,False,False)</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DriverTool.Tests.WebTests.useCachedVersionBaseTests&lt;Boolean&gt;("c:\\temp\\file1.txt",True,True,True)</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
         <TestName>DriverTool.Tests.WebTests.verifyDownloadTests(False,False,False,False)</TestName>
@@ -385,8 +373,53 @@
         <FixtureName>DriverTool.Tests.XmlHelperTests</FixtureName>
       </FixtureTestSelector>
       <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp\\test.txt","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp\\test.tx?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp\\test.*x?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("c:\\temp","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCreateTest("","Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.PathCompareTest</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest(null,"Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp\\test.txt","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp\\test.tx?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp\\test.*x?","Local path with wild card",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("c:\\temp","Local path",True)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.PathTests.Path2CreateTest("","Empty string",False)</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
         <TestName>DriverTool.Tests.DellDriverPackCatalogTests.loadCatalogTest</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DriverTool.Tests.LenovoUpdateTests.getDriverUpdatesTest</TestName>
+      </NamedTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.PathTests</FixtureName>
+      </FixtureTestSelector>
+      <FixtureTestSelector>
+        <FixtureName>DriverTool.Tests.WebTests</FixtureName>
+      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

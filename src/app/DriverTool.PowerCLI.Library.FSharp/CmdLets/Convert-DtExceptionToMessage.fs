@@ -26,7 +26,7 @@ module ConvertDtExceptionToMessage =
             ()
     
         override this.ProcessRecord() =        
-            let msg = DriverTool.Library.F0.getAccumulatedExceptionMessages this.Exception
+            let msg = DriverTool.Library.F0.toExceptionMessages this.Exception
             this.WriteObject(msg)
         
         override this.EndProcessing() =

@@ -31,10 +31,11 @@ module F0=
 
     open System
 
-    let rec getAccumulatedExceptionMessages (ex: Exception) =
+    /// Get exception messages recursively
+    let rec toExceptionMessages (ex: Exception) =
         match ex.InnerException with
         | null -> ex.Message
-        | _ -> ex.Message + " " + (getAccumulatedExceptionMessages ex.InnerException)
+        | _ -> ex.Message + " " + (toExceptionMessages ex.InnerException)
 
     let sourceException ex = 
         System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).SourceException

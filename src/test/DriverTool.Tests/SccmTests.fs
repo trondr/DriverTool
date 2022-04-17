@@ -64,7 +64,7 @@ module SccmTests=
             return actual
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)
+        |Result.Error (ex:exn) -> Assert.Fail(toExceptionMessages ex)
 
     open DriverTool.Library.PackageDefinitionSms
 
@@ -80,7 +80,7 @@ module SccmTests=
             return testprogram
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)
+        |Result.Error (ex:exn) -> Assert.Fail(toExceptionMessages ex)
 
     [<Test>]
     [<Category(TestCategory.ManualTests)>]
@@ -118,7 +118,7 @@ module SccmTests=
             return actual
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)
+        |Result.Error (ex:exn) -> Assert.Fail(toExceptionMessages ex)
 
     open DriverTool.Library.PackageXml
 
@@ -184,4 +184,4 @@ Add-CMTaskSequenceStep -TaskSequenceName 'Example TS 1.0' -Step @($ApplyDriversG
             return actual
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error (ex:exn) -> Assert.Fail(getAccumulatedExceptionMessages ex)
+        |Result.Error (ex:exn) -> Assert.Fail(toExceptionMessages ex)

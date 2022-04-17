@@ -70,7 +70,7 @@ module Web =
                 Result.Ok path      
             |Result.Error ex -> toErrorResult ex (Some(sprintf "Destination file '%s' allready exists" (FileSystem.pathValue destinationFilePath)))
         with
-        | ex -> toErrorResult ex (Some(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (getAccumulatedExceptionMessages ex)))
+        | ex -> toErrorResult ex (Some(sprintf "Failed to download '%s' due to '%s'" sourceUri.OriginalString (toExceptionMessages ex)))
 
     let hasSameFileHash downloadInfo =
         (DriverTool.Library.Checksum.hasSameFileHash (downloadInfo.DestinationFile, downloadInfo.SourceChecksum, downloadInfo.SourceFileSize))

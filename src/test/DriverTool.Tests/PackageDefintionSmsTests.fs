@@ -40,5 +40,5 @@ module PackageDefintionSmsTests=
             return actual2
         })with
         |Result.Ok a -> Assert.IsTrue(true)
-        |Result.Error ex -> Assert.Fail(getAccumulatedExceptionMessages ex)
+        |Result.Error ex -> Assert.Fail(toExceptionMessages ex)
 

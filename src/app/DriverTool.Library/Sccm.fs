@@ -125,7 +125,7 @@ module Sccm =
         })with
         |Result.Ok packages -> (packages.Length > 0)
         |Result.Error ex ->
-            logger.Warn(sprintf "Failed to check if package '%s' exists in Configuration Manager due to: %s" packageName (getAccumulatedExceptionMessages ex))
+            logger.Warn(sprintf "Failed to check if package '%s' exists in Configuration Manager due to: %s" packageName (toExceptionMessages ex))
             false
 
     let ensureDriverPackInfoExists packageName =
@@ -242,7 +242,7 @@ module Sccm =
         })with
         |Result.Ok packages -> (packages.Length > 0)
         |Result.Error ex ->
-            logger.Warn(sprintf "Failed to check if task sequence '%s' exists in Configuration Manager due to: %s" name (getAccumulatedExceptionMessages ex))
+            logger.Warn(sprintf "Failed to check if task sequence '%s' exists in Configuration Manager due to: %s" name (toExceptionMessages ex))
             false
 
     let ensureCmTaskSequenceExists name =

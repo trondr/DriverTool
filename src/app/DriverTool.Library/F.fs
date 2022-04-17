@@ -110,7 +110,7 @@ module F=
     let getAllExceptions (results:seq<Result<_,Exception>>) =
             let f = fun (r:Result<_,Exception>) ->
                 match r with
-                |Result.Error ex -> Some(getAccumulatedExceptionMessages ex)
+                |Result.Error ex -> Some(toExceptionMessages ex)
                 |Result.Ok v -> None
             results 
             |> Seq.choose f
@@ -147,7 +147,7 @@ module F=
                             | _ -> false)
         |> Seq.map (fun dpi -> 
                         match dpi with
-                        |Result.Error ex -> getAccumulatedExceptionMessages ex
+                        |Result.Error ex -> toExceptionMessages ex
                         | _ -> String.Empty)
 
     let getAllSuccesses (results:seq<Result<'T,Exception>>) =

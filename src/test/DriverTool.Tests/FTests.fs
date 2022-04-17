@@ -39,8 +39,8 @@ module FTests =
         match res with
         |Ok v -> Assert.AreEqual(11,v)
         |Error ex -> 
-            Assert.IsTrue((getAccumulatedExceptionMessages ex).Contains(errorMessage),ex.Message)
-            Assert.IsTrue((ex.Message).Contains("Dummy message"),getAccumulatedExceptionMessages ex)
+            Assert.IsTrue((toExceptionMessages ex).Contains(errorMessage),ex.Message)
+            Assert.IsTrue((ex.Message).Contains("Dummy message"),toExceptionMessages ex)
     
     [<Test>]
     [<Category(TestCategory.UnitTests)>]
@@ -61,7 +61,7 @@ module FTests =
         match actual with
         |Ok v -> Assert.Fail("Expected error result, got success result")
         |Error ex -> 
-            Assert.AreEqual("Test Message. subfunctionThatThrows.", getAccumulatedExceptionMessages ex)
+            Assert.AreEqual("Test Message. subfunctionThatThrows.", toExceptionMessages ex)
             printf "%A" ex
             Assert.IsTrue(ex.ToString().StartsWith("System.Exception: Test Message. ---> System.Exception: subfunctionThatThrows."))
 

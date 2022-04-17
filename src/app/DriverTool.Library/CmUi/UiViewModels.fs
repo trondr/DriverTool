@@ -272,7 +272,7 @@
                                             let logPackagingResult (r:Result<_,Exception>) =
                                                 match r with
                                                 |Result.Ok p -> this.ReportProgress (sprintf "Succesfully created CM driver package: %A" p) String.Empty String.Empty None true None
-                                                |Result.Error ex -> logger.Error(sprintf "Failed to create CM driver package due to: %s" (getAccumulatedExceptionMessages ex))
+                                                |Result.Error ex -> logger.Error(sprintf "Failed to create CM driver package due to: %s" (toExceptionMessages ex))
                                                 r                                                                                                                                
                                             match(result{
                                                 let! cacheFolderPath = getCacheFolderPath()                                
@@ -286,7 +286,7 @@
                                                 return downloadedDriverPackInfos |> Seq.toArray
                                             })with
                                             |Result.Ok _ -> this.ReportProgress "Successfully packaged CM packages" String.Empty String.Empty  None false None
-                                            |Result.Error ex -> logger.Error(sprintf "Failed to package CM driver packages due to %s" (getAccumulatedExceptionMessages ex))
+                                            |Result.Error ex -> logger.Error(sprintf "Failed to package CM driver packages due to %s" (toExceptionMessages ex))
                                             this.ReportProgress "TODO: Done packaging CM driver packages!" String.Empty String.Empty None true None
                                             this.ReportProgress "Ready"  String.Empty String.Empty None false None
                                         } |> Async.startAsPlainTask                                    

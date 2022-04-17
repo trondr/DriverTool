@@ -169,7 +169,7 @@ module DirectoryOperations =
             System.IO.Directory.Move(FileSystem.longPathValue sourceFolderPath,FileSystem.longPathValue destinationFolderPath)
         with
         |ex ->
-            logger.Warn(getAccumulatedExceptionMessages ex)
+            logger.Warn(toExceptionMessages ex)
             reraise()
 
     let moveDirectory sourceFolderPath destinationFolderPath =
