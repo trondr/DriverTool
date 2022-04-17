@@ -23,8 +23,9 @@ module DirectoryOperations =
         try
             Result.Ok (createDirectoryUnsafe directoryPath)
         with
-        | ex -> Result.Error (new Exception(sprintf "Failed to create directory '%s'" (FileSystem.pathValue directoryPath),ex))
-    
+        | ex -> 
+            toErrorResult ex (Some (sprintf "Failed to create directory '%A'" directoryPath))
+                
     ///Delete directory, throw exception if not succesful
     let deleteDirectoryUnsafe force (folderPath:FileSystem.Path) =
             match (directoryExists folderPath) with
@@ -62,7 +63,8 @@ module DirectoryOperations =
         |false->
            match directoryExists with
            | true -> Result.Ok directoryPath
-           | false -> Result.Error (new Exception(sprintf "Directory not found: '%s'. %s" (FileSystem.pathValue directoryPath) message))
+           | false -> 
+                toErrorResultEx (sprintf "Directory not found: '%s'. %s" (FileSystem.pathValue directoryPath) message)                
 
     let ensureDirectoryExists createIfNotExists directoryPath =
         ensureDirectoryExistsWithMessage createIfNotExists String.Empty directoryPath
@@ -80,7 +82,7 @@ module DirectoryOperations =
         |Ok dp -> 
             match (directoryPathIsEmpty dp) with
             |true -> Result.Ok dp
-            |false -> Result.Error (new Exception(sprintf "Directory '%s' is not empty. %s" (FileSystem.pathValue dp) message))
+            |false -> toErrorResultEx (sprintf "Directory '%s' is not empty. %s" (FileSystem.pathValue dp) message)            
         |Result.Error ex -> Result.Error ex
 
     let ensureDirectoryExistsAndIsEmpty (directoryPath:FileSystem.Path, createIfNotExists) =
@@ -118,7 +120,7 @@ module DirectoryOperations =
 
     let ensureDirectoryNotExistsWithMessage message directoryPath =
         match directoryExists directoryPath with
-        |true -> Result.Error (new Exception(sprintf "Directory '%A' allready exists. %s" directoryPath message))
+        |true -> toErrorResultEx (sprintf "Directory '%A' allready exists. %s" directoryPath message)
         |false -> Result.Ok directoryPath
     
     let getParentFolderPath (folderPath:FileSystem.Path)=        
@@ -142,7 +144,7 @@ module DirectoryOperations =
             |>Seq.map(fun fn -> FileSystem.path fn)
             |>toAccumulatedResult
         with
-        |ex -> Result.Error (new Exception(sprintf "Failed to get files in folder '%s' due to: %s" (FileSystem.pathValue directoryPath) ex.Message,ex))
+        |ex -> toErrorResult ex (Some(sprintf "Failed to get files in folder '%s' due to: %s" (FileSystem.pathValue directoryPath) ex.Message))
 
     let findFilesUnsafe recurse searchPattern directoryPath =
         let searchOptions = toSearchOptions recurse

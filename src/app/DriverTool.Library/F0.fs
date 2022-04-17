@@ -52,6 +52,9 @@ module F0=
            |Some m -> Result.Error (toException m (Some ex))
            |None -> Result.Error (sourceException ex)
 
+    let toErrorResultEx message =
+        Result.Error (toException message None)
+
     let arrayToSeq (array:Array) =
         seq{
             for item in array do

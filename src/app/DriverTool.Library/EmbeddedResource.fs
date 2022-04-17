@@ -41,7 +41,7 @@ module EmbeddedResource =
         match resourceStream with
         |Null -> 
             debugPrintResourceNames assembly
-            Result.Error (new Exception(sprintf "Failed to extract embedded resource '%s' from assembly '%s'." resourceName.Value assembly.FullName))
+            toErrorResultEx (sprintf "Failed to extract embedded resource '%s' from assembly '%s'." resourceName.Value assembly.FullName)
         |NotNull rs -> Result.Ok rs
 
     let extractEmbeddedResourceInAssemblyToFile (resourceName:ResourceName, assembly:Assembly, filePath:FileSystem.Path) =
@@ -59,7 +59,7 @@ module EmbeddedResource =
                 FileOperations.ensureFileExists filePath
             |Result.Error ex -> Result.Error ex    
         with
-        | _ as ex -> Result.Error (toException (sprintf "Failed to extract embedded resource '%A' from assembly '%s' due to %s" resourceName assembly.FullName ex.Message) (Some ex))
+        | _ as ex -> toErrorResult ex (Some (sprintf "Failed to extract embedded resource '%A' from assembly '%s' due to %s" resourceName assembly.FullName ex.Message))
         
     let resourceNameToPartialResourceNames (resourceName:string) =
         let split = resourceName.Split([|'.'|])

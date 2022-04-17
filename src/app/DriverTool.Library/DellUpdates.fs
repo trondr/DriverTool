@@ -215,7 +215,8 @@ module DellUpdates=
             let! sccmPackageInfo =
                 match driverPackage with
                 |Some dpi -> Result.Ok dpi
-                |None -> Result.Error (new Exception(sprintf "Failed to find Dell sccm driver package for model '%s' and operating system '%s' " modelCode.Value operatingSystemCode.Value))
+                |None -> 
+                    toErrorResultEx (sprintf "Failed to find Dell sccm driver package for model '%s' and operating system '%s' " modelCode.Value operatingSystemCode.Value)
             return sccmPackageInfo
         }
 
