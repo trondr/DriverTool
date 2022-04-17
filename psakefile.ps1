@@ -20,9 +20,10 @@ task Clean {
     Remove-Item -Path $artifactsFolder -Force -Recurse -ErrorAction SilentlyContinue
     New-Item -Path $artifactsFolder -ItemType Directory -Force | Out-Null
     #Remove-Item -Path $buildFolder -Force -Recurse -ErrorAction SilentlyContinue
-    New-Item -Path $buildFolder -ItemType Directory -Force | Out-Null            
-    Write-Host "Cleaned!" -ForegroundColor Green
+    New-Item -Path $buildFolder -ItemType Directory -Force | Out-Null
     Remove-Item -Path "$artifactsFolder\DriverTool.*.zip" -Force
+    Get-ChildItem -LiteralPath $rootFolder -Filter "nunit-agent_*.log" | Remove-Item -Force -ErrorAction SilentlyContinue
+    Write-Host "Cleaned!" -ForegroundColor Green
 }
 
 task Build -depends Clean {
