@@ -466,18 +466,13 @@ CmUi                            Start user interface for download and
 	
 ## Install Powershell Module
 	
-1. Create local PS Repository 
 
 ```PowerShell
-New-Item -Path c:\ -Name LocalPSRepository -ItemType Directory -Force
-Register-PSRepository -Name LocalPSRepository -SourceLocation "C:\LocalPSRepository" -PublishLocation "C:\LocalPSRepository" -InstallationPolicy Trusted
-```
-2. Download and copy DriverTool.PowerCLI.%version%.nupkg to C:\LocalPSRepository
-	
-3. Install PowerShell Module
-
-```PowerShell
-Install-Module -Repository LocalPSRepository -Name DriverTool.PowerCLI
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Confirm:$false
+Write-Host "Installing DriverTool.PowerCLI..."
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+Install-Module -Repository PSGallery -Name DriverTool.PowerCLI -Force
+Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
 ```
 	
 ## Create DriverPack Packages and task sequence.
