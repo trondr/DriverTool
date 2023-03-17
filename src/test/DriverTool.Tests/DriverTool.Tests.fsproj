@@ -91,8 +91,7 @@
     <EmbeddedResource Include="TestData\LenovoSccm\ds112090_new_2019-12-01.html" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="6.0.3" />
+  <ItemGroup>    
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
@@ -132,8 +131,7 @@
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />    
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit.ConsoleRunner" Version="3.15.0" />
     <PackageReference Include="NUnit.Console" Version="3.15.0" />

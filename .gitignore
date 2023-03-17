@@ -50,3 +50,4 @@ artifacts/
 nChrunchTemp*
 
 modules/DriverTool.PowerCLI/binary/
+.idea/

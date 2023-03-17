@@ -15,8 +15,5 @@
     <Compile Include="F.fs" />
     <Compile Include="Dup.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="6.0.3" />
-  </ItemGroup>
+  </ItemGroup>  
 </Project>

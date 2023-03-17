@@ -42,8 +42,7 @@
     <Compile Include="Program.fs" />
     <Content Include="Debug.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="6.0.3" />
+  <ItemGroup>    
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
     <PackageReference Include="NCmdLiner" Version="2.0.18110.340" />
