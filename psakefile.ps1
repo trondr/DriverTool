@@ -106,8 +106,8 @@ task PublishModule -depends ModuleRepository {
 }
 
 task PublishApp -depends UnitTests  {
-    $assemblyVersion = (Get-Item "$buildAppFolder\DriverTool.exe").VersionInfo.FileVersion    
-    Compress-Archive -Path "$buildAppFolder\**"  -DestinationPath "$artifactsFolder\DriverTool.$assemblyVersion.zip"
+    $assemblyVersion = (Get-Item "$buildAppFolder\DriverTool\net48\DriverTool.exe").VersionInfo.FileVersion    
+    Compress-Archive -Path "$buildAppFolder\DriverTool\net48\**"  -DestinationPath "$artifactsFolder\DriverTool.$assemblyVersion.zip"
 }
 
 task Publish -depends PublishModule, PublishApp {
