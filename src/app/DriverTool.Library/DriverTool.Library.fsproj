@@ -2,10 +2,10 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyVersion>1.0.22106.82</AssemblyVersion>
-    <FileVersion>1.0.22106.82</FileVersion>
-    <Version>1.0.22106</Version>
-    <Copyright>Copyright (c) 2018-2022 github/trondr</Copyright>
+    <AssemblyVersion>1.0.23080.84</AssemblyVersion>
+    <FileVersion>1.0.23080.84</FileVersion>
+    <Version>1.0.23080</Version>
+    <Copyright>Copyright (c) 2018-2023 github/trondr</Copyright>
   </PropertyGroup>
   <PropertyGroup>
     <DummyProperty>Dummy</DummyProperty>
@@ -111,7 +111,7 @@
     <PackageReference Include="Destructurama.FSharp" Version="1.2.0" />
     <PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.2.0" />
     <PackageReference Include="FSharp.Configuration" Version="2.0.0" />
-    <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.0" />    
+    <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.0" />
     <PackageReference Include="FSharp.Data" Version="4.2.4" />
     <PackageReference Include="FSharpx.Async" Version="1.14.1" />
     <PackageReference Include="FSharpx.Collections" Version="3.0.1" />
@@ -143,7 +143,7 @@
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />    
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="PresentationCore" />

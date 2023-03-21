@@ -2,10 +2,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net48</TargetFrameworks>
-    <AssemblyVersion>1.0.22106.82</AssemblyVersion>
-    <FileVersion>1.0.22106.82</FileVersion>
-    <Version>1.0.22106</Version>
-    <Copyright>Copyright (c) 2018-2022 github/trondr</Copyright>
+    <AssemblyVersion>1.0.23080.84</AssemblyVersion>
+    <FileVersion>1.0.23080.84</FileVersion>
+    <Version>1.0.23080</Version>
+    <Copyright>Copyright (c) 2018-2023 github/trondr</Copyright>
   </PropertyGroup>
   <PropertyGroup>
     <DummyProperty>Dummy</DummyProperty>
@@ -14,5 +14,5 @@
     <Compile Include="F.fs" />
     <Compile Include="DpInstExitCode.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>  
+  </ItemGroup>
 </Project>
