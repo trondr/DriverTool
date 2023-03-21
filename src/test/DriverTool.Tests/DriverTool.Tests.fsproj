@@ -60,6 +60,7 @@
     <Compile Include="PackageDefintionSmsTests.fs" />
     <Compile Include="PathOperationsTests.fs" />
     <Compile Include="DpInstExitCode2ExitCodeTests.fs" />
+    <Compile Include="DriverUpdatesTests.fs" />
     <Compile Include="_TemplateTests.fs" />
     <EmbeddedResource Include="TestData\TestDataXmlHelper.xml" />
     <EmbeddedResource Include="TestData\Cryptography\n20ku13w_x64.exe" />
@@ -135,7 +136,7 @@
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit.ConsoleRunner" Version="3.15.0" />
     <PackageReference Include="NUnit.Console" Version="3.15.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
     <PackageReference Include="RhinoMocks" Version="3.6.1" />
   </ItemGroup>
   <ItemGroup>
