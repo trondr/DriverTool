@@ -208,15 +208,18 @@ module LenovoUpdates =
             let! packageInfos = 
                 (parsePackageXmls downloadedPackageXmls)
                 |>toAccumulatedResult
+            
+            let filteredPackageInfos =
+                packageInfos
+                |> Seq.filter (filterDriverUpdates excludeUpdateRegexPatterns)
+                |> Seq.toArray |> getLatestPackageInfos
+            
             let! downloadResult = 
-                    packageInfos
-                    |>Seq.toArray
-                    |> Array.map (downloadExternalFiles cacheFolderPath)                    
-                    |> toAccumulatedResult            
-            return 
-                packageInfos 
-                |>Seq.filter (filterDriverUpdates excludeUpdateRegexPatterns)
-                |>Seq.toArray
+                    filteredPackageInfos
+                    |> Array.map (downloadExternalFiles cacheFolderPath)
+                    |> toAccumulatedResult
+            
+            return filteredPackageInfos
         }
 
     let assertThatModelCodeIsValid (model:ModelCode) (actualModel:ModelCode) =

@@ -4,11 +4,11 @@
     <TargetFramework>net48</TargetFramework>
     <PackageReleaseNotes>
     </PackageReleaseNotes>
-    <AssemblyVersion>1.0.22106.82</AssemblyVersion>
-    <FileVersion>1.0.22106.82</FileVersion>
-    <Version>1.0.22106</Version>
+    <AssemblyVersion>1.0.23080.84</AssemblyVersion>
+    <FileVersion>1.0.23080.84</FileVersion>
+    <Version>1.0.23080</Version>
     <Description>Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.</Description>
-    <Copyright>Copyright (c) 2018-2022 github/trondr</Copyright>
+    <Copyright>Copyright (c) 2018-2023 github/trondr</Copyright>
     <Company>github/trondr</Company>
     <Authors>github/trondr</Authors>
     <ApplicationIcon>DriverTool.ico</ApplicationIcon>
@@ -42,7 +42,7 @@
     <Compile Include="Program.fs" />
     <Content Include="Debug.txt" />
   </ItemGroup>
-  <ItemGroup>    
+  <ItemGroup>
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Serilog" Version="4.4.0" />
     <PackageReference Include="NCmdLiner" Version="2.0.18110.340" />

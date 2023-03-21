@@ -67,4 +67,21 @@ module PackageXmlTests=
     let truncateCategoryTests (category,expected) =        
         let actual = truncateCategory category
         Assert.AreEqual(expected,actual)
-        ()            
+        ()
+        
+    
+    [<Test>]
+    let getLatestPackageInfosTest() =
+        let packageInfo1 = {PackageInfo.Default with Name="Test";Version="1.0.1" }
+        let packageInfo2 = {PackageInfo.Default with Name="Test";Version="1.0.2" }
+        let packageInfo3 = {PackageInfo.Default with Name="Test2";Version="1.0.3" }
+        let packageInfo4 = {PackageInfo.Default with Name="Test2";Version="1.0.2" }
+        let packageInfo5 = {PackageInfo.Default with Name="Test2";Version="1.0.1" }
+        
+        let packageInfos = [|packageInfo1;packageInfo2;packageInfo3;packageInfo4;packageInfo5|]
+        let expectedPackageInfos = [|packageInfo2;packageInfo3|]
+        let actualPackageInfos = packageInfos |> getLatestPackageInfos
+        Assert.AreEqual(2,actualPackageInfos.Length,"Length is not expected")
+        Assert.AreEqual(expectedPackageInfos.[0],actualPackageInfos.[0])
+        Assert.AreEqual(expectedPackageInfos.[1],actualPackageInfos.[1])
+        ()

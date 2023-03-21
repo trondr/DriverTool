@@ -62,9 +62,12 @@ module Configuration =
 
     let getDownloadCacheDirectoryPath' () =
         let expandedPath = getExpandedValue "DownloadCacheDirectoryPath"
-        let path = System.IO.Path.GetFullPath(expandedPath)        
-        path
-
+        let path = System.IO.Path.GetFullPath(expandedPath)
+        match (Directory.Exists(path)) with
+        | true -> path
+        | false ->
+            Directory.CreateDirectory(path).FullName
+            
     let getDownloadCacheDirectoryPath () =
         try
             getDownloadCacheDirectoryPath' ()

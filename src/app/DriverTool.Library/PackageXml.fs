@@ -489,3 +489,20 @@ module PackageXml =
                 |None -> Result.Ok Seq.empty
             return externalFiles
         }
+    
+    //Convert a version string to a version object.
+    let toVersion version =
+        System.Version.Parse(version)
+    
+    //Keep the latest version of packages with the same name.
+    let getLatestPackageInfos packageInfos =
+        let latestPackageInfos =
+            packageInfos
+            |>Array.groupBy (fun p -> p.Name)
+            |>Array.map (
+                    fun(_,values) ->
+                        values
+                        |> Array.sortBy(fun p -> toVersion p.Version)
+                        |> Array.last
+                )
+        latestPackageInfos
