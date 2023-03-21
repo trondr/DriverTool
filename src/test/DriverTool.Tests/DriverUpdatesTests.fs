@@ -26,7 +26,9 @@ module DriverUpdatesTests=
             let modelName = $"20L6 %s{operatingSystem}"
             let! operatingSystemCode = OperatingSystemCode.create "WIN10X64" false
             let osBuild = "22H2"
-            let! excludeUpdateRegexPatterns = ([|"BIOS";"Firmware"|] |> DriverTool.Library.RegExp.toRegexPatterns true)
+            //let! excludeUpdateRegexPatterns = ([|"BIOS";"Firmware"|] |> DriverTool.Library.RegExp.toRegexPatterns true)
+            //let! excludeUpdateRegexPatterns = ([|"BIOS"|] |> DriverTool.Library.RegExp.toRegexPatterns true)
+            let! excludeUpdateRegexPatterns = ([||] |> DriverTool.Library.RegExp.toRegexPatterns true)
             let! actual = loadDriverUpdates reportProgress cacheFolderPath manufacturer model modelName operatingSystemCode osBuild excludeUpdateRegexPatterns
             return actual
         })with
