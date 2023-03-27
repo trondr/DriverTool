@@ -12,6 +12,6 @@
     <DummyProperty>Dummy</DummyProperty>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="PowershellStandard.Library" Version="5.1.0" />
+    <PackageReference Include="PowershellStandard.Library" Version="5.1.1" />
   </ItemGroup>
 </Project>
