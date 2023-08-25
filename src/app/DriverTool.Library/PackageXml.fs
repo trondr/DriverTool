@@ -394,6 +394,12 @@ module PackageXml =
             ExternalFiles = externalFiles
         }
     
+    let getPackageInfoSafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
+        try
+            Result.Ok (getPackageInfoUnsafe downloadedPackageInfo)
+        with
+        |ex -> Result.Error ex
+    
     ///Keep only the two first words of the category.
     let truncateCategory (category:string) =
         let words = category.Split [|' '|] |>Array.filter(fun s -> not (s.Contains("and")))

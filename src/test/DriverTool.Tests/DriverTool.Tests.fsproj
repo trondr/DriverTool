@@ -80,6 +80,8 @@
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_WithErrorCorrected_20QG_win10.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.txt" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w_2_.xml" />
+	<EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w_2_Empty_Corrupt.xml" />
+	<EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w_2_Missing_Installer_Element.xml" />
     <EmbeddedResource Include="TestData\LenovoCatalog\Update\nz3gs05w.exe" />
     <EmbeddedResource Include="TestData\LenovoCatalog\LenovoCatalog_catalogv2.xml" />
     <EmbeddedResource Include="TestData\InstallXml\InstallXmlInstall.xml" />

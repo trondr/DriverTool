@@ -1,6 +1,7 @@
 ﻿namespace DriverTool.Tests
 
 
+open System
 open NUnit.Framework
 
 [<TestFixture>]
@@ -84,4 +85,63 @@ module PackageXmlTests=
         Assert.AreEqual(2,actualPackageInfos.Length,"Length is not expected")
         Assert.AreEqual(expectedPackageInfos.[0],actualPackageInfos.[0])
         Assert.AreEqual(expectedPackageInfos.[1],actualPackageInfos.[1])
+        ()
+      
+    let expected_nz3gs05w_PackageInfo = {
+        Name = "ISDAS_NZ3GS"
+        Title = "Intel® SGX Device and Software (Windows 10 Version 1709 or later) - 10 [64]"
+        Version = "2.3.100.49777"
+        Installer =
+           { Url = None
+             Name = "nz3gs05w.exe"
+             Checksum =
+              "C872A0F1A3159C68B811F31C841153D22E304550D815EDA6464C706247EB7658"
+             Size = 2780688L
+             Type = Installer }
+        ExtractCommandLine = "nz3gs05w.exe /VERYSILENT /DIR=%PACKAGEPATH% /EXTRACT=\"YES\""
+        InstallCommandLine = "%PACKAGEPATH%\\nz3gs05w.exe /verysilent /DIR=%PACKAGEPATH%\\TMP"
+        Category = ""
+        Readme =
+           { Url = None
+             Name = "nz3gs05w.txt"
+             Checksum =
+              "E6A73AA8DC369C5D16B0F24EB0438FF41305E68E4D91CCB406EF9E5C5FCAC181"
+             Size = 14275L
+             Type = Readme }
+        ReleaseDate = "2019-08-15"
+        PackageXmlName = "nz3gs05w_2_.xml"
+        ExternalFiles =
+           Some
+             [|{ Url = None
+                 Name = "getw10ver6.exe"
+                 Checksum =
+                  "D983A6376977C6B578D05232FEE0BDFA2C66538FDB2B35CA41694A900A2DEB6A"
+                 Size = 159048L
+                 Type = External }|] }
+
+      
+    open DriverTool.Library.F
+    open DriverTool.Library
+    [<Test>]
+    [<TestCase("nz3gs05w_2_.xml",true,"")>]
+    [<TestCase("nz3gs05w_2_Empty_Corrupt.xml",false,"Root element is missing.")>]
+    [<TestCase("nz3gs05w_2_Missing_Installer_Element.xml",false,"Missing installer element.")>]
+    let getPackageInfoUnsafeTests (fileName:string,success:bool,expectedErrorMessage:string) =        
+        match (result{
+            use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
+            let! cacheFolderPath = cacheFolder.FolderPath                        
+            let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,cacheFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
+            let! existingDestinationFilePath = FileSystem.existingFilePath destinationFilePath             
+            let downloadedPackageXmlInfo = {Location=""; Category="";FilePath=existingDestinationFilePath;BaseUrl="";CheckSum=""}            
+            let! actual = getPackageInfoSafe downloadedPackageXmlInfo
+            return actual
+        }) with        
+        |Result.Ok a ->
+            Assert.IsTrue(success)
+            Assert.AreEqual(expected_nz3gs05w_PackageInfo,a,"Loaded package info is not expected.")
+            printfn $"%A{a}"
+            ()
+        |Result.Error e ->
+            Assert.IsFalse(success,$"Test was expected to succeed. Exception: %s{e.ToString()}")
+            Assert.IsTrue(e.Message.Contains(expectedErrorMessage),$"Expected error message: %s{expectedErrorMessage}. Actual error message %s{e.Message}")
         ()
