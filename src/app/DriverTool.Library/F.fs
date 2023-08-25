@@ -190,10 +190,13 @@ module F=
             if(String.IsNullOrWhiteSpace(obj)) then
                 raise (new ArgumentException("Value cannot be null or whitespace.",argumentName))
     
-    let nullGuardResult (obj: 'T when 'T : not struct, argumentName:string) =
+    let nullGuard' (obj: 'T when 'T : not struct) (argumentName:string) (message: string option) =
         match obj with
-        |Null -> 
-            toErrorResult (toException (sprintf "Value '%s' cannot be null." argumentName) None) None
+        |Null ->
+            match message with
+            |Some m -> toErrorResult (toException $"Value '%s{argumentName}' cannot be null. %s{m}" None) None
+            |None -> toErrorResult (toException $"Value '%s{argumentName}' cannot be null." None) None
+            
         |NotNull v -> Result.Ok v
 
     let nullGuard (obj: 'T when 'T : not struct) (argumentName:string) =

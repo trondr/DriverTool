@@ -1,5 +1,6 @@
 ﻿namespace DriverTool.Library
 
+open FSharpx.Collections
 open ManufacturerTypes
 
 module PackageXml = 
@@ -310,90 +311,120 @@ module PackageXml =
                 |> Seq.toArray
             Some externalPackageFiles
 
-    let getPackageInfoUnsafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
-        let packageXDocument = XDocument.Load(FileSystem.pathValue downloadedPackageInfo.FilePath)
-        let packageXElement = packageXDocument.Root
-        let name = packageXElement.Attribute(XName.Get("name")).Value
-        let version = packageXElement.Attribute(XName.Get("version")).Value
-        let title = (packageXElement.Element(XName.Get("Title")).Descendants(XName.Get("Desc")) |> Seq.head).Value
-        let installerName = 
-            packageXElement.Element(XName.Get("Files"))
-                        .Element(XName.Get("Installer"))
-                        .Element(XName.Get("File"))
-                        .Element(XName.Get("Name")).Value
-        let installerCrc =
-            packageXElement.Element(XName.Get("Files"))
-                        .Element(XName.Get("Installer"))
-                        .Element(XName.Get("File"))
-                        .Element(XName.Get("CRC")).Value
+    // Get package info (with more error checking but still unsafe as exceptions may occur)
+    let getPackageInfoUnSafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         
-        let installerSize =
-            packageXElement.Element(XName.Get("Files"))
-                        .Element(XName.Get("Installer"))
-                        .Element(XName.Get("File"))
-                        .Element(XName.Get("Size")).Value |> int64
+        //Convert string to int64
+        let toInt64Result message s =
+            try
+                Result.Ok (s |> int64)
+            with
+            |ex -> Result.Error (toException message None)
+        
+        let getSinglePackageFile baseUrl packageFileType (fileElement:XElement) =
+            result{
+                let! validFileElement = nullGuard' fileElement (nameof fileElement) None
+                let! nameElement = validFileElement|> XmlHelper.getChildElement (xn "Name")
+                let fileName = nameElement.Value
+                let! crcElement = validFileElement|> XmlHelper.getChildElement (xn "CRC")
+                let checksum = crcElement.Value
+                let! sizeElement = validFileElement|> XmlHelper.getChildElement (xn "Size")
+                let! size = sizeElement.Value |> toInt64Result $"Failed to convert file size '%s{crcElement.Value}' to long."
+                let packageFile = 
+                    {
+                        Url = toOptionalUri baseUrl fileName
+                        Name = fileName
+                        Checksum = checksum
+                        Size = size
+                        Type = packageFileType
+                    }
+                return packageFile
+            }
+        
+        ///Get package files
+        let getPackageFiles (packageElement:XElement) url packageFileType =
+            result{
+                let! validPackageElement = nullGuard' packageElement (nameof packageElement) None
+                let fileTypeName =
+                    match packageFileType with
+                    |Installer -> "Installer"
+                    |Readme -> "Readme"
+                    |External -> "External"
+                let! filesElement = validPackageElement|> XmlHelper.getChildElement (xn "Files")
+                let! fileTypNameElement = filesElement|> XmlHelper.getChildElement (xn fileTypeName)
+                let! fileElement = fileTypNameElement|> XmlHelper.getChildElement (xn "File")
+                let! packageFile = fileElement|> getSinglePackageFile url packageFileType
+                return packageFile
+            }
 
-        let readmeName = 
-            packageXElement.Element(XName.Get("Files"))
-                        .Element(XName.Get("Readme"))
-                        .Element(XName.Get("File"))
-                        .Element(XName.Get("Name")).Value
-        
-        let readmeCrc =
-            packageXElement.Element(XName.Get("Files"))
-                        .Element(XName.Get("Readme"))
-                        .Element(XName.Get("File"))
-                        .Element(XName.Get("CRC")).Value
-        
-        let readmeSize =
-            packageXElement.Element(XName.Get("Files"))
-                        .Element(XName.Get("Readme"))
-                        .Element(XName.Get("File"))
-                        .Element(XName.Get("Size")).Value |> int64
-
-        let extractCommandLine = 
-            match packageXElement.Element(XName.Get("ExtractCommand")) with
-            | null -> String.Empty
-            | v -> v.Value
-        let installCommandLine = 
-            match packageXElement.Element(XName.Get("Install")) with
-            | null -> String.Empty
-            | v -> 
-                match v.Element(XName.Get("Cmdline")) with
-                | null -> String.Empty
-                | v -> v.Value
-        let releaseDate = packageXElement.Element(XName.Get("ReleaseDate")).Value
-        let baseUrl = downloadedPackageInfo.BaseUrl
-        let category = downloadedPackageInfo.Category
-        let externalFiles = toExternalFiles packageXElement baseUrl
-        {
-            Name = name;
-            Title = title;
-            Version = version;
-            Installer = 
-                {
-                    Url = toOptionalUri baseUrl installerName
-                    Name = installerName
-                    Checksum = installerCrc
-                    Size = installerSize
-                    Type = Installer
-                }
-            Readme = 
-                {
-                    Url = toOptionalUri baseUrl readmeName
-                    Name = readmeName
-                    Checksum = readmeCrc
-                    Size = readmeSize
-                    Type = Readme
-                }            
-            ExtractCommandLine = extractCommandLine;
-            InstallCommandLine = installCommandLine;                
-            Category = category;
-            ReleaseDate = releaseDate;
-            PackageXmlName = ((new System.IO.FileInfo(FileSystem.pathValue downloadedPackageInfo.FilePath)).Name)
-            ExternalFiles = externalFiles
+        let toExternalFiles2 (packageXElement:XElement) (baseUrl:string) =
+            result{
+                let! validPackageElement = nullGuard' packageXElement (nameof packageXElement) None
+                let! filesElement = validPackageElement|> XmlHelper.getChildElement (xn "Files")
+                let! externalElement = filesElement|> XmlHelper.getOptionalChildElement (xn "External")
+                let! externalPackageFiles =
+                    match externalElement with
+                    |None -> Result.Ok Seq.empty
+                    |Some ee ->
+                        let files = 
+                            ee.Elements(xn "File")
+                            |> Seq.map (fun xf ->
+                                xf|> getSinglePackageFile baseUrl PackageFileType.External
+                            )
+                            |> Seq.toArray
+                            |>toAccumulatedResult
+                        files
+                let externalPackageFileArray = externalPackageFiles |>Seq.toArray
+                let optionalExternalPackageFileArray =
+                    match Array.length externalPackageFileArray with
+                    |0 -> None
+                    |_ -> Some externalPackageFileArray
+                return optionalExternalPackageFileArray
+            }
+            
+        result{
+            //Load xml file
+            let! existingPackageInfoPath = FileOperations.ensureFileExists downloadedPackageInfo.FilePath
+            let! packageXDocument = XmlHelper.loadXDocument existingPackageInfoPath
+            let! packageElement = XmlHelper.getRootElement packageXDocument
+            let! name = XmlHelper.getRequiredAttribute packageElement (xn "name")
+            let! version = XmlHelper.getRequiredAttribute packageElement (xn "version")
+            let! titleElement = packageElement |> XmlHelper.getChildElement (xn "Title")
+            let! titleDescElement = titleElement |> XmlHelper.getElementDescendants (xn "Desc")|> Seq.tryHead |> optionToResult "Title element do not have one or more Desc child elements."
+            let title = titleDescElement.Value
+            let! installerPackageFile = getPackageFiles packageElement downloadedPackageInfo.BaseUrl PackageFileType.Installer
+            let! readmePackageFile = getPackageFiles packageElement downloadedPackageInfo.BaseUrl PackageFileType.Readme
+            let! releaseDateElement = packageElement |> XmlHelper.getChildElement (xn "ReleaseDate")
+            let releaseDate = releaseDateElement.Value
+            
+            let! extractCommandElement = packageElement |> XmlHelper.getOptionalChildElement (xn "ExtractCommand")
+            let extractCommandLine =
+                    match extractCommandElement with
+                    |None -> String.Empty
+                    |Some ecl -> ecl.Value
+            
+            let! installElement = packageElement |> XmlHelper.getOptionalChildElement (xn "Install")
+            let installCommandLine =
+                    match installElement with
+                    |None -> String.Empty
+                    |Some ecl -> ecl.Value
+            
+            let! externalFiles = toExternalFiles2 packageElement downloadedPackageInfo.BaseUrl
+            return {PackageInfo.Default with
+                        Name=name
+                        Title = title
+                        Version = version
+                        Installer = installerPackageFile
+                        Readme = readmePackageFile
+                        ReleaseDate = releaseDate
+                        Category = downloadedPackageInfo.Category
+                        ExternalFiles = externalFiles
+                        ExtractCommandLine = extractCommandLine
+                        InstallCommandLine = installCommandLine
+                        PackageXmlName = (new System.IO.FileInfo(FileSystem.pathValue downloadedPackageInfo.FilePath)).Name 
+                    }    
         }
-    
+        
     ///Keep only the two first words of the category.
     let truncateCategory (category:string) =
         let words = category.Split [|' '|] |>Array.filter(fun s -> not (s.Contains("and")))

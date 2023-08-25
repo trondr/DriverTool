@@ -4,9 +4,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarnOn>3390;$(WarnOn)</WarnOn>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyVersion>1.0.23080.84</AssemblyVersion>
-    <FileVersion>1.0.23080.84</FileVersion>
-    <Version>1.0.23080</Version>
+    <AssemblyVersion>1.0.23237.86</AssemblyVersion>
+    <FileVersion>1.0.23237.86</FileVersion>
+    <Version>1.0.23237</Version>
     <Copyright>Copyright (c) 2018-2023 github/trondr</Copyright>
   </PropertyGroup>
   <PropertyGroup>
@@ -31,7 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PowershellStandard.Library" Version="5.1.1" />
-    <PackageReference Update="FSharp.Core" Version="7.0.200" />
+    <PackageReference Update="FSharp.Core" Version="7.0.400" />
     <ProjectReference Include="..\DriverTool.Library\DriverTool.Library.fsproj" />
     <ProjectReference Include="..\DriverTool.PowerCLI.Library.CSharp\DriverTool.PowerCLI.Library.CSharp.csproj" />
     <ProjectReference Include="..\DriverTool\DriverTool.fsproj" />

@@ -122,7 +122,7 @@ module DellDriverPackCatalog =
             let! baseLocation = getRequiredAttribute xDocument.Root (xnu "baseLocation")
             let baseLocationUrl = "http://" + baseLocation
             let! driverPackages = 
-                xDocument |> getXDocumentDescendants (xn "DriverPackage")
+                xDocument |> getDocumentDescendants (xn "DriverPackage")
                 |>Seq.map (toDriverPackage baseLocationUrl)
                 |>toAccumulatedResult
             return driverPackages |> Seq.toArray
