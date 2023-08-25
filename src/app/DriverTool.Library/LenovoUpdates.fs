@@ -155,13 +155,13 @@ module LenovoUpdates =
 
     let getPackageInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         try
-            Result.Ok (getPackageInfoUnsafe downloadedPackageInfo)
+            getPackageInfoUnSafeImproved downloadedPackageInfo
         with
-        |ex -> Result.Error (new Exception(sprintf "Failed to get update info from '%s'." (FileSystem.pathValue downloadedPackageInfo.FilePath),ex))
+        |ex -> Result.Error (new Exception( $"Failed to get update info from '%s{FileSystem.pathValue downloadedPackageInfo.FilePath}'.",ex))
 
     let parsePackageXmls (downloadedPackageXmls : seq<DownloadedPackageXmlInfo>) : seq<Result<PackageInfo,Exception>> = 
         downloadedPackageXmls
-        |> Seq.map (fun pi -> (getPackageInfo pi))        
+        |> Seq.map (fun pi -> (getPackageInfo pi))
 
     let filterUpdates context packageInfo =
         (not (RegExp.matchAny context.ExcludeUpdateRegexPatterns packageInfo.Category)) 
