@@ -13,12 +13,12 @@
         let xnn nameSpace name = 
             XName.Get(name, nameSpace)
 
-        ///Get decendants from xDocument
-        let getXDocumentDescendants elementName (xDocument:XDocument) =
+        ///Get descendants from xDocument
+        let getDocumentDescendants elementName (xDocument:XDocument)=
             xDocument.Descendants(elementName)
 
-        ///Get decendants from xElement
-        let getXElementDescendants elementName (xElement:XElement) =
+        ///Get descendants from xElement
+        let getElementDescendants elementName (xElement:XElement)=
             xElement.Descendants(elementName)
         
         ///Get optional attribute from xElement. Example: getOptionalAttribute xElement (xn "SystemId")
