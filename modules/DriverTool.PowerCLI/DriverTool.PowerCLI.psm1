@@ -48,11 +48,16 @@ $fsharpCorePath = [System.IO.FileInfo]([System.IO.Path]::Combine($($global:Modul
 $global:fsharpCore = [reflection.assembly]::LoadFrom($fsharpCorePath)
 $OnAssemblyResolve = [System.ResolveEventHandler] {
   param($sender, $e)
-  # from:FSharp.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-  # to:  FSharp.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+  # Redirect assembly loading
+  # from:"FSharp.Core, Version=4.4.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "FSharp.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" 
+  # to:  FSharp.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
   #Write-Host "OnAssemblyResolve: Attempting to resolve when asking for assembly: $($e.Name)"
-  if ($e.Name -eq "FSharp.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") 
-  {       
+  $redirectAssemblies = @(
+    "FSharp.Core, Version=4.4.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+    "FSharp.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"  
+  )
+  if ($e.Name -in $redirectAssemblies) 
+  {
     #Write-Host "OnAssemblyResolve: Resolving: $($global:fsharpCore)"
     return $global:fsharpCore
   }
