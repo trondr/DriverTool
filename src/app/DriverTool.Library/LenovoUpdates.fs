@@ -155,7 +155,7 @@ module LenovoUpdates =
 
     let getPackageInfo (downloadedPackageInfo : DownloadedPackageXmlInfo) =
         try
-            getPackageInfoUnSafeImproved downloadedPackageInfo
+            getPackageInfoUnSafe downloadedPackageInfo
         with
         |ex -> Result.Error (new Exception( $"Failed to get update info from '%s{FileSystem.pathValue downloadedPackageInfo.FilePath}'.",ex))
 

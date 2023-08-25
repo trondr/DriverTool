@@ -139,7 +139,7 @@ module PackageXmlTests=
                 else
                     Result.Ok existingDestinationFilePath                
             let downloadedPackageXmlInfo = {Location=""; Category="";FilePath=adjustedDestinationFilePath;BaseUrl="";CheckSum=""}            
-            let! actual = getPackageInfoUnSafeImproved downloadedPackageXmlInfo
+            let! actual = getPackageInfoUnSafe downloadedPackageXmlInfo
             return actual
         }) with        
         |Result.Ok a ->
