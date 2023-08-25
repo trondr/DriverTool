@@ -47,10 +47,16 @@ module F0=
             (new System.Exception(message))
     
     let toErrorResult ex message =
-           match message with
-           |Some m -> Result.Error (toException m (Some ex))
-           |None -> Result.Error (sourceException ex)
+       match message with
+       |Some m -> Result.Error (toException m (Some ex))
+       |None -> Result.Error (sourceException ex)
 
+    //Not implemented result.
+    let toNotImplementedResult message =
+       match message with
+       |Some m -> Result.Error (toException $"Not implemented. %s{m}" None)
+       |None -> Result.Error (toException "Not implemented." None)
+    
     let arrayToSeq (array:Array) =
         seq{
             for item in array do
