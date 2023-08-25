@@ -2,9 +2,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
-    <AssemblyVersion>1.0.23080.84</AssemblyVersion>
-    <FileVersion>1.0.23080.84</FileVersion>
-    <Version>1.0.23080</Version>
+    <AssemblyVersion>1.0.23237.86</AssemblyVersion>
+    <FileVersion>1.0.23237.86</FileVersion>
+    <Version>1.0.23237</Version>
     <Copyright>Copyright (c) 2018-2023 github/trondr</Copyright>
   </PropertyGroup>
   <PropertyGroup>
