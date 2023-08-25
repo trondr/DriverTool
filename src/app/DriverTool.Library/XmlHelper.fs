@@ -58,4 +58,34 @@
             with
             |ex -> Result.Error (toException (sprintf "Failed to load xml file '%A' due to: %s" xmlFilePath ex.Message) (Some ex))
 
+        //Get root of xml document.
+        let getRootElement (document:XDocument) =
+            result{
+                let! validDocument = nullGuard' document (nameof document) None
+                let! validRootElement = nullGuard' validDocument.Root "Root" (Some $"Root element not found.")
+                return validRootElement
+            }            
+        
+        //Get child element.
+        let getChildElement (name:XName) (element:XElement) =
+            result{
+                let! validElement = nullGuard' element (nameof element) None
+                let! validName = nullGuard' name (nameof name) None
+                let childElement = validElement.Element(validName)
+                let! validChildElement = nullGuard' childElement validName.LocalName (Some $"Element not found: %s{validName.LocalName}")                
+                return validChildElement
+            }
+            
+        //Get optional child element.
+        let getOptionalChildElement (name:XName) (element:XElement) =
+            result{
+                let! validElement = nullGuard' element (nameof element) None
+                let! validName = nullGuard' name (nameof name) None
+                let childElement = validElement.Element(validName)
+                let validChildElement =
+                    match childElement with
+                    |Null -> None
+                    |NotNull c -> Some c
+                return validChildElement
+            }
         
