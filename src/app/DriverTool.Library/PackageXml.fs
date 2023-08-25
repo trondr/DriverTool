@@ -394,12 +394,115 @@ module PackageXml =
             ExternalFiles = externalFiles
         }
     
-    let getPackageInfoSafe (downloadedPackageInfo : DownloadedPackageXmlInfo) =
-        try
-            Result.Ok (getPackageInfoUnsafe downloadedPackageInfo)
-        with
-        |ex -> Result.Error ex
-    
+    // Get package info (with more error checking but still unsafe as exceptions may occur)
+    let getPackageInfoUnSafeImproved (downloadedPackageInfo : DownloadedPackageXmlInfo) =
+        
+        //Convert string to int64
+        let toInt64Result message s =            
+            try
+                Result.Ok (s |> int64)
+            with
+            |ex -> Result.Error (toException message None)
+        
+        ///Get package file
+        let getPackageFile (packageElement:XElement) url packageFileType =
+            result{
+                let! validPackageElement = nullGuard' packageElement (nameof packageElement) None
+                let fileTypeName =
+                    match packageFileType with
+                    |Installer -> "Installer"
+                    |Readme -> "Readme"
+                    |External -> "External"
+                let! filesElement = validPackageElement|> XmlHelper.getChildElement (xn "Files")
+                let! fileTypNameElement = filesElement|> XmlHelper.getChildElement (xn fileTypeName)
+                let! fileElement = fileTypNameElement|> XmlHelper.getChildElement (xn "File")
+                let! nameElement = fileElement|> XmlHelper.getChildElement (xn "Name")
+                let fileName = nameElement.Value
+                let! crcElement = fileElement|> XmlHelper.getChildElement (xn "CRC")
+                let checksum = crcElement.Value
+                let! sizeElement = fileElement|> XmlHelper.getChildElement (xn "Size")
+                let! size = sizeElement.Value |> toInt64Result $"Failed to convert file size '%s{crcElement.Value}' to long."                
+                let packageFile = 
+                    {
+                        Url = toOptionalUri url fileName
+                        Name = fileName
+                        Checksum = checksum
+                        Size = size
+                        Type = packageFileType
+                    }
+                return packageFile
+            }
+        let toExternalFiles2 (packageXElement:XElement) (baseUrl:string) =
+            result{
+                let! validPackageElement = nullGuard' packageXElement (nameof packageXElement) None
+                let! filesElement = validPackageElement|> XmlHelper.getChildElement (xn "Files")
+                let! externalElement = filesElement|> XmlHelper.getOptionalChildElement (xn "External")
+                let externalPackageFiles =
+                    match externalElement with
+                    |None -> None
+                    |Some ee ->
+                        let files = 
+                            ee.Elements(xn "File")
+                            |> Seq.map (fun xf ->
+                                let name = xf.Element(xn "Name").Value
+                                let crc = xf.Element(xn "CRC").Value
+                                let size = xf.Element(xn "Size").Value |> int64
+                                {
+                                    Url = toOptionalUri baseUrl name
+                                    Name = name
+                                    Checksum = crc
+                                    Size = size
+                                    Type = External
+                                }
+                            )
+                            |> Seq.toArray
+                        Some(files)
+                return externalPackageFiles                
+            }
+            
+        result{
+            //Load xml file
+            let! existingPackageInfoPath = FileOperations.ensureFileExists downloadedPackageInfo.FilePath
+            let! packageXDocument = XmlHelper.loadXDocument existingPackageInfoPath
+            let! packageElement = XmlHelper.getRootElement packageXDocument
+            let! name = XmlHelper.getRequiredAttribute packageElement (xn "name")
+            let! version = XmlHelper.getRequiredAttribute packageElement (xn "version")
+            let! titleElement = packageElement |> XmlHelper.getChildElement (xn "Title")
+            let! titleDescElement = titleElement |> XmlHelper.getElementDescendants (xn "Desc")|> Seq.tryHead |> optionToResult "Title element do not have one or more Desc child elements."
+            let title = titleDescElement.Value
+            let! installerPackageFile = getPackageFile packageElement downloadedPackageInfo.BaseUrl PackageFileType.Installer
+            let! readmePackageFile = getPackageFile packageElement downloadedPackageInfo.BaseUrl PackageFileType.Readme
+            let! releaseDateElement = packageElement |> XmlHelper.getChildElement (xn "ReleaseDate")
+            let releaseDate = releaseDateElement.Value
+            
+            let! extractCommandElement = packageElement |> XmlHelper.getOptionalChildElement (xn "ExtractCommand")
+            let extractCommandLine =
+                    match extractCommandElement with
+                    |None -> String.Empty
+                    |Some ecl -> ecl.Value
+            
+            let! installElement = packageElement |> XmlHelper.getOptionalChildElement (xn "Install")
+            let installCommandLine =
+                    match installElement with
+                    |None -> String.Empty
+                    |Some ecl -> ecl.Value
+            
+            let! externalFiles = toExternalFiles2 packageElement downloadedPackageInfo.BaseUrl
+            return {PackageInfo.Default with
+                        Name=name
+                        Title = title
+                        Version = version
+                        Installer = installerPackageFile
+                        Readme = readmePackageFile
+                        ReleaseDate = releaseDate
+                        Category = downloadedPackageInfo.Category
+                        ExternalFiles = externalFiles
+                        ExtractCommandLine = extractCommandLine
+                        InstallCommandLine = installCommandLine
+                        PackageXmlName = (new System.IO.FileInfo(FileSystem.pathValue downloadedPackageInfo.FilePath)).Name 
+                    }    
+        }
+        
     ///Keep only the two first words of the category.
     let truncateCategory (category:string) =
         let words = category.Split [|' '|] |>Array.filter(fun s -> not (s.Contains("and")))

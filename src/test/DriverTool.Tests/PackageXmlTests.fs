@@ -125,7 +125,7 @@ module PackageXmlTests=
     [<Test>]
     [<TestCase("nz3gs05w_2_.xml",true,false,"")>]
     [<TestCase("nz3gs05w_2_Empty_Corrupt.xml",false,false,"Root element is missing.")>]
-    [<TestCase("nz3gs05w_2_Missing_Installer_Element.xml",false,false,"Missing installer element.")>]
+    [<TestCase("nz3gs05w_2_Missing_Installer_Element.xml",false,false,"Element not found: Installer")>]
     [<TestCase("nz3gs05w_2_.xml",false,true,"Could not find file")>]
     let getPackageInfoUnsafeTests (fileName:string,success:bool,removeFileBeforeTest:bool,expectedErrorMessage:string) =
         match (result{
@@ -139,7 +139,7 @@ module PackageXmlTests=
                 else
                     Result.Ok existingDestinationFilePath                
             let downloadedPackageXmlInfo = {Location=""; Category="";FilePath=adjustedDestinationFilePath;BaseUrl="";CheckSum=""}            
-            let! actual = getPackageInfoSafe downloadedPackageXmlInfo
+            let! actual = getPackageInfoUnSafeImproved downloadedPackageXmlInfo
             return actual
         }) with        
         |Result.Ok a ->
