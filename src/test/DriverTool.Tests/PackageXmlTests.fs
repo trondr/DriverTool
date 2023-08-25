@@ -123,16 +123,22 @@ module PackageXmlTests=
     open DriverTool.Library.F
     open DriverTool.Library
     [<Test>]
-    [<TestCase("nz3gs05w_2_.xml",true,"")>]
-    [<TestCase("nz3gs05w_2_Empty_Corrupt.xml",false,"Root element is missing.")>]
-    [<TestCase("nz3gs05w_2_Missing_Installer_Element.xml",false,"Missing installer element.")>]
-    let getPackageInfoUnsafeTests (fileName:string,success:bool,expectedErrorMessage:string) =        
+    [<TestCase("nz3gs05w_2_.xml",true,false,"")>]
+    [<TestCase("nz3gs05w_2_Empty_Corrupt.xml",false,false,"Root element is missing.")>]
+    [<TestCase("nz3gs05w_2_Missing_Installer_Element.xml",false,false,"Missing installer element.")>]
+    [<TestCase("nz3gs05w_2_.xml",false,true,"Could not find file")>]
+    let getPackageInfoUnsafeTests (fileName:string,success:bool,removeFileBeforeTest:bool,expectedErrorMessage:string) =
         match (result{
             use cacheFolder = new DirectoryOperations.TemporaryFolder(logger)
             let! cacheFolderPath = cacheFolder.FolderPath                        
             let! destinationFilePath = EmbeddedResource.extractEmbeddedResourceByFileNameBase (fileName,cacheFolderPath,fileName,System.Reflection.Assembly.GetExecutingAssembly())
-            let! existingDestinationFilePath = FileSystem.existingFilePath destinationFilePath             
-            let downloadedPackageXmlInfo = {Location=""; Category="";FilePath=existingDestinationFilePath;BaseUrl="";CheckSum=""}            
+            let! existingDestinationFilePath = FileSystem.existingFilePath destinationFilePath
+            let! adjustedDestinationFilePath =
+                if(removeFileBeforeTest) then
+                    FileOperations.deleteFile existingDestinationFilePath
+                else
+                    Result.Ok existingDestinationFilePath                
+            let downloadedPackageXmlInfo = {Location=""; Category="";FilePath=adjustedDestinationFilePath;BaseUrl="";CheckSum=""}            
             let! actual = getPackageInfoSafe downloadedPackageXmlInfo
             return actual
         }) with        
