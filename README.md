@@ -181,7 +181,7 @@ As DriverTool does not calculate dependencies between updates it will in many ca
 ## Command line help
 
 ```
-DriverTool 1.0.23080 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
+DriverTool 1.0.23237 - Download drivers and software for current PC model and create a driver package that can be imported into SCCM as a package or application.
 Copyright (c) 2018-2023 github/trondr
 Usage: DriverTool.exe <command> [parameters]
 
