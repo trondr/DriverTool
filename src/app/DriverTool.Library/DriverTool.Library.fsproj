@@ -112,7 +112,7 @@
     <PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.2.0" />
     <PackageReference Include="FSharp.Configuration" Version="2.0.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
-    <PackageReference Include="FSharp.Data" Version="5.0.2" />
+    <PackageReference Include="FSharp.Data" Version="6.2.0" />
     <PackageReference Include="FSharpx.Async" Version="1.14.1" />
     <PackageReference Include="FSharpx.Collections" Version="3.1.0" />
     <PackageReference Include="FSharpx.Extras" Version="3.1.0" />
@@ -140,9 +140,9 @@
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="System.Reactive" Version="5.0.0" />
-    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
-    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+    <PackageReference Include="System.Reactive" Version="6.0.0" />
+    <PackageReference Include="System.Reactive.Linq" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -161,6 +161,7 @@
     <Reference Include="FSharp.Data.DesignTime">
       <HintPath>..\..\..\packages\fsharp.data\4.2.4\typeproviders\fsharp41\netstandard2.0\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
+    <PackageReference Update="FSharp.Core" Version="7.0.400" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DriverTool.CSharpLib\DriverTool.CSharpLib.csproj" />

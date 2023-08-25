@@ -82,14 +82,14 @@ module EmbeddedResourceTest  =
             let files = 
                 System.IO.Directory.GetFiles(FileSystem.pathValue p,"*.*",System.IO.SearchOption.AllDirectories)
                 |> Array.filter(fun f -> not (f.Contains("DriverTool.exe"))) //Filter away DriverTool.exe and DriverTool.exe.config as these files are not in the expected location during NChrunch testing.
-            Assert.AreEqual(111, files.Length, sprintf "Extracted file count not expected in %s. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'. %A" destinationFolderPathString (System.IO.Directory.GetFiles(destinationFolderPathString,"*.*",SearchOption.AllDirectories)))
+            Assert.AreEqual(118, files.Length, sprintf "Extracted file count %i not expected in %s. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\\app\DriverTool.Library\PackageTemplate'. %A" files.Length destinationFolderPathString files)
         |Error ex -> Assert.IsTrue(false,ex.Message)
 
     [<Test>]
     let getPackageTemplateEmbeddedResourceNamesTest () =
         let actual = PackageTemplate.getPackageTemplateEmbeddedResourceNames()
         let actualResourceNameCount = (actual |> Seq.toList).Length
-        Assert.AreEqual(11,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\app\DriverTool\PackageTemplate'.")
+        Assert.AreEqual(11,actualResourceNameCount,"Resource name count not expected. This number must be adjusted by the developer if files are added or removed from the package template folder '<solutiondirectory>\src\\app\DriverTool.Library\PackageTemplate'.")
 
 
     [<Test>]

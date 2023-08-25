@@ -31,7 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PowershellStandard.Library" Version="5.1.1" />
-    <PackageReference Update="FSharp.Core" Version="7.0.200" />
+    <PackageReference Update="FSharp.Core" Version="7.0.400" />
     <ProjectReference Include="..\DriverTool.Library\DriverTool.Library.fsproj" />
     <ProjectReference Include="..\DriverTool.PowerCLI.Library.CSharp\DriverTool.PowerCLI.Library.CSharp.csproj" />
     <ProjectReference Include="..\DriverTool\DriverTool.fsproj" />

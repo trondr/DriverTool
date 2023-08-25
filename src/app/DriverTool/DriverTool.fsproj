@@ -49,5 +49,6 @@
     <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
     <ProjectReference Include="..\DriverTool.Library\DriverTool.Library.fsproj" />
     <ProjectReference Include="..\DriverTool.UI\DriverTool.UI.csproj" />
+    <PackageReference Update="FSharp.Core" Version="7.0.400" />
   </ItemGroup>
 </Project>
