@@ -34,4 +34,9 @@ module WmiHelperTests  =
         let actualResult = WmiHelper.getWmiProperty "root\WMI" "MS_SystemInformation" "BaseBoardProduct"
         match actualResult with
         |Ok actual -> Assert.IsFalse(System.String.IsNullOrWhiteSpace(actual),"Is null")
-        |Error e -> Assert.Fail(e.Message)
+        |Error e -> 
+            match (e.Message.Contains("No instances of wmi class 'MS_SystemInformation' was found.")) with
+            |true-> 
+                Assert.Inconclusive()
+            |false ->
+                Assert.Fail(e.Message)
